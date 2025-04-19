@@ -10,11 +10,11 @@ class Entities(solidago.Entities):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def load(cls, directory: str, *args, **kwargs) -> "Entities":
+    def load(cls, poll_name: str, *args, **kwargs) -> "Entities":
         # TODO: Lê does not know the database well enough
         raise NotImplemented
 
-    def save(self, directory: str, name: str="entities", **kwargs) -> tuple[str, dict]:
+    def save(self, poll_name: str, name: str="entities", **kwargs) -> tuple[str, dict]:
         # TODO: Lê does not know the database well enough
         raise NotImplemented
         return self.save_instructions(name)

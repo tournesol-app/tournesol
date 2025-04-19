@@ -19,7 +19,6 @@ class EntityCriterionWise(StateFunction):
         entities: Entities,
         voting_rights: VotingRights,
         user_models: UserModels,
-        *args, **kwargs,
     ) -> ScoringModel:
         """ Returns weighted average of user's scores """
         global_model = ScoringModel(note=type(self).note)

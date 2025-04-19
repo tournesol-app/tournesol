@@ -27,15 +27,15 @@ class TournesolState(solidago.State):
         super().__init__(*args, **kwargs)
     
     @classmethod
-    def load(cls, directory: str, *args, **kwargs) -> "TournesolState":
+    def load(cls, poll_name: str, *args, **kwargs) -> "TournesolState":
         return cls(
-            users=Users.load(directory, *args, **kwargs),
-            vouches=Vouches.load(directory, *args, **kwargs),
-            entities=Entities.load(directory, *args, **kwargs),
-            made_public=MadePublic.load(directory, *args, **kwargs),
-            assessments=Assessments.load(directory, *args, **kwargs),
-            comparisons=Comparisons.load(directory, *args, **kwargs),
-            voting_rights=VotingRights.load(directory, *args, **kwargs),
-            user_models=UserModels.load(directory, *args, **kwargs),
-            global_model=GlobalModel.load(directory, *args, **kwargs),
+            users=Users.load(poll_name, *args, **kwargs),
+            vouches=Vouches.load(poll_name, *args, **kwargs),
+            entities=Entities.load(poll_name, *args, **kwargs),
+            made_public=MadePublic.load(poll_name, *args, **kwargs),
+            assessments=Assessments.load(poll_name, *args, **kwargs),
+            comparisons=Comparisons.load(poll_name, *args, **kwargs),
+            voting_rights=VotingRights.load(poll_name, *args, **kwargs),
+            user_models=UserModels.load(poll_name, *args, **kwargs),
+            global_model=GlobalModel.load(poll_name, *args, **kwargs),
         )

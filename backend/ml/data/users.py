@@ -11,6 +11,7 @@ class Users(solidago.Users):
 
     @classmethod
     def load(cls, *args, **kwargs) -> "Users":
+        """ Users are common to all polls """
         values = (
             User.objects
             .filter(is_active=True)

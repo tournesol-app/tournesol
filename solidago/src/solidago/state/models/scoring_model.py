@@ -54,7 +54,7 @@ class Translations(MultiScore):
 
 class ScoringModel:
     def __init__(self, 
-        composition: list=[("direct", {})],
+        composition: Optional[list]=None,
         directs: Optional[MultiScore]=None,
         scales: Optional[MultiScore]=None,
         note: Optional[str]=None,
@@ -64,9 +64,9 @@ class ScoringModel:
             ("direct", {"note": "entitywise_qr_quantile"}),
             ("squash", {"note": "squash", "score_max": 100}),
         ] """
-        if composition[0][0] == "direct" and isinstance(note, str):
-            composition[0][1]["note"] = note
-        self.composition = composition
+        self.composition = composition or [("direct", {})]
+        if self.composition[0][0] == "direct" and isinstance(note, str):
+            self.composition[0][1]["note"] = note
         self.directs = MultiScore(["entity_name", "criterion"], name="directs") if directs is None else directs
         self.scales = MultiScore(["height", "kind", "criterion"], name="scales") if scales is None else scales
 

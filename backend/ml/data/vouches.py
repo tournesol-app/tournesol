@@ -13,6 +13,7 @@ class Vouches(solidago.Vouches):
 
     @classmethod
     def load(cls, *args, **kwargs) -> "Vouches":
+        """ Vouches are common to all polls """
         values = Voucher.objects.filter(
             by__is_active=True,
             to__is_active=True,

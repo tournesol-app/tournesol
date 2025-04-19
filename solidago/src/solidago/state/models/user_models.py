@@ -28,13 +28,13 @@ class UserModels:
         user_directs: Optional[MultiScore]=None,
         user_scales: Optional[MultiScore]=None,
         common_scales: Optional[MultiScore]=None,
-        default_composition: tuple[str, dict]=[("direct", {})],
+        default_composition: list[tuple[str, dict]]=None,
         user_composition: Optional[dict[str, tuple]]=None,
         user_models_dict: Optional[dict[str, ScoringModel]]=None,
     ):
         for name, table in zip(self.table_keynames, (user_directs, user_scales, common_scales)):
             setattr(self, name, MultiScore(self.table_keynames[name], name=name) if table is None else table)
-        self.default_composition = default_composition
+        self.default_composition = default_composition or [("direct", {})]
         self.user_composition = user_composition or dict()
         self._cache_users = user_models_dict
     

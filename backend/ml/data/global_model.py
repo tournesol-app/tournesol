@@ -15,7 +15,7 @@ class GlobalModel(solidago.ScoringModel):
 
     @classmethod
     def load(cls, 
-        directory: str, 
+        poll_name: str, 
         composition: list=DEFAULT_COMPOSITION, 
         criterion=None, 
         *args, **kwargs
@@ -37,8 +37,8 @@ class GlobalModel(solidago.ScoringModel):
         directs = solidago.MultiScore(cls.table_keynames["directs"], pd.DataFrame(values))
         return cls(composition, directs)
 
-    def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
-        poll = Poll.objects.get(name=directory)
+    def save(self, poll_name: str=None, json_dump: bool=False) -> tuple[str, dict]:
+        poll = Poll.objects.get(name=poll_name)
         def entities_iterator():
             for entity in (
                 Entity.objects.filter(all_criteria_scores__poll=poll)

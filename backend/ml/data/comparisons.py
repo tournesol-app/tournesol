@@ -12,9 +12,9 @@ class Comparisons(solidago.Comparisons):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def load(cls, directory: str, criterion=None, user_id=None, *args, **kwargs) -> "Comparisons":
+    def load(cls, poll_name: str, criterion=None, user_id=None, *args, **kwargs) -> "Comparisons":
         scores_queryset = ComparisonCriteriaScore.objects.filter(
-            comparison__poll__name=directory,
+            comparison__poll__name=poll_name,
             comparison__user__is_active=True,
         )
         if criterion is not None:
@@ -35,6 +35,6 @@ class Comparisons(solidago.Comparisons):
         init_data = pd.DataFrame(values) if len(values) > 0 else None
         return cls(*args, init_data=values, **kwargs)
     
-    def save(self, directory: str, name: str="comparisons", **kwargs) -> tuple[str, dict]:
+    def save(self, poll_name: str, name: str="comparisons", **kwargs) -> tuple[str, dict]:
         # Solidago must not modify comparisons
         raise NotImplemented

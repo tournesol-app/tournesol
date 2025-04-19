@@ -87,6 +87,7 @@ class Score:
         return self.min > score.max
     
     def __le__(self, score: Union[int, float, "Score"]) -> bool:
+        # TODO Verify consistency
         if not isinstance(score, Score):
             score = Score(score, 0, 0)
         return self.min <= score.max

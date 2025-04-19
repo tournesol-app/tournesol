@@ -6,9 +6,9 @@ class Assessments(solidago.Assessments):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    def load(cls, directory: str, *args, **kwargs) -> "Assessments":
+    def load(cls, poll_name: str, *args, **kwargs) -> "Assessments":
         return cls(*args, **kwargs)
 
-    def save(self, directory: str, name: str="assessments", **kwargs) -> tuple[str, dict]:
+    def save(self, poll_name: str, name: str="assessments", **kwargs) -> tuple[str, dict]:
         # Solidago must not modify assessments
         raise NotImplemented

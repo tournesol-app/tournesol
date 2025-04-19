@@ -28,8 +28,7 @@ class Generator(Sequential):
         comparison: ComparisonGen = ComparisonGen(),
     ):
         """ Pipeline to generate a random dataset """
-        super().__init__(user=user, entity=entity, vouch=vouch, 
-            engagement=engagement, assessment=assessment, comparison=comparison)
+        super().__init__([user, entity, vouch, engagement, assessment, comparison])
  
     def __call__(self, state: Optional[State]=None, seed: Optional[int]=None) -> State:
         """ Generates a random dataset, presented as a state.

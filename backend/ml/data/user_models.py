@@ -49,7 +49,7 @@ class UserModels(solidago.UserModels):
         return solidago.MultiScore(cls.table_keynames["user_directs"], init_value)
 
     @classmethod
-    def load_user_scales(cls, directory: str, user_id=None) -> solidago.MultiScore:
+    def load_user_scales(cls, poll_name: str, user_id=None) -> solidago.MultiScore:
         """ TODO Fetch saved individual scalings
         Returns:
         - ratings_df: DataFrame with columns
@@ -60,7 +60,7 @@ class UserModels(solidago.UserModels):
             * `translation`: float
             * `translation_uncertainty`: float
         """
-        scalings = ContributorScaling.objects.filter(poll__name=directory)
+        scalings = ContributorScaling.objects.filter(poll__name=poll_name)
         if user_id is not None:
             scalings = scalings.filter(user_id=user_id)
         values = scalings.values(
@@ -79,22 +79,22 @@ class UserModels(solidago.UserModels):
                 user_scales[keys] = Score(row[kind], row[f"{kind}_unc"], row[f"{kind}_unc"])
         return user_scales
     
-    def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
-        self.save_base_models(directory)
-        self.save_user_scales(directory)
+    def save(self, poll_name: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+        self.save_base_models(poll_name)
+        self.save_user_scales(poll_name)
         # We do not save common scales, as it is collapsed into user scales upon saving
-        return self.save_instructions(directory, json_dump)
+        return self.save_instructions(poll_name, json_dump)
     
-    def save_base_models(self, directory: Optional[str]=None) -> str:
+    def save_base_models(self, poll_name: Optional[str]=None) -> str:
         """ TODO """
         raise NotImplemented
     
-    def save_user_scales(self, directory: Optional[str]=None) -> str:
+    def save_user_scales(self, poll_name: Optional[str]=None) -> str:
         """ TODO: Collapse scales of all height into a single user scale
         This should be done in Solidago rather than Tournesol """
         raise NotImplemented
     
-    def save_common_scales(self, directory: Optional[str]=None) -> str:
+    def save_common_scales(self, poll_name: Optional[str]=None) -> str:
         """ Because Tournesol's current implementation collapses all scales,
         we save common scales by saving user scales.
         Note that this is needed in LipschitzStandardize and LipschitzQuantileShift,
