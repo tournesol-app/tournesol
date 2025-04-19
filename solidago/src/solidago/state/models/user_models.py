@@ -5,6 +5,7 @@ from copy import deepcopy
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import pandas as pd
+import numpy as np
 import json
 import logging
 
@@ -157,8 +158,8 @@ class UserModels:
         return len(self.user_composition[username])
 
     def to_matrices(self, 
-        users: Users, 
-        entities: Entities, 
+        users: "Users", 
+        entities: "Entities", 
         criterion: str
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         value_matrix = np.full((len(users), len(entities)), np.nan)

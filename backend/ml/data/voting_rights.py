@@ -13,17 +13,20 @@ class VotingRights(solidago.VotingRights):
 
     @classmethod
     def load(cls, directory: str, *args, **kwargs) -> "VotingRights":
-        values = VotingRights.objects.filter(
-            voting_rights__poll__name=directory,
-        ).values(
-            username=F("user_id"), 
-            entity_name=F("entity_id"), 
-            criterion=F("criterion"),
-            value=F("value"),
-        )
-        init_data = pd.DataFrame(values) if len(values) > 0 else None
-        return cls(init_data=init_data, *args, **kwargs)
+        """ In the current Tournesol implementation, voting rights are not saved.
+        This must be fixed to facilitate online updates. """
+        return VotingRights()
+        # values = VotingRights.objects.filter(
+            # voting_rights__poll__name=directory,
+        # ).values(
+            # username=F("user_id"), 
+            # entity_name=F("entity_id"), 
+            # criterion=F("criterion"),
+            # value=F("value"),
+        # )
+        # init_data = pd.DataFrame(values) if len(values) > 0 else None
+        # return cls(init_data=init_data, *args, **kwargs)
 
     def save(self, directory: str, name: str="vouches", **kwargs) -> tuple[str, dict]:
-        # Solidago must not modify vouches
-        raise NotImplemented
+        """ In the current Tournesol implementation, voting rights are not saved. """
+        return self.save_instructions(directory, name)

@@ -47,7 +47,7 @@ class PreferenceLearning(StateFunction, ABC):
         comparisons: Comparisons,
         user_models: UserModels,
     ) -> Users:
-        evaluated_entities = lambda u: assesments[u].keys("entity_name") | comparisons[u].keys("entity_name")
+        evaluated_entities = lambda u: assessments[u].keys("entity_name") | comparisons[u].keys("entity_name")
         return users.assign(
             n_assessments=[len(assessments[u]) for u in users], 
             n_comparisons=[len(comparisons[u]) for u in users], 
