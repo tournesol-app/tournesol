@@ -54,6 +54,7 @@ export interface EntityCardProps {
   // Configuration specific to the entity type.
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
   displayContextAlert?: boolean;
+  displayImage?: boolean;
 }
 
 const EntityCard = ({
@@ -65,6 +66,7 @@ const EntityCard = ({
   showRatingControl = false,
   onRatingChange,
   displayContextAlert = false,
+  displayImage = true,
 }: EntityCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -143,21 +145,23 @@ const EntityCard = ({
       )}
       {contentDisplayed && (
         <>
-          <Grid
-            xs={12}
-            sm={compact ? 12 : 'auto'}
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              ...(compact ? {} : { maxWidth: { sm: '240px' } }),
-            }}
-          >
-            <EntityImagery
-              entity={entity}
-              compact={compact}
-              config={entityTypeConfig}
-            />
-          </Grid>
+          {displayImage && (
+            <Grid
+              xs={12}
+              sm={compact ? 12 : 'auto'}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                ...(compact ? {} : { maxWidth: { sm: '240px' } }),
+              }}
+            >
+              <EntityImagery
+                entity={entity}
+                compact={compact}
+                config={entityTypeConfig}
+              />
+            </Grid>
+          )}
           <Grid
             xs={true} // Grow and fill the container height when two cards are side by side
             p={1}
