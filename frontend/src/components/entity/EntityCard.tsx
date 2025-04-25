@@ -151,11 +151,13 @@ const EntityCard = ({
       {contentDisplayed && (
         <>
           <Grid2
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              ...(compact ? {} : { maxWidth: { sm: '240px' } }),
-            }}
+            sx={[
+              {
+                display: 'flex',
+                justifyContent: 'center',
+              },
+              compact ? {} : { maxWidth: { sm: '240px' } },
+            ]}
             size={{
               xs: 12,
               sm: compact ? 12 : 'auto',

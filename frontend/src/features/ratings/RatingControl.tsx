@@ -108,10 +108,18 @@ export const RatingControl = ({
             />
             <Typography
               variant="caption"
-              sx={{
-                color: isPublic ? '#222' : '#bbb',
-                textTransform: 'capitalize',
-              }}
+              sx={[
+                {
+                  textTransform: 'capitalize',
+                },
+                isPublic
+                  ? {
+                      color: '#222',
+                    }
+                  : {
+                      color: '#bbb',
+                    },
+              ]}
             >
               {t('public')}
             </Typography>

@@ -70,5 +70,4 @@ const FooterSection = ({
     </Grid2>
   );
 };
-
 export default FooterSection;

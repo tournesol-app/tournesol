@@ -153,10 +153,18 @@ const Footer = () => {
       <Grid2
         container
         spacing={2}
-        sx={{
-          justifyContent: lessThanLargeScreen ? 'flex-start' : 'space-around',
-          alignContent: 'center',
-        }}
+        sx={[
+          {
+            alignContent: 'center',
+          },
+          lessThanLargeScreen
+            ? {
+                justifyContent: 'flex-start',
+              }
+            : {
+                justifyContent: 'space-around',
+              },
+        ]}
       >
         {footerSections.map((section) => (
           <FooterSection

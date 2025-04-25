@@ -263,10 +263,18 @@ const ComparisonSliders = ({
                 }
                 size="medium"
                 color="secondary"
-                sx={{
-                  marginBottom: '8px',
-                  color: showOptionalCriterias ? 'red' : '',
-                }}
+                sx={[
+                  {
+                    marginBottom: '8px',
+                  },
+                  showOptionalCriterias
+                    ? {
+                        color: 'red',
+                      }
+                    : {
+                        color: '',
+                      },
+                ]}
               >
                 {showOptionalCriterias
                   ? t('comparison.removeOptionalCriterias')

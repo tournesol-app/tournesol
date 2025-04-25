@@ -437,7 +437,6 @@ const Comparison = ({
             display: 'flex',
             alignItems: 'center',
             flexDirection: 'column',
-
             '&:empty': {
               display: 'none',
             },

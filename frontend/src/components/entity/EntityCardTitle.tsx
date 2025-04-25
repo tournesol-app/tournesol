@@ -26,18 +26,26 @@ const EntityCardTitle = ({
     <Typography
       variant={compact ? 'body1' : 'h5'}
       title={title}
-      sx={{
-        color: 'text.primary',
-        lineHeight: '1.3',
-        overflowWrap: 'anywhere',
-        fontSize: compact ? '1em !important' : undefined,
-        // Limit text to 3 lines and show ellipsis
-        display: '-webkit-box',
-        overflow: 'hidden',
-        WebkitLineClamp: titleMaxLines,
-        WebkitBoxOrient: 'vertical',
-        ...sx,
-      }}
+      sx={[
+        {
+          color: 'text.primary',
+          lineHeight: '1.3',
+          overflowWrap: 'anywhere',
+          // Limit text to 3 lines and show ellipsis
+          display: '-webkit-box',
+          overflow: 'hidden',
+          WebkitLineClamp: titleMaxLines,
+          WebkitBoxOrient: 'vertical',
+          ...sx,
+        },
+        compact
+          ? {
+              fontSize: '1em !important',
+            }
+          : {
+              fontSize: null,
+            },
+      ]}
     >
       {title}
     </Typography>

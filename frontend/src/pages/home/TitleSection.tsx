@@ -73,7 +73,6 @@ const TitleSection = ({ title, children }: Props) => {
             flexDirection: 'column',
             maxWidth: 'min(100%, 800px)',
             alignItems: 'flex-start',
-
             [theme.breakpoints.down('md')]: {
               alignSelf: 'center',
             },

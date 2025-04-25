@@ -129,7 +129,6 @@ const EntityImagery = ({
           alignItems: 'center',
           bgcolor: 'black',
           width: '100%',
-
           '& img': {
             // prevent the InternalLink to add few extra pixels
             display: 'block',
@@ -156,7 +155,6 @@ const EntityImagery = ({
           display: 'flex',
           maxHeight: '280px',
           justifyContent: 'center',
-
           '& > img': {
             flex: 1,
             objectFit: 'contain',

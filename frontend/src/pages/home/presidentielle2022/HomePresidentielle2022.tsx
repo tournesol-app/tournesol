@@ -159,5 +159,4 @@ const HomePresidentielle2022Page = () => {
     </>
   );
 };
-
 export default HomePresidentielle2022Page;

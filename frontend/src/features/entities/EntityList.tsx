@@ -52,7 +52,6 @@ function EntityList({
             sx={{
               mx: 1,
               my: 2,
-
               '&:first-of-type': {
                 marginTop: 0,
               },

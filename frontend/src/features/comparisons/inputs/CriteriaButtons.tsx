@@ -223,11 +223,19 @@ const CriteriaButtons = ({
       }}
     >
       <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          visibility: navigationDisabled ? 'hidden' : 'visible',
-        }}
+        sx={[
+          {
+            display: 'flex',
+            justifyContent: 'center',
+          },
+          navigationDisabled
+            ? {
+                visibility: 'hidden',
+              }
+            : {
+                visibility: 'visible',
+              },
+        ]}
       >
         <MobileIconButton
           color="secondary"
@@ -254,10 +262,18 @@ const CriteriaButtons = ({
           <Fade in={slideIn} appear={true} timeout={SWIPE_TIMEOUT}>
             <Box
               {...bindDrag()}
-              sx={{
-                touchAction: 'none',
-                pointerEvents: disableScoreButtons ? 'none' : undefined,
-              }}
+              sx={[
+                {
+                  touchAction: 'none',
+                },
+                disableScoreButtons
+                  ? {
+                      pointerEvents: 'none',
+                    }
+                  : {
+                      pointerEvents: null,
+                    },
+              ]}
             >
               <CriterionButtons
                 critName={criterion.name}
@@ -271,11 +287,19 @@ const CriteriaButtons = ({
         </div>
       </Slide>
       <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          visibility: navigationDisabled ? 'hidden' : 'visible',
-        }}
+        sx={[
+          {
+            display: 'flex',
+            justifyContent: 'center',
+          },
+          navigationDisabled
+            ? {
+                visibility: 'hidden',
+              }
+            : {
+                visibility: 'visible',
+              },
+        ]}
       >
         <MobileIconButton
           color="secondary"

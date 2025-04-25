@@ -311,7 +311,6 @@ const RateLaterPage = () => {
                 m: 2,
                 textAlign: 'center',
                 lineHeight: '1.5em',
-
                 '& strong': {
                   color: 'secondary.main',
                   fontSize: '1.4em',

@@ -63,9 +63,15 @@ const PreferencePage = () => {
         <Grid2
           container
           spacing={4}
-          sx={{
-            justifyContent: isEmbedded ? 'center' : 'normal',
-          }}
+          sx={[
+            isEmbedded
+              ? {
+                  justifyContent: 'center',
+                }
+              : {
+                  justifyContent: 'normal',
+                },
+          ]}
         >
           {!isEmbedded && (
             <Grid2 size={settingsMenuBreakpoints}>

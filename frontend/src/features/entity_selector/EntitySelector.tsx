@@ -406,7 +406,6 @@ const EntitySelectorInnerAuth = ({
                       bgcolor: 'rgba(0,0,0,.6)',
                       width: '100%',
                       aspectRatio: '16/9',
-
                       [theme.breakpoints.down('sm')]: {
                         fontSize: '0.8rem',
                       },

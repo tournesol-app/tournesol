@@ -50,7 +50,6 @@ const EntitySearchResultsList = ({
           sx={{
             bgcolor: 'white',
             overflowY: 'auto',
-
             ul: {
               li: {
                 cursor: 'pointer',
@@ -115,7 +114,6 @@ const EntitySearchResults = ({
             variant="subtitle1"
             sx={{
               textAlign: 'center',
-
               '& strong': {
                 color: 'secondary.main',
                 fontSize: '1.4rem',
@@ -221,14 +219,22 @@ const EntitySearchInput = ({
 
   return (
     <Box
-      sx={{
-        pt: 2,
-        bgcolor: 'grey.100',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        flexShrink: displayResults ? undefined : 0,
-      }}
+      sx={[
+        {
+          pt: 2,
+          bgcolor: 'grey.100',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        },
+        displayResults
+          ? {
+              flexShrink: null,
+            }
+          : {
+              flexShrink: 0,
+            },
+      ]}
     >
       <form onSubmit={searchEntity} name="entity-selector-search">
         <Box

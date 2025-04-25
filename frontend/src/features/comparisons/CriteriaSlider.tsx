@@ -66,13 +66,11 @@ const CriteriaLabelWithTooltip = ({ children, criteria }: Props) => {
     <>{children}</>
   );
 };
-
 const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
   const poll = useCurrentPoll();
   const hasCriteriaPage = !poll.options?.disabledRouteIds?.includes(
     RouteID.Criteria
   );
-
   if (hasCriteriaPage) {
     return (
       <InternalLink

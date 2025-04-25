@@ -65,10 +65,18 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
             <Stack
               direction="row"
               spacing={2}
-              sx={{
-                alignItems: 'center',
-                justifyContent: security ? 'center' : 'flex-start',
-              }}
+              sx={[
+                {
+                  alignItems: 'center',
+                },
+                security
+                  ? {
+                      justifyContent: 'center',
+                    }
+                  : {
+                      justifyContent: 'flex-start',
+                    },
+              ]}
             >
               {security ? (
                 <Warning fontSize="large" color="error" />

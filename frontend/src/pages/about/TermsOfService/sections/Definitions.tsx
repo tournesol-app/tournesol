@@ -36,7 +36,6 @@ const Section = ({
             fontFamily: 'monospace',
             whiteSpace: 'pre',
           },
-
           marginBottom: 2,
         }}
       >

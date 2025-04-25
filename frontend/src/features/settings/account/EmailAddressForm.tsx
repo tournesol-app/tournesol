@@ -135,7 +135,18 @@ const EmailAddressForm = () => {
       >
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
-        <Grid item sx={{ display: isLoading ? 'none' : undefined }}>
+        <Grid
+          item
+          sx={[
+            isLoading
+              ? {
+                  display: 'none',
+                }
+              : {
+                  display: null,
+                },
+          ]}
+        >
           {profileData && (
             <Box
               sx={{

@@ -78,27 +78,34 @@ const ScoreButton = ({
       data-criterion-input-type="score-button"
       data-criterion-input-score={score}
       data-criterion-input-selected={selected}
-      sx={{
-        minWidth: '40px',
-        borderRadius: '4px',
-        backgroundColor: selected
-          ? theme.palette.primary.main
-          : theme.palette.background.mobileButton,
-        color: selected ? 'text.primary' : undefined,
-        '&:hover': hover
+      sx={[
+        {
+          minWidth: '40px',
+          borderRadius: '4px',
+          '&:hover': hover
+            ? {
+                color: 'white',
+                backgroundColor: selected
+                  ? theme.palette.secondary.dark
+                  : theme.palette.secondary.main,
+              }
+            : {
+                color: undefined,
+                backgroundColor: selected
+                  ? theme.palette.primary.main
+                  : theme.palette.background.mobileButton,
+              },
+        },
+        selected
           ? {
-              color: 'white',
-              backgroundColor: selected
-                ? theme.palette.secondary.dark
-                : theme.palette.secondary.main,
+              color: 'text.primary',
+              backgroundColor: theme.palette.primary.main,
             }
           : {
-              color: undefined,
-              backgroundColor: selected
-                ? theme.palette.primary.main
-                : theme.palette.background.mobileButton,
+              color: null,
+              backgroundColor: theme.palette.background.mobileButton,
             },
-      }}
+      ]}
     >
       {children}
     </IconButton>
