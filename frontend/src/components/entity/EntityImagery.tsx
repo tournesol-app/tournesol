@@ -73,7 +73,7 @@ export const VideoPlayer = ({
     <ReactPlayer
       url={`https://youtube.com/watch?v=${videoId}`}
       playing
-      light
+      light={`https://i.ytimg.com/vi/${videoId}/sddefault.jpg`}
       width="100%"
       height="100%"
       wrapper={DurationWrapper}
