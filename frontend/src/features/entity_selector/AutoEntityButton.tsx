@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Tooltip, Button, useMediaQuery } from '@mui/material';
-import { Autorenew, SwipeUp } from '@mui/icons-material';
+import { Autorenew, SwipeVertical } from '@mui/icons-material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { theme } from 'src/theme';
@@ -50,7 +50,7 @@ const AutoEntityButton = ({
           startIcon={compactLabelLoc === 'left' ? compactLabel : undefined}
           endIcon={compactLabelLoc === 'right' ? compactLabel : undefined}
         >
-          <SwipeUp />
+          <SwipeVertical />
         </MobileButton>
       ) : (
         <Tooltip
