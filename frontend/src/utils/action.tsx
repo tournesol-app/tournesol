@@ -24,7 +24,7 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
   return (
     <Tooltip title={`${t('actions.compareNow')}`} placement="left">
       <IconButton
-        sx={{ color: '#CDCABC' }}
+        color="secondary"
         size="medium"
         component={Link}
         to={`${baseUrl}/comparison?uidA=${uid}`}
@@ -56,12 +56,7 @@ export const AddToRateLaterList = ({ uid }: { uid: string }) => {
   };
   return (
     <Tooltip title={`${t('actions.rateLater')}`} placement="left">
-      <IconButton
-        size="medium"
-        color="secondary"
-        onClick={handleCreation}
-        sx={{ color: '#CDCABC' }}
-      >
+      <IconButton size="medium" color="secondary" onClick={handleCreation}>
         <AddIcon />
       </IconButton>
     </Tooltip>
@@ -77,13 +72,13 @@ export const RemoveFromRateLater = (asyncCallback?: () => void) => {
     return (
       <Tooltip title={`${t('actions.remove')}`} placement="left">
         <IconButton
+          color="secondary"
           size="medium"
           onClick={async () => {
             await UsersService.usersMeRateLaterDestroy({ pollName, uid });
             if (asyncCallback) await asyncCallback();
             showSuccessAlert(t('actions.videoDeletedFromRateLaterList'));
           }}
-          sx={{ color: '#CDCABC' }}
         >
           <DeleteIcon />
         </IconButton>
@@ -100,7 +95,7 @@ export const AnalysisPageLink = ({ uid }: { uid: string }) => {
   return (
     <Tooltip title={`${t('actions.analysis')}`} placement="left">
       <IconButton
-        sx={{ color: '#CDCABC' }}
+        color="secondary"
         size="medium"
         component={Link}
         to={`${baseUrl}/entities/${uid}`}
