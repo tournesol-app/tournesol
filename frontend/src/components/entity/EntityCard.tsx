@@ -185,7 +185,7 @@ const EntityCard = ({
             sx={{
               display: 'flex',
               alignItems: 'end',
-              justifyContent: 'space-between',
+              justifyContent: 'start',
               flexDirection: 'column',
               [theme.breakpoints.down('sm')]: {
                 flexDirection: 'row',
