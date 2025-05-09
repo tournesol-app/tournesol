@@ -315,9 +315,6 @@ export const RowEntityCard = ({
           title={entity.metadata.name}
           titleMaxLines={1}
           withLink={withLink}
-          sx={{
-            fontSize: '1em',
-          }}
         />
         {entity.type == TypeEnum.VIDEO && (
           <VideoMetadata

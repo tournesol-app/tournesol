@@ -36,8 +36,8 @@ const EntityCardTitle = ({
           overflow: 'hidden',
           WebkitLineClamp: titleMaxLines,
           WebkitBoxOrient: 'vertical',
-          ...sx,
         },
+        ...(Array.isArray(sx) ? sx : [sx]),
         compact
           ? {
               fontSize: '1em !important',
