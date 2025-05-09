@@ -26,12 +26,14 @@ const CriteriaIcon = ({
 
   return (
     <Box
-      sx={{
-        '& img': {
-          display: 'block',
+      sx={[
+        {
+          '& img': {
+            display: 'block',
+          },
         },
-        ...sx,
-      }}
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
       <Tooltip title={tooltipTitle}>
         {emoji ? (
