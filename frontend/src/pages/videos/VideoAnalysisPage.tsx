@@ -9,7 +9,7 @@ import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
-import VideoCard from 'src/features/videos/VideoCard';
+import EntityCard from 'src/components/entity/EntityCard';
 import { useLoginState, useScrollToLocation } from 'src/hooks';
 import { Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
@@ -62,7 +62,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
             <VideoAnalysisActionBar video={video} />
           </Grid>
           <Grid item xs={12}>
-            <VideoCard video={video} actions={actions} showPlayer={false} />
+            <EntityCard result={video} actions={actions} displayImage={false} />
           </Grid>
           {video.entity_contexts.length > 0 && (
             <Grid item xs={12}>

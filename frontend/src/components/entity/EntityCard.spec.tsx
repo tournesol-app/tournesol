@@ -4,14 +4,14 @@ import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 
 import { theme } from 'src/theme';
-import VideoCard from './VideoCard';
+import EntityCard from 'src/components/entity/EntityCard';
 import { Recommendation, TypeEnum } from 'src/services/openapi';
 
 const renderVideoCard = (video: Recommendation) =>
   render(
     <Router>
       <ThemeProvider theme={theme}>
-        <VideoCard video={video} />
+        <EntityCard result={video} displayImage={false} />
       </ThemeProvider>
     </Router>
   );
