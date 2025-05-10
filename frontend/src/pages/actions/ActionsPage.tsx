@@ -28,13 +28,20 @@ export const ActionQuestion = ({
   const theme = useTheme();
   return (
     <Box
-      bgcolor={theme.palette.background.emphatic}
-      color="white"
-      mt={mt}
-      mb={4}
-      p={2}
+      sx={{
+        bgcolor: theme.palette.background.emphatic,
+        color: 'white',
+        mt: mt,
+        mb: 4,
+        p: 2,
+      }}
     >
-      <Typography variant="h3" textAlign="center">
+      <Typography
+        variant="h3"
+        sx={{
+          textAlign: 'center',
+        }}
+      >
         {question}
       </Typography>
     </Box>
@@ -65,7 +72,13 @@ const ActionsPage = () => {
         <ActionQuestion
           question={t('actionsPage.whatCanYouDoToProtectSocietiesFromAIs')}
         />
-        <Box display="flex" flexDirection="column" gap={4}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+          }}
+        >
           {[
             <BeEducated key="section_be_educated" />,
             <HelpResearch key="section_help_research" />,
@@ -84,7 +97,13 @@ const ActionsPage = () => {
             'actionsPage.whatCanYouDoToProtectYourselfAndYourRelatives'
           )}
         />
-        <Box display="flex" flexDirection="column" gap={4}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+          }}
+        >
           {[
             <IncreaseFriction key="section_increase_friction" />,
             <ExposureToQualityInformation key="section_exposure_to_quality" />,

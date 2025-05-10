@@ -9,15 +9,21 @@ const PollListSection = () => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      maxWidth="640px"
-      alignItems="flex-start"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: '640px',
+        alignItems: 'flex-start',
+      }}
     >
       <Typography id="explore" variant="h4" gutterBottom>
         {t('home.exploreTournesolPossibilities')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('home.tournesolToComparedMultipleTypesOfAlternatives')}
       </Typography>
       <PollList />

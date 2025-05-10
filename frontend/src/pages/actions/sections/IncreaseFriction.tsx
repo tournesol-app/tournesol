@@ -43,9 +43,11 @@ const IncreaseFriction = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="increase-friction"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t(
           'actionsPage.increaseFriction.increaseFrictionBetweenYouAndUndesirableInformationUsage'

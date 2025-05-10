@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 } from '@mui/material';
 
 import { SuggestionHistory } from 'src/features/suggestions/suggestionHistory';
 
@@ -35,35 +35,47 @@ const EntitySelectorControls = ({
 
   return (
     <Box
-      display="flex"
-      flexDirection={
+      sx={[
+        {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        },
         uid
-          ? alignment === 'left'
-            ? 'row'
-            : 'row-reverse'
-          : alignment !== 'left'
-          ? 'row'
-          : 'row-reverse'
-      }
-      alignItems="center"
-      justifyContent="space-between"
+          ? {
+              flexDirection: alignment === 'left' ? 'row' : 'row-reverse',
+            }
+          : {
+              flexDirection: alignment !== 'left' ? 'row' : 'row-reverse',
+            },
+      ]}
     >
-      <Grid
+      <Grid2
         container
         spacing={{ xs: 2, sm: 1 }}
-        display={uid ? 'flex' : 'none'}
         direction={alignment === 'left' ? 'row' : 'row-reverse'}
-        justifyContent="flex-start"
+        sx={[
+          {
+            justifyContent: 'flex-start',
+          },
+          uid
+            ? {
+                display: 'flex',
+              }
+            : {
+                display: 'none',
+              },
+        ]}
       >
-        <Grid item>
+        <Grid2>
           <EntitySelectButton
             value={inputValue || uid || ''}
             onChange={onEntitySelect}
             otherUid={otherUid}
             history={history}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <AutoEntityButton
             disabled={disabled}
             onClick={onAutoClick}
@@ -74,8 +86,8 @@ const EntitySelectorControls = ({
             }
             compactLabelLoc={alignment === 'left' ? 'right' : 'left'}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

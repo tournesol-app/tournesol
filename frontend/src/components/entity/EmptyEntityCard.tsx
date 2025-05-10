@@ -34,13 +34,13 @@ const EmptyEntityCard = ({
         item
         xs={12}
         sm={compact ? 12 : 4}
+        container
         sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
           aspectRatio: '16 / 9',
           backgroundColor: '#fafafa',
         }}
-        container
-        alignItems="center"
-        justifyContent="center"
       >
         <img
           src="/svg/LogoSmall.svg"

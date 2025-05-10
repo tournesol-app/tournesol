@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, Grid } from '@mui/material';
+import { Alert, Grid2 } from '@mui/material';
 
 import SettingsHeading from 'src/features/settings/preferences/SettingsHeading';
 
@@ -21,20 +21,20 @@ const FeedTopItems = ({
   const { t } = useTranslation();
   return (
     <>
-      <Grid item>
+      <Grid2>
         <SettingsHeading
           id={`${scope}-feed-top`}
           text={t('videosUserSettingsForm.feed.topItems.feedTopVideos')}
         />
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <Alert severity="info">
           {t(
             'videosUserSettingsForm.feed.topItems.customizeItemsAppearingInTheFeedTopVideos'
           )}
         </Alert>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <ItemsLanguages
           label={t('videosUserSettingsForm.feed.topItems.topVideosLanguages')}
           helpText={t(
@@ -43,7 +43,7 @@ const FeedTopItems = ({
           value={topItemsLanguages}
           onChange={setTopItemsLangauges}
         />
-      </Grid>
+      </Grid2>
     </>
   );
 };

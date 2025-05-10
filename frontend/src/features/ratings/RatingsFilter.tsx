@@ -26,7 +26,12 @@ function RatingsFilter({
   };
 
   return (
-    <Box color="text.secondary" marginBottom={2}>
+    <Box
+      sx={{
+        color: 'text.secondary',
+        marginBottom: 2,
+      }}
+    >
       <CollapseButton
         expanded={expanded}
         onClick={handleExpandClick}
@@ -35,7 +40,14 @@ function RatingsFilter({
         {t('options')}
       </CollapseButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Grid container spacing={2} mb={1} justifyContent="space-between">
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            mb: 1,
+            justifyContent: 'space-between',
+          }}
+        >
           <Grid item xs={12} sm={6} md={3}>
             <IsPublicFilter
               value={filterParams.get('isPublic') ?? ''}

@@ -36,23 +36,35 @@ const RecommendationsSubsetControls = ({
   ];
 
   return (
-    <Stack direction="row" justifyContent="center" spacing={2}>
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{
+        justifyContent: 'center',
+      }}
+    >
       {dateControls.map((control, idx) => (
         <Button
           key={`${idx}_${control.value}`}
           variant="outlined"
           disableElevation
-          sx={{
-            color:
-              selectedDate === control.value
-                ? theme.palette.primary.main
-                : controlsColor,
-            borderColor:
-              selectedDate === control.value
-                ? theme.palette.primary.main
-                : controlsColor,
-            '&:hover': { color: theme.palette.primary.main },
-          }}
+          sx={[
+            {
+              '&:hover': {
+                color: theme.palette.primary.main,
+                borderColor: theme.palette.primary.main,
+              },
+            },
+            selectedDate === control.value
+              ? {
+                  color: theme.palette.primary.main,
+                  borderColor: theme.palette.primary.main,
+                }
+              : {
+                  color: controlsColor,
+                  borderColor: controlsColor,
+                },
+          ]}
           startIcon={
             selectedDate === control.value ? (
               <CheckCircleOutline />

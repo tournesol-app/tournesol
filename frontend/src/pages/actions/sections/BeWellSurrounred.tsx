@@ -12,9 +12,11 @@ const BeWellSurrounred = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="be-well-surrounded"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('actionsPage.beWellSurrounded.beWellSurrounded')}
       </Typography>
@@ -36,7 +38,11 @@ const BeWellSurrounred = () => {
           </Typography>
         </li>
       </ul>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('actionsPage.beWellSurrounded.takeCareMentalHealth')}
       </Typography>
     </Box>

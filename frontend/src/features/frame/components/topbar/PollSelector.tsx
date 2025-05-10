@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import {
   Box,
   Button,
-  Grid,
+  Grid2,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -58,11 +58,17 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
         }}
       >
         <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
-          <Grid container alignItems="center" spacing={1}>
-            <Grid item>
+          <Grid2
+            container
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
+            <Grid2>
               <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Typography
                 variant="h1"
                 sx={{
@@ -74,8 +80,19 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
               >
                 Tournesol
               </Typography>
-              <Box display="flex" flexDirection="row" alignItems="center">
-                <Typography variant="subtitle1" lineHeight={1.5}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    lineHeight: 1.5,
+                  }}
+                >
                   {getPollName(t, currentPoll)}
                 </Typography>
                 {!isDisabled &&
@@ -85,8 +102,8 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
                     <ArrowDropDown sx={{ color: 'rgba(0, 0, 0, 0.32)' }} />
                   ))}
               </Box>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Box>
         <Box sx={{ display: { sm: 'block', md: 'none' } }}>
           <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />

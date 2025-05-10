@@ -317,7 +317,9 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
               </ListItemIcon>
               <ListItemText
                 primary={t('menu.installTheApp')}
-                primaryTypographyProps={{ color: theme.palette.neutral.dark }}
+                slotProps={{
+                  primary: { color: theme.palette.neutral.dark },
+                }}
               />
             </ListItemButton>
           </>

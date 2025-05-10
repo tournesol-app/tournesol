@@ -49,16 +49,20 @@ const Tips = ({
     <Grid
       container
       direction="row"
-      justifyContent="center"
-      alignItems="flex-start"
-      flexWrap="nowrap"
-      mb={2}
+      sx={{
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexWrap: 'nowrap',
+        mb: 2,
+      }}
     >
       <Grid item xs={1}>
         <Box
-          display="flex"
-          justifyContent="center"
-          visibility={disablePrev() ? 'hidden' : 'visible'}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            visibility: disablePrev() ? 'hidden' : 'visible',
+          }}
         >
           <IconButton
             color="secondary"
@@ -70,14 +74,21 @@ const Tips = ({
           </IconButton>
         </Box>
       </Grid>
-      <Grid item width={`${tipWidth}px`}>
+      <Grid
+        item
+        sx={{
+          width: `${tipWidth}px`,
+        }}
+      >
         {content && <Tip tip={content[index]} tipId={step.toString()} />}
       </Grid>
       <Grid item xs={1}>
         <Box
-          display="flex"
-          justifyContent="center"
-          visibility={disableNext() ? 'hidden' : 'visible'}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            visibility: disableNext() ? 'hidden' : 'visible',
+          }}
         >
           <IconButton
             color="secondary"

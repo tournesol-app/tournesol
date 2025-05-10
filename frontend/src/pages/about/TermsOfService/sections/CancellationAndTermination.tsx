@@ -9,13 +9,19 @@ const CancellationAndTermination = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="cancellation-and-termination"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.cancellationAndTermination.cancellationAndTermination')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>
@@ -26,13 +32,21 @@ const CancellationAndTermination = () => {
       <Typography variant="h5" gutterBottom id="account-cancellation">
         {t('terms.cancellationAndTermination.titles.1accountCancellation')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.cancellationAndTermination.p.accountCancellation')}
       </Typography>
       <Typography variant="h5" gutterBottom id="upon-cancellation">
         {t('terms.cancellationAndTermination.titles.2uponCancellation')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.cancellationAndTermination.p.weWillDelete')}
       </Typography>
       <Typography
@@ -44,15 +58,27 @@ const CancellationAndTermination = () => {
           'terms.cancellationAndTermination.titles.3theTournesolAssociationMayTerminate'
         )}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.cancellationAndTermination.p.theAssociationWillCancel')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t(
           'terms.cancellationAndTermination.p.theTournesolAssociationHasTheRight'
         )}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.cancellationAndTermination.p.suspendAllAccessInCaseOfThreat')}
       </Typography>
     </Box>

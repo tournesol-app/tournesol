@@ -40,7 +40,12 @@ export const EntityIndividualScores = ({
         fontSize: '0.8125em',
       }}
       label={
-        <Box display="flex" columnGap="2px">
+        <Box
+          sx={{
+            display: 'flex',
+            columnGap: '2px',
+          }}
+        >
           <Trans t={t} i18nKey="entityIndividualScores.inYourOpinion">
             in your opinion
             <TournesolScore

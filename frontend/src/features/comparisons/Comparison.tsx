@@ -376,13 +376,23 @@ const Comparison = ({
     <>
       <Grid
         container
-        gap={1}
-        mb={1}
-        maxWidth={COMPARISON_MAX_WIDTH}
-        // Allow the CriterionButtons to slide behind the entity selectors.
-        zIndex={theme.zIndex.comparisonElevation1}
+        sx={{
+          gap: 1,
+          mb: 1,
+          maxWidth: COMPARISON_MAX_WIDTH,
+          // Allow the CriterionButtons to slide behind the entity selectors.
+          zIndex: theme.zIndex.comparisonElevation1,
+        }}
       >
-        <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
+        <Grid
+          item
+          xs
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: 'stretch',
+          }}
+        >
           <EntitySelector
             alignment="left"
             value={selectorA}
@@ -392,7 +402,15 @@ const Comparison = ({
             orderedCriteriaRated={orderedCriteriaRated}
           />
         </Grid>
-        <Grid item xs display="flex" flexDirection="column" alignSelf="stretch">
+        <Grid
+          item
+          xs
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: 'stretch',
+          }}
+        >
           <EntitySelector
             alignment="right"
             value={selectorB}
@@ -403,20 +421,26 @@ const Comparison = ({
           />
         </Grid>
       </Grid>
-      <Grid container gap={1} maxWidth={COMPARISON_MAX_WIDTH}>
+      <Grid
+        container
+        sx={{
+          gap: 1,
+          maxWidth: COMPARISON_MAX_WIDTH,
+        }}
+      >
         <Grid
           item
           xs={12}
-          display="flex"
-          alignItems="center"
-          flexDirection="column"
+          component={Card}
+          elevation={2}
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
             '&:empty': {
               display: 'none',
             },
           }}
-          component={Card}
-          elevation={2}
         >
           <ComparisonHelper />
         </Grid>
@@ -429,17 +453,22 @@ const Comparison = ({
         <Grid
           item
           xs={12}
-          display="flex"
-          alignItems="stretch"
-          flexDirection="column"
-          gap={1}
           sx={{
+            display: 'flex',
+            alignItems: 'stretch',
+            flexDirection: 'column',
+            gap: 1,
             '&:empty': { display: 'none' },
           }}
         >
           {selectorA.rating && selectorB.rating ? (
             isLoading ? (
-              <Box display="flex" justifyContent="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
                 <CircularProgress color="secondary" />
               </Box>
             ) : (
@@ -456,7 +485,12 @@ const Comparison = ({
             )
           ) : selectorA.uid && selectorB.uid ? (
             // Entities are selected but ratings are not loaded yet
-            <Box display="flex" justifyContent="center">
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <CircularProgress color="secondary" />
             </Box>
           ) : null}

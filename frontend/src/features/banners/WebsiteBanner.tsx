@@ -45,34 +45,62 @@ const WebsiteBanner = ({ banner }: WebsiteBannerSingleProps) => {
   const linkifyOpts = { defaultProtocol: 'https', target: '_blank' };
 
   return (
-    <Grid container width="100%" flexDirection="column" alignItems="center">
-      <Grid item width="100%" xl={9}>
+    <Grid
+      container
+      sx={{
+        width: '100%',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <Grid
+        item
+        xl={9}
+        sx={{
+          width: '100%',
+        }}
+      >
         <Paper sx={bannerSx} square={mediaBelowXl}>
           <Stack direction="column" spacing={1}>
             <Stack
               direction="row"
               spacing={2}
-              alignItems="center"
-              justifyContent={security ? 'center' : 'flex-start'}
+              sx={[
+                {
+                  alignItems: 'center',
+                },
+                security
+                  ? {
+                      justifyContent: 'center',
+                    }
+                  : {
+                      justifyContent: 'flex-start',
+                    },
+              ]}
             >
               {security ? (
                 <Warning fontSize="large" color="error" />
               ) : (
                 <Campaign fontSize="large" color="secondary" />
               )}
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: 2,
+                }}
+              >
                 <strong>{banner.title}</strong>
               </Typography>
               {security && <Warning fontSize="large" color="error" />}
             </Stack>
             <Box>
               <Typography
-                paragraph
-                display="inline"
-                mb={0}
-                whiteSpace="pre-wrap"
                 dangerouslySetInnerHTML={{
                   __html: linkifyStr(banner.text, linkifyOpts),
+                }}
+                sx={{
+                  display: 'inline',
+                  mb: 0,
+                  whiteSpace: 'pre-wrap',
                 }}
               />
 

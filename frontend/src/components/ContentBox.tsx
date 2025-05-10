@@ -27,11 +27,13 @@ const ContentBox = ({
 
   return (
     <Box
-      px={[noMinPaddingX ? 0 : 2, 2, 3]}
-      py={2}
-      // Push the global footer away, to avoid displaying it in the middle
-      // of the screen.
-      minHeight={`calc(100vh - ${topBarHeight}px)`}
+      sx={{
+        px: [noMinPaddingX ? 0 : 2, 2, 3],
+        py: 2,
+        // Push the global footer away, to avoid displaying it in the middle
+        // of the screen.
+        minHeight: `calc(100vh - ${topBarHeight}px)`,
+      }}
     >
       <Container maxWidth={maxWidth} disableGutters>
         {children}

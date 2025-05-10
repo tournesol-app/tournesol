@@ -52,7 +52,15 @@ export const RatingControl = ({
   );
 
   return (
-    <Box display="flex" alignItems="center" flexWrap="wrap" width="100%" px={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        width: '100%',
+        px: 1,
+      }}
+    >
       <Typography variant="caption" sx={{ fontSize: '11px' }}>
         {nComparisons > 0 ? (
           <InternalLink
@@ -67,7 +75,12 @@ export const RatingControl = ({
           t('video.notYetComparedByYou')
         )}
       </Typography>
-      <Box flexGrow={1} minWidth="12px" />
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: '12px',
+        }}
+      />
       {individualRating && options?.comparisonsCanBePublic === true && (
         <Tooltip
           title={
@@ -79,7 +92,13 @@ export const RatingControl = ({
           }
           placement="bottom"
         >
-          <Box component="label" display="inline-flex" alignItems="center">
+          <Box
+            component="label"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
+          >
             <Switch
               checked={isPublic}
               onChange={handleChange}
@@ -89,10 +108,18 @@ export const RatingControl = ({
             />
             <Typography
               variant="caption"
-              sx={{
-                color: isPublic ? '#222' : '#bbb',
-                textTransform: 'capitalize',
-              }}
+              sx={[
+                {
+                  textTransform: 'capitalize',
+                },
+                isPublic
+                  ? {
+                      color: '#222',
+                    }
+                  : {
+                      color: '#bbb',
+                    },
+              ]}
             >
               {t('public')}
             </Typography>

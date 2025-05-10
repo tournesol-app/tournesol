@@ -39,10 +39,18 @@ const TermsOfServicePage = () => {
         ))}
 
         <LegalPaper>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('terms.copying.thisDocumentIsInspiredByTheGitHubTos')}
           </Typography>
-          <Typography paragraph mb={0}>
+          <Typography
+            sx={{
+              mb: 0,
+            }}
+          >
             <Trans
               t={t}
               i18nKey="terms.copying.thePresentTextsAreDedicatedToThePublicDomain"

@@ -33,21 +33,30 @@ const CriteriaButtonsScoreReview = ({
 
   return (
     <Box
-      px={1}
-      display="flex"
-      sx={{ justifyContent: { xs: 'space-between', md: 'space-around' } }}
-      // Allow the CriterionButtons to slide behind this component.
-      zIndex={theme.zIndex.comparisonElevation1}
+      sx={{
+        px: 1,
+        display: 'flex',
+        zIndex: theme.zIndex.comparisonElevation1,
+        justifyContent: { xs: 'space-between', md: 'space-around' },
+      }}
     >
       {scoreButtons.map((scoreBtn) => (
         <Box
           key={scoreBtn.score}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          rowGap={1}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            rowGap: 1,
+          }}
         >
-          <Box px={1} color="grey.500" height="1.8rem">
+          <Box
+            sx={{
+              px: 1,
+              color: 'grey.500',
+              height: '1.8rem',
+            }}
+          >
             {scoreBtn.icons}
           </Box>
 
@@ -57,7 +66,13 @@ const CriteriaButtonsScoreReview = ({
 
             return (
               <Zoom in={true} key={crit.criteria}>
-                <Box display="flex" alignItems="center" height="1.4rem">
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '1.4rem',
+                  }}
+                >
                   <CriteriaIcon criteriaName={crit.criteria} />
                 </Box>
               </Zoom>

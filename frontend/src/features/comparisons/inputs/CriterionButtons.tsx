@@ -78,27 +78,34 @@ const ScoreButton = ({
       data-criterion-input-type="score-button"
       data-criterion-input-score={score}
       data-criterion-input-selected={selected}
-      sx={{
-        minWidth: '40px',
-        borderRadius: '4px',
-        backgroundColor: selected
-          ? theme.palette.primary.main
-          : theme.palette.background.mobileButton,
-        color: selected ? 'text.primary' : undefined,
-        '&:hover': hover
+      sx={[
+        {
+          minWidth: '40px',
+          borderRadius: '4px',
+          '&:hover': hover
+            ? {
+                color: 'white',
+                backgroundColor: selected
+                  ? theme.palette.secondary.dark
+                  : theme.palette.secondary.main,
+              }
+            : {
+                color: undefined,
+                backgroundColor: selected
+                  ? theme.palette.primary.main
+                  : theme.palette.background.mobileButton,
+              },
+        },
+        selected
           ? {
-              color: 'white',
-              backgroundColor: selected
-                ? theme.palette.secondary.dark
-                : theme.palette.secondary.main,
+              color: 'text.primary',
+              backgroundColor: theme.palette.primary.main,
             }
           : {
-              color: undefined,
-              backgroundColor: selected
-                ? theme.palette.primary.main
-                : theme.palette.background.mobileButton,
+              color: null,
+              backgroundColor: theme.palette.background.mobileButton,
             },
-      }}
+      ]}
     >
       {children}
     </IconButton>
@@ -112,16 +119,28 @@ const CriterionButtons = React.forwardRef(function (
   return (
     <Box ref={ref}>
       <Paper sx={{ py: 2, px: 1 }}>
-        <Box display="flex" justifyContent="center" mb={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mb: 2,
+          }}
+        >
           <CriteriaIcon criteriaName={critName} sx={{ mr: 1 }} />
-          <Typography fontSize={{ xs: '90%', sm: '100%' }}>
+          <Typography
+            sx={{
+              fontSize: { xs: '90%', sm: '100%' },
+            }}
+          >
             <CriteriaLabel criteria={critName} criteriaLabel={critLabel} />
           </Typography>
         </Box>
         <Box
-          width="100%"
-          display="flex"
-          sx={{ justifyContent: { xs: 'space-between', md: 'space-around' } }}
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: { xs: 'space-between', md: 'space-around' },
+          }}
         >
           {scoreButtons.map((btn, idx) => (
             <ScoreButton

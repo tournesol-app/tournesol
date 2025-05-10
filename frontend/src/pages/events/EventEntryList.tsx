@@ -1,19 +1,30 @@
 import React from 'react';
 
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid2 from '@mui/material/Grid2';
 
 import EventSingleEntry from 'src/pages/events/EventSingleEntry';
 import { TournesolEvent } from 'src/services/openapi';
 
 const EventEntryList = ({ events }: { events: Array<TournesolEvent> }) => {
   return (
-    <Grid container justifyContent="column" spacing={4}>
+    <Grid2
+      container
+      spacing={4}
+      sx={{
+        justifyContent: 'column',
+      }}
+    >
       {events.map((event, idx) => (
-        <Grid key={`${idx}_${event.name}`} width="100%">
+        <Grid2
+          key={`${idx}_${event.name}`}
+          sx={{
+            width: '100%',
+          }}
+        >
           <EventSingleEntry key={event.name} event={event} />
-        </Grid>
+        </Grid2>
       ))}
-    </Grid>
+    </Grid2>
   );
 };
 

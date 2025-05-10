@@ -16,7 +16,11 @@ const ReceivedVoucherList = () => {
 
   if (receivedVouchers.length === 0)
     return (
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('personalVouchers.noVoucherReceived')}
       </Typography>
     );
@@ -24,11 +28,13 @@ const ReceivedVoucherList = () => {
   return (
     <Stack
       direction="row"
-      flexWrap="wrap"
-      gap={1}
-      sx={{ py: 2 }}
       role="list"
       data-testid="received-vouchers-list"
+      sx={{
+        flexWrap: 'wrap',
+        gap: 1,
+        py: 2,
+      }}
     >
       {receivedVouchers.map(({ by }) => (
         <VoucherChip key={by} username={by} />
@@ -41,7 +47,11 @@ const ReceivedVouchers = () => {
   const { t } = useTranslation();
 
   return (
-    <Box py={2}>
+    <Box
+      sx={{
+        py: 2,
+      }}
+    >
       <Typography variant="h6">
         {t('personalVouchers.receivedVouchersTitle')}
       </Typography>

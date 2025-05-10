@@ -79,10 +79,12 @@ const StatsSection = () => {
         headingId="statistics"
       />
       <Box
-        textAlign="center"
-        width="100%"
-        display="flex"
-        justifyContent="center"
+        sx={{
+          textAlign: 'center',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
       >
         <Grid container sx={{ maxWidth: 1000 }}>
           <Grid item xs={12} sm={4}>

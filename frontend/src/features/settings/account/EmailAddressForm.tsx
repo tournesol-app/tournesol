@@ -26,11 +26,13 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="row"
-      flexWrap="wrap"
-      alignItems="center"
-      justifyContent="space-between"
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
       <Typography
         component="div"
@@ -39,14 +41,22 @@ const TrustStatus = ({ isTrusted }: { isTrusted: boolean }) => {
         {t('settings.emailStatus')}
         {': '}
         <LensIcon sx={{ fontSize: 16, color: statusColor, margin: '0 4px' }} />
-        <Box color={statusColor} fontWeight="bold">
+        <Box
+          sx={{
+            color: statusColor,
+            fontWeight: 'bold',
+          }}
+        >
           {isTrusted
             ? t('settings.emailTrusted')
             : t('settings.emailNonTrusted')}
         </Box>
       </Typography>
-
-      <Box display="inline-flex">
+      <Box
+        sx={{
+          display: 'inline-flex',
+        }}
+      >
         <Button
           component={RouterLink}
           to="/about/trusted_domains"
@@ -115,16 +125,36 @@ const EmailAddressForm = () => {
       );
     }
     return (
-      <Grid container spacing={2} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={2}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         {isLoading && <CircularProgress />}
         {/* "display" is used here to keep the form state during loading. */}
-        <Grid item sx={{ display: isLoading ? 'none' : undefined }}>
+        <Grid
+          item
+          sx={[
+            isLoading
+              ? {
+                  display: 'none',
+                }
+              : {
+                  display: null,
+                },
+          ]}
+        >
           {profileData && (
             <Box
-              marginBottom={2}
-              display="flex"
-              flexDirection="column"
-              gap="8px"
+              sx={{
+                marginBottom: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
             >
               <Typography>
                 {t('settings.currentEmailAddressIs')}{' '}
@@ -159,7 +189,15 @@ const EmailAddressForm = () => {
     );
   };
 
-  return <Box minHeight="180px">{getContent()}</Box>;
+  return (
+    <Box
+      sx={{
+        minHeight: '180px',
+      }}
+    >
+      {getContent()}
+    </Box>
+  );
 };
 
 export default EmailAddressForm;

@@ -40,7 +40,13 @@ const CriteriaPage = () => {
       <ContentBox maxWidth="lg">
         {criteria.map((crit) => {
           const title = (
-            <Box display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+              }}
+            >
               <CriteriaIcon
                 criteriaName={crit.name}
                 imgWidth="24px"

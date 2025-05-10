@@ -55,7 +55,13 @@ const getIndividualScores = (res: EntityResult) => {
 };
 
 const TabError = ({ message }: { message: string }) => (
-  <Typography variant="subtitle1" paragraph m={2} color="neutral.main">
+  <Typography
+    variant="subtitle1"
+    sx={{
+      m: 2,
+      color: 'neutral.main',
+    }}
+  >
     {message}
   </Typography>
 );
@@ -226,7 +232,6 @@ const EntityTabsBox = ({
           onResultSelect={onSelectEntity}
         />
       )}
-
       <Tabs
         textColor="secondary"
         indicatorColor="secondary"
@@ -237,14 +242,22 @@ const EntityTabsBox = ({
         }}
         variant="scrollable"
         scrollButtons="auto"
-        sx={{
-          display: tabsHidden ? 'none' : 'inital',
-          bgcolor: 'grey.100',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-          '& .MuiTabs-scrollButtons.Mui-disabled': {
-            opacity: 0.3,
+        sx={[
+          {
+            bgcolor: 'grey.100',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+            '& .MuiTabs-scrollButtons.Mui-disabled': {
+              opacity: 0.3,
+            },
           },
-        }}
+          tabsHidden
+            ? {
+                display: 'none',
+              }
+            : {
+                display: 'inital',
+              },
+        ]}
       >
         {tabs.map(({ label, name, disabled }) => (
           <Tab
@@ -258,7 +271,18 @@ const EntityTabsBox = ({
       <LoaderWrapper
         circularProgress={!searchError && !tabsHidden}
         isLoading={status === TabStatus.Loading}
-        sx={{ display: tabsHidden ? 'none' : 'initial', overflowY: 'auto' }}
+        sx={[
+          {
+            overflowY: 'auto',
+          },
+          tabsHidden
+            ? {
+                display: 'none',
+              }
+            : {
+                display: 'initial',
+              },
+        ]}
       >
         {isDescriptionVisible ? (
           <TabInfo
@@ -272,7 +296,12 @@ const EntityTabsBox = ({
             }
           />
         ) : (
-          <Box display="flex" justifyContent="flex-end">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
             <IconButton onClick={handleToggleDescription} color="info">
               <InfoOutlined />
             </IconButton>

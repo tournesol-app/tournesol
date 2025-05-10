@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Menu } from '@mui/material';
+import { Button, Menu, Theme } from '@mui/material';
 import { ArrowDropDown } from '@mui/icons-material';
 
 interface Props {
@@ -40,14 +40,16 @@ const MenuButton = ({
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={closeMenu}
-        MenuListProps={{
-          onClick: () => closeMenu(),
-          sx: {
-            backgroundColor: (t) => t.palette.background.menu,
-            '& .MuiListItemIcon-root': { color: '#CDCABC' },
+        {...menuProps}
+        slotProps={{
+          list: {
+            onClick: () => closeMenu(),
+            sx: {
+              backgroundColor: (t: Theme) => t.palette.background.menu,
+              '& .MuiListItemIcon-root': { color: '#CDCABC' },
+            },
           },
         }}
-        {...menuProps}
       >
         {menuContent}
       </Menu>

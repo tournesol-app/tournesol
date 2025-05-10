@@ -188,9 +188,15 @@ const VideoInput = ({
     <ClickAwayListener onClickAway={() => setSuggestionsOpen(false)}>
       <Box
         ref={selectorAnchor}
-        sx={{
-          width: variant === 'full' ? '100%' : 'auto',
-        }}
+        sx={[
+          variant === 'full'
+            ? {
+                width: '100%',
+              }
+            : {
+                width: 'auto',
+              },
+        ]}
       >
         {smallScreen && variant === 'compact' ? (
           <MobileIconButton

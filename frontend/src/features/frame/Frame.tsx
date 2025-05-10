@@ -27,10 +27,10 @@ const useStyles = makeStyles({
 
 const EmbeddedTopBar = () => (
   <Box
-    sx={{
+    sx={(theme) => ({
       height: '4px',
-      bgcolor: (theme) => theme.palette.primary.main,
-    }}
+      bgcolor: theme.palette.primary.main,
+    })}
   />
 );
 

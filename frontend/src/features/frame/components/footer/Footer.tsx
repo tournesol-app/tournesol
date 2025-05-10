@@ -1,8 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, useMediaQuery } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Box, Grid2, useMediaQuery } from '@mui/material';
 
 import FooterSection from 'src/features/frame/components/footer/FooterSection';
 import { theme } from 'src/theme';
@@ -144,12 +143,28 @@ const Footer = () => {
   });
 
   return (
-    <Box p={2} color="#fff" bgcolor="background.emphatic">
-      <Grid
+    <Box
+      sx={{
+        p: 2,
+        color: '#fff',
+        bgcolor: 'background.emphatic',
+      }}
+    >
+      <Grid2
         container
         spacing={2}
-        justifyContent={lessThanLargeScreen ? 'flex-start' : 'space-around'}
-        alignContent="center"
+        sx={[
+          {
+            alignContent: 'center',
+          },
+          lessThanLargeScreen
+            ? {
+                justifyContent: 'flex-start',
+              }
+            : {
+                justifyContent: 'space-around',
+              },
+        ]}
       >
         {footerSections.map((section) => (
           <FooterSection
@@ -160,7 +175,7 @@ const Footer = () => {
             trailingDivider={section.trailingDivider}
           />
         ))}
-      </Grid>
+      </Grid2>
     </Box>
   );
 };

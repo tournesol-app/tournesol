@@ -263,10 +263,18 @@ const ComparisonSliders = ({
                 }
                 size="medium"
                 color="secondary"
-                sx={{
-                  marginBottom: '8px',
-                  color: showOptionalCriterias ? 'red' : '',
-                }}
+                sx={[
+                  {
+                    marginBottom: '8px',
+                  },
+                  showOptionalCriterias
+                    ? {
+                        color: 'red',
+                      }
+                    : {
+                        color: '',
+                      },
+                ]}
               >
                 {showOptionalCriterias
                   ? t('comparison.removeOptionalCriterias')
@@ -302,12 +310,14 @@ const ComparisonSliders = ({
         )}
 
         <Box
-          display="flex"
-          alignItems="center"
-          gap="8px"
-          my={1}
-          color="text.hint"
-          minHeight="40px"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            my: 1,
+            color: 'text.hint',
+            minHeight: '40px',
+          }}
         >
           {isComparisonPublic && (
             <>

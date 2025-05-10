@@ -20,13 +20,15 @@ const PageNotFound = () => {
       }}
     >
       <Box
-        display="flex"
-        alignItems="center"
-        flexDirection="column"
-        justifyContent="center"
-        textAlign="center"
-        pt={22}
-        pb={2}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          textAlign: 'center',
+          pt: 22,
+          pb: 2,
+        }}
       >
         <Typography variant="h2">
           {t('pageNotFound.sorryPageNotFound')}
@@ -34,13 +36,23 @@ const PageNotFound = () => {
         <Typography variant="subtitle1">
           {t('pageNotFound.theRequestedAddressIsErroneous')}
         </Typography>
-        <Box mt={2}>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
           <Button variant="contained" component={Link} to={path}>
             {t('pageNotFound.backToHomePage')}
           </Button>
         </Box>
       </Box>
-      <Box display="flex" flexDirection="row" justifyContent="center">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}
+      >
         <img src="/svg/Watering.svg" height="380px" />
       </Box>
     </Box>
