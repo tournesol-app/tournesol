@@ -93,6 +93,8 @@ def add_comparisons_evolution_grouped_by_contributors_age():
     Display the number of active contributors per week, grouped by age.
     """
 
+    SEASON_SIZE = 4 # A season to be defined as a period of x months. Users will be grouped by the first season they did a comparison in
+
     st.markdown("#### Active contributors grouped by age")
     st.info(
         "An active contributor is a user who makes at least one public comparison during a given"
@@ -112,11 +114,10 @@ def add_comparisons_evolution_grouped_by_contributors_age():
     overall_last_week = df.week_date.max()
 
     # Categories: one category for each season between min(week_date) and max(week_date).
-    # A season is a period of 3 months.
     seasons = pd.date_range(
         start=f"{overall_first_week[:4]}-01-01",
         end=overall_last_week,
-        freq="3M",
+        freq=f"{SEASON_SIZE}M",
     ).to_list()
 
     # For each season, create a new dataframe.
@@ -160,7 +161,7 @@ def add_comparisons_evolution_grouped_by_contributors_age():
         if s == "single week":
             sub_dfs.append(("= last comparison date", season_df))
         else:
-            category = s.strftime("%Y %b") + " to " + (s + relativedelta(months=2)).strftime("%b")
+            category = s.strftime("%Y %b") + " to " + (s + relativedelta(months=SEASON_SIZE-1)).strftime("%b")
             sub_dfs.append((category, season_df))
 
     # Merge previous computed series into one, by week_date.

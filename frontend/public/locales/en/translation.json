@@ -1001,7 +1001,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
     "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> application made with Streamlit.",
-    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2023/06/13)."
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2025/05/12)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
