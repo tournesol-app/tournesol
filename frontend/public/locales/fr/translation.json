@@ -1010,7 +1010,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
     "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visualization</1> réalisée avec Streamlit.",
-    "personCorrelationCoefficientMatrix": "Matrice des coefficients de corrélation de Pearson entre les scores des critères de comparaison (2023/06/13)."
+    "personCorrelationCoefficientMatrix": "Matrice des coefficients de corrélation de Pearson entre les scores des critères de comparaison (2025/05/12)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",

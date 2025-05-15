@@ -148,11 +148,13 @@ def add_expander_correlation_coefficients():
         fig = plt.figure()
         sns.heatmap(
             df_correl,
-            cmap="Blues",
+            cmap="RdBu",
             linewidths=0.5,
             annot=True,
-            fmt=".2g",
+            fmt=".2f",
             annot_kws={"size": 7},
+            vmin=-1,
+	        vmax=+1,
         )
         st.pyplot(fig)
 
