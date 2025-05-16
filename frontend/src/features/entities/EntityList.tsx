@@ -49,9 +49,9 @@ function EntityList({
         entities.map((res: EntityResult) => (
           <Box
             key={res.entity.uid}
-            mx={1}
-            my={2}
             sx={{
+              mx: 1,
+              my: 2,
               '&:first-of-type': {
                 marginTop: 0,
               },
@@ -73,7 +73,11 @@ function EntityList({
           </Box>
         ))
       ) : (
-        <Box m={2}>
+        <Box
+          sx={{
+            m: 2,
+          }}
+        >
           <Typography variant="h5" component="h2" align="center">
             {emptyMessage}
           </Typography>

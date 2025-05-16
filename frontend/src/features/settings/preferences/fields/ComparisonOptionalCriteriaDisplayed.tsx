@@ -7,7 +7,7 @@ import {
   Box,
   Checkbox,
   Divider,
-  Grid,
+  Grid2,
   IconButton,
   Typography,
 } from '@mui/material';
@@ -55,14 +55,21 @@ const OrderableCriterionRow = ({
   };
 
   return (
-    <Grid
+    <Grid2
       container
       direction="row"
-      alignItems="center"
-      justifyContent="space-between"
       wrap="nowrap"
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
-      <Grid item display="flex" alignItems="center">
+      <Grid2
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Checkbox
           id={`id_selected_optional_${criterionName}`}
           checked={checked}
@@ -73,9 +80,14 @@ const OrderableCriterionRow = ({
         />
         <CriteriaIcon criteriaName={criterionName} sx={{ marginRight: 1 }} />
         <Typography>{criterionLabel}</Typography>
-      </Grid>
+      </Grid2>
       {checked && (
-        <Grid item display="flex" flexWrap="nowrap">
+        <Grid2
+          sx={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+          }}
+        >
           <IconButton
             aria-label={`${t(
               'pollUserSettingsForm.moveTheFollowingCriterionUp'
@@ -96,9 +108,9 @@ const OrderableCriterionRow = ({
           >
             <KeyboardArrowDown />
           </IconButton>
-        </Grid>
+        </Grid2>
       )}
-    </Grid>
+    </Grid2>
   );
 };
 
@@ -137,27 +149,50 @@ const ComparisonOptionalCriteriaDisplayed = ({
   };
 
   return (
-    <Grid flexDirection="row" container spacing={2}>
-      <Grid item xs={12}>
-        <Typography paragraph mb={0}>
+    <Grid2
+      container
+      spacing={2}
+      sx={{
+        flexDirection: 'row',
+      }}
+    >
+      <Grid2 size={12}>
+        <Typography
+          sx={{
+            mb: 0,
+          }}
+        >
           <strong>
             {t('pollUserSettingsForm.selectTheCriteriaYouWantToDisplay')}
           </strong>
         </Typography>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={12}
-        lg={6}
-        minHeight={{ xs: 'initial', sm: 410 }}
+      </Grid2>
+      <Grid2
+        sx={{
+          minHeight: { xs: 'initial', sm: 410 },
+        }}
+        size={{
+          xs: 12,
+          sm: 12,
+          md: 12,
+          lg: 6,
+        }}
       >
-        <Box mb={1}>
+        <Box
+          sx={{
+            mb: 1,
+          }}
+        >
           <Typography>{t('pollUserSettingsForm.optionalCriteria')}</Typography>
           <Divider />
         </Box>
-        <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: { xs: 2, sm: 0 },
+          }}
+        >
           {criterias
             .filter((c) => !displayedCriteria.includes(c.name) && c.optional)
             .map((criterion, index) => (
@@ -181,22 +216,35 @@ const ComparisonOptionalCriteriaDisplayed = ({
             </Typography>
           </Alert>
         )}
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={12}
-        lg={6}
-        minHeight={{ xs: 'initial', sm: 410 }}
+      </Grid2>
+      <Grid2
+        sx={{
+          minHeight: { xs: 'initial', sm: 410 },
+        }}
+        size={{
+          xs: 12,
+          sm: 12,
+          md: 12,
+          lg: 6,
+        }}
       >
-        <Box mb={1}>
+        <Box
+          sx={{
+            mb: 1,
+          }}
+        >
           <Typography>
             {t('pollUserSettingsForm.alwaysDisplayedCriteria')}
           </Typography>
           <Divider />
         </Box>
-        <Box display="flex" flexDirection="column" gap={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: { xs: 2, sm: 0 },
+          }}
+        >
           {displayedCriteria.map((criterion, index) => (
             <OrderableCriterionRow
               key={criterion}
@@ -220,8 +268,8 @@ const ComparisonOptionalCriteriaDisplayed = ({
             </Typography>
           </Alert>
         )}
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };
 

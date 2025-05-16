@@ -31,7 +31,12 @@ const CriteriaSelector = ({
       )}
       {criterias.map((criterion) => (
         <MenuItem key={criterion.name} value={criterion.name}>
-          <Box display="flex" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
             <CriteriaIcon
               criteriaName={criterion.name}
               sx={{

@@ -9,13 +9,19 @@ const ApplicationOfLaws = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="application-of-laws"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('actionsPage.applicationOfLaws.demandTheApplicationOfLaws')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info" icon={false}>
           {t('actionsPage.applicationOfLaws.why')}
         </Alert>

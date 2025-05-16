@@ -13,13 +13,19 @@ const ChangesToTheseTerms = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="changes-to-these-terms"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.changesToTheseTerms.changesToTheseTerms')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>
@@ -27,10 +33,18 @@ const ChangesToTheseTerms = () => {
           {t('terms.changesToTheseTerms.shortVersion')}
         </Alert>
       </Box>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.changesToTheseTerms.weMayAmendTheseTermsAtAnyTime')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         <Trans t={t} i18nKey="terms.changesToTheseTerms.weWillNotifyTheUsers">
           We will notify the Users of material changes to this Agreement, at
           least 30 days prior to the change taking effect by posting a notice on

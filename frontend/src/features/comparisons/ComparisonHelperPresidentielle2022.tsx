@@ -29,13 +29,22 @@ const ComparisonHelperPresidentielle2022 = () => {
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', p: 3 }}>
-        <Typography paragraph>
+        <Typography
+          sx={{
+            marginBottom: 2,
+          }}
+        >
           Si vous ne connaissez pas suffisamment bien les candidat·es et leurs
           programmes, nous (l&apos;Association Tournesol) vous proposons
           ci-dessous differentes sources d&apos;information que nous avons
           trouvées utiles.
         </Typography>
-        <Grid container justifyContent="space-between">
+        <Grid
+          container
+          sx={{
+            justifyContent: 'space-between',
+          }}
+        >
           <Grid item>
             <Typography variant="h4" color="secondary">
               Sites web officiels des candidat·es

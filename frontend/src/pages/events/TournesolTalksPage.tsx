@@ -16,10 +16,19 @@ const Header = () => {
       <Typography component="h2" variant="h4" gutterBottom>
         {t('tournesolTalksPage.whatAreTournesolTalks')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('tournesolTalksPage.tournesolTalksIntroduction')}
       </Typography>
-      <Box display="flex" justifyContent="flex-end">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
         <Button
           size="small"
           variant="contained"

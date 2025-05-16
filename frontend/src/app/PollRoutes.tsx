@@ -49,7 +49,12 @@ const PollRoutes = ({ pollName }: Props) => {
 
   if (pollName !== currentPollName || !isReady) {
     return (
-      <Box m={4} textAlign="center">
+      <Box
+        sx={{
+          m: 4,
+          textAlign: 'center',
+        }}
+      >
         <CircularProgress color="secondary" size={50} />
       </Box>
     );

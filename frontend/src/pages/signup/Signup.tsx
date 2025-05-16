@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import {
-  Grid,
+  Grid2,
   Link as MuiLink,
   Button,
   Typography,
@@ -45,7 +45,13 @@ const SignupSuccess = ({ email }: { email: string }) => {
           </Trans>
         </Typography>
       </Alert>
-      <Typography paragraph px={1} textAlign="center">
+      <Typography
+        sx={{
+          px: 1,
+          textAlign: 'center',
+          marginBottom: 2,
+        }}
+      >
         <Trans t={t} i18nKey="signup.ifYourEmailIsIncorrect">
           If your email address is incorrect, simply{' '}
           <MuiLink
@@ -76,11 +82,26 @@ const WelcomePaper = () => {
         backgroundColor: 'background.emphatic',
       }}
     >
-      <Box display="flex" flexDirection="column" gap={1}>
-        <Typography variant="h3" textAlign="center">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           {t('signup.welcomeToTournesol')}
         </Typography>
-        <Typography textAlign="center">
+        <Typography
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           {t('signup.weVeBeenWaitingForYou')}
         </Typography>
       </Box>
@@ -153,9 +174,16 @@ const Signup = () => {
           <SignupSuccess email={successEmailAddress} />
         ) : (
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={3} direction="column" alignItems="stretch">
+            <Grid2
+              container
+              spacing={3}
+              direction="column"
+              sx={{
+                alignItems: 'stretch',
+              }}
+            >
               {formError && (
-                <Grid item xs={12}>
+                <Grid2 size={12}>
                   <Typography color="error">
                     {t('signup.accountCreationFailed')}
                     <br />
@@ -163,9 +191,9 @@ const Signup = () => {
                       <Lines messages={formError.non_field_errors} />
                     )}
                   </Typography>
-                </Grid>
+                </Grid2>
               )}
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <FormTextField
                   name="email"
                   label={t('emailAddress')}
@@ -173,8 +201,8 @@ const Signup = () => {
                   formError={formError}
                   helperText={t('signup.anActivationEmailWillBeSent')}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormTextField
                   name="username"
                   label={t('username')}
@@ -183,8 +211,8 @@ const Signup = () => {
                     'settings.captionUsernameWillAppearInPublicDatabase'
                   )}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormTextField
                   name="password"
                   label={t('password')}
@@ -192,8 +220,8 @@ const Signup = () => {
                   autoComplete="new-password"
                   formError={formError}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <FormTextField
                   name="password_confirm"
                   label={t('confirmYourPassword')}
@@ -201,8 +229,15 @@ const Signup = () => {
                   autoComplete="new-password"
                   formError={formError}
                 />
-              </Grid>
-              <Grid item xs={12} display="flex" alignItems="center" gap={1}>
+              </Grid2>
+              <Grid2
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+                size={12}
+              >
                 <Checkbox
                   name="accept_terms"
                   color="secondary"
@@ -228,29 +263,38 @@ const Signup = () => {
                     </Trans>
                   </Typography>
                 </span>
-              </Grid>
-              <Grid item xs={12}>
-                <Box py={2}>
+              </Grid2>
+              <Grid2 size={12}>
+                <Box
+                  sx={{
+                    py: 2,
+                  }}
+                >
                   <Divider>
-                    <Box display="flex" alignItems="center">
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       <EmailIcon color="secondary" />
                     </Box>
                   </Divider>
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <NotificationsEmailResearch
                   value={notififResearch}
                   onChange={(value) => setNotififResearch(value)}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <NotificationsEmailNewFeatures
                   value={notifNewFeatures}
                   onChange={(value) => setNnotifNewFeatures(value)}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid2>
+              <Grid2 size={12}>
                 <Button
                   type="submit"
                   color="secondary"
@@ -260,8 +304,8 @@ const Signup = () => {
                 >
                   {t('signUpButton')}
                 </Button>
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </form>
         )}
       </ContentBox>

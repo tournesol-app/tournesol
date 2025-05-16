@@ -36,14 +36,22 @@ const CollapseButton = ({
         aria-expanded={expanded}
         aria-label="show more"
         onClick={onClick}
-        sx={{
-          padding: '0 8px',
-          fontSize: variant === 'mainOptions' ? '1.1rem' : undefined,
-          color:
-            expanded || variant == 'mainOptions'
-              ? theme.palette.secondary.main
-              : theme.palette.action.active,
-        }}
+        sx={[
+          {
+            padding: '0 8px',
+            color:
+              expanded || variant == 'mainOptions'
+                ? theme.palette.secondary.main
+                : theme.palette.action.active,
+          },
+          variant === 'mainOptions'
+            ? {
+                fontSize: '1.1rem',
+              }
+            : {
+                fontSize: null,
+              },
+        ]}
       >
         {children}
       </Button>

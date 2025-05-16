@@ -61,7 +61,14 @@ function ResetPassword() {
       <ContentHeader title={t('reset.resetYourPassword')} />
       <ContentBox maxWidth="xs">
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3} direction="column" alignItems="stretch">
+          <Grid
+            container
+            spacing={3}
+            direction="column"
+            sx={{
+              alignItems: 'stretch',
+            }}
+          >
             <Grid item xs={12}>
               <FormTextField
                 type="password"

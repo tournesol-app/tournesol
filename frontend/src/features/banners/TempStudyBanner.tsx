@@ -102,24 +102,59 @@ const TempStudyBanner = () => {
   }
 
   return (
-    <Box py={3} bgcolor="#1282B2">
-      <Grid container width="100%" flexDirection="column" alignItems="center">
-        <Grid item xl={9} width="100%">
+    <Box
+      sx={{
+        py: 3,
+        bgcolor: '#1282B2',
+      }}
+    >
+      <Grid
+        container
+        sx={{
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Grid
+          item
+          xl={9}
+          sx={{
+            width: '100%',
+          }}
+        >
           <Paper sx={{ p: 2 }} square={mediaBelowXl}>
             <Stack
               // Using != direction per breakpoint requires to define != spacing
               // per breakpoint.
               spacing={{ xs: 2, sm: 2 }}
               direction={{ sm: 'column', md: 'row' }}
-              alignItems="center"
+              sx={{
+                alignItems: 'center',
+              }}
             >
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <Campaign fontSize="large" sx={{ color: '#1282B2' }} />
-                <Typography paragraph mb={0}>
+                <Typography
+                  sx={{
+                    mb: 0,
+                  }}
+                >
                   {t('tempStudyBanner.isTheTournesolProjectReallyEffective')}
                 </Typography>
               </Stack>
-              <Box display="flex" justifyContent="flex-end">
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}
+              >
                 {isLoggedIn ? (
                   <ParticipateButton userProof={userProof} />
                 ) : (

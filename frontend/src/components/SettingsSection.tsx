@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Divider, Grid, Typography } from '@mui/material';
+import { Box, Divider, Grid2, Typography } from '@mui/material';
 
 const SettingsSection = ({
   title,
@@ -25,17 +25,19 @@ const SettingsSection = ({
     );
 
   return (
-    <Grid item container>
-      <Grid item xs={12}>
-        <Box marginBottom={2}>
+    <Grid2 container>
+      <Grid2 size={{ xs: 12 }}>
+        <Box
+          sx={{
+            marginBottom: 2,
+          }}
+        >
           {sectionTitle}
           <Divider />
         </Box>
-      </Grid>
-      <Grid item {...rest}>
-        {children}
-      </Grid>
-    </Grid>
+      </Grid2>
+      <Grid2 size={rest}>{children}</Grid2>
+    </Grid2>
   );
 };
 

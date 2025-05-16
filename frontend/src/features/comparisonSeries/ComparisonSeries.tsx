@@ -328,7 +328,12 @@ const ComparisonSeries = ({
             title={currentDialog.title}
             content={currentDialog.messages.map((message, index) => {
               return (
-                <Typography key={index} paragraph>
+                <Typography
+                  key={index}
+                  sx={{
+                    marginBottom: 2,
+                  }}
+                >
                   {message}
                 </Typography>
               );

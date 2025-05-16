@@ -117,7 +117,13 @@ const ComparisonInput = ({
               {t('comparisonInput.thisComparisonWasMadeOnAMobileDevice')}
             </Alert>
           )}
-          <Box display="flex" flexDirection="column" rowGap={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              rowGap: 1,
+            }}
+          >
             <CriteriaButtons
               uidA={uidA || ''}
               uidB={uidB || ''}

@@ -84,13 +84,22 @@ const VerifySignature = ({ verify }: { verify: 'user' | 'email' }) => {
     <>
       <ContentHeader title={title} />
       <ContentBox maxWidth="sm">
-        <Typography paragraph>
+        <Typography
+          sx={{
+            marginBottom: 2,
+          }}
+        >
           {verificationState == 'loading' && <CircularProgress />}
           {verificationState == 'fail' && t('verify.verificationFailed')}
           {verificationState == 'success' && successMessage}
         </Typography>
         {verify === 'user' && verificationState === 'success' && (
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               component={RouterLink}
               to={`${baseUrl}/comparison`}

@@ -26,16 +26,23 @@ const TopBarMobile = () => {
       {mobileSearchOpen ? (
         <Grid
           container
-          width="100%"
-          px={1}
           spacing={2}
-          justifyContent="flex-start"
+          sx={{
+            width: '100%',
+            px: 1,
+            justifyContent: 'flex-start',
+          }}
         >
           <Grid item xs={11}>
             {options?.withSearchBar && <SearchBar />}
           </Grid>
           <Grid item xs={1}>
-            <Box display="flex" justifyContent="center">
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <IconButton
                 aria-label="Close the searchbar"
                 onClick={() => searchOpeningHandler(false)}

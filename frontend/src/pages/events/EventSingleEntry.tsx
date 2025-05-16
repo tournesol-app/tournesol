@@ -49,13 +49,25 @@ const EventTypeLabel = ({ event }: { event: TournesolEvent }) => {
   return (
     <>
       {event.event_type === EventTypeEnum.LIVE && (
-        <Box display="flex" gap={1} alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+          }}
+        >
           <YouTube fontSize="small" />
           <Typography variant="body2">Tournesol Live</Typography>
         </Box>
       )}
       {event.event_type === EventTypeEnum.TALK && (
-        <Box display="flex" gap={1} alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+          }}
+        >
           <Science fontSize="small" />
           <Typography variant="body2">Tournesol Talk</Typography>
         </Box>
@@ -93,23 +105,30 @@ const EventHeading = ({ event }: { event: TournesolEvent }) => {
   return (
     <Box
       id={event.name}
-      px={2}
-      py="12px"
-      color="#fff"
-      bgcolor="background.emphatic"
       sx={{
+        px: 2,
+        py: '12px',
+        color: '#fff',
+        bgcolor: 'background.emphatic',
         borderTopLeftRadius: 'inherit',
         borderTopRightRadius: 'inherit',
       }}
     >
       <Grid
         container
-        justifyContent="space-between"
-        alignItems="center"
         spacing={1}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
         <Grid item>
-          <Box display="flex" flexDirection="column">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             <Typography variant="h4">
               {headingLink ? (
                 <ExternalLink
@@ -133,7 +152,13 @@ const EventHeading = ({ event }: { event: TournesolEvent }) => {
         </Grid>
         {displayedDatetime && (
           <Grid item>
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               {isLive(event) && (
                 <Chip
                   label={t('eventsPage.live')}
@@ -171,8 +196,8 @@ const EventImagery = ({ event }: { event: TournesolEvent }) => {
 
   return (
     <Box
-      display="flex"
       sx={{
+        display: 'flex',
         maxWidth: '320px',
         marginRight: { xs: 0, sm: 2 },
         marginBottom: { xs: 2, sm: 0 },
@@ -223,7 +248,12 @@ const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
   return (
     <Paper>
       <EventHeading event={event} />
-      <Box p={2} sx={{ overflow: 'auto' }}>
+      <Box
+        sx={{
+          p: 2,
+          overflow: 'auto',
+        }}
+      >
         <EventImagery event={event} />
         {event.speakers && (
           <Typography variant="h6" color="secondary" gutterBottom>
@@ -233,15 +263,24 @@ const EventSingleEntry = ({ event }: { event: TournesolEvent }) => {
         {abstractParagraphs.map((abstractParagraph, index) => (
           <Typography
             key={`${event.title}_p${index}`}
-            textAlign="justify"
-            paragraph
+            sx={{
+              textAlign: 'justify',
+              marginBottom: 2,
+            }}
           >
             {abstractParagraph}
           </Typography>
         ))}
       </Box>
       {actionLink && (
-        <Box p={2} pt={0} display="flex" justifyContent="flex-end">
+        <Box
+          sx={{
+            p: 2,
+            pt: 0,
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           <Button
             size="small"
             color="secondary"

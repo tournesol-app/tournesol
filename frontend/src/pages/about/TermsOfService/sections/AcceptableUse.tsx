@@ -12,13 +12,19 @@ const AcceptableUse = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="acceptable-use"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t('terms.acceptableUse.acceptableUse')}
       </Typography>
-      <Box my={2}>
+      <Box
+        sx={{
+          my: 2,
+        }}
+      >
         <Alert severity="info">
           <AlertTitle>
             <strong>{t('terms.shortVersion')}</strong>
@@ -33,28 +39,48 @@ const AcceptableUse = () => {
       >
         {t('terms.acceptableUse.titles.1ComplianceWithLawsAndRegulation')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.acceptableUse.p.complianceWithLawsAndRegulation')}
       </Typography>
       <Typography variant="h5" gutterBottom id="user-safety">
         {t('terms.acceptableUse.titles.2UserSafety')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.acceptableUse.p.userSafetyIntro')}
       </Typography>
       <ul>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('terms.acceptableUse.p.isUnlawlfulOrPromoteUnlawful')}
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('terms.acceptableUse.p.isFalseInaccurateOrDeceptive')}
           </Typography>
         </li>
         <li>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             <Trans
               t={t}
               i18nKey="terms.acceptableUse.p.orGoesAgainstOurCodeOfConduct"
@@ -71,7 +97,11 @@ const AcceptableUse = () => {
       <Typography variant="h5" gutterBottom id="inauthentic-activity-and-spam">
         {t('terms.acceptableUse.titles.3InauthenticActivityAndSpam')}
       </Typography>
-      <Typography paragraph>
+      <Typography
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('terms.acceptableUse.p.inauthenticActivityAndSpamIntro')}
       </Typography>
     </Box>

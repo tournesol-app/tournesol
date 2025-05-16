@@ -31,15 +31,25 @@ const PwaBanner = ({ beforeInstallPromptEvent }: Props) => {
   return (
     <Grid
       container
-      p={2}
-      sx={(theme) => ({
-        backgroundColor: theme.palette.neutral.light,
-        color: theme.palette.text.primary,
-      })}
-      gap={2}
-      alignItems="center"
+      sx={[
+        {
+          p: 2,
+          gap: 2,
+          alignItems: 'center',
+        },
+        (theme) => ({
+          backgroundColor: theme.palette.neutral.light,
+          color: theme.palette.text.primary,
+        }),
+      ]}
     >
-      <Typography fontWeight="bold" display="flex" gap={1}>
+      <Typography
+        sx={{
+          fontWeight: 'bold',
+          display: 'flex',
+          gap: 1,
+        }}
+      >
         <Avatar
           component="span"
           src="/icons/maskable-icon-512x512.png"
@@ -47,7 +57,14 @@ const PwaBanner = ({ beforeInstallPromptEvent }: Props) => {
         />
         {t('pwaBanner.message')}
       </Typography>
-      <Grid item container justifyContent="right" columnGap={1}>
+      <Grid
+        item
+        container
+        sx={{
+          justifyContent: 'right',
+          columnGap: 1,
+        }}
+      >
         <Button
           variant="text"
           color="inherit"

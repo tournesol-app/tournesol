@@ -22,14 +22,21 @@ const LoaderWrapper = ({
   return (
     <>
       {isLoading && circularProgress && (
-        <Box position="relative" width="100%">
+        <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+          }}
+        >
           <Box
-            position="absolute"
-            display="flex"
-            width="100%"
-            minHeight="100px"
-            alignItems="center"
-            justifyContent="center"
+            sx={{
+              position: 'absolute',
+              display: 'flex',
+              width: '100%',
+              minHeight: '100px',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <CircularProgress size={50} />
           </Box>

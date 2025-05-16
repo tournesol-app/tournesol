@@ -102,11 +102,20 @@ const SearchPage = () => {
         subtitle={t('searchPage.exploreTheRecommendationsUsingSearchFilters')}
       />
       <ContentBox noMinPaddingX maxWidth="lg">
-        <Box px={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            px: { xs: 2, sm: 0 },
+          }}
+        >
           <SearchFilter
             appearExpanded
             extraActions={
-              <Box display="flex" gap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                }}
+              >
                 <ShareMenuButton isIcon />
                 {backButtonPath && <BackIconButton path={backButtonPath} />}
                 <PreferencesIconButtonLink hash={`#${pollName}-search`} />
@@ -115,7 +124,12 @@ const SearchPage = () => {
           />
         </Box>
         {loadingError && !isLoading && entities.count === 0 && (
-          <Box mb={1} px={{ xs: 2, sm: 0 }}>
+          <Box
+            sx={{
+              mb: 1,
+              px: { xs: 2, sm: 0 },
+            }}
+          >
             <Alert severity="warning">
               {t('genericError.errorOnLoadingTryAgainLater')}
             </Alert>

@@ -21,10 +21,20 @@ const NoRatingMessage = ({ hasFilter }: { hasFilter: boolean }) => {
     <>
       <Divider />
       {hasFilter ? (
-        <Box my={2}>{t('ratings.noVideoCorrespondsToFilter')}</Box>
+        <Box
+          sx={{
+            my: 2,
+          }}
+        >
+          {t('ratings.noVideoCorrespondsToFilter')}
+        </Box>
       ) : (
         <>
-          <Box my={2}>
+          <Box
+            sx={{
+              my: 2,
+            }}
+          >
             {t('ratings.noVideoComparedYet')}
             {' 🥺'}
           </Box>
@@ -104,7 +114,11 @@ const VideoRatingsPage = () => {
       <ContentHeader title={t('myRatedVideosPage.title')} />
       <ContentBox noMinPaddingX maxWidth="lg">
         {options?.comparisonsCanBePublic === true && (
-          <Box px={{ xs: 2, sm: 0 }}>
+          <Box
+            sx={{
+              px: { xs: 2, sm: 0 },
+            }}
+          >
             <RatingsFilter
               defaultFilters={[
                 { name: 'orderBy', value: DEFAULT_FILTER_ORDER_BY },

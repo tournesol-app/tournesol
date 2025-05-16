@@ -183,7 +183,13 @@ const ComparisonPage = () => {
           }}
         >
           {!pollActive && (
-            <Box pb={3} textAlign="center" color="neutral.main">
+            <Box
+              sx={{
+                pb: 3,
+                textAlign: 'center',
+                color: 'neutral.main',
+              }}
+            >
               <Typography>{t('comparison.inactivePoll')}</Typography>
               <Typography>
                 {t(

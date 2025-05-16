@@ -59,22 +59,21 @@ function VideoCard({
           item
           xs={12}
           sm={compact ? 12 : 'auto'}
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            ...(compact
-              ? {}
-              : { minWidth: '240px', maxWidth: { sm: '240px' } }),
-          }}
+          sx={[
+            {
+              display: 'flex',
+              justifyContent: 'center',
+            },
+            compact ? {} : { minWidth: '240px', maxWidth: { sm: '240px' } },
+          ]}
         >
           <Box
-            display="flex"
-            alignItems="center"
-            bgcolor="black"
-            width="100%"
-            // prevent the RouterLink to add few extra pixels
-            lineHeight={0}
             sx={{
+              display: 'flex',
+              alignItems: 'center',
+              bgcolor: 'black',
+              width: '100%',
+              lineHeight: 0,
               '& > img': {
                 flex: 1,
               },
@@ -143,7 +142,11 @@ function VideoCard({
         )}
         {isSmallScreen && settings.length > 0 && (
           <>
-            <Box flexGrow={1} />
+            <Box
+              sx={{
+                flexGrow: 1,
+              }}
+            />
             <IconButton
               size="small"
               aria-label={t('video.labelShowSettings')}
@@ -155,14 +158,22 @@ function VideoCard({
         )}
       </Grid>
       {settings.length > 0 && (
-        <Grid item xs={12} p={0}>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            p: 0,
+          }}
+        >
           <Collapse in={settingsVisible || !isSmallScreen}>
             <Box
-              paddingY={1}
-              borderTop="1px solid rgba(0, 0, 0, 0.12)"
-              display="flex"
-              gap="16px"
-              color="text.secondary"
+              sx={{
+                paddingY: 1,
+                borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                display: 'flex',
+                gap: '16px',
+                color: 'text.secondary',
+              }}
             >
               {settings.map((Action, index) =>
                 typeof Action === 'function' ? (

@@ -141,7 +141,11 @@ function RecommendationsPage() {
         <ContentHeader title={getRecommendationPageName(t, pollName)} />
       )}
       <ContentBox noMinPaddingX maxWidth="lg">
-        <Box px={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            px: { xs: 2, sm: 0 },
+          }}
+        >
           <Grid container>
             {/* Filters section. */}
             <Grid item xs={12}>
@@ -149,7 +153,12 @@ function RecommendationsPage() {
               <SearchFilter
                 disableAdvanced={displayPersonalRecommendations}
                 extraActions={
-                  <Box display="flex" gap={1}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 1,
+                    }}
+                  >
                     <ShareMenuButton isIcon />
                   </Box>
                 }
