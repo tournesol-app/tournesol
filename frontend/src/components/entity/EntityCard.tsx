@@ -54,6 +54,7 @@ export interface EntityCardProps {
   // Configuration specific to the entity type.
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
   displayContextAlert?: boolean;
+  displayImage?: boolean;
 }
 
 const EntityCard = ({
@@ -65,6 +66,7 @@ const EntityCard = ({
   showRatingControl = false,
   onRatingChange,
   displayContextAlert = false,
+  displayImage = true,
 }: EntityCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -150,25 +152,27 @@ const EntityCard = ({
       )}
       {contentDisplayed && (
         <>
-          <Grid2
-            sx={[
-              {
-                display: 'flex',
-                justifyContent: 'center',
-              },
-              compact ? {} : { maxWidth: { sm: '240px' } },
-            ]}
-            size={{
-              xs: 12,
-              sm: compact ? 12 : 'auto',
-            }}
-          >
-            <EntityImagery
-              entity={entity}
-              compact={compact}
-              config={entityTypeConfig}
-            />
-          </Grid2>
+          {displayImage && (
+            <Grid2
+              sx={[
+                {
+                  display: 'flex',
+                  justifyContent: 'center',
+                },
+                compact ? {} : { maxWidth: { sm: '240px' } },
+              ]}
+              size={{
+                xs: 12,
+                sm: compact ? 12 : 'auto',
+              }}
+            >
+              <EntityImagery
+                entity={entity}
+                compact={compact}
+                config={entityTypeConfig}
+              />
+            </Grid2>
+          )}
           <Grid2
             data-testid="video-card-info"
             container
@@ -192,7 +196,7 @@ const EntityCard = ({
             sx={{
               display: 'flex',
               alignItems: 'end',
-              justifyContent: 'space-between',
+              justifyContent: 'start',
               flexDirection: 'column',
               [theme.breakpoints.down('sm')]: {
                 flexDirection: 'row',

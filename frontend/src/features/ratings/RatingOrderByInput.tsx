@@ -10,8 +10,10 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
-import CallMadeIcon from '@mui/icons-material/CallMade';
-import CallReceivedIcon from '@mui/icons-material/CallReceived';
+import {
+  NorthEast as Ascending,
+  SouthEast as Descending,
+} from '@mui/icons-material';
 
 import { TitledSection } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
@@ -37,42 +39,42 @@ function RatingOrderByInput(props: FilterProps) {
       {
         label: t('ratingOrderByInput.lastComparisonDate'),
         value: 'last_compared_at',
-        icon: CallMadeIcon,
+        icon: Ascending,
       },
       {
         label: t('ratingOrderByInput.lastComparisonDate'),
         value: '-last_compared_at',
-        icon: CallReceivedIcon,
+        icon: Descending,
       },
       {
         label: t('ratingOrderByInput.numberOfComparisons'),
         value: 'n_comparisons',
-        icon: CallMadeIcon,
+        icon: Ascending,
       },
       {
         label: t('ratingOrderByInput.numberOfComparisons'),
         value: '-n_comparisons',
-        icon: CallReceivedIcon,
+        icon: Descending,
       },
       {
         label: t('ratingOrderByInput.collectiveTournesolScore'),
         value: 'collective_score',
-        icon: CallMadeIcon,
+        icon: Ascending,
       },
       {
         label: t('ratingOrderByInput.collectiveTournesolScore'),
         value: '-collective_score',
-        icon: CallReceivedIcon,
+        icon: Descending,
       },
       {
         label: t('ratingOrderByInput.individualTournesolScore'),
         value: 'individual_score',
-        icon: CallMadeIcon,
+        icon: Ascending,
       },
       {
         label: t('ratingOrderByInput.individualTournesolScore'),
         value: '-individual_score',
-        icon: CallReceivedIcon,
+        icon: Descending,
       },
     ],
     [t]
@@ -121,7 +123,7 @@ function RatingOrderByInput(props: FilterProps) {
                   {getMetadataName(t, pollName, metadata)}
                 </ListItemText>
                 &nbsp;
-                <CallMadeIcon fontSize="small" />
+                <Ascending fontSize="small" />
               </Box>
             </MenuItem>,
             <MenuItem key={`-${metadata}`} value={`-${metadata}`}>
@@ -135,7 +137,7 @@ function RatingOrderByInput(props: FilterProps) {
                   {getMetadataName(t, pollName, metadata)}
                 </ListItemText>
                 &nbsp;
-                <CallReceivedIcon fontSize="small" />
+                <Descending fontSize="small" />
               </Box>
             </MenuItem>,
           ])}
