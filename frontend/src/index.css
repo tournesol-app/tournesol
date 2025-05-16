@@ -69,6 +69,10 @@ html.embedded .notistack-SnackbarContainer.belowTopBar {
   .notistack-SnackbarContainer.belowTopBar {
     width: auto;
   }
+
+  .notistack-SnackbarContainer.belowTopBar .notistack-Snackbar {
+    min-width: unset;
+  }
 }
 
 
