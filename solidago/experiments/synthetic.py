@@ -176,10 +176,10 @@ def run_from_hyperparameters_file(filename):
 
 
 if len(sys.argv) == 1:
-    logger.warn("Please specify the hyperparameters of the pipeline experiments in a json file.")
-    logger.warn("The file must specify n_users, n_entities, n_seeds, x_parameter, x_values,")
-    logger.warn("z_parameter, z_values. See `experiments/hyperparameters.json` for an example.")
-    logger.warn("You may then add the filename of the json hyperparameters file.")
+    logger.warning("Please specify the hyperparameters of the pipeline experiments in a json file.")
+    logger.warning("The file must specify n_users, n_entities, n_seeds, x_parameter, x_values,")
+    logger.warning("z_parameter, z_values. See `experiments/hyperparameters.json` for an example.")
+    logger.warning("You may then add the filename of the json hyperparameters file.")
 
 elif sys.argv[1] == "plot":
     from plot import plot_file
