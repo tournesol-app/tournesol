@@ -41,8 +41,7 @@
     "nComparisonsByYou_other": "{{count}} comparisons by you",
     "notYetComparedByYou": "Not yet compared by you",
     "contributionsArePublicMessage": "Your contributions about this item are currently public. Comparisons appear in the public data associated to your profile only if you tag both items as public.",
-    "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
-    "personalScore": "Personal score: {{score}}"
+    "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores."
   },
   "entityCard": {
     "thisElementIsNotAvailable": "This element is not available anymore."
@@ -1074,9 +1073,7 @@
     "title": "My rate-later list"
   },
   "recommendationsPage": {
-    "chips": {
-      "by": "by"
-    },
+    "basedOnUserPublicContributions": "Based on public contributions by <2></2>",
     "title": {
       "results": "Results",
       "personalRecommendations": "Personal recommendations",

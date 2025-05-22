@@ -44,8 +44,7 @@
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
-    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
-    "personalScore": "Score personnel\u00a0: {{score}}"
+    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics."
   },
   "entityCard": {
     "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
@@ -1084,9 +1083,7 @@
     "title": "À comparer plus tard"
   },
   "recommendationsPage": {
-    "chips": {
-      "by": "d'après"
-    },
+    "basedOnUserPublicContributions": "Selon les contributions publiques de <2></2>",
     "title": {
       "results": "Résultats",
       "personalRecommendations": "Recommandations personnelles",

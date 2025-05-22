@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Chip, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 /**
  * Display a header.
@@ -12,13 +12,9 @@ import { Box, Chip, Grid, Typography } from '@mui/material';
 const ContentHeader = ({
   title,
   subtitle,
-  chipIcon,
-  chipLabel,
 }: {
   title: string;
   subtitle?: React.ReactNode;
-  chipIcon?: React.ReactElement;
-  chipLabel?: string;
 }) => {
   return (
     <Box
@@ -50,20 +46,6 @@ const ContentHeader = ({
             {title}
           </Typography>
         </Grid>
-        {/* The <ContentHeader> component could use a list of <Chip> instead
-            of only one. */}
-        {chipLabel && (
-          <>
-            <Grid item>
-              <Chip
-                icon={chipIcon}
-                color="secondary"
-                label={chipLabel}
-                variant="outlined"
-              />
-            </Grid>
-          </>
-        )}
       </Grid>
       {subtitle && (
         <Typography

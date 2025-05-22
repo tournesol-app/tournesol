@@ -73,12 +73,24 @@ export const VideoPlayer = ({
     <ReactPlayer
       url={`https://youtube.com/watch?v=${videoId}`}
       playing
-      light
+      light={`https://i.ytimg.com/vi/${videoId}/sddefault.jpg`}
       width="100%"
       height="100%"
       wrapper={DurationWrapper}
       duration={duration}
       controls={controls}
+      config={{
+        playerVars: {
+          /*
+          Setting `playsinline=0` is intended to make the video start in fullscreen on iOS.
+          However, this doesn't always work as expected. When a user clicks the "light"
+          player thumbnail, the player attempts to autoplay the video. In some cases,
+          Safari might block this autoplay (if the player loads too slowly?), as the video
+          playback might not be recognized as a direct result of the user's click.
+          */
+          playsinline: 0,
+        },
+      }}
     />
   );
 };
