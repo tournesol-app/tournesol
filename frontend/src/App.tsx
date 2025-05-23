@@ -17,7 +17,7 @@ import Frame from './features/frame/Frame';
 import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
-import PublicRouteWrapper from './features/login/PublicRouteWrapper';
+import RouteWrapper from './features/login/RouteWrapper';
 
 import ActionsPage from './pages/actions/ActionsPage';
 import ForgotPassword from './pages/login/ForgotPassword';
@@ -91,101 +91,101 @@ function App() {
             <Route
               path="/actions"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <ActionsPage />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route path="/action" render={() => <Redirect to="/actions" />} />
             <Route
               path="/faq"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <FAQ />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/events"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <AllEvents />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/live"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <TournesolLivePage />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/talks"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <TournesolTalksPage />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             {/* About routes */}
             <Route
               path="/about/terms-of-service"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <TermsOfService />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/about/privacy_policy"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <PrivacyPolicy />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/about/trusted_domains"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <TrustedDomains />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/about/donate"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <DonatePage />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/about"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <About />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             {/* LEGAGY route used for retro-compatibility */}
             <Route
               path="/video/:video_id"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <VideoAnalysisPage />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             {/* User Management routes */}
             <Route
               path="/login"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <LoginPage />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <PrivateRoute path="/settings/profile">
@@ -203,53 +203,53 @@ function App() {
             <Route
               path="/signup"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/verify-user"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <VerifySignature verify="user" />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/verify-email"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <VerifySignature verify="email" />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/forgot"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   {isLoggedIn ? (
                     <Redirect to="/settings/account" />
                   ) : (
                     <ForgotPassword />
                   )}
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/reset-password"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <ResetPassword />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             <Route
               path="/shared-content"
               render={() => (
-                <PublicRouteWrapper>
+                <RouteWrapper>
                   <SharedContent />
-                </PublicRouteWrapper>
+                </RouteWrapper>
               )}
             />
             {/* Polls */}
