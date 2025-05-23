@@ -171,13 +171,23 @@ function App() {
               )}
             />
             {/* LEGAGY route used for retro-compatibility */}
-            <PublicRoute path="/video/:video_id">
-              <VideoAnalysisPage />
-            </PublicRoute>
+            <Route
+              path="/video/:video_id"
+              render={() => (
+                <PublicRouteWrapper>
+                  <VideoAnalysisPage />
+                </PublicRouteWrapper>
+              )}
+            />
             {/* User Management routes */}
-            <PublicRoute path="/login">
-              <LoginPage />
-            </PublicRoute>
+            <Route
+              path="/login"
+              render={() => (
+                <PublicRouteWrapper>
+                  <LoginPage />
+                </PublicRouteWrapper>
+              )}
+            />
             <PrivateRoute path="/settings/profile">
               <SettingsProfilePage />
             </PrivateRoute>
@@ -190,28 +200,58 @@ function App() {
             <PrivateRoute path="/vouching">
               <PersonalVouchersPage />
             </PrivateRoute>
-            <PublicRoute path="/signup">
-              {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
-            </PublicRoute>
-            <PublicRoute path="/verify-user">
-              <VerifySignature verify="user" />
-            </PublicRoute>
-            <PublicRoute path="/verify-email">
-              <VerifySignature verify="email" />
-            </PublicRoute>
-            <PublicRoute path="/forgot">
-              {isLoggedIn ? (
-                <Redirect to="/settings/account" />
-              ) : (
-                <ForgotPassword />
+            <Route
+              path="/signup"
+              render={() => (
+                <PublicRouteWrapper>
+                  {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
+                </PublicRouteWrapper>
               )}
-            </PublicRoute>
-            <PublicRoute path="/reset-password">
-              <ResetPassword />
-            </PublicRoute>
-            <PublicRoute path="/shared-content">
-              <SharedContent />
-            </PublicRoute>
+            />
+            <Route
+              path="/verify-user"
+              render={() => (
+                <PublicRouteWrapper>
+                  <VerifySignature verify="user" />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/verify-email"
+              render={() => (
+                <PublicRouteWrapper>
+                  <VerifySignature verify="email" />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/forgot"
+              render={() => (
+                <PublicRouteWrapper>
+                  {isLoggedIn ? (
+                    <Redirect to="/settings/account" />
+                  ) : (
+                    <ForgotPassword />
+                  )}
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/reset-password"
+              render={() => (
+                <PublicRouteWrapper>
+                  <ResetPassword />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/shared-content"
+              render={() => (
+                <PublicRouteWrapper>
+                  <SharedContent />
+                </PublicRouteWrapper>
+              )}
+            />
             {/* Polls */}
             {polls.map(({ name, path }) => (
               <PublicRoute key={name} path={path}>
