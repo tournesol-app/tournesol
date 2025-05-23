@@ -16,7 +16,6 @@ import Frame from './features/frame/Frame';
 
 import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
-import PrivateRoute from './features/login/PrivateRoute';
 import RouteWrapper from './features/login/RouteWrapper';
 
 import ActionsPage from './pages/actions/ActionsPage';
@@ -188,18 +187,38 @@ function App() {
                 </RouteWrapper>
               )}
             />
-            <PrivateRoute path="/settings/profile">
-              <SettingsProfilePage />
-            </PrivateRoute>
-            <PrivateRoute path="/settings/account">
-              <SettingsAccountPage />
-            </PrivateRoute>
-            <PrivateRoute path="/settings/preferences">
-              <SettingsPreferencesPage />
-            </PrivateRoute>
-            <PrivateRoute path="/vouching">
-              <PersonalVouchersPage />
-            </PrivateRoute>
+            <Route
+              path="/settings/profile"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <SettingsProfilePage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/settings/account"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <SettingsAccountPage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/settings/preferences"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <SettingsPreferencesPage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/vouching"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <PersonalVouchersPage />
+                </RouteWrapper>
+              )}
+            />
             <Route
               path="/signup"
               render={() => (
@@ -254,9 +273,9 @@ function App() {
             />
             {/* Polls */}
             {polls.map(({ name, path }) => (
-              <PublicRoute key={name} path={path}>
+              <Route key={name} path={path}>
                 <PollRoutes pollName={name}></PollRoutes>
-              </PublicRoute>
+              </Route>
             ))}
           </Switch>
         </Frame>
