@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Redirect, useLocation } from 'react-router-dom';
+import { Switch, Redirect, useLocation, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
@@ -16,7 +16,7 @@ import Frame from './features/frame/Frame';
 
 import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
-import PrivateRoute from './features/login/PrivateRoute';
+import RouteWrapper from './features/login/RouteWrapper';
 
 import ActionsPage from './pages/actions/ActionsPage';
 import ForgotPassword from './pages/login/ForgotPassword';
@@ -87,91 +87,195 @@ function App() {
         <ScrollToTop />
         <Frame>
           <Switch>
-            <PublicRoute path="/actions">
-              <ActionsPage />
-            </PublicRoute>
-            <PublicRoute path="/action">
-              {/*
-                https://tournesol.app/action is the URL mentionned
-                in "La Dictature des Algorithmes" (page 318)
-              */}
-              <Redirect to="/actions" />
-            </PublicRoute>
-            <PublicRoute path="/faq">
-              <FAQ />
-            </PublicRoute>
-            <PublicRoute path="/events">
-              <AllEvents />
-            </PublicRoute>
-            <PublicRoute path="/live">
-              <TournesolLivePage />
-            </PublicRoute>
-            <PublicRoute path="/talks">
-              <TournesolTalksPage />
-            </PublicRoute>
-            {/* About routes */}
-            <PublicRoute path="/about/terms-of-service">
-              <TermsOfService />
-            </PublicRoute>
-            <PublicRoute path="/about/privacy_policy">
-              <PrivacyPolicy />
-            </PublicRoute>
-            <PublicRoute path="/about/trusted_domains">
-              <TrustedDomains />
-            </PublicRoute>
-            <PublicRoute path="/about/donate">
-              <DonatePage />
-            </PublicRoute>
-            <PublicRoute path="/about">
-              <About />
-            </PublicRoute>
-            {/* LEGAGY route used for retro-compatibility */}
-            <PublicRoute path="/video/:video_id">
-              <VideoAnalysisPage />
-            </PublicRoute>
-            {/* User Management routes */}
-            <PublicRoute path="/login">
-              <LoginPage />
-            </PublicRoute>
-            <PrivateRoute path="/settings/profile">
-              <SettingsProfilePage />
-            </PrivateRoute>
-            <PrivateRoute path="/settings/account">
-              <SettingsAccountPage />
-            </PrivateRoute>
-            <PrivateRoute path="/settings/preferences">
-              <SettingsPreferencesPage />
-            </PrivateRoute>
-            <PrivateRoute path="/vouching">
-              <PersonalVouchersPage />
-            </PrivateRoute>
-            <PublicRoute path="/signup">
-              {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
-            </PublicRoute>
-            <PublicRoute path="/verify-user">
-              <VerifySignature verify="user" />
-            </PublicRoute>
-            <PublicRoute path="/verify-email">
-              <VerifySignature verify="email" />
-            </PublicRoute>
-            <PublicRoute path="/forgot">
-              {isLoggedIn ? (
-                <Redirect to="/settings/account" />
-              ) : (
-                <ForgotPassword />
+            <Route
+              path="/actions"
+              render={() => (
+                <RouteWrapper>
+                  <ActionsPage />
+                </RouteWrapper>
               )}
-            </PublicRoute>
-            <PublicRoute path="/reset-password">
-              <ResetPassword />
-            </PublicRoute>
-            <PublicRoute path="/shared-content">
-              <SharedContent />
-            </PublicRoute>
+            />
+            <Route path="/action" render={() => <Redirect to="/actions" />} />
+            <Route
+              path="/faq"
+              render={() => (
+                <RouteWrapper>
+                  <FAQ />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/events"
+              render={() => (
+                <RouteWrapper>
+                  <AllEvents />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/live"
+              render={() => (
+                <RouteWrapper>
+                  <TournesolLivePage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/talks"
+              render={() => (
+                <RouteWrapper>
+                  <TournesolTalksPage />
+                </RouteWrapper>
+              )}
+            />
+            {/* About routes */}
+            <Route
+              path="/about/terms-of-service"
+              render={() => (
+                <RouteWrapper>
+                  <TermsOfService />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/about/privacy_policy"
+              render={() => (
+                <RouteWrapper>
+                  <PrivacyPolicy />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/about/trusted_domains"
+              render={() => (
+                <RouteWrapper>
+                  <TrustedDomains />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/about/donate"
+              render={() => (
+                <RouteWrapper>
+                  <DonatePage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/about"
+              render={() => (
+                <RouteWrapper>
+                  <About />
+                </RouteWrapper>
+              )}
+            />
+            {/* LEGAGY route used for retro-compatibility */}
+            <Route
+              path="/video/:video_id"
+              render={() => (
+                <RouteWrapper>
+                  <VideoAnalysisPage />
+                </RouteWrapper>
+              )}
+            />
+            {/* User Management routes */}
+            <Route
+              path="/login"
+              render={() => (
+                <RouteWrapper>
+                  <LoginPage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/settings/profile"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <SettingsProfilePage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/settings/account"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <SettingsAccountPage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/settings/preferences"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <SettingsPreferencesPage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/vouching"
+              render={() => (
+                <RouteWrapper auth={true}>
+                  <PersonalVouchersPage />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/signup"
+              render={() => (
+                <RouteWrapper>
+                  {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/verify-user"
+              render={() => (
+                <RouteWrapper>
+                  <VerifySignature verify="user" />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/verify-email"
+              render={() => (
+                <RouteWrapper>
+                  <VerifySignature verify="email" />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/forgot"
+              render={() => (
+                <RouteWrapper>
+                  {isLoggedIn ? (
+                    <Redirect to="/settings/account" />
+                  ) : (
+                    <ForgotPassword />
+                  )}
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/reset-password"
+              render={() => (
+                <RouteWrapper>
+                  <ResetPassword />
+                </RouteWrapper>
+              )}
+            />
+            <Route
+              path="/shared-content"
+              render={() => (
+                <RouteWrapper>
+                  <SharedContent />
+                </RouteWrapper>
+              )}
+            />
             {/* Polls */}
             {polls.map(({ name, path }) => (
-              <PublicRoute key={name} path={path}>
+              <Route key={name} path={path}>
                 <PollRoutes pollName={name}></PollRoutes>
-              </PublicRoute>
+              </Route>
             ))}
           </Switch>
         </Frame>
