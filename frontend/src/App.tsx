@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Redirect, useLocation } from 'react-router-dom';
+import { Switch, Redirect, useLocation, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
@@ -17,6 +17,7 @@ import Frame from './features/frame/Frame';
 import { StatsLazyProvider } from './features/statistics/StatsContext';
 import PublicRoute from './features/login/PublicRoute';
 import PrivateRoute from './features/login/PrivateRoute';
+import PublicRouteWrapper from './features/login/PublicRouteWrapper';
 
 import ActionsPage from './pages/actions/ActionsPage';
 import ForgotPassword from './pages/login/ForgotPassword';
@@ -87,44 +88,88 @@ function App() {
         <ScrollToTop />
         <Frame>
           <Switch>
-            <PublicRoute path="/actions">
-              <ActionsPage />
-            </PublicRoute>
-            <PublicRoute path="/action">
-              {/*
-                https://tournesol.app/action is the URL mentionned
-                in "La Dictature des Algorithmes" (page 318)
-              */}
-              <Redirect to="/actions" />
-            </PublicRoute>
-            <PublicRoute path="/faq">
-              <FAQ />
-            </PublicRoute>
-            <PublicRoute path="/events">
-              <AllEvents />
-            </PublicRoute>
-            <PublicRoute path="/live">
-              <TournesolLivePage />
-            </PublicRoute>
-            <PublicRoute path="/talks">
-              <TournesolTalksPage />
-            </PublicRoute>
+            <Route
+              path="/actions"
+              render={() => (
+                <PublicRouteWrapper>
+                  <ActionsPage />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route path="/action" render={() => <Redirect to="/actions" />} />
+            <Route
+              path="/faq"
+              render={() => (
+                <PublicRouteWrapper>
+                  <FAQ />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/events"
+              render={() => (
+                <PublicRouteWrapper>
+                  <AllEvents />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/live"
+              render={() => (
+                <PublicRouteWrapper>
+                  <TournesolLivePage />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/talks"
+              render={() => (
+                <PublicRouteWrapper>
+                  <TournesolTalksPage />
+                </PublicRouteWrapper>
+              )}
+            />
             {/* About routes */}
-            <PublicRoute path="/about/terms-of-service">
-              <TermsOfService />
-            </PublicRoute>
-            <PublicRoute path="/about/privacy_policy">
-              <PrivacyPolicy />
-            </PublicRoute>
-            <PublicRoute path="/about/trusted_domains">
-              <TrustedDomains />
-            </PublicRoute>
-            <PublicRoute path="/about/donate">
-              <DonatePage />
-            </PublicRoute>
-            <PublicRoute path="/about">
-              <About />
-            </PublicRoute>
+            <Route
+              path="/about/terms-of-service"
+              render={() => (
+                <PublicRouteWrapper>
+                  <TermsOfService />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/about/privacy_policy"
+              render={() => (
+                <PublicRouteWrapper>
+                  <PrivacyPolicy />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/about/trusted_domains"
+              render={() => (
+                <PublicRouteWrapper>
+                  <TrustedDomains />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/about/donate"
+              render={() => (
+                <PublicRouteWrapper>
+                  <DonatePage />
+                </PublicRouteWrapper>
+              )}
+            />
+            <Route
+              path="/about"
+              render={() => (
+                <PublicRouteWrapper>
+                  <About />
+                </PublicRouteWrapper>
+              )}
+            />
             {/* LEGAGY route used for retro-compatibility */}
             <PublicRoute path="/video/:video_id">
               <VideoAnalysisPage />
