@@ -107,9 +107,7 @@ describe('login feature', () => {
         <MemoryRouter initialEntries={['/login']}>
           <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
             <Routes>
-              <Route path="/login">
-                <Login />
-              </Route>
+              <Route path="/login" element={<Login />} />
             </Routes>
           </SnackbarProvider>
         </MemoryRouter>
