@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { useAppSelector } from 'src/app/hooks';
 import { selectLogin } from './loginSlice';
@@ -21,11 +21,10 @@ const PrivateRoute = ({ children, ...rest }: Props) => {
         isLoggedIn(login) ? (
           children
         ) : (
-          <Redirect
-            to={{
-              pathname: '/login',
-              state: { from: location } as RedirectState,
-            }}
+          <Navigate
+            to="/login"
+            state={{ from: location } as RedirectState}
+            replace
           />
         )
       }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import { getPollName } from 'src/utils/constants';
 import { SelectablePoll } from 'src/utils/types';
 
 const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { name: currentPoll, setPollName } = useCurrentPoll();
 
@@ -35,7 +35,7 @@ const PollSelector = ({ polls }: { polls: Array<SelectablePoll> }) => {
 
   const onItemSelect = (event: React.MouseEvent<HTMLElement>) => {
     setPollName(event.currentTarget.dataset.pollName || '');
-    history.push(event.currentTarget.dataset.pollUrl || '');
+    navigate(event.currentTarget.dataset.pollUrl || '');
     onMenuClose();
   };
 

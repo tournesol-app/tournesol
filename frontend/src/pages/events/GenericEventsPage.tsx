@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, Box, Typography } from '@mui/material';
 
@@ -37,7 +37,7 @@ const GenericEventsPage = ({
 }: GenericEventsPageProps) => {
   const { t } = useTranslation();
   const { contactAdministrator } = useNotifications();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [pastEvents, setPastEvents] = useState<Array<TournesolEvent>>([]);
@@ -50,7 +50,7 @@ const GenericEventsPage = ({
 
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
   };
 
   const displayFutureEvents = offset === 0 || futureEvents.length > 0;
