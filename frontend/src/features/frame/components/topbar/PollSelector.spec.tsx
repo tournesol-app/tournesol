@@ -10,7 +10,7 @@ import {
 } from 'src/utils/constants';
 import { SelectablePoll } from 'src/utils/types';
 
-describe('change password feature', () => {
+describe('poll selector component', () => {
   const polls: Array<SelectablePoll> = [
     {
       name: PRESIDENTIELLE_2022_POLL_NAME,
@@ -43,6 +43,10 @@ describe('change password feature', () => {
         <MemoryRouter>
           <Routes>
             <Route path="/" element={<PollSelector polls={polls} />} />
+            <Route
+              path="/presidentielle2022"
+              element={<PollSelector polls={polls} />}
+            />
           </Routes>
         </MemoryRouter>
       </PollProvider>
