@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Route, Switch } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { SpyInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
@@ -64,11 +64,11 @@ describe('Preferences Page', () => {
           <reactRedux.Provider store={store}>
             <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
               <MemoryRouter initialEntries={['settings/preferences']}>
-                <Switch>
+                <Routes>
                   <Route path="settings/preferences">
                     <Preferences />
                   </Route>
-                </Switch>
+                </Routes>
               </MemoryRouter>
             </SnackbarProvider>
           </reactRedux.Provider>

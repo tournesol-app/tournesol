@@ -3,7 +3,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter } from 'react-router-dom';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import configureStore, {
   MockStoreCreator,
   MockStoreEnhanced,
@@ -106,11 +106,11 @@ describe('login feature', () => {
       <Provider store={store}>
         <MemoryRouter initialEntries={['/login']}>
           <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-            <Switch>
+            <Routes>
               <Route path="/login">
                 <Login />
               </Route>
-            </Switch>
+            </Routes>
           </SnackbarProvider>
         </MemoryRouter>
       </Provider>

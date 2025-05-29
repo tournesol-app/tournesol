@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Switch, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import { Provider } from 'react-redux';
@@ -27,10 +27,10 @@ const renderComponent = ({
       })}
     >
       <MemoryRouter initialEntries={[targetPath]}>
-        <Switch>
+        <Routes>
           <Route path="/login">{loginPage}</Route>
           <PrivateRoute path={targetPath}>{protectedPage}</PrivateRoute>
-        </Switch>
+        </Routes>
       </MemoryRouter>
     </Provider>
   );

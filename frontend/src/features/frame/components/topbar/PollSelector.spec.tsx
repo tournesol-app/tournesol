@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Route, Switch } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { HowToVote, YouTube } from '@mui/icons-material';
 import PollSelector from './PollSelector';
@@ -41,11 +41,11 @@ describe('change password feature', () => {
     render(
       <PollProvider>
         <MemoryRouter>
-          <Switch>
+          <Routes>
             <Route path="/">
               <PollSelector polls={polls} />
             </Route>
-          </Switch>
+          </Routes>
         </MemoryRouter>
       </PollProvider>
     );

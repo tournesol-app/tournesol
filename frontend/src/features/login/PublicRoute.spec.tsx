@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Switch } from 'react-router-dom';
+import { MemoryRouter, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import { Provider } from 'react-redux';
@@ -14,9 +14,9 @@ describe('Public Route component', () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={['/']}>
-          <Switch>
+          <Routes>
             <PublicRoute path="/">Public Page</PublicRoute>
-          </Switch>
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
