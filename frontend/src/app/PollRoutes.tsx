@@ -181,6 +181,7 @@ const PollRoutes = ({ pollName }: Props) => {
         );
       })}
       <Route
+        path="*"
         element={
           <RouteWrapper>
             <PageNotFound />
