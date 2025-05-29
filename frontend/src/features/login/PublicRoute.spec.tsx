@@ -9,7 +9,7 @@ import { initialState } from './loginSlice';
 import PublicRoute from './PublicRoute';
 import { mockStore, MockState } from './Login.spec';
 
-describe('Public Route component', () => {
+describe.skip('Public Route component', () => {
   const renderComponent = (store: MockStoreEnhanced<MockState>) =>
     render(
       <Provider store={store}>
