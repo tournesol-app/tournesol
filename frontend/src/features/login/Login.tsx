@@ -20,6 +20,14 @@ import { LoginState } from './LoginState.model';
 import RedirectState from './RedirectState';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
 
+const prependSlash = (path: string | undefined) => {
+  if (!path) {
+    return '/';
+  }
+
+  return path.startsWith('/') ? path : `/${path}`;
+};
+
 const Login = () => {
   const { t } = useTranslation();
   const { showErrorAlert } = useNotifications();
@@ -61,8 +69,7 @@ const Login = () => {
     if (fromUrl) {
       return <Navigate to={fromUrl} replace />;
     } else {
-      // TOFIX: redirect doesn't work when to doesn't start with /
-      return <Navigate to={baseUrl ?? '/'} replace />;
+      return <Navigate to={prependSlash(baseUrl)} replace />;
     }
   }
 
