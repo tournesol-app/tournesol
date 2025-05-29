@@ -42,9 +42,7 @@ describe('change password feature', () => {
       <PollProvider>
         <MemoryRouter>
           <Routes>
-            <Route path="/">
-              <PollSelector polls={polls} />
-            </Route>
+            <Route path="/" element={<PollSelector polls={polls} />} />
           </Routes>
         </MemoryRouter>
       </PollProvider>
