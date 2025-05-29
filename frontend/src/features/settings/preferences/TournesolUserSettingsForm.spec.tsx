@@ -106,11 +106,12 @@ describe('GenericPollUserSettingsForm', () => {
         render(
           <reactRedux.Provider store={store}>
             <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-              <MemoryRouter initialEntries={['settings/preferences']}>
+              <MemoryRouter initialEntries={['/settings/preferences']}>
                 <Routes>
-                  <Route path="settings/preferences">
-                    <TournesolUserSettingsForm />
-                  </Route>
+                  <Route
+                    path="/settings/preferences"
+                    element={<TournesolUserSettingsForm />}
+                  />
                 </Routes>
               </MemoryRouter>
             </SnackbarProvider>

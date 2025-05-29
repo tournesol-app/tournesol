@@ -133,7 +133,7 @@ const EntityAnalysisPage = () => {
     if (!isLoggedIn) {
       return false;
     }
-    const videoId = extractVideoId(uid);
+    const videoId = extractVideoId(uid ?? '');
     if (!videoId) {
       return false;
     }
@@ -156,7 +156,7 @@ const EntityAnalysisPage = () => {
     async function getEntityWithPollStats(): Promise<Recommendation> {
       const entity = await PollsService.pollsEntitiesRetrieve({
         name: pollName,
-        uid,
+        uid: uid || '',
       });
       return entity;
     }

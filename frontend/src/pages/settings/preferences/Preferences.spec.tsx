@@ -63,11 +63,12 @@ describe('Preferences Page', () => {
         render(
           <reactRedux.Provider store={store}>
             <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-              <MemoryRouter initialEntries={['settings/preferences']}>
+              <MemoryRouter initialEntries={['/settings/preferences']}>
                 <Routes>
-                  <Route path="settings/preferences">
-                    <Preferences />
-                  </Route>
+                  <Route
+                    path="/settings/preferences"
+                    element={<Preferences />}
+                  />
                 </Routes>
               </MemoryRouter>
             </SnackbarProvider>
