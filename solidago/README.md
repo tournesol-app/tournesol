@@ -10,10 +10,12 @@ A toolbox for **Solid** **A**lgorithmic **Go**vernance, used by the Tournesol pl
 
 ---
 
-## Tests
+## Development
+
+### Tests
 
 To run tests, setup a virtual environment, activate it, install dependencies and run pytest.
-```
+```sh
 python3 -m venv devenv
 source devenv/bin/activate
 pip install -e .[test]
@@ -21,6 +23,23 @@ pytest
 ```
 Depending on the platform, you may need to replace ```source devenv/bin/activate``` by another call.
 See the [venv doc](https://docs.python.org/3/library/venv.html#how-venvs-work) for more information.
+
+### Docs
+
+The documentation website (deployed to https://solidago.tournesol.app) is built using [MkDocs](https://www.mkdocs.org/) and [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
+
+To build the documentation locally:
+
+1. Install the "docs" dependencies in your virtual environment
+```sh
+pip install -e .[docs]
+```
+
+2. Start the MkDocs development server
+```sh
+mkdocs serve -a localhost:9000
+```
+Find more options on https://www.mkdocs.org/user-guide/cli/
 
 
 ## Synthetic experiments
