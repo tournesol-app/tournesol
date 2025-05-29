@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useHistory, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 
 import { Box, Button, Divider } from '@mui/material';
 
@@ -60,7 +60,7 @@ const VideoRatingsPage = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const searchParams = new URLSearchParams(location.search);
   const limit = 20;
@@ -69,7 +69,7 @@ const VideoRatingsPage = () => {
 
   const handleOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
     scrollToTop();
   };
 
@@ -102,7 +102,7 @@ const VideoRatingsPage = () => {
     if (hasFilter) {
       // A filter had been selected. Let's reset the filter to reload the list.
       searchParams.delete('isPublic');
-      history.push({ search: searchParams.toString() });
+      navigate({ search: searchParams.toString() });
     } else {
       // No filter is selected. Let's simply refresh the list.
       loadData();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 
 import { Box, Button, Typography } from '@mui/material';
@@ -17,7 +17,7 @@ function ComparisonsPage() {
     (l: Comparison[] | undefined) => void
   ] = useState();
   const [comparisonCount, setComparisonCount] = useState(0);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
@@ -26,7 +26,7 @@ function ComparisonsPage() {
 
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
   }
 
   useEffect(() => {

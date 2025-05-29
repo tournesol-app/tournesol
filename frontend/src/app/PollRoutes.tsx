@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { Box, CircularProgress } from '@mui/material';
 
@@ -27,9 +27,6 @@ interface Props {
 }
 
 const PollRoutes = ({ pollName }: Props) => {
-  const { path } = useRouteMatch();
-  const basePath = path.replace(/\/+$/g, '');
-
   const {
     setPollName,
     name: currentPollName,
@@ -166,7 +163,7 @@ const PollRoutes = ({ pollName }: Props) => {
   }
 
   return (
-    <Switch>
+    <Routes>
       {routes.map((route) => {
         if (disabledItems.includes(route.id)) {
           return;
@@ -174,24 +171,23 @@ const PollRoutes = ({ pollName }: Props) => {
         return (
           <Route
             key={route.id}
-            path={`${basePath}/${route.url}`}
-            exact
-            render={() => (
+            path={route.url}
+            element={
               <RouteWrapper auth={route.auth}>
                 <route.page />
               </RouteWrapper>
-            )}
+            }
           />
         );
       })}
       <Route
-        render={() => (
+        element={
           <RouteWrapper>
             <PageNotFound />
           </RouteWrapper>
-        )}
+        }
       ></Route>
-    </Switch>
+    </Routes>
   );
 };
 

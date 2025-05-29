@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Redirect, useLocation, Route } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
@@ -15,7 +15,6 @@ import PersonalVouchersPage from './pages/personal/vouchers/VouchersPage';
 import Frame from './features/frame/Frame';
 
 import { StatsLazyProvider } from './features/statistics/StatsContext';
-import PublicRoute from './features/login/PublicRoute';
 import RouteWrapper from './features/login/RouteWrapper';
 
 import ActionsPage from './pages/actions/ActionsPage';
@@ -68,6 +67,10 @@ const ScrollToTop = () => {
   return null;
 };
 
+const buildParentRoutePath = (path: string) => {
+  return path.endsWith('/') ? `${path}*` : `${path}/*`;
+};
+
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
@@ -86,198 +89,203 @@ function App() {
       <StatsLazyProvider>
         <ScrollToTop />
         <Frame>
-          <Switch>
+          <Routes>
             <Route
               path="/actions"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <ActionsPage />
                 </RouteWrapper>
-              )}
+              }
             />
-            <Route path="/action" render={() => <Redirect to="/actions" />} />
+            <Route
+              path="/action"
+              element={<Navigate to="/actions" replace />}
+            />
             <Route
               path="/faq"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <FAQ />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/events"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <AllEvents />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/live"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <TournesolLivePage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/talks"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <TournesolTalksPage />
                 </RouteWrapper>
-              )}
+              }
             />
             {/* About routes */}
             <Route
               path="/about/terms-of-service"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <TermsOfService />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/about/privacy_policy"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <PrivacyPolicy />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/about/trusted_domains"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <TrustedDomains />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/about/donate"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <DonatePage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/about"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <About />
                 </RouteWrapper>
-              )}
+              }
             />
             {/* LEGAGY route used for retro-compatibility */}
             <Route
               path="/video/:video_id"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <VideoAnalysisPage />
                 </RouteWrapper>
-              )}
+              }
             />
             {/* User Management routes */}
             <Route
               path="/login"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <LoginPage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/settings/profile"
-              render={() => (
+              element={
                 <RouteWrapper auth={true}>
                   <SettingsProfilePage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/settings/account"
-              render={() => (
+              element={
                 <RouteWrapper auth={true}>
                   <SettingsAccountPage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/settings/preferences"
-              render={() => (
+              element={
                 <RouteWrapper auth={true}>
                   <SettingsPreferencesPage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/vouching"
-              render={() => (
+              element={
                 <RouteWrapper auth={true}>
                   <PersonalVouchersPage />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/signup"
-              render={() => (
+              element={
                 <RouteWrapper>
-                  {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
+                  {isLoggedIn ? <Navigate to="/" replace /> : <SignupPage />}
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/verify-user"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <VerifySignature verify="user" />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/verify-email"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <VerifySignature verify="email" />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/forgot"
-              render={() => (
+              element={
                 <RouteWrapper>
                   {isLoggedIn ? (
-                    <Redirect to="/settings/account" />
+                    <Navigate to="/settings/account" replace />
                   ) : (
                     <ForgotPassword />
                   )}
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/reset-password"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <ResetPassword />
                 </RouteWrapper>
-              )}
+              }
             />
             <Route
               path="/shared-content"
-              render={() => (
+              element={
                 <RouteWrapper>
                   <SharedContent />
                 </RouteWrapper>
-              )}
+              }
             />
             {/* Polls */}
             {polls.map(({ name, path }) => (
-              <Route key={name} path={path}>
-                <PollRoutes pollName={name}></PollRoutes>
-              </Route>
+              <Route
+                key={name}
+                path={buildParentRoutePath(path)}
+                element={<PollRoutes pollName={name}></PollRoutes>}
+              />
             ))}
-          </Switch>
+          </Routes>
         </Frame>
       </StatsLazyProvider>
     </PollProvider>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useLocation, Redirect } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -59,9 +59,10 @@ const Login = () => {
 
   if (validToken) {
     if (fromUrl) {
-      return <Redirect to={fromUrl} />;
+      return <Navigate to={fromUrl} replace />;
     } else {
-      return <Redirect to={baseUrl ?? '/'} />;
+      // TOFIX: redirect doesn't work when to doesn't start with /
+      return <Navigate to={baseUrl ?? '/'} replace />;
     }
   }
 
