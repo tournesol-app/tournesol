@@ -1,54 +1,20 @@
 # solidago [![pypi](https://img.shields.io/pypi/v/solidago.svg?color=%2334D058)](https://pypi.python.org/pypi/solidago) [![license](https://img.shields.io/pypi/l/solidago)](https://github.com/tournesol-app/tournesol/blob/main/solidago/README.md#copyright--license)
 
-A toolbox for **Soli**d **A**lgorithmic **Go**vernance, used by the [Tournesol](https://tournesol.app) platform.
+**Solidago** is a [free](https://github.com/tournesol-app/tournesol/blob/main/solidago/README.md#copyright--license) 
+and [open-source](https://github.com/tournesol-app/tournesol/tree/main/solidago)
+[python library](https://pypi.python.org/pypi/solidago)
+for **Solid** **A**lgorithmic **Go**vernance,
+which proposes algorithms to learn, generalize, aggregate, analyze and visualize human preferences
+based on [state-of-the-art research](https://tournesol.app#research).
 
-{{ version }}
+This documentation has three main sections:
+[Tutorials](tutorials/index.md) | 
+[Understanding](understanding/index.md) |
+[API Reference](api/index.md)
 
+![Solidago flower](solidago.jpg "Solidago is also the name of a flower, commonly known as goldenrod. From Pixabay.")
 
-## Usage
-
-```py title="Pipeline Usage"
-import logging
-from solidago.pipeline import Pipeline
-from solidago.pipeline.inputs import TournesolDataset
-from solidago.pipeline.outputs import PipelineOutputInMemory
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-
-# Initialize pipeline with its input and output
-tournesol_dataset = TournesolDataset.download()
-pipeline = Pipeline()
-output = PipelineOutputInMemory()
-
-# Run pipeline
-pipeline.run(
-    input=tournesol_dataset,
-    output=output,
-    criterion="largely_recommended",
-)
-
-# Access results
-print(output.individual_scores)
-print(output.entity_scores)
-```
-
-## Installation
-
-**`solidago`** requires **Python >= 3.9**
-
-### From PyPI
-
-Using `pip`:
-
-```bash
-pip install solidago
-```
-
-### From source
-
-To install `solidago` from branch "main":
-
-```bash
-pip install "git+https://github.com/tournesol-app/tournesol.git@main#egg=solidago&subdirectory=solidago"
-```
+**Solidago** is used by the [Tournesol](https://tournesol.app) platform.
+It is developed by a consortium composed of 
+the [Tournesol Association](https://tournesol.app/about), 
+[Calicarpa](https://www.calicarpa.com) and [Kleis Technology](https://kleis.ch).
