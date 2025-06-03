@@ -87,28 +87,70 @@ Thus, overall, **Solidago** aims to construct a map
 $\texttt{Ballots} \mapsto (\texttt{UserModels}, \texttt{GlobalModel})$,
 though more information may be used in inputs,
 and more information may be returned in outputs.
+
+## Modules
+
 In practice, **Solidago** proposes a modular construction of such a map,
 which allows a more careful analysis of the properties of the map,
 as well as improvements of each module separately.
 Below, we further briefly discuss some of the key modules.
 
-## Preference learning
+### Preference learning
 
 User evaluations may be assumed to be noisy.
-In practice, inconsistencies are even observed in the Tournesol dataset,
+In practice, inconsistencies have been observed in the Tournesol dataset,
 with users favoring $e$ over $f$, $f$ over $g$ and $g$ over $e$.
 Moreover, it could be desirable to *generalize* a user's judgment to non-evaluated entities.
 Typically, if we strongly assume entity $f$ to resemble entity $e$ (e.g. because of metadata),
 and if the user's ballot clearly shows strong preferences for $e$,
 then it could be reasonable to assume that they probably regard $f$ favorably too.
+Finally, score uncertainties must be evaluated.
 
-## Preference scaling
+To account for all the considerations above,
+**Solidago** defines a ```preference_learning``` module,
+which maps a user $u$'s $\texttt{Ballots}_u$ 
+to a learned scoring model $\texttt{UserModels}_u$.
+We refer to the [preference learning section](../preference_learning/index.md) of this documentation 
+for a detailed explanation of the proposed preference learning algorithms of **Solidago**.
 
+### Preference scaling
 
-## Preference aggregattion
+One classical challenge for cardinal scores as provided by scoring models
+is that two different users' scoring models may be scaled very differently.
+Typically, the Von Neumann-Morgenstern axioms suggest 
+that scoring models should be thought as being defined up to a positive affine translation,
+that is, for any $\alpha > 0$ and $\beta \in \mathbb R$,
+the scoring models $s$ and $\alpha s + \beta$ should be regarded as describing
+the same underlying preferences.
 
+Preference scaling is then the problem of selecting a positive affine translation for each user,
+so that scaled user models become "on the same scale", 
+to then allow for more meaningful preference aggregation.
+Note that some preference aggregation modules may not require preference scaling,
+e.g. if they are ranking-based (or "ordinal", as is said in the literature).
+Solutions are provided in the ```scaling``` module.
+We refer to the [scaling section](../scaling/index.md) of the documentation for more information.
 
-## Trust and voting rights
+### Preference aggregation
 
+An important goal of **Solidago** is to aggregate the preferences of a community of users.
+This precise step is the task of the ```aggregation``` module.
+We refer to the [aggregation section](../aggregation/index.md) of the documentation for more information.
 
-## User and entity clustering
+### Trust and voting rights
+
+An important practical consideration of any poll is to carefully define the set of surveyed users.
+While it may be satisfactory to allow any web account creator to participate in some low-stake settings,
+we highly encourage to carefully consider trust and voting rights assignment mechanisms 
+in settings where adversarial behaviors cannot be ruled out.
+Trust and voting rights management solutions are provided in the ```trust_propagation``` 
+and ```voting_rights``` modules.
+We refer to the [trust section](../trust/index.md) of the documentation for more information.
+
+### User and entity clustering
+
+Further analyses of the users' ballots are useful in practice,
+such as a mapping of the users as proposed by the [Polis](https://pol.is) platform,
+or of the entities.
+We refer to the [clustering section](../clustering/index.md) of the documentation
+for more information.
