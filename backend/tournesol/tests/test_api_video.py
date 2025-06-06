@@ -206,10 +206,10 @@ class VideoApi(TestCase):
         self.assertEqual(video.metadata["duration"], 1263)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
-    def test_authenticated_can_create_with_yt_no_statistics(self, mock_youtube):
+    def test_authenticated_can_create_with_yt_fields_missing(self, mock_youtube):
         """
         An authenticated user can add a new video, even if the YouTube API
-        does not return its statistics.
+        does not return its statistics or its duration.
         """
         mock_youtube.return_value = {
             "items": [
@@ -219,7 +219,6 @@ class VideoApi(TestCase):
                         "contentRating": {},
                         "definition": "hd",
                         "dimension": "2d",
-                        "duration": "PT21M3S",
                         "licensedContent": True,
                         "projection": "rectangular",
                     },
@@ -265,6 +264,7 @@ class VideoApi(TestCase):
         video = Entity.get_from_video_id(video_id=new_video_id)
         self.assertEqual(response.json()["name"], "Entity title")
         self.assertEqual(video.metadata["views"], None)
+        self.assertEqual(video.metadata["duration"], None)
 
     @patch("tournesol.utils.api_youtube.get_youtube_video_details")
     def test_authenticated_cant_create_with_yt_no_result(self, mock_youtube):
