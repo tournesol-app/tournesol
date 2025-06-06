@@ -42,6 +42,7 @@ def get_youtube_video_details(video_id):
             "YouTube client not initialized, did you provide an API key?"
         )
 
+    logger.info("Fetching YouTube metadata for video_id '%s'", video_id)
     request = youtube.videos().list(part="snippet,contentDetails,statistics,status", id=video_id)
     return request.execute()
 
@@ -52,7 +53,11 @@ def get_video_metadata(video_id, compute_language=True):
     except YoutubeNotConfiguredError:
         return {}
     except Exception:  # pylint: disable=broad-except
-        logger.error("Failed to retrieve video metadata from Youtube", exc_info=True)
+        logger.error(
+            "Failed to retrieve video metadata from Youtube for video_id '%s'",
+            video_id,
+            exc_info=True,
+        )
         return {}
 
     yt_items = yt_response.get("items", [])
@@ -73,7 +78,14 @@ def get_video_metadata(video_id, compute_language=True):
         language = None
     #  if video has no tags, the field doesn't appear on response
     tags = yt_info["snippet"].get("tags", [])
-    duration = parse_duration(yt_info["contentDetails"]["duration"])
+
+    raw_duration = yt_info["contentDetails"].get("duration")
+    if raw_duration is None:
+        logger.warning("Video duration not found in metadata: %s", yt_info)
+        duration = None
+    else:
+        duration = parse_duration(yt_info["contentDetails"]["duration"])
+
     is_unlisted = yt_info["status"].get("privacyStatus") == "unlisted"
     return {
         "source": "youtube",
