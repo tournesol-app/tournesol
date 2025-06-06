@@ -71,7 +71,6 @@ def get_video_metadata(video_id, compute_language=True):
     # we could truncate description to spare some space
     description = str(yt_info["snippet"]["description"])
     uploader = yt_info["snippet"]["channelTitle"]
-    channel_id = yt_info["snippet"]["channelId"]
     if compute_language:
         language = compute_video_language(uploader, title, description)
     else:
@@ -86,7 +85,6 @@ def get_video_metadata(video_id, compute_language=True):
     else:
         duration = parse_duration(yt_info["contentDetails"]["duration"])
 
-    is_unlisted = yt_info["status"].get("privacyStatus") == "unlisted"
     return {
         "source": "youtube",
         "name": title,
@@ -94,9 +92,9 @@ def get_video_metadata(video_id, compute_language=True):
         "publication_date": published_date,
         "views": nb_views,
         "uploader": uploader,
-        "channel_id": channel_id,
+        "channel_id": yt_info["snippet"]["channelId"],
         "language": language,
         "tags": tags,
         "duration": int(duration.total_seconds()) if duration else None,
-        "is_unlisted": is_unlisted,
+        "is_unlisted": yt_info["status"].get("privacyStatus") == "unlisted",
     }
