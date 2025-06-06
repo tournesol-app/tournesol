@@ -83,7 +83,7 @@ def get_video_metadata(video_id, compute_language=True):
         logger.warning("Video duration not found in metadata: %s", yt_info)
         duration = None
     else:
-        duration = parse_duration(yt_info["contentDetails"]["duration"])
+        duration = parse_duration(raw_duration)
 
     return {
         "source": "youtube",
