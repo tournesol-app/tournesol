@@ -20,6 +20,7 @@ import {
   ContributorRecommendations,
 } from 'src/services/openapi';
 import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
+import { absolutePollBasePath } from 'src/utils/navigation';
 
 interface Props {
   comparisonsNbr: number;
@@ -82,7 +83,9 @@ const StackedCandidatesPaper = ({
         return (
           <ListItem key={entity.uid} alignItems="flex-start">
             <ListItemAvatar>
-              <InternalLink to={`${baseUrl}/entities/${entity.uid}`}>
+              <InternalLink
+                to={`${absolutePollBasePath(baseUrl)}/entities/${entity.uid}`}
+              >
                 <Avatar
                   alt={entity?.metadata?.name || ''}
                   src={entity?.metadata?.image_url || ''}
