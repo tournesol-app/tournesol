@@ -36,7 +36,7 @@ export const useListFilter = ({
         searchParams.delete('offset');
       }
 
-      navigate({ search: searchParams.toString() }, { replace: true });
+      navigate({ search: searchParams.toString() });
     }
   };
 

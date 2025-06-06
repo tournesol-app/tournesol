@@ -98,6 +98,10 @@ function App() {
                 </RouteWrapper>
               }
             />
+            {/*
+              https://tournesol.app/action is the URL mentionned
+              in "La Dictature des Algorithmes" (page 318)
+            */}
             <Route
               path="/action"
               element={<Navigate to="/actions" replace />}
