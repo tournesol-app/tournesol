@@ -8,12 +8,18 @@ onlyOn("headed", () => {
       defaultCommandTimeout: 16000,
     },
     () => {
-      // Accept the cookies.
+      // Close consent modal
       const consent = () => {
-        cy.get("body #dialog")
-          .then((dialog) => dialog.find("#content button"))
-          .first()
-          .click()
+        cy.get("body")
+          .then(body => body.find("#dialog").length > 0)
+          .then((has_dialog: boolean) => {
+            if (!has_dialog) {
+              return
+            }
+            cy.get("body #dialog #content button")
+              .first()
+              .click()
+          })
       };
 
       beforeEach(() => {
@@ -45,7 +51,7 @@ onlyOn("headed", () => {
         it("shows Tournesol search results when the search is on", () => {
           cy.visit(`https://www.youtube.com/results?search_query=${searchQuery}&tournesolSearch=1`);
           consent();
-          cy.contains("Recommended by Tournesol", {timeout: 20000});
+          cy.contains("Recommended by Tournesol", { timeout: 20000 });
         });
 
         it("doesn't show Tournesol search results when the search is off", () => {
@@ -63,7 +69,7 @@ onlyOn("headed", () => {
           // Dismiss YouTube ad if present.
           cy.get("body").then(($body) => {
             if ($body.find("button:contains('Dismiss')").length > 0) {
-              cy.contains('button', 'Dismiss', {matchCase: false}).click();
+              cy.contains('button', 'Dismiss', { matchCase: false }).click();
             }
             cy.contains("button", "Rate Later", { matchCase: false }).should(
               "be.visible", { timeout: 20000 }
