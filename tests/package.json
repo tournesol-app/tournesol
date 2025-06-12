@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "devDependencies": {
     "@cypress/skip-test": "^2.6.1",
-    "cypress": "^14"
+    "cypress": "^14",
+    "typescript": "^5"
   }
 }
