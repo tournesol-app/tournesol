@@ -10,11 +10,10 @@ onlyOn("headed", () => {
     () => {
       // Accept the cookies.
       const consent = () => {
-        cy.get("body").then(($body) => {
-          if ($body.find("#dialog").length) {
-            cy.get("#dialog button").last().click();
-          }
-        });
+        cy.get("body #dialog")
+          .then((dialog) => dialog.find("#content button"))
+          .first()
+          .click()
       };
 
       beforeEach(() => {
