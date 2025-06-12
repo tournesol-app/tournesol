@@ -24,6 +24,7 @@ module.exports = (on, config) => {
 
   on('before:browser:launch', (browser, launchOptions) => {
     launchOptions.extensions.push(path.join(__dirname, '../../../browser-extension/src'));
+    launchOptions.env.LANGUAGE = "en"
     return launchOptions
   })
 }
