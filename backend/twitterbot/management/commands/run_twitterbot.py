@@ -44,7 +44,7 @@ class Command(BaseCommand):
             for video in videos:
                 print(
                     video.metadata["video_id"],
-                    f"{video.tournesol_score:5.2f}",
+                    f"{video.single_poll_rating.tournesol_score:5.2f}",
                     video.metadata["uploader"],
                     video.metadata["name"],
                     sep=" - ",
