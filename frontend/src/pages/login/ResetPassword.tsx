@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Grid, Button } from '@mui/material';
 import {
   AccountsService,
@@ -13,7 +13,7 @@ import useLastPoll from 'src/hooks/useLastPoll';
 function ResetPassword() {
   useLastPoll();
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const searchParams = useSearchParams();
   const { showErrorAlert, showSuccessAlert } = useNotifications();
   const [formError, setFormError] = useState<Record<string, string[]>>({});
@@ -39,7 +39,7 @@ function ResetPassword() {
       });
       logout();
       showSuccessAlert(t('reset.passwordModifiedSuccessfully'));
-      history.replace('/login');
+      navigate('/login', { replace: true });
     } catch (err) {
       if (err?.status !== 400) {
         showErrorAlert(err?.message || 'Server error');
