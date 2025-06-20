@@ -78,7 +78,7 @@ describe('RouteWrapper - public route', () => {
     const store = mockStore({
       token: { ...initialState, refresh_token: 'dummy_refresh_token' },
     });
-    const { getByText } = renderComponent(store);
+    renderComponent(store);
     expect(screen.getByText('Public page')).toBeVisible();
     await waitFor(() =>
       expect(store.getActions()).toMatchObject(token_refresh_expected_actions)

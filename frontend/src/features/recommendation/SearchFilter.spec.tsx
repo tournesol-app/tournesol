@@ -17,12 +17,7 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  MemoryRouter,
-  Router,
-  RouterProvider,
-  createMemoryRouter,
-} from 'react-router-dom';
+import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
