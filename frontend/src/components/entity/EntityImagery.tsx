@@ -6,6 +6,7 @@ import { Avatar, Box, useTheme } from '@mui/material';
 import { InternalLink } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
+import { absolutePollBasePath } from 'src/utils/navigation';
 import { JSONValue, EntityObject } from 'src/utils/types';
 import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
 
@@ -176,7 +177,9 @@ const EntityImagery = ({
         {compact ? (
           <img src={entity.metadata.image_url} alt={entity.metadata.name} />
         ) : (
-          <InternalLink to={`${baseUrl}/entities/${entity.uid}`}>
+          <InternalLink
+            to={`${absolutePollBasePath(baseUrl)}/entities/${entity.uid}`}
+          >
             <Avatar
               alt={entity?.metadata?.name || ''}
               src={entity?.metadata?.image_url || ''}

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
 
@@ -28,7 +28,7 @@ const FeedForYou = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
@@ -55,7 +55,7 @@ const FeedForYou = () => {
 
   const onOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
   };
 
   useEffect(() => {

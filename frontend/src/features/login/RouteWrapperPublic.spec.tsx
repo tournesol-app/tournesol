@@ -1,39 +1,43 @@
 import React from 'react';
-import { MemoryRouter, Switch } from 'react-router-dom';
-import { render } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 
 import { initialState } from './loginSlice';
-import PublicRoute from './PublicRoute';
 import { mockStore, MockState } from './Login.spec';
+import RouteWrapper from './RouteWrapper';
 
-describe('Public Route component', () => {
+describe('RouteWrapper - public route', () => {
   const renderComponent = (store: MockStoreEnhanced<MockState>) =>
     render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={['/']}>
-          <Switch>
-            <PublicRoute path="/">Public Page</PublicRoute>
-          </Switch>
+        <MemoryRouter initialEntries={['/public']}>
+          <Routes>
+            <Route
+              path="/public"
+              element={<RouteWrapper>Public page</RouteWrapper>}
+            />
+          </Routes>
         </MemoryRouter>
       </Provider>
     );
 
-  it('should render the page when not logged in', async () => {
-    const { getByText } = renderComponent(
+  it('should render the page for anonymous users', async () => {
+    renderComponent(
       mockStore({
         token: initialState,
       })
     );
-    await waitFor(() => getByText('Public Page'));
+
+    expect(screen.getByText('Public page')).toBeVisible();
   });
 
   const anHourLater = new Date(new Date().getTime() + 3600000);
-  const fiveMinutesLater = new Date(new Date().getTime() + 300000);
+  const tenMinutesLater = new Date(new Date().getTime() + 600000);
 
-  it('should render the page when logged in', async () => {
+  it('should render the page for authenticated users', async () => {
     const store = mockStore({
       token: {
         ...initialState,
@@ -41,8 +45,8 @@ describe('Public Route component', () => {
         access_token_expiration_date: anHourLater.toString(),
       },
     });
-    const { getByText } = renderComponent(store);
-    await waitFor(() => getByText('Public Page'));
+    renderComponent(store);
+    expect(screen.getByText('Public page')).toBeVisible();
   });
 
   const token_refresh_expected_actions = [
@@ -74,8 +78,8 @@ describe('Public Route component', () => {
     const store = mockStore({
       token: { ...initialState, refresh_token: 'dummy_refresh_token' },
     });
-    const { getByText } = renderComponent(store);
-    await waitFor(() => getByText('Public Page'));
+    renderComponent(store);
+    expect(screen.getByText('Public page')).toBeVisible();
     await waitFor(() =>
       expect(store.getActions()).toMatchObject(token_refresh_expected_actions)
     );
@@ -90,22 +94,22 @@ describe('Public Route component', () => {
         access_token_expiration_date: anHourLater.toString(),
       },
     });
-    const { getByText } = renderComponent(store);
-    await waitFor(() => getByText('Public Page'));
+    renderComponent(store);
+    expect(screen.getByText('Public page')).toBeVisible();
     await waitFor(() => expect(store.getActions()).toMatchObject([]));
   });
 
-  it('should refresh the login if it expires in 5 minutes', async () => {
+  it('should refresh the login if it expires in 10 minutes', async () => {
     const store = mockStore({
       token: {
         ...initialState,
         refresh_token: 'dummy_refresh_token',
         access_token: 'dummy_token',
-        access_token_expiration_date: fiveMinutesLater.toString(),
+        access_token_expiration_date: tenMinutesLater.toString(),
       },
     });
-    const { getByText } = renderComponent(store);
-    await waitFor(() => getByText('Public Page'));
+    renderComponent(store);
+    expect(screen.getByText('Public page')).toBeVisible();
     await waitFor(() =>
       expect(store.getActions()).toMatchObject(token_refresh_expected_actions)
     );
