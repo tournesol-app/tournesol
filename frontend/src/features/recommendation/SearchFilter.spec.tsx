@@ -154,11 +154,11 @@ describe('Filters feature', () => {
   function selectLanguage({
     language,
     action = 'add',
-    expectInUrl,
+    expectInLocalStorage,
   }: {
     language: string;
     action: 'add' | 'remove';
-    expectInUrl: string;
+    expectInLocalStorage: string;
   }) {
     const languageFilter = queryByTestId(document, 'search-language-filter');
     const autocomplete = queryByTestId(languageFilter, 'autocomplete');
@@ -180,7 +180,7 @@ describe('Filters feature', () => {
       fireEvent.click(removeButton);
     }
 
-    expect(localStorage.getItem('languages')).toEqual(expectInUrl);
+    expect(localStorage.getItem('languages')).toEqual(expectInLocalStorage);
   }
 
   it('Can open and close the filters menu', async () => {
@@ -208,19 +208,19 @@ describe('Filters feature', () => {
     const { router } = await renderSearchFilters(true);
     clickOnShowMore();
 
-    clickOnDateCheckbox({ checkbox: 'Week', expectInUrl: 'Week' });
+    clickOnDateCheckbox({ checkbox: 'Week' });
     expect(router.state.location.search).toEqual('?date=Week');
-    clickOnDateCheckbox({ checkbox: 'Month', expectInUrl: 'Month' });
+    clickOnDateCheckbox({ checkbox: 'Month' });
     expect(router.state.location.search).toEqual('?date=Month');
-    clickOnDateCheckbox({ checkbox: 'Today', expectInUrl: 'Today' });
+    clickOnDateCheckbox({ checkbox: 'Today' });
     expect(router.state.location.search).toEqual('?date=Today');
-    clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: 'Year' });
+    clickOnDateCheckbox({ checkbox: 'Year' });
     expect(router.state.location.search).toEqual('?date=Year');
 
     // A second click on "This year" should not change the URL
-    clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: 'Year' });
+    clickOnDateCheckbox({ checkbox: 'Year' });
     expect(router.state.location.search).toEqual('?date=Year');
-    clickOnDateCheckbox({ checkbox: '', expectInUrl: '' });
+    clickOnDateCheckbox({ checkbox: '' });
     expect(router.state.location.search).toEqual('?date=');
   });
 
@@ -229,13 +229,16 @@ describe('Filters feature', () => {
     clickOnShowMore();
 
     // Adding new languages
-    selectLanguage({ language: 'language.en', expectInUrl: 'en' });
+    selectLanguage({ language: 'language.en', expectInLocalStorage: 'en' });
     expect(router.state.location.search).toEqual('?language=en');
-    selectLanguage({ language: 'language.fr', expectInUrl: 'en,fr' });
+    selectLanguage({ language: 'language.fr', expectInLocalStorage: 'en,fr' });
     expect(router.state.location.search).toEqual(
       `?language=${encodeURIComponent('en,fr')}`
     );
-    selectLanguage({ language: 'language.de', expectInUrl: 'en,fr,de' });
+    selectLanguage({
+      language: 'language.de',
+      expectInLocalStorage: 'en,fr,de',
+    });
     expect(router.state.location.search).toEqual(
       `?language=${encodeURIComponent('en,fr,de')}`
     );
@@ -244,7 +247,7 @@ describe('Filters feature', () => {
     selectLanguage({
       action: 'remove',
       language: 'language.fr',
-      expectInUrl: 'en,de',
+      expectInLocalStorage: 'en,de',
     });
     expect(router.state.location.search).toEqual(
       `?language=${encodeURIComponent('en,de')}`
@@ -252,7 +255,7 @@ describe('Filters feature', () => {
     selectLanguage({
       action: 'remove',
       language: 'language.en',
-      expectInUrl: 'de',
+      expectInLocalStorage: 'de',
     });
     expect(router.state.location.search).toEqual(
       `?language=${encodeURIComponent('de')}`
@@ -260,7 +263,7 @@ describe('Filters feature', () => {
     selectLanguage({
       action: 'remove',
       language: 'language.de',
-      expectInUrl: '',
+      expectInLocalStorage: '',
     });
     expect(router.state.location.search).toEqual(`?language=`);
   });
