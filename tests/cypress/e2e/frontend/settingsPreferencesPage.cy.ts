@@ -388,8 +388,7 @@ describe('Settings - preferences page', () => {
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
 
-              cy.contains('test_exclude_false').click();
-              cy.get('[data-testid="settings-preferences"]').click();
+              cy.visit('/settings/preferences');
               cy.wait('@settingsRetrievedFromAPI');
 
               // Change an additional setting to bypass the cache in /feed/foryou.
@@ -438,8 +437,7 @@ describe('Settings - preferences page', () => {
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
 
-              cy.contains('test_exclude_true').click();
-              cy.get('[data-testid="settings-preferences"]').click();
+              cy.visit('/settings/preferences');
               cy.wait('@settingsRetrievedFromAPI');
 
               // Change an additional setting to bypass the cache in /feed/foryou.
