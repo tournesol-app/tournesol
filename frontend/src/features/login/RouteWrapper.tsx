@@ -25,7 +25,7 @@ const RouteWrapper = ({
 }) => {
   const dispatch = useAppDispatch();
   const login = useAppSelector(selectLogin);
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
     const should_refresh =
@@ -43,7 +43,7 @@ const RouteWrapper = ({
   }, [login, dispatch]);
 
   if (auth && !isLoggedIn(login)) {
-    return <Navigate to="/login" state={{ from: pathname }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
