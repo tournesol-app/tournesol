@@ -1,15 +1,18 @@
 import pytest
 
-from solidago import *
+from solidago import Sequential, State
 from solidago.modules.trust_propagation import LipschiTrust, TrustAll
+# from solidago.state import Users, Vouches
+from solidago.primitives.datastructure.multi_key_array import Users, Vouches
+
 
 states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 
 def test_lipschitrust_simple():
-    users0 = Users(range(5))
+    users0 = Users.range(5)
     users0 = users0.assign(is_pretrusted=[True, True, False, False, False])
-    vouches = Vouches(init_data={
+    vouches = Vouches.from_dict({
         (0, 1, "Personhood"): (1, 0),
         (0, 2, "Personhood"): (1, 0),
         (2, 3, "Personhood"): (1, 0),
@@ -26,14 +29,14 @@ def test_lipschitrust_generative(seed):
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8,)
 
     users = trust_propagator(states[seed].users, states[seed].vouches)
-    for user in users:
+    for user in users.iter():
         assert user.is_trustworthy or (user.trust == 0)
 
 
 def test_lipschitrust_ten_users():
-    users = Users([str(i) for i in range(10)])
+    users = Users.from_usernames([str(i) for i in range(10)])
     users = users.assign(is_pretrusted=[False, True, False, True, False, False, True, False, False, False])
-    vouches = Vouches(init_data={
+    vouches = Vouches.from_dict({
         ("1", "0", "Personhood"): (1, 0),
         ("1", "3", "Personhood"): (1, 0),
         ("1", "7", "Personhood"): (1, 0),
@@ -57,7 +60,8 @@ def test_lipschitrust_ten_users():
     assert users["9"]["trust"] == 0.0
 
     # Add one vouch: 1 -> 8
-    vouches["1", "8", "Personhood"] = (1, 0)
+    extra_vouches = vouches.from_dict({("1", "8", "Personhood"): (1, 0)})
+    vouches = vouches.merge(extra_vouches)
     users = trust_propagator(users, vouches)
     assert users["8"].trust > 0.0
 
@@ -66,12 +70,12 @@ def test_lipschitrust_ten_users():
 def test_lipschitrust_test_data(seed):
     pipeline = Sequential.load("tests/modules/test_pipeline.json")
     users = pipeline.modules[0](states[seed].users, states[seed].vouches)
-    for user in users:
-        assert user["is_trustworthy"] or (user.trust == 0)
+    for user in users.iter():
+        assert user.is_trustworthy or (user.trust == 0)
 
 
 def test_trust_all():
-    users = Users(range(5))
+    users = Users.range(5)
     users = users.assign(is_pretrusted=[True, True, False, False, False])
     vouches = Vouches({
         "0": {
@@ -86,6 +90,6 @@ def test_trust_all():
         },
     })
     out_users = TrustAll()(users, vouches)
-    for user in out_users:
+    for user in out_users.iter():
         assert user.trust == 1.0
         

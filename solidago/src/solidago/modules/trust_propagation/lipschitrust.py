@@ -68,23 +68,26 @@ class LipschiTrust(StateFunction):
         if len(users) == 0:
             return users.assign(trust=list())
 
-        personhood_vouches = vouches.nested_dict("kind", "by", "to")["Personhood"]
+        personhood_vouches = vouches.where(lambda v: v["kind"] == "Personhood")
         total_vouches = defaultdict(lambda: 0)
-        for (voucher_name, _), (weight, _) in personhood_vouches:
-            total_vouches[voucher_name] += weight
-        pretrusts = np.array(users.values("is_pretrusted")) * self.pretrust_value
+        for vouch in personhood_vouches.iter():
+            total_vouches[vouch.by] += vouch.weight
+        pretrusts = users.values("is_pretrusted") * self.pretrust_value
         trusts = pretrusts.copy()
 
         n_iterations = -np.log(len(users) / self.error) / np.log(self.decay)
         n_iterations = int(np.ceil(n_iterations))
+
+        id_to_idx = users.id_to_idx()
+
         for _ in range(n_iterations):
             # Initialize to pretrust
             new_trusts = pretrusts.copy()
             # Propagate trust through vouches
-            for (voucher_name, vouchee_name), (weight, _) in personhood_vouches:
-                voucher_index = users.name2index(voucher_name)
-                vouchee_index = users.name2index(vouchee_name)
-                discount = self.decay * weight / total_vouches[voucher_name]
+            for vouch in personhood_vouches.iter():
+                voucher_index = id_to_idx[vouch.by]
+                vouchee_index = id_to_idx[vouch.to]
+                discount = self.decay * vouch.weight / total_vouches[vouch.by]
                 new_trusts[vouchee_index] += discount * trusts[voucher_index]
 
             # Bound trusts for Lipschitz resilience

@@ -60,7 +60,14 @@ class State:
         import solidago.state
         for key, j_value in j.items():
             assert hasattr(state, key)
-            value = getattr(solidago.state, j_value[0]).load(directory, **j_value[1])
+            if j_value[0] == "Users":
+                from solidago.primitives.datastructure.multi_key_array import Users as Users2
+                value = Users2.load(directory, **j_value[1])
+            elif j_value[0] == "Vouches":
+                from solidago.primitives.datastructure.multi_key_array import Vouches as Vouches2
+                value = Vouches2.load(directory, **j_value[1])
+            else:
+                value = getattr(solidago.state, j_value[0]).load(directory, **j_value[1])
             setattr(state, key, value)
         return state
     
