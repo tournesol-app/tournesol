@@ -6,6 +6,7 @@ import { Box, Button, Grid2, Paper, Typography, useTheme } from '@mui/material';
 import { VolunteerActivism } from '@mui/icons-material';
 
 import SectionTitle from './SectionTitle';
+import SectionDescription from './SectionDescription';
 
 interface FundingSectionProps {
   linkToDonatePage?: boolean;
@@ -35,25 +36,9 @@ const FundingSection = ({
         dividerWidthXl={fullWidth ? '100%' : undefined}
         headingId="funding"
       />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          mb: 6,
-        }}
-      >
-        <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
-          <Typography
-            variant="h3"
-            sx={{
-              textAlign: 'center',
-              letterSpacing: '0.8px',
-            }}
-          >
-            {t('fundingSection.tournesolExistsThanksToYourInvolvement')}
-          </Typography>
-        </Box>
-      </Box>
+      <SectionDescription
+        description={t('fundingSection.tournesolExistsThanksToYourInvolvement')}
+      />
       <Grid2
         container
         spacing={4}

@@ -1,12 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 
 import SectionTitle from '../SectionTitle';
 import PublicDataPublicCodeBox from './PublicDataPublicCodeBox';
 import ScientificLiteratureBox from './ScientificLiteratureBox';
 import VisualizeDataBox from './VisualizeDataBox';
+import SectionDescription from '../SectionDescription';
 
 const ResearchSection = () => {
   const { t } = useTranslation();
@@ -17,25 +18,9 @@ const ResearchSection = () => {
         title={t('researchSection.research')}
         headingId="research"
       />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          mb: 6,
-        }}
-      >
-        <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
-          <Typography
-            variant="h3"
-            sx={{
-              textAlign: 'center',
-              letterSpacing: '0.8px',
-            }}
-          >
-            {t('researchSection.weSeekToSupportResearch')}
-          </Typography>
-        </Box>
-      </Box>
+      <SectionDescription
+        description={t('researchSection.weSeekToSupportResearch')}
+      />
       <Grid
         container
         spacing={4}
