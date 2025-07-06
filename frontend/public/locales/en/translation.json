@@ -642,7 +642,8 @@
     "comparisons": "Comparisons"
   },
   "statsSection": {
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "thankYouForStats": "We thank all contributors who compared videos and built collaboratively Tournesol's recommendations system."
   },
   "tip": {
     "less": "Less",
@@ -951,11 +952,14 @@
     "useOurExtension": "Use our extension!",
     "webExtensionDescription": "The browser extension allows you to display videos recommended by the community directly on your YouTube home page. With just a few clicks you can rate any video or add them to your rate-later list.",
     "getTheExtensionButton": "Get the extension",
-    "extensionNotAvailableOnYourBrowser": "Unfortunately the extension is not available on your web browser. You may use it on <1>Firefox</1>, <3>Google Chrome</3>, <4>Microsoft Edge</4>, and similar browsers."
+    "extensionNotAvailableOnYourBrowser": "Unfortunately the extension is not available on your web browser. You may use it on <1>Firefox</1>, <3>Google Chrome</3>, <4>Microsoft Edge</4>, and similar browsers.",
+    "installTheMobileAppTitle": "Use our app!",
+    "installTheMobileAppDescription": "The mobile application is the best way to find and watch the high quality videos identified by the Tournesol contributors directly on your mobile.",
+    "installTheMobileAppButton": "Get the app"
   },
   "comparisonSection": {
     "contribute": "Contribute",
-    "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
+    "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family? Create an account to help identify public interest videos."
   },
   "fundingSection": {
     "supportUs": "Support Us!",
@@ -971,8 +975,8 @@
   },
   "recommendationsSection": {
     "recommendations": "Recommendations",
-    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
-    "seeMore": "See more"
+    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users.",
+    "seeMore": "See more videos"
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Our data are open",
@@ -988,7 +992,7 @@
   },
   "researchSection": {
     "research": "Research",
-    "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
+    "weSeekToSupportResearch": "We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments."
   },
   "scientificLiteratureBox": {
     "publications": "Publications",
