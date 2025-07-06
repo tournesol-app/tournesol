@@ -1,29 +1,68 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
+import { Box, Grid, Button, Link } from '@mui/material';
 
-import { Metrics } from 'src/features/statistics/UsageStatsSection';
-import { getPollStats } from 'src/features/statistics/stats';
-import { useCurrentPoll, useStats } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 
 import HomeComparison from './HomeComparison';
 import SectionTitle from './SectionTitle';
+import SectionDescription from './SectionDescription';
 
 const ComparisonSection = () => {
   const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
+  const { baseUrl } = useCurrentPoll();
 
-  const stats = useStats({ poll: pollName });
-  const pollStats = getPollStats(stats, pollName);
-
-  const color = '#fff';
+  const { isLoggedIn } = useLoginState();
 
   return (
     <Box>
       <SectionTitle
         title={t('comparisonSection.contribute')}
         headingId="contribute"
+      />
+      <SectionDescription description={t('home.helpUsAdvanceResearch')} />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          my: 4,
+        }}
+      >
+        {!isLoggedIn && (
+          <Button
+            size="large"
+            color="inherit"
+            variant="outlined"
+            component={Link}
+            to={`/signup`}
+            sx={{
+              px: 4,
+              mx: 1,
+              textAlign: 'center',
+              fontSize: '120%',
+            }}
+          >
+            {t('home.generic.createAccount')}
+          </Button>
+        )}
+        <Button
+          size="large"
+          color="primary"
+          variant="contained"
+          component={Link}
+          to={`${baseUrl}/comparison`}
+          sx={{
+            px: 4,
+            mx: 1,
+            fontSize: '120%',
+          }}
+        >
+          {t('home.generic.start')}
+        </Button>
+      </Box>
+      <SectionDescription
+        description={t('comparisonSection.theSimpliestWayToContribute')}
       />
       <Grid
         container
@@ -32,48 +71,6 @@ const ComparisonSection = () => {
           justifyContent: 'center',
         }}
       >
-        <Grid item lg={3} xl={3}>
-          <Paper elevation={0}>
-            <Box
-              sx={{
-                p: 2,
-                bgcolor: 'background.emphatic',
-                color: color,
-                borderRadius: 1,
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: 17,
-                  marginBottom: 2,
-                }}
-              >
-                {t('comparisonSection.theSimpliestWayToContribute')}
-              </Typography>
-              <Box
-                sx={{
-                  pb: 2,
-                }}
-              >
-                <Divider sx={{ backgroundColor: color }} />
-              </Box>
-              <Box
-                sx={{
-                  textAlign: 'center',
-                }}
-              >
-                <Metrics
-                  text={t('stats.comparisons')}
-                  count={pollStats?.comparisons.total ?? 0}
-                  lastMonthCount={
-                    pollStats?.comparisons.added_last_30_days ?? 0
-                  }
-                  lastMonthAsText
-                />
-              </Box>
-            </Box>
-          </Paper>
-        </Grid>
         <Grid
           item
           lg={9}

@@ -1,27 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { Box, Button, Divider, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 
-import { Metrics } from 'src/features/statistics/UsageStatsSection';
-import { getPollStats } from 'src/features/statistics/stats';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
-import { useCurrentPoll, useStats } from 'src/hooks';
-import SectionTitle from '../SectionTitle';
-import UseOurExtension from './UseOurExtension';
+
+import TitleSection from 'src/pages/home/TitleSection';
 
 /**
  * A home page section that displays a subset of recommended entities.
  */
 const RecommendationsSection = () => {
   const { i18n, t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
 
-  const stats = useStats({ poll: pollName });
-  const pollStats = getPollStats(stats, pollName);
-
-  const titleColor = '#fff';
   const currentLang = i18n.resolvedLanguage || i18n.language;
 
   // Determine the date filter applied when the user click on the see more
@@ -31,25 +23,27 @@ const RecommendationsSection = () => {
     setSeeMoreDate(selectedDate);
   };
 
-  const comparedEntitiesTitle = useMemo(() => {
-    switch (pollName) {
-      case 'videos':
-        return t('stats.ratedVideos');
-      case 'presidentielle2022':
-        return t('stats.ratedCandidates');
-      default:
-        throw new Error(`Unknown poll: ${pollName}`);
-    }
-  }, [pollName, t]);
-
   return (
-    <Box>
-      <SectionTitle
-        title={t('recommendationsSection.recommendations')}
-        color={titleColor}
-        dividerColor={titleColor}
-        headingId="recommendations"
-      />
+    <>
+      <TitleSection title={t('home.collaborativeContentRecommendations')}>
+        <Typography
+          sx={{
+            fontSize: '1.1em',
+            marginBottom: 2,
+          }}
+        >
+          {t('home.tournesolIsAParticipatoryResearchProject')}
+        </Typography>
+        <Typography
+          sx={{
+            fontSize: '1.1em',
+            marginBottom: 2,
+          }}
+        >
+          {t('recommendationsSection.eachComparisonHelps')}
+        </Typography>
+      </TitleSection>
+
       <Grid
         container
         spacing={4}
@@ -57,46 +51,6 @@ const RecommendationsSection = () => {
           justifyContent: 'center',
         }}
       >
-        <Grid item lg={3} xl={3}>
-          <Paper elevation={0}>
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: 1,
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: 17,
-                  marginBottom: 2,
-                }}
-              >
-                {t('recommendationsSection.eachComparisonHelps')}
-              </Typography>
-              <Box
-                sx={{
-                  pb: 2,
-                }}
-              >
-                <Divider />
-              </Box>
-              <Box
-                sx={{
-                  textAlign: 'center',
-                }}
-              >
-                <Metrics
-                  text={comparedEntitiesTitle}
-                  count={pollStats?.compared_entities.total ?? 0}
-                  lastMonthCount={
-                    pollStats?.compared_entities.added_last_30_days ?? 0
-                  }
-                  lastMonthAsText
-                />
-              </Box>
-            </Box>
-          </Paper>
-        </Grid>
         <Grid item lg={9} xl={6}>
           <Box
             sx={{
@@ -128,8 +82,7 @@ const RecommendationsSection = () => {
           </Box>
         </Grid>
       </Grid>
-      <UseOurExtension titleColor={titleColor} />
-    </Box>
+    </>
   );
 };
 

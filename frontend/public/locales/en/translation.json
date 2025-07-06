@@ -971,8 +971,8 @@
   },
   "recommendationsSection": {
     "recommendations": "Recommendations",
-    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
-    "seeMore": "See more"
+    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users.",
+    "seeMore": "See more videos"
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Our data are open",
@@ -988,7 +988,7 @@
   },
   "researchSection": {
     "research": "Research",
-    "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
+    "weSeekToSupportResearch": "We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments."
   },
   "scientificLiteratureBox": {
     "publications": "Publications",
