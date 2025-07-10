@@ -1,4 +1,6 @@
 import concurrent.futures
+import itertools
+import random
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -25,6 +27,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--user-sampling", type=float, default=None)
+        parser.add_argument("--videos-limit", type=int, default=None)
         parser.add_argument("--dataset-url", type=str, default=PUBLIC_DATASET_URL)
 
     def create_user(self, username: str, ml_input: TournesolDataset):
@@ -45,7 +48,7 @@ class Command(BaseCommand):
 
     def create_videos(self, video_ids: pd.Series) -> dict[int, Entity]:
         videos = {}
-        for (entity_id, video_id) in video_ids.items():
+        for entity_id, video_id in video_ids.items():
             videos[entity_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
         return videos
 
@@ -65,6 +68,23 @@ class Command(BaseCommand):
             username="user1", password="tournesol", email="user1@tournesol.app"
         )
 
+    @staticmethod
+    def apply_videos_limit(limit: int, usernames_set: set, comparisons: pd.DataFrame):
+        usernames = sorted(usernames_set)
+        random.Random(RANDOM_SEED).shuffle(usernames)
+        entity_ids_to_keep = set()
+        usernames_to_keep = set()
+        for username in itertools.chain(SEED_USERS, usernames):
+            user_comparisons = comparisons[comparisons.public_username == username]
+            user_videos = set(user_comparisons.entity_a).union(user_comparisons.entity_b)
+            new_entity_ids_to_keep = entity_ids_to_keep.union(user_videos)
+            if len(new_entity_ids_to_keep) > limit:
+                break
+            print(f"Adding user {username!r}, new video count: {len(new_entity_ids_to_keep)}")
+            usernames_to_keep.add(username)
+            entity_ids_to_keep = new_entity_ids_to_keep
+        return usernames_to_keep, entity_ids_to_keep
+
     def handle(self, *args, **options):
         public_dataset = TournesolDataset(options["dataset_url"])
         nb_comparisons = 0
@@ -76,6 +96,8 @@ class Command(BaseCommand):
 
             usernames = public_dataset.users.public_username.unique()
             comparisons = public_dataset.comparisons
+            video_ids = public_dataset.entity_id_to_video_id
+
             if options["user_sampling"]:
                 usernames = set(
                     pd.Series(usernames)
@@ -83,20 +105,29 @@ class Command(BaseCommand):
                     .values
                 ).union(SEED_USERS)
                 comparisons = comparisons[comparisons.public_username.isin(usernames)]
+                video_ids = video_ids[
+                    video_ids.index.isin(set(comparisons.entity_a) | set(comparisons.entity_b))
+                ]
+
+            if options["videos_limit"]:
+                usernames, entity_ids = self.apply_videos_limit(
+                    options["videos_limit"], usernames, comparisons
+                )
+                comparisons = comparisons[comparisons.public_username.isin(usernames)]
+                video_ids = video_ids[video_ids.index.isin(entity_ids)]
 
             EmailDomain.objects.create(
                 domain="@trusted.example", status=EmailDomain.STATUS_ACCEPTED
             )
-
             users = {
                 username: self.create_user(username, public_dataset) for username in usernames
             }
             print(f"Created {len(users)} users")
 
-            videos = self.create_videos(video_ids=public_dataset.entity_id_to_video_id)
+            videos = self.create_videos(video_ids=video_ids)
             print(f"Created {len(videos)} video entities")
 
-            for ((username, entity_a, entity_b), rows) in comparisons.groupby(
+            for (username, entity_a, entity_b), rows in comparisons.groupby(
                 ["public_username", "entity_a", "entity_b"]
             ):
                 comparison = Comparison.objects.create(
