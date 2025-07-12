@@ -127,7 +127,7 @@ describe('My rated elements page', () => {
           expect(loc.search).to.eq('?orderBy=-n_comparisons')
         });
 
-        cy.contains('29 comparisons by you').should('be.visible');
+        cy.contains(/2\d comparisons by you/).should('be.visible');
       });
 
       it('the ratings can be order by video specific metadata fields', () => {

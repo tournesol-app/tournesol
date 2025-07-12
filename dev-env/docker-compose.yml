@@ -1,7 +1,7 @@
 services:
   db:
     container_name: tournesol-dev-db
-    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2023-10-27}
+    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2025-07-12}
     user: ${DB_UID}:${DB_GID}
     volumes:
       - ./db-data:/var/lib/postgresql/data

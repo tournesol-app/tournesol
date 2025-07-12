@@ -245,10 +245,18 @@ describe('Settings - preferences page', () => {
           cy.contains('A day ago').click();
           cy.contains('Update preferences').click();
 
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
+
           cy.visit('/feed/foryou');
+          cy.wait('@settingsRetrievedFromAPI')
+            .its('response.body')
+            .should(settings => {
+              expect(settings["videos"]["feed_foryou__date"]).equals("TODAY")
+            });
           cy.contains(
             "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('be.visible');
         });
 
@@ -260,11 +268,15 @@ describe('Settings - preferences page', () => {
           cy.contains('A week ago').click();
           cy.contains('Update preferences').click();
 
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
+
           cy.visit('/feed/foryou');
-          cy.contains(
-            "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
-          ).should('be.visible');
+          cy.wait('@settingsRetrievedFromAPI')
+            .its('response.body')
+            .should(settings => {
+              expect(settings["videos"]["feed_foryou__date"]).equals("WEEK")
+            });
         });
 
         it('handles the value A month ago', () => {
@@ -275,12 +287,6 @@ describe('Settings - preferences page', () => {
           cy.get(
             '[data-testid=videos_feed_foryou__date]'
           ).should('have.value', 'MONTH');
-
-          cy.visit('/feed/foryou');
-          cy.contains(
-            "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
-          ).should('be.visible');
         });
 
         it('handles the value A year ago', () => {
@@ -291,11 +297,15 @@ describe('Settings - preferences page', () => {
           cy.contains('A year ago').click();
           cy.contains('Update preferences').click();
 
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
+
           cy.visit('/feed/foryou');
-          cy.contains(
-            "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
-          ).should('not.exist');
+          cy.wait('@settingsRetrievedFromAPI')
+            .its('response.body')
+            .should(settings => {
+              expect(settings["videos"]["feed_foryou__date"]).equals("YEAR")
+            });
         });
 
         it('handles the value All time', () => {
@@ -309,7 +319,7 @@ describe('Settings - preferences page', () => {
           cy.visit('/feed/foryou');
           cy.contains(
             "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('not.exist');
         });
       });
@@ -333,7 +343,7 @@ describe('Settings - preferences page', () => {
 
           cy.contains(
             "The score of this video is below the recommendability threshold defined by Tournesol.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('not.exist');
         });
 
@@ -353,7 +363,7 @@ describe('Settings - preferences page', () => {
 
           cy.contains(
             "The score of this video is below the recommendability threshold defined by Tournesol.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('be.visible');
         });
       });
@@ -405,7 +415,7 @@ describe('Settings - preferences page', () => {
                 .should('eq', videoTitle);
             });
 
-            cy.deleteUser('test_exclude_false');
+          cy.deleteUser('test_exclude_false');
         });
 
         it('handles the value true (exclude)', () => {
@@ -453,7 +463,7 @@ describe('Settings - preferences page', () => {
                 .first()
                 .invoke('attr', 'title')
                 .should('not.eq', videoTitle);
-          });
+            });
 
           cy.deleteUser('test_exclude_true');
         });

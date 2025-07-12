@@ -1,9 +1,9 @@
 describe('Password reset', () => {
   beforeEach(() => {
-    cy.recreateUser("username-pwreset", "test@example.com", "forgottenPassword");
+    cy.recreateUser("username-pwreset", "test-pwreset@example.test", "forgottenPassword");
   });
 
-  ["username-pwreset", "test@example.com"].forEach(login => {
+  ["username-pwreset", "test-pwreset@example.test"].forEach(login => {
     it(`can reset password for ${login}`, () => {
       cy.visit('/login');
       cy.contains('Forgot').click();

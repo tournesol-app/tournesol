@@ -154,7 +154,7 @@ Commands:
   WARNING: if a Youtube API key has been configured, a large amount of queries
   to the API may be required to fetch metadata about all videos.
     ./run-docker-compose.sh download
-    ./run-docker-compose.sh download --user-sampling 0.1
+    ./run-docker-compose.sh download --videos-limit 8000
 
   restart
   Restart all dev_env services using the existing database and containers.
