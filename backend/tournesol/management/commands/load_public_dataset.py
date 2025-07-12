@@ -24,9 +24,10 @@ class Command(BaseCommand):
     help = "Generate a new database for dev purposes, derived from the public dataset"
 
     def add_arguments(self, parser):
-        parser.add_argument("--user-sampling", type=float, default=None)
-        parser.add_argument("--videos-limit", type=int, default=None)
         parser.add_argument("--dataset-url", type=str, default=PUBLIC_DATASET_URL)
+        samping_group = parser.add_mutually_exclusive_group()
+        samping_group.add_argument("--user-sampling", type=float, default=None)
+        samping_group.add_argument("--videos-limit", type=int, default=None)
 
     def create_user(self, username: str, ml_input: TournesolDataset):
         user = ml_input.users.loc[ml_input.users.public_username == username].iloc[0]
