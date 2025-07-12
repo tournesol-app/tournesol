@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { Box, CircularProgress } from '@mui/material';
 
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import PublicRoute from 'src/features/login/PublicRoute';
-import PrivateRoute from 'src/features/login/PrivateRoute';
+import RouteWrapper from 'src/features/login/RouteWrapper';
 import PwaEntryPoint from 'src/features/pwa/PwaEntryPoint';
 import PageNotFound from 'src/pages/404/PageNotFound';
 import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
@@ -28,9 +27,6 @@ interface Props {
 }
 
 const PollRoutes = ({ pollName }: Props) => {
-  const { path } = useRouteMatch();
-  const basePath = path.replace(/\/+$/g, '');
-
   const {
     setPollName,
     name: currentPollName,
@@ -65,13 +61,13 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.Home,
       url: '',
       page: HomePage,
-      type: PublicRoute,
+      auth: false,
     },
     {
       id: RouteID.PwaEntryPoint,
       url: 'pwa/start',
       page: PwaEntryPoint,
-      type: PublicRoute,
+      auth: false,
     },
     // deprecated, kept for backward compatibility, should be deleted later
     // in 2025
@@ -79,25 +75,25 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.FeedCollectiveRecommendations,
       url: 'feed/recommendations',
       page: PwaEntryPoint,
-      type: PublicRoute,
+      auth: false,
     },
     {
       id: RouteID.FeedTopItems,
       url: 'feed/top',
       page: FeedTopItems,
-      type: PublicRoute,
+      auth: false,
     },
     {
       id: RouteID.FeedForYou,
       url: 'feed/foryou',
       page: FeedForYou,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.Search,
       url: 'search',
       page: SearchPage,
-      type: PublicRoute,
+      auth: false,
     },
     // deprecated, kept for backward compatibility, should be deleted later
     // in 2025
@@ -105,55 +101,55 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.CollectiveRecommendations,
       url: 'recommendations',
       page: RecommendationPage,
-      type: PublicRoute,
+      auth: false,
     },
     {
       id: RouteID.EntityAnalysis,
       url: 'entities/:uid',
       page: EntityAnalysisPage,
-      type: PublicRoute,
+      auth: false,
     },
     {
       id: RouteID.Comparison,
       url: 'comparison',
       page: ComparisonPage,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.MyComparisons,
       url: 'comparisons',
       page: ComparisonListPage,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.MyComparedItems,
       url: 'ratings',
       page: VideoRatingsPage,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.MyRateLaterList,
       url: 'rate_later',
       page: RateLaterPage,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.MyFeedback,
       url: 'personal/feedback',
       page: FeedbackPage,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.MyProofByKeyword,
       url: 'me/proof/:keyword',
       page: ProofByKeywordPage,
-      type: PrivateRoute,
+      auth: true,
     },
     {
       id: RouteID.Criteria,
       url: 'criteria',
       page: CriteriaPage,
-      type: PublicRoute,
+      auth: false,
     },
   ];
 
@@ -162,26 +158,37 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.PublicPersonalRecommendationsPage,
       url: 'users/:username/recommendations',
       page: RecommendationPage,
-      type: PublicRoute,
+      auth: false,
     });
   }
 
   return (
-    <Switch>
+    <Routes>
       {routes.map((route) => {
         if (disabledItems.includes(route.id)) {
           return;
         }
         return (
-          <route.type key={route.id} path={`${basePath}/${route.url}`} exact>
-            <route.page />
-          </route.type>
+          <Route
+            key={route.id}
+            path={route.url}
+            element={
+              <RouteWrapper auth={route.auth}>
+                <route.page />
+              </RouteWrapper>
+            }
+          />
         );
       })}
-      <PublicRoute>
-        <PageNotFound />
-      </PublicRoute>
-    </Switch>
+      <Route
+        path="*"
+        element={
+          <RouteWrapper>
+            <PageNotFound />
+          </RouteWrapper>
+        }
+      ></Route>
+    </Routes>
   );
 };
 

@@ -17,8 +17,8 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
+import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
 import { combineReducers, createStore } from 'redux';
@@ -28,11 +28,25 @@ import { Provider } from 'react-redux';
 import SearchFilter from './SearchFilter';
 
 describe('Filters feature', () => {
-  let pushSpy = null;
   async function renderSearchFilters(loggedIn: boolean) {
-    // Used to spy on URL parameters updates
-    const history = createMemoryHistory();
-    pushSpy = vi.spyOn(history, 'push');
+    const routes = [
+      {
+        path: '/search',
+        element: (
+          <SearchFilter
+            onLanguagesChange={(langs) =>
+              localStorage.setItem('languages', langs)
+            }
+          />
+        ),
+      },
+    ];
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ['/search'],
+      initialIndex: 0,
+    });
+
     vi.spyOn(PollsService, 'pollsRetrieve').mockImplementation(async () => ({
       name: 'videos',
       criterias: [
@@ -70,29 +84,26 @@ describe('Filters feature', () => {
 
       render(
         <Provider store={mockStore}>
-          <Router history={history}>
-            <StyledEngineProvider injectFirst>
-              <ThemeProvider theme={theme}>
-                <PollProvider>
-                  <SearchFilter
-                    onLanguagesChange={(langs) =>
-                      localStorage.setItem('languages', langs)
-                    }
-                  />
-                </PollProvider>
-              </ThemeProvider>
-            </StyledEngineProvider>
-          </Router>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+              <PollProvider>
+                <RouterProvider router={router}></RouterProvider>
+              </PollProvider>
+            </ThemeProvider>
+          </StyledEngineProvider>
         </Provider>
       );
     });
+
+    return { router };
   }
 
   function clickOnShowMore(wasClosed = true) {
     const checkboxDisplayFilters = screen.queryByLabelText('show more');
     expect(checkboxDisplayFilters).not.toBeNull();
 
-    // aria-expanded should be set to false if the filters menu was closed, and true otherwise
+    // aria-expanded should be set to false if the filters menu was closed,
+    // and true otherwise
     expect(checkboxDisplayFilters.getAttribute('aria-expanded')).toBe(
       (!wasClosed).toString()
     );
@@ -128,35 +139,26 @@ describe('Filters feature', () => {
     expect(screen.getByLabelText('multiple criteria')).toBeVisible();
   }
 
-  // Click on a date filter checkbox and verify the resulting URL parameters
+  // Click on a date filter checkbox
   function clickOnDateCheckbox({
     checkbox,
-    expectInUrl,
   }: {
     checkbox: 'Today' | 'Week' | 'Month' | 'Year' | '';
-    expectInUrl: string;
   }) {
     const dateCheckbox = screen.queryByTestId('checkbox-choice-' + checkbox);
     expect(dateCheckbox).not.toBeNull();
-
     fireEvent.click(dateCheckbox);
-
-    // Check that it updated the URL with the new date type filter
-    // Use encodeURI to escape comas (in URL, "," => "%2C")
-    expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'date=' + encodeURIComponent(expectInUrl),
-    });
   }
 
-  // Select or unselect a language and verify the resulting URL parameters
+  // Select or unselect a language and verify the local storage
   function selectLanguage({
     language,
     action = 'add',
-    expectInUrl,
+    expectInLocalStorage,
   }: {
     language: string;
     action: 'add' | 'remove';
-    expectInUrl: string;
+    expectInLocalStorage: string;
   }) {
     const languageFilter = queryByTestId(document, 'search-language-filter');
     const autocomplete = queryByTestId(languageFilter, 'autocomplete');
@@ -178,13 +180,7 @@ describe('Filters feature', () => {
       fireEvent.click(removeButton);
     }
 
-    // Check that it updated the URL with the new language filter
-    // Use encodeURI to escape comas (in URL, "," => "%2C")
-    expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'language=' + encodeURIComponent(expectInUrl),
-    });
-
-    expect(localStorage.getItem('languages')).toEqual(expectInUrl);
+    expect(localStorage.getItem('languages')).toEqual(expectInLocalStorage);
   }
 
   it('Can open and close the filters menu', async () => {
@@ -198,75 +194,82 @@ describe('Filters feature', () => {
 
   it('Check that all the filter checkboxes and sliders are present for anonymous', async () => {
     await renderSearchFilters(false);
-    // Click to open the filters menu
     clickOnShowMore();
-    // Check the presence of all the filters checkboxes
     verifyFiltersPresence(false);
   });
 
   it('Check that all the filter checkboxes and sliders are present for a logged in user', async () => {
     await renderSearchFilters(true);
-    // Click to open the filters menu
     clickOnShowMore();
-    // Check the presence of all the filters checkboxes
     verifyFiltersPresence(true);
   });
 
   it('Can only check one date filter at once', async () => {
-    await renderSearchFilters(true);
+    const { router } = await renderSearchFilters(true);
     clickOnShowMore();
 
-    // click on the checkbox "This week", and check that the URL now contains "date=Week"
-    clickOnDateCheckbox({ checkbox: 'Week', expectInUrl: 'Week' });
+    clickOnDateCheckbox({ checkbox: 'Week' });
+    expect(router.state.location.search).toEqual('?date=Week');
+    clickOnDateCheckbox({ checkbox: 'Month' });
+    expect(router.state.location.search).toEqual('?date=Month');
+    clickOnDateCheckbox({ checkbox: 'Today' });
+    expect(router.state.location.search).toEqual('?date=Today');
+    clickOnDateCheckbox({ checkbox: 'Year' });
+    expect(router.state.location.search).toEqual('?date=Year');
 
-    // Now set it to "This Month".
-    // Verify that the previous option "This week" is automatically unchecked (date="Month").
-    clickOnDateCheckbox({ checkbox: 'Month', expectInUrl: 'Month' });
-
-    // Same with "Today" and "This year"
-    clickOnDateCheckbox({ checkbox: 'Today', expectInUrl: 'Today' });
-    clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: 'Year' });
-
-    // Click again on "This year", and verify that there is no change in the URL
-    clickOnDateCheckbox({ checkbox: 'Year', expectInUrl: 'Year' });
-
-    // Set it to "All time", and verify that there is no filter in the URL
-    clickOnDateCheckbox({ checkbox: '', expectInUrl: '' });
+    // A second click on "This year" should not change the URL
+    clickOnDateCheckbox({ checkbox: 'Year' });
+    expect(router.state.location.search).toEqual('?date=Year');
+    clickOnDateCheckbox({ checkbox: '' });
+    expect(router.state.location.search).toEqual('?date=');
   });
 
   it('Can check multiple language filters at once', async () => {
-    await renderSearchFilters(true);
+    const { router } = await renderSearchFilters(true);
     clickOnShowMore();
 
-    // select the language English and check that the URL contains "language=en"
-    selectLanguage({ language: 'language.en', expectInUrl: 'en' });
+    // Adding new languages
+    selectLanguage({ language: 'language.en', expectInLocalStorage: 'en' });
+    expect(router.state.location.search).toEqual('?language=en');
+    selectLanguage({ language: 'language.fr', expectInLocalStorage: 'en,fr' });
+    expect(router.state.location.search).toEqual(
+      `?language=${encodeURIComponent('en,fr')}`
+    );
+    selectLanguage({
+      language: 'language.de',
+      expectInLocalStorage: 'en,fr,de',
+    });
+    expect(router.state.location.search).toEqual(
+      `?language=${encodeURIComponent('en,fr,de')}`
+    );
 
-    // select the language French and check that the URL contains "language=en,fr"
-    selectLanguage({ language: 'language.fr', expectInUrl: 'en,fr' });
-
-    // select the language German ("de"), and check that the URL contains "language=de,en,fr"
-    selectLanguage({ language: 'language.de', expectInUrl: 'en,fr,de' });
-
-    // Now remove the languages and verify that it was removed from the URL
+    // Removing languages
     selectLanguage({
       action: 'remove',
       language: 'language.fr',
-      expectInUrl: 'en,de',
+      expectInLocalStorage: 'en,de',
     });
+    expect(router.state.location.search).toEqual(
+      `?language=${encodeURIComponent('en,de')}`
+    );
     selectLanguage({
       action: 'remove',
       language: 'language.en',
-      expectInUrl: 'de',
+      expectInLocalStorage: 'de',
     });
+    expect(router.state.location.search).toEqual(
+      `?language=${encodeURIComponent('de')}`
+    );
     selectLanguage({
       action: 'remove',
       language: 'language.de',
-      expectInUrl: '',
+      expectInLocalStorage: '',
     });
+    expect(router.state.location.search).toEqual(`?language=`);
   });
 
   it('Can select a maximum duration', async () => {
-    await renderSearchFilters(true);
+    const { router } = await renderSearchFilters(true);
     clickOnShowMore();
 
     const filter = screen
@@ -275,17 +278,17 @@ describe('Filters feature', () => {
 
     await act(async () => {
       fireEvent.change(filter, { target: { value: '40' } });
-      expect(pushSpy).toHaveBeenCalledTimes(0);
+      // The URL should not change before the typing delay of DurationFilter
+      // has passed.
+      expect(router.state.location.search).toEqual('');
       await new Promise((resolve) => setTimeout(resolve, 800));
     });
 
-    expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'duration_lte=40',
-    });
+    expect(router.state.location.search).toEqual('?duration_lte=40');
   });
 
   it('Can select a minimum duration', async () => {
-    await renderSearchFilters(true);
+    const { router } = await renderSearchFilters(true);
     clickOnShowMore();
 
     const filter = screen
@@ -294,13 +297,13 @@ describe('Filters feature', () => {
 
     await act(async () => {
       fireEvent.change(filter, { target: { value: '20' } });
-      expect(pushSpy).toHaveBeenCalledTimes(0);
+      // The URL should not change before the typing delay of DurationFilter
+      // has passed.
+      expect(router.state.location.search).toEqual('');
       await new Promise((resolve) => setTimeout(resolve, 800));
     });
 
-    expect(pushSpy).toHaveBeenLastCalledWith({
-      search: 'duration_gte=20',
-    });
+    expect(router.state.location.search).toEqual('?duration_gte=20');
   });
 
   it('Can fold and unfold the multiple criteria', async () => {
@@ -308,7 +311,7 @@ describe('Filters feature', () => {
     clickOnShowMore();
 
     // By default the criteria sliders must be hidden.
-    const checkbox = screen.queryByLabelText('multiple criteria');
+    const checkbox = screen.getByLabelText('multiple criteria');
     expect(screen.queryAllByLabelText(/neutral/i)).toHaveLength(0);
     expect(
       screen.queryByTestId('filter-criterion-slider-criteria1')
@@ -322,7 +325,7 @@ describe('Filters feature', () => {
 
     // A click on the label must display all criteria sliders.
     fireEvent.click(checkbox);
-    expect(screen.getAllByLabelText(/neutral/i)).toHaveLength(3);
+    expect(screen.getAllByText(/neutral/i)).toHaveLength(3);
     expect(
       screen.getByTestId('filter-criterion-slider-criteria1')
     ).toBeVisible();

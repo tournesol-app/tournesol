@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
 
@@ -56,7 +56,7 @@ const FeedTopItems = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
@@ -77,7 +77,7 @@ const FeedTopItems = () => {
 
   const onOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
   };
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const FeedTopItems = () => {
       }
 
       searchString.set('language', loadedLanguages);
-      history.replace({ search: searchString.toString() });
+      navigate({ search: searchString.toString() }, { replace: true });
       return;
     }
 
@@ -142,8 +142,8 @@ const FeedTopItems = () => {
   }, [
     langsAutoDiscovery,
     criterias,
-    history,
     location.search,
+    navigate,
     offset,
     options,
     preferredLanguages,
