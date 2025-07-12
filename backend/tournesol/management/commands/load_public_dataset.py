@@ -1,6 +1,4 @@
 import concurrent.futures
-import itertools
-import random
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -70,16 +68,27 @@ class Command(BaseCommand):
 
     @staticmethod
     def apply_videos_limit(limit: int, comparisons: pd.DataFrame):
-        counts_a = comparisons.drop_duplicates(subset=["entity_a", "public_username"], keep="first", inplace=False).entity_a.value_counts().rename("count_a")
-        counts_b = comparisons.drop_duplicates(subset=["entity_b", "public_username"], keep="first", inplace=False).entity_b.value_counts().rename("count_b")
+        counts_a = (
+            comparisons.drop_duplicates(
+                subset=["entity_a", "public_username"], keep="first", inplace=False
+            )
+            .entity_a.value_counts()
+            .rename("count_a")
+        )
+        counts_b = (
+            comparisons.drop_duplicates(
+                subset=["entity_b", "public_username"], keep="first", inplace=False
+            )
+            .entity_b.value_counts()
+            .rename("count_b")
+        )
         counts_combined = pd.concat([counts_a, counts_b], axis=1).fillna(0)
         counts_combined["total_count"] = counts_combined.count_a + counts_combined.count_b
         videos_to_keep = set(
             counts_combined.sort_values(by="total_count", ascending=False).index[:limit]
         )
         comparisons = comparisons[
-            comparisons.entity_a.isin(videos_to_keep) & 
-            comparisons.entity_b.isin(videos_to_keep)
+            comparisons.entity_a.isin(videos_to_keep) & comparisons.entity_b.isin(videos_to_keep)
         ]
         usernames_to_keep = comparisons.public_username.unique()
         print(
