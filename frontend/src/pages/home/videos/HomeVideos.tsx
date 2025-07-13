@@ -35,7 +35,7 @@ const HomeVideosPage = () => {
             color: 'white',
           }}
         >
-          <RecommendationsSection color="#fff" />
+          <RecommendationsSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
           <InstallMobileApp />
