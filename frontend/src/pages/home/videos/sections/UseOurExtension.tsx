@@ -5,7 +5,7 @@ import { Alert, Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { Extension } from '@mui/icons-material';
 
 import { getWebExtensionUrl } from 'src/utils/extension';
-import SectionTitle from '../SectionTitle';
+import SectionTitle from './SectionTitle';
 
 interface UseOurExtensionProps {
   titleColor?: string;
@@ -17,18 +17,12 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
 
   return (
     <Box>
-      <Box
-        sx={{
-          my: 6,
-        }}
-      >
-        <SectionTitle
-          title={t('home.useOurExtension')}
-          color={titleColor}
-          dividerColor={titleColor}
-          headingId="use-extension"
-        />
-      </Box>
+      <SectionTitle
+        title={t('home.useOurExtension')}
+        color={titleColor}
+        dividerColor={titleColor}
+        headingId="use-extension"
+      />
       <Grid
         container
         sx={{

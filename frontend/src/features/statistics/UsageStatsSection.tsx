@@ -6,6 +6,7 @@ import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import { useCurrentPoll, useStats } from 'src/hooks';
 import { getPollStats } from './stats';
 import SectionTitle from 'src/pages/home/videos/sections/SectionTitle';
+import SectionDescription from 'src/pages/home/videos/sections/SectionDescription';
 
 interface statsProp {
   text: string;
@@ -73,11 +74,12 @@ const StatsSection = () => {
   }, [pollName, t]);
 
   return (
-    <Box>
+    <Box sx={{ pb: 4 }}>
       <SectionTitle
         title={t('statsSection.statistics')}
         headingId="statistics"
       />
+      <SectionDescription description={t('statsSection.thankYouForStats')} />
       <Box
         sx={{
           textAlign: 'center',

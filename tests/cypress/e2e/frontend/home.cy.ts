@@ -2,21 +2,11 @@ describe('Home', () => {
   describe('Poll - videos', () => {
 
     describe('anonymous users', () => {
-      it('contains a link to signup', () => {
+      it('contains recommended videos', () => {
         cy.visit('/');
-        cy.contains('Create account').should('be.visible');
-        cy.contains('Create account').click();
-        cy.location('pathname').should('equal', '/signup');
-      });
-
-      it('contains a link to the tutorial', () => {
-        cy.visit('/');
-
-        cy.contains('Start').should('be.visible');
-        cy.contains('Create account').should('be.visible');
-
-        cy.contains('Start').click();
-        cy.location('pathname').should('equal', '/login');
+        cy.contains('See more videos').should('be.visible');
+        cy.contains('See more videos').click();
+        cy.location('pathname').should('equal', '/search');
       });
     });
 
@@ -28,7 +18,7 @@ describe('Home', () => {
 
       it('contains a link to the comparison page', () => {
         cy.visit('/');
-        cy.contains('Start').click();
+        cy.contains('Compare the videos').click();
 
         cy.focused().type('aidjango');
         cy.get('input[name="password"]').click().type('tournesol').type('{enter}');

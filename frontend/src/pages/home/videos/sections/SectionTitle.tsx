@@ -32,7 +32,7 @@ const SectionTitle = ({
 
   return (
     <Box
-      mb={6}
+      my={6}
       width="100%"
       display="flex"
       alignItems="center"

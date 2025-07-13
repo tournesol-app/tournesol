@@ -19,6 +19,12 @@ yarn install --frozen-lockfile
 yarn run cypress run
 ```
 
+or to run a single file:
+
+```
+yarn run cypress run --spec path/to/spec.cy.ts
+```
+
 By default, Cypress will run the tests on Electron (based on Chromium). 
 To run the tests in a specific browser installed on your system, use `--browser` :
 ```
