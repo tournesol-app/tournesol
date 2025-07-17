@@ -11,7 +11,7 @@ class Objects(MultiKeyArray):
     KEY_NAMES = ["id"]
 
     @classmethod
-    def from_dict(cls, data: dict[tuple, tuple], sparse=True, vector_dims=0):
+    def from_dict(cls, data: dict[tuple, tuple], sparse=False, vector_dims=0):
         objects = super().from_dict(data, sparse)
         if vector_dims > 0:
             objects.dataset["vector"] = (
@@ -31,7 +31,7 @@ class Objects(MultiKeyArray):
     def values(self, key: str):
         if key not in self.VALUE_NAMES:
             raise ValueError(f"Unknown field {key!r}")
-        return self.dataset[key].to_numpy()
+        return self.dataset[key].broadcast_like(self.dataset["id"]).to_numpy()
 
     def keys(self) -> np.ndarray:
         return self.dataset["id"].values
@@ -41,17 +41,18 @@ class Objects(MultiKeyArray):
         return self.where(lambda x: x["id"].isin(sample_ids))
 
     def assign(self, **kwargs):
+        dataset = self.dataset.copy()
         for (key, values) in kwargs.items():
             if key not in self.VALUE_NAMES:
                 raise ValueError(f"Unknown field {key!r}")
             if isinstance(values, (list, np.ndarray)):
-                self.dataset[key] = (
+                dataset[key] = (
                     self.KEY_NAMES,
                     values
                 )
             else:
-                self.dataset[key] = values
-        return self
+                dataset[key] = values
+        return type(self)(dataset=dataset)
 
     def id_to_idx(self) -> dict:
         return {id: idx for (idx, id) in enumerate(self.dataset["id"].values)}
