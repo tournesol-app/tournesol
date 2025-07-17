@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Self
+from typing import Callable, Iterable, Self, NamedTuple
 
 import pandas as pd
 import xarray as xr
@@ -25,11 +25,11 @@ class MultiKeyArray:
     def where(self, filter_fun: Callable):
         return type(self)(dataset=self.dataset.where(filter_fun, drop=True))
 
-    def iter(self) -> Iterable[tuple]:
+    def iter(self) -> Iterable[NamedTuple]:
         return self.to_df().itertuples(index=False)
 
     def to_df(self) -> pd.DataFrame:
-        return self.dataset.stack(index=[...]).dropna("index").as_numpy().to_dataframe()
+        return self.dataset.stack(index=[...], create_index=False).dropna("index").as_numpy().to_dataframe()
 
     @classmethod
     def load(cls, directory: str, name: str, **kwargs):
