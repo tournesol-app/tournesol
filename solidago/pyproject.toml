@@ -9,7 +9,7 @@ authors = [
 ]
 description = "A toolbox for Solid Algorithmic Governance"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "LGPL-3.0-or-later"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -19,8 +19,10 @@ classifiers = [
 keywords = ["tournesol", "collaborative recommendations", "judgement aggregation", "comparison based", "mehestan"]
 dependencies = [
     "pandas>=1.5.3,<3.0",
-    "numpy>=1.24.3,<1.27",
-    "numba==0.60.0",
+    "numpy>=1.24.3,<2.3",
+    "numba==0.61.2",
+    "sparse==0.17.0",
+    "xarray==2025.7.1",
 ]
 dynamic = ["version"]
 
