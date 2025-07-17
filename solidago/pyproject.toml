@@ -21,6 +21,7 @@ dependencies = [
     "pandas>=1.5.3,<3.0",
     "numpy>=2.3",
     "numba==0.63.*",
+    "sparse==0.17.0",
     "xarray==2025.7.1",
 ]
 dynamic = ["version"]
