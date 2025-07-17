@@ -69,6 +69,7 @@ export enum RouteID {
   MyRateLaterList = 'myRateLaterList',
   MyFeedback = 'myFeedback',
   MyProofByKeyword = 'myProofByKeyword',
+  MyStats = 'myStats',
 }
 
 export type OrderedDialogs = {
