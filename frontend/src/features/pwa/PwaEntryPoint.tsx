@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
@@ -13,17 +13,18 @@ const PwaEntryPoint = () => {
   const { isLoggedIn } = useLoginState();
 
   if (isLoggedIn) {
-    return <Redirect to="/feed/foryou" />;
+    return <Navigate to="/feed/foryou" replace />;
   }
 
   return (
-    <Redirect
+    <Navigate
       to={`/feed/top${getFeedTopItemsDefaultSearchParams(
         pollName,
         options,
         userSettings,
         langsAutoDiscovery
       )}`}
+      replace
     />
   );
 };

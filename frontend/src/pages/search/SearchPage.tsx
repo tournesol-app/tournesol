@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
 
@@ -26,7 +26,7 @@ const ENTITIES_LIMIT = 20;
 const SearchPage = () => {
   const { t } = useTranslation();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
@@ -43,7 +43,7 @@ const SearchPage = () => {
 
   const onOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
   };
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const SearchPage = () => {
 
     if (searchString.get('language') === null) {
       searchString.set('language', '');
-      history.replace({ search: searchString.toString() });
+      navigate({ search: searchString.toString() }, { replace: true });
       return;
     }
 
@@ -80,7 +80,7 @@ const SearchPage = () => {
     };
 
     fetchEntities();
-  }, [criterias, history, location.search, offset, options, pollName]);
+  }, [criterias, location.search, navigate, offset, options, pollName]);
 
   const createBackButtonPath = () => {
     const backPath = loginState.backPath;
