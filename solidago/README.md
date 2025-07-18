@@ -48,11 +48,8 @@ or by creating a new ```.json``` file.
 
 ## Copyright & License
 
-Copyright 2025 Calicarpa.
-
-All rights reserved.
-
-Copyright 2025 Tournesol Association and contributors.
+Copyright 2023-2025 Tournesol Association and contributors.\
+Copyright 2024-2025 Calicarpa.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the [**GNU Lesser General Public License**](./LICENSE.LESSER) as published by the Free Software Foundation, either version 3 of the License, or any later version.
 
