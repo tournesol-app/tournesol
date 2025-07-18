@@ -403,6 +403,18 @@ const AboutPage = () => {
 
         <Grid item xs={12} className={classes.container}>
           <ContentBox className={classes.card}>
+            <img height="84px" src="/logos/Calicarpa_Logo.svg" />
+            <Typography variant="h4">
+              {t('about.partnershipWithCalicarpa')}
+            </Typography>
+            <Typography paragraph>
+              {t('about.partnershipWithCalicarpaDetail')}
+            </Typography>
+          </ContentBox>
+        </Grid>
+
+        <Grid item xs={12} className={classes.container}>
+          <ContentBox className={classes.card}>
             <img height="84px" src="/logos/EPFL_Logo.png" />
             <Typography variant="h4">
               {t('about.partnershipWithEpfl')}

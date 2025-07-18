@@ -693,6 +693,8 @@
     "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première vesion de la plateforme.",
     "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
     "weThankOurPartners": "Nous remercions nos partenaires",
+    "partnershipWithCalicarpa": "Partenariat avec Calicarpa",
+    "partnershipWithCalicarpaDetail": "Tournesol est l'incarnation de la recherche de Calicarpa et de ses efforts de développement open-source. Calicarpa est maintenant le seul contributeur à la bibliothèque python open-source de Solidago, qui contient les implémentations des algorithmes de démocratie numérique à l'état de l'art de la recherche.",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
     "partenershipWithEpflDetail": "Pendant une courte période, un ingénieur de recherche à l'École Polytechnique Fédérale de Lausanne (EPFL) s'est consacré au développement de la plateforme Tournesol. Plusieurs chercheurs et chercheuses du laboratoire d'informatique distributée (DCL) ont également participé à la conception et poursuivent la recherche sur les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
