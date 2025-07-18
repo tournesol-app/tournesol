@@ -368,9 +368,7 @@ describe('Settings - preferences page', () => {
         });
       });
 
-      // TOFIX: these tests fail nearly everytime. This could be related to
-      // the API cache, or a bad usage of Cypress + React.
-      describe.skip('Setting - exclude compared entities', () => {
+      describe('Setting - exclude compared entities', () => {
         it('handles the value false (include)', () => {
           cy.recreateUser('test_exclude_false', 'test_exclude_false@example.com', 'tournesol');
 
