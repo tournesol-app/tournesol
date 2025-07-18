@@ -10,15 +10,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from .users.base import Users
-from .vouches.base import Vouches
-from .entities.base import Entities
-from .made_public.base import MadePublic
-from .assessments.base import Assessments
-from .comparisons.base import Comparisons
-from .voting_rights.base import VotingRights
-from .models import ScoringModel, DirectScoring
-from .models.user_models import UserModels
+from .users import Users
+from .vouches import Vouches
+from .entities import Entities
+from .made_public import MadePublic
+from .assessments import Assessments
+from .comparisons import Comparisons
+from .voting_rights import VotingRights
+from .models import ScoringModel, UserModels
 
 
 class State:
@@ -50,7 +49,7 @@ class State:
         self.comparisons = Comparisons() if comparisons is None else comparisons
         self.voting_rights = VotingRights() if voting_rights is None else voting_rights
         self.user_models = UserModels() if user_models is None else user_models
-        self.global_model = DirectScoring() if global_model is None else global_model
+        self.global_model = ScoringModel() if global_model is None else global_model
     
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "State":

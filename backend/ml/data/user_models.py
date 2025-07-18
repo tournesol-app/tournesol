@@ -1,12 +1,56 @@
+from django.db.models import F, Q
+
+from tournesol.models import ContributorRatingCriteriaScore
 import solidago
 
+
+DEFAULT_COMPOSITION = [
+    ("direct", dict(note="uniform_gbt")),
+    ("scale", dict(note="aggregated")),
+    ("squash", dict(score_max=100, note="squash")),
+]
 
 class UserModels(solidago.UserModels):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    
+    @classmethod
+    def load(cls, 
+        directory: str, 
+        default_composition: list=DEFAULT_COMPOSITION, 
+        *args, **kwargs
+    ) -> "UserModels":
+        return cls(
+            user_directs=cls.load_user_directs(directory),
+            user_scales=cls.load_user_scales(directory),
+            *args, **kwargs
+        )
+    
+    @classmethod
+    def load_user_directs(cls, directory: str, user_id=None, criterion=None) -> solidago.MultiScore:
+        scores_queryset = ContributorRatingCriteriaScore.objects.filter(
+            contributor_rating__poll__name=directory,
+            contributor_rating__user__is_active=True,
+        )
+        if criterion is not None:
+            scores_queryset = scores_queryset.filter(criteria=criterion)
+        if user_id is not None:
+            scores_queryset = scores_queryset.filter(contributor_rating__user_id=user_id)
 
-    def get_user_scalings(self, user_id=None) -> pd.DataFrame:
-        """Fetch saved invidiual scalings
+        values = scores_queryset.values(
+            criterion=F("criteria"),
+            entity_name=F("contributor_rating__entity_id"),
+            username=F("contributor_rating__user_id"),
+            value=F("raw_score"),
+        )
+        init_value = pd.DataFrame(values) if len(values) > 0 else pd.DataFrame()
+        init_value["left_unc"], init_value["right_unc"] = np.nan, np.nan
+        # keynames == ("username", "entity_name", "criterion")
+        return solidago.MultiScore(cls.table_keynames["user_directs"], init_value)
+
+    @classmethod
+    def load_user_scales(cls, poll_name: str, user_id=None) -> solidago.MultiScore:
+        """ TODO Fetch saved individual scalings
         Returns:
         - ratings_df: DataFrame with columns
             * `user_id`: int
@@ -16,52 +60,43 @@ class UserModels(solidago.UserModels):
             * `translation`: float
             * `translation_uncertainty`: float
         """
-
-        scalings = ContributorScaling.objects.filter(poll__name=self.poll_name)
+        scalings = ContributorScaling.objects.filter(poll__name=poll_name)
         if user_id is not None:
             scalings = scalings.filter(user_id=user_id)
         values = scalings.values(
-            "user_id",
-            "scale",
-            "scale_uncertainty",
-            "translation",
-            "translation_uncertainty",
+            username=F("user_id"),
+            multiplier=F("scale"),
+            multiplier_unc=F("scale_uncertainty"),
+            translation=F("translation"),
+            translation_unc=F("translation_uncertainty"),
             criterion=F("criteria"),
-
         )
-        if len(values) == 0:
-            return pd.DataFrame(
-                columns=[
-                    "user_id",
-                    "criterion",
-                    "scale",
-                    "scale_uncertainty",
-                    "translation",
-                    "translation_uncertainty",
-                ]
-            )
-        return pd.DataFrame(values)
-
-    def get_individual_scores(
-        self, user_id: Optional[int] = None, criterion: Optional[str] = None,
-    ) -> pd.DataFrame:
-        scores_queryset = ContributorRatingCriteriaScore.objects.filter(
-            contributor_rating__poll__name=self.poll_name,
-            contributor_rating__user__is_active=True,
-        )
-        if criterion is not None:
-            scores_queryset = scores_queryset.filter(criteria=criterion)
-        if user_id is not None:
-            scores_queryset = scores_queryset.filter(contributor_rating__user_id=user_id)
-
-        values = scores_queryset.values(
-            "raw_score",
-            criterion=F("criteria"),
-            entity_id=F("contributor_rating__entity_id"),
-            user_id=F("contributor_rating__user_id"),
-        )
-        if len(values) == 0:
-            return pd.DataFrame(columns=["user_id", "entity_id", "criterion", "raw_score"])
-
-        dtf = pd.DataFrame(values)
-        return dtf[["user_id", "entity_id", "criterion", "raw_score"]]
+        df = pd.DataFrame(values) if len(values) > 0 else pd.DataFrame()
+        user_scales = solidago.MultiScore(cls.table_keynames["user_scales"])
+        for _, row in df.iterrows():
+            for kind in ("multiplier", "translation"):
+                keys = row["username"], 1, kind, row["criterion"]
+                user_scales[keys] = Score(row[kind], row[f"{kind}_unc"], row[f"{kind}_unc"])
+        return user_scales
+    
+    def save(self, poll_name: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+        self.save_base_models(poll_name)
+        self.save_user_scales(poll_name)
+        # We do not save common scales, as it is collapsed into user scales upon saving
+        return self.save_instructions(poll_name, json_dump)
+    
+    def save_base_models(self, poll_name: Optional[str]=None) -> str:
+        """ TODO """
+        raise NotImplemented
+    
+    def save_user_scales(self, poll_name: Optional[str]=None) -> str:
+        """ TODO: Collapse scales of all height into a single user scale
+        This should be done in Solidago rather than Tournesol """
+        raise NotImplemented
+    
+    def save_common_scales(self, poll_name: Optional[str]=None) -> str:
+        """ Because Tournesol's current implementation collapses all scales,
+        we save common scales by saving user scales.
+        Note that this is needed in LipschitzStandardize and LipschitzQuantileShift,
+        which only save common scales """
+        return self.save_user_scales(directory)

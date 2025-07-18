@@ -120,7 +120,7 @@ class Mehestan(StateFunction):
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             state.users.save(directory)
-            state.user_models.user_scales.save(directory, "user_scales.csv")
+            state.user_models.save_user_scales(directory)
         with time(logger, "Saving state.json"):
             instructions = state.save_instructions(directory)
         return instructions
@@ -137,7 +137,7 @@ class Mehestan(StateFunction):
             return MultiScore(keynames=["username", "kind"]), activities, is_scaler
         scalers, nonscalers = set(), set()
         for index, user in enumerate(users):
-            (scalers if is_scaler[index] else nonscalers).add(str(user))
+            (scalers if is_scaler[index] else nonscalers).add(user.name)
         
         scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
         scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
@@ -188,7 +188,6 @@ class Mehestan(StateFunction):
         scalee_scores: MultiScore, # keynames == ["username", "entity_name"]
         scalees_are_scalers: bool=False
     ) -> tuple[MultiScore, MultiScore]: # scalee_scales, scalee_scores
-        s = "2" if scalees_are_scalers else "3"
         scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
     
         ratio_weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
@@ -454,7 +453,7 @@ class Mehestan(StateFunction):
         norm: float
         """
         weight_sum, weighted_sum = 0., 0.
-        for entity_name, score in scores:
+        for (entity_name,), score in scores:
             weight = made_public.penalty(self.privacy_penalty, entity_name)
             weight_sum += weight
             weighted_sum += weight * (score.value**self.p_norm_for_multiplicative_resilience)
@@ -607,6 +606,6 @@ class Mehestan(StateFunction):
         )
         return MultiScore(["username"], {
             name: self.aggregate_scalers(weights, diffs.get(name), **kwargs)
-            for name, weights in voting_rights.iter("scalee_name")
+            for (name,), weights in voting_rights.iter("scalee_name")
         })
 

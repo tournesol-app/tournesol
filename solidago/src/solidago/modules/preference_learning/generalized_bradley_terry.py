@@ -109,18 +109,17 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         assessments: Assessments, # Not used
         comparisons: Comparisons, # keynames == ["criterion", "entity_name", "other_name"]
         init_model: Optional[ScoringModel]=None,
-    ) -> DirectScoring:
+    ) -> ScoringModel:
         """ Learns only based on comparisons """
-        init_model = DirectScoring() if init_model is None else init_model
-        model = DirectScoring()
-        comparisons.cache("criterion", "entity_name", "other_name")
-        for (criterion,), criterion_comparisons in comparisons.iter("criterion"):
-            criterion_entity_names = criterion_comparisons.keys("entity_name")
-            if len(criterion_entity_names) <= 1:
+        init_model = ScoringModel() if init_model is None else init_model
+        model = ScoringModel(note=type(self).__name__)
+        comparisons = comparisons.reorder("criterion", "entity_name", "other_name")
+        for criterion in comparisons.keys("criterion"):
+            criterion_entities = entities[comparisons[criterion].keys("entity_name")]
+            if len(criterion_entities) <= 1:
                 continue
-            criterion_entities = entities[criterion_entity_names] # Restrict to compared entities
             init = init_model(criterion_entities, criterion)
-            scores = self.user_learn_criterion(criterion_entities, criterion_comparisons, init)
+            scores = self.user_learn_criterion(criterion_entities, comparisons[criterion], init)
             for (entity_name,), score in scores:
                 if not score.isnan():
                     model[entity_name, criterion] = score

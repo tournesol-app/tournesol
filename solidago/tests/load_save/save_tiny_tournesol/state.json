@@ -72,26 +72,35 @@
             "user_directs": "user_directs.csv",
             "user_scales": "user_scales.csv",
             "common_scales": "common_scales.csv",
-            "default_model_cls": [
-                "ScaledModel",
-                {
-                    "parent": [
-                        "ScaledModel",
-                        {
-                            "parent": [
-                                "DirectScoring",
-                                {}
-                            ]
-                        }
-                    ]
-                }
+            "default_composition": [
+                [
+                    "direct",
+                    {}
+                ],
+                [
+                    "scale",
+                    {
+                        "note": "scale"
+                    }
+                ],
+                [
+                    "scale",
+                    {
+                        "note": "scale"
+                    }
+                ]
             ]
         }
     ],
     "global_model": [
-        "DirectScoring",
+        "ScoringModel",
         {
-            "note": "None",
+            "composition": [
+                [
+                    "direct",
+                    {}
+                ]
+            ],
             "directs": {
                 "name": "directs.csv",
                 "keynames": [

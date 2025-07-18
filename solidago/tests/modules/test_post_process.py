@@ -15,8 +15,8 @@ user_models = UserModels(
         ("user_1", "entity_3", "default"): Score(.4, .4, .3),
     })
 )
-global_model = DirectScoring(
-    MultiScore(["entity_name", "criterion"], {
+global_model = ScoringModel(
+    directs=MultiScore(["entity_name", "criterion"], {
         ("entity_0", "default"): Score(-1.2, 1, .5),
         ("entity_1", "default"): Score(-.2, .5, .5),
         ("entity_2", "default"): Score(-.3, .2, .1),

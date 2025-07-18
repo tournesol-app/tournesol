@@ -1,4 +1,5 @@
 from typing import Optional
+from django.db.models import F, Q
 
 import pandas as pd
 import solidago
@@ -7,40 +8,21 @@ from tournesol.models import ContributorRating
 
 
 class MadePublic(solidago.MadePublic):
-    def __init__(self, 
-        keynames: list=[],
-        init_data: None,
-        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
-        username: Optional[str]=None, 
-        criterion: Optional[str]=None, 
-        *args, **kwargs
-    ):
-        keynames = list()
-        if username is not None:
-            keynames.append("username")
-        if criterion is not None:
-            keynames.append("criterion")
-        keynames += ["entity_name", "other_name"]
-        if init_data is None:
-            init_data = self.query_init_data(criterion, username)
-        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    def init_data(self):
-        # This makes sure that `get_scaling_calibration_users()` is evaluated separately, as the
-        # table names mentionned in its RawSQL query could conflict with the current queryset.
+    @classmethod
+    def load(cls, poll_name: str, *args, **kwargs) -> "MadePublic":
         values = ContributorRating.objects.filter(
-            poll__name=self.poll_name,
+            poll__name=poll_name,
         ).values(
-            "user_id",
-            "entity_id",
-            "is_public",
+            username=F("user_id"),
+            entity_name=F("entity_id"),
+            public=F("is_public"),
         )
-        if len(values) == 0:
-            return pd.DataFrame(
-                columns=[
-                    "user_id",
-                    "entity_id",
-                    "is_public",
-                ]
-            )
-        return pd.DataFrame(values)
+        init_data = pd.DataFrame(values) if len(values) > 0 else None
+        return cls(*args, init_data=init_data, **kwargs)
+
+    def save(self, poll_name: str, name: str="made_public", **kwargs) -> tuple[str, dict]:
+        # Solidago must not modify made_public
+        raise NotImplemented

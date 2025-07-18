@@ -79,7 +79,7 @@ class LipschitzQuantileShift(StateFunction):
     def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
-            state.user_models.common_scales.save(directory, "common_scales.csv")
+            state.user_models.save_common_scales(directory)
         logger.info("Saving state.json")
         return state.save_instructions(directory)
 

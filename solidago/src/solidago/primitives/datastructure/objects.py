@@ -125,7 +125,9 @@ class Objects:
             return self._dict[name]
         return type(self)([obj for obj in name])
     
-    def sample(self, n_items: int) -> "Objects":
+    def sample(self, n_items: Optional[int]=None) -> "Objects":
+        if n_items is None or len(self) < n_items:
+            return self.deepcopy()
         return self[random.sample(self.keys(), n_items)]
     
     def __delitem__(self, obj: Union[int, str, Object, Iterable]) -> Object:
@@ -200,7 +202,7 @@ class Objects:
         name = name or type(self).name
         if directory is not None:
             self.to_df().to_csv(Path(directory) / f"{name}.csv")
-        return self.save_instructions()
+        return self.save_instructions(name)
 
     def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
         name = name or type(self).name

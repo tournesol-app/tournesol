@@ -151,8 +151,11 @@ class MultiKeyTable:
             self._cache[keynames][new_keys] = value
         return self._cache[keynames]
     
-    def get_matching_prefix_caches(self, *keynames) -> set[tuple]:
-        """ Searches a cache_keynames such that set(keynames) == set(cache_keynames[:len(keynames)])
+    def get_matching_prefix_caches(self, *keynames_sets) -> set[tuple]:
+        """ Searches a cache_keynames such that 
+        keynames_sets[0] == set(cache_keynames[:len(keynames_sets[0])])
+        keynames_sets[0] | keynames_sets[1] == set(cache_keynames[:len(keynames_sets[0])+len(keynames_sets[1])]),
+        and so on.
         If so, returns (cache_keynames, self._cache[cache_keynames])
         Otherwise, adds a new cache entry 
         
@@ -162,16 +165,23 @@ class MultiKeyTable:
             tuple of all keynames, as it appears in NestedDict and in self._cache
         nested_dict: NestedDict
         """
-        keynames = (keynames,) if isinstance(keynames, str) else tuple(keynames)
+        keynames_sets = [{kn_set} if isinstance(kn_set, str) else set(kn_set) for kn_set in keynames_sets]
         matching_keynames = set()
         for cache_keynames in self._cache:
-            if set(keynames) == set(cache_keynames[:len(keynames)]):
+            matches, keynames = True, set()
+            for keynames_set in keynames_sets:
+                keynames |= keynames_set
+                if keynames != set(cache_keynames[:len(keynames)]):
+                    matches = False
+                    break
+            if matches:
                 matching_keynames.add(cache_keynames)
         if matching_keynames:
             return matching_keynames
-        keynames = tuple(list(keynames) + [k for k in self.keynames if k not in keynames])
+        keynames = sum([list(keynames_set) for keynames_set in keynames_sets], list())
+        keynames += [kn for kn in self.keynames if kn not in keynames]
         self.nested_dict(*keynames)
-        return {keynames}
+        return {tuple(keynames)}
 
     def iter(self, *keynames) -> Iterable:
         keynames = (keynames,) if isinstance(keynames, str) else keynames
@@ -196,6 +206,9 @@ class MultiKeyTable:
         return [ value for _, value in self ]
 
     def convert_key(key) -> Union[int, str, set]:
+        from solidago.primitives.datastructure.objects import Objects
+        if isinstance(key, Objects):
+            return {o.name for o in key}
         return key if isinstance(key, (str, int, set)) else key.name
 
     def keys2kwargs(self, *args, **kwargs) -> dict:
@@ -214,32 +227,23 @@ class MultiKeyTable:
     
     def get(self, *args, **kwargs) -> Union["MultiKeyTable", "Value"]:
         kwargs = self.keys2kwargs(*args, **kwargs)
-        set_keynames = [kn for kn in kwargs if isinstance(kwargs[kn], set)]
+        set_keynames = {kn for kn in kwargs if isinstance(kwargs[kn], set)}
         if set_keynames:
-            nonset_keynames = [kn for kn in kwargs if not isinstance(kwargs[kn], set)]
-            kwargs_keynames = nonset_keynames + set_keynames
-            keynames_set = self.get_matching_prefix_caches(*kwargs_keynames)
-            parent_keynames = next(iter(keynames_set))[:len(nonset_keynames)]
+            nonset_keynames = {kn for kn in kwargs if not isinstance(kwargs[kn], set)}
+            matching_keynames = self.get_matching_prefix_caches(nonset_keynames, set_keynames)
+            parent_keynames = next(iter(matching_keynames))[:len(nonset_keynames)]
             parent_keys = tuple(kwargs[kn] for kn in parent_keynames)
             other_keynames = [kn for kn in self.keynames if kn not in kwargs]
             to_keys = lambda keynames: tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
-            def to_keys_list(keynames): 
-                keys_list = [parent_keys]
-                for keyname in set_keynames:
-                    prekeys_list, keys_list = keys_list, list()
-                    for prekeys in prekeys_list:
-                        for key in kwargs[keyname]:
-                            keys_list.append(prekeys + key)
-                return keys_list
-            return type(self)(tuple(set_keynames + other_keynames), {
+            return type(self)(next(iter(matching_keynames))[len(nonset_keynames):], {
                 keynames[len(nonset_keynames):]: self._cache[keynames][to_keys(keynames)]
-                for keynames in keynames_set
+                for keynames in matching_keynames
             }, (self, parent_keynames, parent_keys))
         if len(kwargs) == self.depth:
             keys = tuple(kwargs[kn] for kn in self.keynames)
             return self.nested_dict()[keys]
         other_keynames = [kn for kn in self.keynames if kn not in kwargs]
-        keynames_set = self.get_matching_prefix_caches(*kwargs.keys())
+        keynames_set = self.get_matching_prefix_caches(kwargs.keys())
         parent_keynames = next(iter(keynames_set))[:len(kwargs)]
         parent_keys = tuple(kwargs[kn] for kn in parent_keynames)
         to_keys = lambda keynames: tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
@@ -254,7 +258,7 @@ class MultiKeyTable:
             
     def __contains__(self, *args, **kwargs) -> bool:
         kwargs = self.keys2kwargs(*args, **kwargs)
-        keynames = next(iter(self.get_matching_prefix_caches(*kwargs.keys())))[:len(kwargs)]
+        keynames = next(iter(self.get_matching_prefix_caches(set(kwargs.keys()))))[:len(kwargs)]
         keys = tuple(kwargs[kn] for kn in keynames[:len(kwargs)])
         return keys in self.nested_dict(*keynames)
 
@@ -315,9 +319,9 @@ class MultiKeyTable:
 
     def delete(self, *args, tolerate_key_error: bool=False, **kwargs) -> None:
         kwargs = self.keys2kwargs(*args, **kwargs)
-        nonset_keynames = [kn for kn in kwargs if not isinstance(kwargs[kn], set)]
+        nonset_keynames = {kn for kn in kwargs if not isinstance(kwargs[kn], set)}
         if len(nonset_keynames) < self.depth:
-            keynames = next(iter(self.get_matching_prefix_caches(*nonset_keynames)))
+            keynames = next(iter(self.get_matching_prefix_caches(nonset_keynames)))
             parent_keys = [kwargs[kn] for kn in keynames[:len(nonset_keynames)]]
             def matching_sub_keys(sub_keys):
                 for key, keyname in zip(sub_keys, keynames[len(nonset_keynames):]):
@@ -357,6 +361,7 @@ class MultiKeyTable:
         return result
 
     def reorder(self, *keynames) -> "MultiKeyTable":
+        self._main_cache()
         keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
         assert len(keynames) == self.depth
         return type(self)(keynames, self._cache)
@@ -408,5 +413,7 @@ class MultiKeyTable:
         return type(self).__name__, dict(name=name, keynames=self.keynames)
 
     def __repr__(self) -> str:
-        return f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df(5)}\n\n... ({len(self)} items)"
+        r = f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df(5)}"
+        return r + (f"\n\n... ({len(self)} items)" if len(self) > 5 else "")
+        
     

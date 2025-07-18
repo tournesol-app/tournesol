@@ -69,16 +69,23 @@
     "user_models": [
         "UserModels",
         {
-            "default_model_cls": [
-                "DirectScoring",
-                {}
+            "default_composition": [
+                [
+                    "direct",
+                    {}
+                ]
             ]
         }
     ],
     "global_model": [
-        "DirectScoring",
+        "ScoringModel",
         {
-            "note": "None"
+            "composition": [
+                [
+                    "direct",
+                    {}
+                ]
+            ]
         }
     ]
 }

@@ -16,15 +16,23 @@
 
 ## Tests
 
-To run tests, setup a virtual environment, activate it, install dependencies and run pytest.
+To run tests, setup a virtual environment, activate it and install dependencies.
 ```
 python3 -m venv devenv
 source devenv/bin/activate
 pip install -e .[test]
-pytest
 ```
 Depending on the platform, you may need to replace ```source devenv/bin/activate``` by another call.
 See the [venv doc](https://docs.python.org/3/library/venv.html#how-venvs-work) for more information.
+
+To run the tests, generate synthetic data by running
+```
+python3 tests/generate_test_states.py
+```
+You can then run pytest
+```
+pytest
+```
 
 ## Synthetic experiments
 
