@@ -368,6 +368,7 @@ describe('Settings - preferences page', () => {
         });
       });
 
+      // Does it work?
       describe('Setting - exclude compared entities', () => {
         it('handles the value false (include)', () => {
           cy.recreateUser('test_exclude_false', 'test_exclude_false@example.com', 'tournesol');
