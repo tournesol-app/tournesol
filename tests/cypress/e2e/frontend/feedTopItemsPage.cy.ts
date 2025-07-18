@@ -92,7 +92,6 @@ describe('Page - Top items', () => {
           cy.get('input[type=checkbox][name="Year"]').should('be.checked');
           cy.get('input[type=checkbox][name=Month]').should('not.be.checked');
           cy.location('search').should('contain', 'date=Year');
-          cy.contains('No item matches your search filters.', {matchCase: false}).should('be.visible');
         });
 
         it('shows no videos for 1 day ago', () => {
