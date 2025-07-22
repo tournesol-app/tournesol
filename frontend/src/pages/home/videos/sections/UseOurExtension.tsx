@@ -23,97 +23,84 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
         dividerColor={titleColor}
         headingId="use-extension"
       />
-      <Grid
-        container
-        sx={{
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Grid item xl={9}>
-          <Paper sx={{ p: 2 }}>
-            <Grid
-              container
+      <Paper sx={{ p: 2 }}>
+        <Grid
+          container
+          sx={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 3,
+          }}
+        >
+          <Grid
+            item
+            lg={7}
+            sx={{
+              width: '100%',
+            }}
+          >
+            <Box
               sx={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 3,
+                display: 'flex',
+                justifyContent: 'space-evenly',
               }}
             >
-              <Grid
-                item
-                lg={7}
+              <img
+                width="64px"
+                src="/logos/Fx-Browser-icon-fullColor.svg"
+                alt="Mozilla Firefox browser logo."
+              />
+              <img
+                width="64px"
+                src="/logos/Chrome-Browser-icon-fullColor.svg"
+                alt="Google Chrome browser logo."
+              />
+              <img
+                width="64px"
+                src="/logos/Edge-Browser-icon-fullColor.svg"
+                alt="Microsoft Edge browser logo."
+              />
+            </Box>
+          </Grid>
+          <Grid item>
+            <Typography
+              sx={{
+                m: 0,
+                textAlign: 'justify',
+              }}
+            >
+              {t('home.webExtensionDescription')}
+            </Typography>
+          </Grid>
+          <Grid item>
+            {webExtensionUrl ? (
+              <Box
                 sx={{
-                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-evenly',
-                  }}
+                <Button
+                  color="primary"
+                  variant="contained"
+                  component="a"
+                  href={webExtensionUrl}
+                  startIcon={<Extension />}
                 >
-                  <img
-                    width="64px"
-                    src="/logos/Fx-Browser-icon-fullColor.svg"
-                    alt="Mozilla Firefox browser logo."
-                  />
-                  <img
-                    width="64px"
-                    src="/logos/Chrome-Browser-icon-fullColor.svg"
-                    alt="Google Chrome browser logo."
-                  />
-                  <img
-                    width="64px"
-                    src="/logos/Edge-Browser-icon-fullColor.svg"
-                    alt="Microsoft Edge browser logo."
-                  />
-                </Box>
-              </Grid>
-              <Grid item xl={9}>
-                <Typography
-                  sx={{
-                    m: 0,
-                    textAlign: 'justify',
-                  }}
-                >
-                  {t('home.webExtensionDescription')}
-                </Typography>
-              </Grid>
-              <Grid item xl={9}>
-                {webExtensionUrl ? (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      component="a"
-                      href={webExtensionUrl}
-                      startIcon={<Extension />}
-                    >
-                      {t('home.getTheExtensionButton')}
-                    </Button>
-                  </Box>
-                ) : (
-                  <Alert severity="info" variant="filled">
-                    <Trans
-                      t={t}
-                      i18nKey="home.extensionNotAvailableOnYourBrowser"
-                    >
-                      The extension is not available on your web browser. You
-                      may use it on <b>Firefox</b>, <b>Google Chrome</b>.
-                    </Trans>
-                  </Alert>
-                )}
-              </Grid>
-            </Grid>
-          </Paper>
+                  {t('home.getTheExtensionButton')}
+                </Button>
+              </Box>
+            ) : (
+              <Alert severity="info" variant="filled">
+                <Trans t={t} i18nKey="home.extensionNotAvailableOnYourBrowser">
+                  The extension is not available on your web browser. You may
+                  use it on <b>Firefox</b>, <b>Google Chrome</b>.
+                </Trans>
+              </Alert>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
+      </Paper>
     </Box>
   );
 };

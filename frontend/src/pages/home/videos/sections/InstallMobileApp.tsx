@@ -1,8 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Grid, Paper, Typography, Button } from '@mui/material';
-import { InstallMobile } from '@mui/icons-material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 
 import SectionTitle from './SectionTitle';
 
@@ -23,75 +22,52 @@ const InstallMobileApp = ({ titleColor }: UseOurExtensionProps) => {
         dividerColor={titleColor}
         headingId="use-extension"
       />
-      <Grid
-        container
-        sx={{
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Grid item xl={9}>
-          <Paper sx={{ p: 2 }}>
-            <Grid
-              container
+      <Paper sx={{ p: 2 }}>
+        <Grid
+          container
+          sx={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 3,
+          }}
+        >
+          <Grid item>
+            <Typography
               sx={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 3,
+                m: 0,
+                textAlign: 'justify',
               }}
             >
-              <Grid
-                item
-                lg={7}
-                sx={{
-                  width: '100%',
-                }}
+              {t('home.installTheMobileAppDescription')}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            sx={{
+              width: '100%',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-evenly',
+              }}
+            >
+              <a
+                href={googlePlayStoreMobileAppUrl}
+                target="_blank"
+                rel="noreferrer"
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-evenly',
-                  }}
-                >
-                  <img
-                    width="256px"
-                    src="/logos/Google_Play_2022_logo.svg"
-                    alt="Google Play Store logo."
-                  />
-                </Box>
-              </Grid>
-              <Grid item xl={9}>
-                <Typography
-                  sx={{
-                    m: 0,
-                    textAlign: 'justify',
-                  }}
-                >
-                  {t('home.installTheMobileAppDescription')}
-                </Typography>
-              </Grid>
-              <Grid item xl={9}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    component="a"
-                    href={googlePlayStoreMobileAppUrl}
-                    startIcon={<InstallMobile />}
-                  >
-                    {t('home.installTheMobileAppButton')}
-                  </Button>
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
+                <img
+                  width="200px"
+                  src="/logos/GetItOnGooglePlay_Badge_Web_color_English.png"
+                  alt="GetItOnGooglePlay Badge"
+                />
+              </a>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      </Paper>
     </Box>
   );
 };

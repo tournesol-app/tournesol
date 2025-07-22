@@ -6,7 +6,6 @@ interface SectionTitleProps {
   title: string;
   color?: string;
   dividerColor?: string;
-  dividerWidthXl?: string;
   headingId?: string;
 }
 
@@ -17,14 +16,11 @@ const SectionTitle = ({
   title,
   color,
   dividerColor,
-  dividerWidthXl = '75%',
   headingId,
 }: SectionTitleProps) => {
   const theme = useTheme();
 
-  let sx: SxProps = {
-    width: { xs: '100%', xl: dividerWidthXl },
-  };
+  let sx: SxProps = { width: '100%' };
 
   if (dividerColor) {
     sx = { ...sx, '&::before, &::after': { borderColor: dividerColor } };

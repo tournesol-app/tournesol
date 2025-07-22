@@ -31,11 +31,7 @@ const FundingSection = ({
 
   return (
     <>
-      <SectionTitle
-        title={t('fundingSection.supportUs')}
-        dividerWidthXl={fullWidth ? '100%' : undefined}
-        headingId="funding"
-      />
+      <SectionTitle title={t('fundingSection.supportUs')} headingId="funding" />
       <SectionDescription
         description={t('fundingSection.tournesolExistsThanksToYourInvolvement')}
       />

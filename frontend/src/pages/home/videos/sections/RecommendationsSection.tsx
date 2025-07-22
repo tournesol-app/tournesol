@@ -46,13 +46,12 @@ const RecommendationsSection = () => {
 
       <Grid
         container
-        spacing={4}
         sx={{
           justifyContent: 'center',
           pb: 4,
         }}
       >
-        <Grid item lg={9} xl={6}>
+        <Grid item lg={9}>
           <Box
             sx={{
               display: 'flex',
