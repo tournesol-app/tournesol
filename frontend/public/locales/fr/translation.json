@@ -963,7 +963,7 @@
     "getTheExtensionButton": "Installer l'extension",
     "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <1>Mozilla Firefox</1>, <3>Google Chrome</3> et probablement leurs dérivés.",
     "installTheMobileAppTitle": "Utilisez l'app",
-    "installTheMobileAppDescription": "L'application mobile est la meilleure façon d'accéder aux vidéos de grande qualité identifiées par la communauté directement sur votre téléphone mobile.",
+    "installTheMobileAppDescription": "L'application mobile est la meilleure façon d'accéder aux vidéos de grande qualité identifiées par la communauté directement sur votre smartphone.",
     "installTheMobileAppButton": "Installer l'app"
   },
   "comparisonSection": {
