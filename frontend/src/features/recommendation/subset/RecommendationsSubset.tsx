@@ -16,8 +16,6 @@ interface RecommendationsSubsetProps {
   nbr?: number;
   // if true display few buttons allowing to filter the recommendations
   displayControls?: boolean;
-  // the color of the control buttons
-  controlsColor?: string;
   // called when the recommendation date is changed by the controls
   onRecoDateChange?: (selectedDate: string) => void;
 }
@@ -26,7 +24,6 @@ const RecommendationsSubset = ({
   language,
   nbr = 4,
   displayControls = false,
-  controlsColor = '#fff',
   onRecoDateChange,
 }: RecommendationsSubsetProps) => {
   const theme = useTheme();
@@ -78,7 +75,6 @@ const RecommendationsSubset = ({
           }}
         >
           <RecommendationsSubsetControls
-            controlsColor={controlsColor}
             selectedDate={recoDate}
             dateControlChangeCallback={dateControlChangeCallback}
           />
