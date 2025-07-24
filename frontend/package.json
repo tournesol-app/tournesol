@@ -25,7 +25,7 @@
     "precompress": "7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-i18next": "^11.18.5",
+    "react-i18next": "^12",
     "react-player": "^2.9.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.30.1",
