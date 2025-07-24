@@ -48,7 +48,7 @@ export default defineConfig(() => {
                   name: "fix-jsx-runtime",
                   setup: (build) => {
                     build.onResolve({ filter: /jsx-runtime$/ }, args => {
-                      return { path: require.resolve(args.path) }
+                      return { path: import.meta.resolve(args.path) }
                     })
                   }
                 }
