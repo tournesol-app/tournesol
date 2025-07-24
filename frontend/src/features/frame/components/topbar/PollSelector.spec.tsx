@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Route, Switch } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { HowToVote, YouTube } from '@mui/icons-material';
 import PollSelector from './PollSelector';
@@ -10,7 +10,7 @@ import {
 } from 'src/utils/constants';
 import { SelectablePoll } from 'src/utils/types';
 
-describe('change password feature', () => {
+describe('poll selector component', () => {
   const polls: Array<SelectablePoll> = [
     {
       name: PRESIDENTIELLE_2022_POLL_NAME,
@@ -41,11 +41,13 @@ describe('change password feature', () => {
     render(
       <PollProvider>
         <MemoryRouter>
-          <Switch>
-            <Route path="/">
-              <PollSelector polls={polls} />
-            </Route>
-          </Switch>
+          <Routes>
+            <Route path="/" element={<PollSelector polls={polls} />} />
+            <Route
+              path="/presidentielle2022"
+              element={<PollSelector polls={polls} />}
+            />
+          </Routes>
         </MemoryRouter>
       </PollProvider>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Alert, Box, Chip, Grid, Typography } from '@mui/material';
@@ -10,10 +10,10 @@ interface EntityCardContextAlertProps {
 
 const EntityCardContextAlert = ({ uid }: EntityCardContextAlertProps) => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    history.push(`/entities/${uid}#entity-context`);
+    navigate(`/entities/${uid}#entity-context`);
   };
 
   return (

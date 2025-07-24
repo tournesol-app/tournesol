@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Redirect, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { Box, Collapse, Grid2, Paper, Typography } from '@mui/material';
 
@@ -208,7 +208,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
 
 const VideoAnalysisPage = () => {
   const { video_id } = useParams<{ video_id: string }>();
-  return <Redirect to={`/entities/yt:${video_id}`} />;
+  return <Navigate to={`/entities/yt:${video_id}`} replace />;
 };
 
 export default VideoAnalysisPage;

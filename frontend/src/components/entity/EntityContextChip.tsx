@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { Chip } from '@mui/material';
 
@@ -13,12 +13,12 @@ export const EntityContextChip = ({
   uid: string;
   entityContexts: EntityContext[];
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
-    history.push(`/entities/${uid}#entity-context`);
+    navigate(`/entities/${uid}#entity-context`);
   };
 
   const unsafeContext = entityContexts.find(

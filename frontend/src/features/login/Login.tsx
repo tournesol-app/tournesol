@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useLocation, Redirect } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -19,6 +19,14 @@ import { hasValidToken } from './loginUtils';
 import { LoginState } from './LoginState.model';
 import RedirectState from './RedirectState';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
+
+const prependSlash = (path: string | undefined) => {
+  if (!path) {
+    return '/';
+  }
+
+  return path.startsWith('/') ? path : `/${path}`;
+};
 
 const Login = () => {
   const { t } = useTranslation();
@@ -59,9 +67,9 @@ const Login = () => {
 
   if (validToken) {
     if (fromUrl) {
-      return <Redirect to={fromUrl} />;
+      return <Navigate to={fromUrl} replace />;
     } else {
-      return <Redirect to={baseUrl ?? '/'} />;
+      return <Navigate to={prependSlash(baseUrl)} replace />;
     }
   }
 

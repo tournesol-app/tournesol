@@ -4,6 +4,7 @@ import { Box, SxProps, Typography } from '@mui/material';
 
 import { InternalLink } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
+import { absolutePollBasePath } from 'src/utils/navigation';
 
 const EntityCardTitle = ({
   uid,
@@ -59,7 +60,10 @@ const EntityCardTitle = ({
       }}
     >
       {withLink ? (
-        <InternalLink to={`${baseUrl}/entities/${uid}`} underline="none">
+        <InternalLink
+          to={`${absolutePollBasePath(baseUrl)}/entities/${uid}`}
+          underline="none"
+        >
           {titleNode}
         </InternalLink>
       ) : (

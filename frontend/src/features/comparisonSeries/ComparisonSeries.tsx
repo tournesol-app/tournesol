@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -287,8 +287,9 @@ const ComparisonSeries = ({
 
   if (initializing.current && firstComparisonParams) {
     return (
-      <Redirect
+      <Navigate
         to={{ pathname: location.pathname, search: firstComparisonParams }}
+        replace
       />
     );
   }
@@ -304,8 +305,9 @@ const ComparisonSeries = ({
       }
     }
     return (
-      <Redirect
+      <Navigate
         to={{ pathname: redirectTo, search: futureSearchParams.toString() }}
+        replace
       />
     );
   }

@@ -372,9 +372,6 @@ describe('Settings - preferences page', () => {
         it('handles the value false (include)', () => {
           cy.recreateUser('test_exclude_false', 'test_exclude_false@example.com', 'tournesol');
 
-          cy.intercept('http://localhost:8000/polls/videos/recommendations/*')
-            .as('recommendationsRetrievedFromAPI');
-
           cy.intercept('http://localhost:8000/users/me/settings/')
             .as('settingsRetrievedFromAPI');
 
@@ -397,17 +394,17 @@ describe('Settings - preferences page', () => {
 
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
+              cy.contains("Comparison successfully submitted.")
 
-              cy.contains('test_exclude_false').click();
-              cy.get('[data-testid="settings-preferences"]').click();
-              cy.wait('@settingsRetrievedFromAPI');
+              cy.intercept('http://localhost:8000/users/me/settings/')
+                .as('settingsRetrievedFromAPI2');
 
-              // Change an additional setting to bypass the cache in /feed/foryou.
-              cy.get('[data-testid="videos_feed_foryou__unsafe"]').check();
-              cy.contains('Update preferences').click();
-
-              cy.visit('/feed/foryou');
-              cy.wait('@recommendationsRetrievedFromAPI');
+              cy.visit("/feed/foryou")
+              cy.wait('@settingsRetrievedFromAPI2')
+                .its('response.body')
+                .should(settings => {
+                  expect(settings["videos"]["feed_foryou__exclude_compared_entities"]).equals(false)
+                });
 
               cy.get('[data-testid="video-card-info"] h5')
                 .first()
@@ -420,9 +417,6 @@ describe('Settings - preferences page', () => {
 
         it('handles the value true (exclude)', () => {
           cy.recreateUser('test_exclude_true', 'test_exclude_true@example.com', 'tournesol');
-
-          cy.intercept('http://localhost:8000/polls/videos/recommendations/*')
-            .as('recommendationsRetrievedFromAPI');
 
           cy.intercept('http://localhost:8000/users/me/settings/')
             .as('settingsRetrievedFromAPI');
@@ -447,17 +441,24 @@ describe('Settings - preferences page', () => {
 
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
+              cy.contains("Comparison successfully submitted.")
 
-              cy.contains('test_exclude_true').click();
-              cy.get('[data-testid="settings-preferences"]').click();
-              cy.wait('@settingsRetrievedFromAPI');
+              // Logging out allows to renew the auth token and make sure
+              // the browser cache is ignored when fetching the feed "For You".
+              cy.contains('test_exclude_true').click()
+              cy.contains("Logout").click()
 
-              // Change an additional setting to bypass the cache in /feed/foryou.
-              cy.get('[data-testid="videos_feed_foryou__unsafe"]').check();
-              cy.contains('Update preferences').click();
+              cy.intercept('http://localhost:8000/users/me/settings/')
+                .as('settingsRetrievedFromAPI2');
 
-              cy.visit('/feed/foryou');
-              cy.wait('@recommendationsRetrievedFromAPI');
+              cy.contains("For you").click()
+              login('test_exclude_true');
+
+              cy.wait('@settingsRetrievedFromAPI2')
+                .its('response.body')
+                .should(settings => {
+                  expect(settings["videos"]["feed_foryou__exclude_compared_entities"]).equals(true)
+                });
 
               cy.get('[data-testid="video-card-info"] h5')
                 .first()

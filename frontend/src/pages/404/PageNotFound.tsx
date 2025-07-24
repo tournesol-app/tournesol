@@ -6,16 +6,16 @@ import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 
 const PageNotFound = () => {
   const { t } = useTranslation();
-
   const { options } = useCurrentPoll();
   const path = options?.path ?? '/';
 
   return (
     <Box
       sx={{
+        backgroundColor: '#eeeeec',
         backgroundImage: "url('/svg/backgrounds/chandelier.svg')",
-        backgroundPosition: 'center',
-        backgroundRepeatY: 'no-repeat',
+        backgroundPosition: 'top',
+        backgroundRepeat: 'repeat-x',
         height: '100%',
       }}
     >
@@ -26,7 +26,7 @@ const PageNotFound = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           textAlign: 'center',
-          pt: 22,
+          pt: '280px',
           pb: 2,
         }}
       >

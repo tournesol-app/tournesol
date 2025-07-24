@@ -7,9 +7,8 @@ import React, {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, Location } from 'react-router-dom';
 import { TFunction, useTranslation } from 'react-i18next';
-import { Location } from 'history';
 
 import {
   Box,
@@ -119,7 +118,7 @@ const Comparison = ({
   const theme = useTheme();
   const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { showSuccessAlert, displayErrorsFrom } = useNotifications();
   const { setHasLoopedThroughCriteria } = useContext(ComparisonsContext);
@@ -176,7 +175,7 @@ const Comparison = ({
       if ((searchParams.get(uidKey) || '') !== uid) {
         searchParams.set(uidKey, uid || '');
         searchParams.delete(LEGACY_PARAMS[vidKey]);
-        history.replace({ search: searchParams.toString() });
+        navigate({ search: searchParams.toString() }, { replace: true });
       }
 
       if (vidKey === 'vidA') {
@@ -193,7 +192,7 @@ const Comparison = ({
         }
       }
     },
-    [history, selectorA.uid, selectorB.uid, setHasLoopedThroughCriteria]
+    [navigate, selectorA.uid, selectorB.uid, setHasLoopedThroughCriteria]
   );
 
   const onChangeA = useMemo(() => onChange('vidA'), [onChange]);

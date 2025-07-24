@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useHistory, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Box, Chip, Grid } from '@mui/material';
@@ -29,7 +29,7 @@ import { getRecommendationPageName } from 'src/utils/constants';
 function RecommendationsPage() {
   const { t } = useTranslation();
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { baseUrl, name: pollName, criterias, options } = useCurrentPoll();
   const langsAutoDiscovery = options?.defaultRecoLanguageDiscovery ?? false;
@@ -67,7 +67,7 @@ function RecommendationsPage() {
 
   function handleOffsetChange(newOffset: number) {
     searchParams.set('offset', newOffset.toString());
-    history.push({ search: searchParams.toString() });
+    navigate({ search: searchParams.toString() });
   }
 
   useEffect(() => {
@@ -84,7 +84,7 @@ function RecommendationsPage() {
     const searchParams = new URLSearchParams(location.search);
     if (langsAutoDiscovery && searchParams.get('language') === null) {
       searchParams.set('language', '');
-      history.replace({ search: searchParams.toString() });
+      navigate({ search: searchParams.toString() }, { replace: true });
       return;
     }
 
@@ -121,9 +121,9 @@ function RecommendationsPage() {
   }, [
     criterias,
     displayPersonalRecommendations,
-    history,
     langsAutoDiscovery,
     location.search,
+    navigate,
     options,
     pollName,
     username,
