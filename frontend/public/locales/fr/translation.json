@@ -651,7 +651,8 @@
     "comparisons": "Comparaisons"
   },
   "statsSection": {
-    "statistics": "Statistiques"
+    "statistics": "Statistiques",
+    "thankYouForStats": "Un grand merci à la communauté qui compare des vidéos et construit le système de recommendation de Tournesol."
   },
   "tip": {
     "less": "Moins",
@@ -960,11 +961,14 @@
     "useOurExtension": "Utilisez l'extension !",
     "webExtensionDescription": "L'extension navigateur vous permet de retrouver les vidéos recommandées par la communauté directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
-    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <1>Mozilla Firefox</1>, <3>Google Chrome</3> et probablement leurs dérivés."
+    "extensionNotAvailableOnYourBrowser": "L'extension n'est malheureusement pas disponible pour votre navigateur web. Elle est compatible avec <1>Mozilla Firefox</1>, <3>Google Chrome</3> et probablement leurs dérivés.",
+    "installTheMobileAppTitle": "Utilisez l'app",
+    "installTheMobileAppDescription": "L'application mobile est la meilleure façon d'accéder aux vidéos de grande qualité identifiées par la communauté directement sur votre smartphone.",
+    "installTheMobileAppButton": "Installer l'app"
   },
   "comparisonSection": {
     "contribute": "Contribuer",
-    "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ?"
+    "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ? Créez un compte pour aider à identifier les vidéos d'utilité publique."
   },
   "fundingSection": {
     "supportUs": "Soutenez-nous !",
@@ -980,8 +984,8 @@
   },
   "recommendationsSection": {
     "recommendations": "Recommandations",
-    "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur·rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
-    "seeMore": "Voir plus"
+    "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur·rices.",
+    "seeMore": "Voir plus de vidéos"
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Nos données sont ouvertes",
@@ -997,7 +1001,7 @@
   },
   "researchSection": {
     "research": "Recherche",
-    "weSeekToSupportResearch": "« Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains. »"
+    "weSeekToSupportResearch": "Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains."
   },
   "scientificLiteratureBox": {
     "publications": "Publications",

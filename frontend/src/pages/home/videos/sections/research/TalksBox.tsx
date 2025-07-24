@@ -30,6 +30,7 @@ const TalksBox = () => {
           }}
         >
           <Button
+            fullWidth
             variant="contained"
             color="primary"
             component={Link}

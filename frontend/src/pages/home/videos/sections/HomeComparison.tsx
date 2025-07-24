@@ -20,6 +20,7 @@ import { getUserComparisonsRaw } from 'src/utils/api/comparisons';
 import { setPendingRating } from 'src/utils/comparison/pending';
 import { alreadyComparedWith, selectRandomEntity } from 'src/utils/entity';
 import { getTutorialVideos } from 'src/utils/polls/videos';
+import { HowToVote } from '@mui/icons-material';
 
 /**
  * The Home Comparison.
@@ -198,6 +199,7 @@ const HomeComparison = () => {
                 handleSliderChange={handleSliderChange}
               />
               <Button
+                startIcon={<HowToVote />}
                 variant="contained"
                 color="primary"
                 size="large"
