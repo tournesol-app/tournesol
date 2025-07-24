@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container } from '@mui/material';
+import { Box, Container, SxProps } from '@mui/material';
 
 import { topBarHeight } from 'src/features/frame/components/topbar/TopBar';
 
@@ -7,6 +7,7 @@ interface Props {
   maxWidth?: false | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
   noMinPaddingX?: boolean;
+  sx?: SxProps;
 }
 
 /**
@@ -20,6 +21,7 @@ const ContentBox = ({
   children,
   maxWidth = false,
   noMinPaddingX = false,
+  sx,
 }: Props) => {
   if (!children) {
     return null;
@@ -33,6 +35,7 @@ const ContentBox = ({
         // Push the global footer away, to avoid displaying it in the middle
         // of the screen.
         minHeight: `calc(100vh - ${topBarHeight}px)`,
+        ...sx,
       }}
     >
       <Container maxWidth={maxWidth} disableGutters>

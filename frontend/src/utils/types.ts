@@ -1,6 +1,6 @@
 import React from 'react';
-import { TFunction } from 'react-i18next';
 import { SvgIconComponent } from '@mui/icons-material';
+import { TFunction } from 'i18next';
 import {
   ContributorRating,
   RateLater,

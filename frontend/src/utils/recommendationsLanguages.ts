@@ -1,4 +1,4 @@
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'i18next';
 import { storage } from 'src/app/localStorage';
 import { someLangsAreSupported } from 'src/i18n';
 import { uniq } from 'src/utils/array';

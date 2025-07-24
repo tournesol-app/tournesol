@@ -45,6 +45,10 @@ const VideoAnalysisPage = React.lazy(
   () => import('./pages/videos/VideoAnalysisPage')
 );
 
+const ManifestoPage = React.lazy(
+  () => import('./pages/manifesto/ManifestoPage')
+);
+
 const API_URL = import.meta.env.REACT_APP_API_URL;
 
 const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
@@ -176,6 +180,14 @@ function App() {
               element={
                 <RouteWrapper>
                   <About />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/manifesto"
+              element={
+                <RouteWrapper>
+                  <ManifestoPage />
                 </RouteWrapper>
               }
             />

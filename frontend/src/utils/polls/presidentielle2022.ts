@@ -1,4 +1,4 @@
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'i18next';
 import { EntitiesService, TypeEnum } from 'src/services/openapi';
 import { EntityResult, OrderedDialogs } from 'src/utils/types';
 
