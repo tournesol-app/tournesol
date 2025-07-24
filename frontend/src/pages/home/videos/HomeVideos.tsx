@@ -14,7 +14,7 @@ import InstallMobileApp from 'src/pages/home/videos/sections/InstallMobileApp';
 const HomeVideosPage = () => {
   const homeSectionSx = {
     width: '100%',
-    px: { xs: 2, md: 6, xl: 9 },
+    px: { xs: 2, md: 6 },
   };
 
   return (

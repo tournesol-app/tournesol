@@ -72,24 +72,18 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
               {t('home.webExtensionDescription')}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid item width="100%">
             {webExtensionUrl ? (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
+              <Button
+                fullWidth
+                color="primary"
+                variant="contained"
+                component="a"
+                href={webExtensionUrl}
+                startIcon={<Extension />}
               >
-                <Button
-                  color="primary"
-                  variant="contained"
-                  component="a"
-                  href={webExtensionUrl}
-                  startIcon={<Extension />}
-                >
-                  {t('home.getTheExtensionButton')}
-                </Button>
-              </Box>
+                {t('home.getTheExtensionButton')}
+              </Button>
             ) : (
               <Alert severity="info" variant="filled">
                 <Trans t={t} i18nKey="home.extensionNotAvailableOnYourBrowser">

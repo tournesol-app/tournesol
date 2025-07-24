@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 
 import TitleSection from 'src/pages/home/TitleSection';
+import { VideoLibrary } from '@mui/icons-material';
 
 /**
  * A home page section that displays a subset of recommended entities.
@@ -44,44 +45,37 @@ const RecommendationsSection = () => {
         </Typography>
       </TitleSection>
 
-      <Grid
-        container
+      <Box
         sx={{
+          display: 'flex',
           justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 2,
           pb: 4,
         }}
       >
-        <Grid item lg={9}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              gap: 2,
-            }}
+        <RecommendationsSubset
+          language={currentLang}
+          displayControls
+          onRecoDateChange={onRecoDateChangeCallback}
+        />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Button
+            fullWidth
+            startIcon={<VideoLibrary />}
+            variant="contained"
+            component={Link}
+            to={`/search?date=${seeMoreDate}&language=${currentLang}`}
           >
-            <RecommendationsSubset
-              language={currentLang}
-              displayControls
-              onRecoDateChange={onRecoDateChangeCallback}
-            />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Button
-                variant="contained"
-                component={Link}
-                to={`/search?date=${seeMoreDate}&language=${currentLang}`}
-              >
-                {t('recommendationsSection.seeMore')}
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
+            {t('recommendationsSection.seeMore')}
+          </Button>
+        </Box>
+      </Box>
     </>
   );
 };

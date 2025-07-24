@@ -45,6 +45,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             }}
           >
             <Button
+              fullWidth
               variant="contained"
               component={Link}
               href={`${apiUrl}/exports/all/`}
@@ -76,6 +77,7 @@ const PublicDataPublicCodeBox = ({ sx }: { sx?: SxProps }) => {
             }}
           >
             <Button
+              fullWidth
               variant="contained"
               component={Link}
               href="https://github.com/tournesol-app/tournesol"

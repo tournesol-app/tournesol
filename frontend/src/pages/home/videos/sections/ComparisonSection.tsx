@@ -28,8 +28,6 @@ const ComparisonSection = () => {
       >
         <Grid
           item
-          lg={9}
-          xl={6}
           sx={{
             width: '100%',
           }}

@@ -10,13 +10,9 @@ import SectionDescription from './SectionDescription';
 
 interface FundingSectionProps {
   linkToDonatePage?: boolean;
-  fullWidth?: boolean;
 }
 
-const FundingSection = ({
-  linkToDonatePage = true,
-  fullWidth = false,
-}: FundingSectionProps) => {
+const FundingSection = ({ linkToDonatePage = true }: FundingSectionProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -47,7 +43,6 @@ const FundingSection = ({
             sm: 12,
             md: 4,
             lg: 4,
-            xl: fullWidth ? 4 : 3,
           }}
         >
           <Paper elevation={0}>
@@ -76,7 +71,6 @@ const FundingSection = ({
             sm: 12,
             md: 4,
             lg: 4,
-            xl: fullWidth ? 4 : 3,
           }}
         >
           <Paper elevation={0}>
@@ -105,7 +99,6 @@ const FundingSection = ({
             sm: 12,
             md: 4,
             lg: 4,
-            xl: fullWidth ? 4 : 3,
           }}
         >
           <Paper elevation={0}>
@@ -131,15 +124,15 @@ const FundingSection = ({
         </Grid2>
         {linkToDonatePage && (
           <Grid2
-            size={9}
+            size={12}
             sx={{
               display: 'flex',
               justifyContent: 'center',
             }}
           >
             <Button
+              fullWidth
               variant="contained"
-              size="large"
               component={Link}
               to="/about/donate"
               startIcon={<VolunteerActivism />}

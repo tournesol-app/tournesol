@@ -28,10 +28,10 @@ const ResearchSection = () => {
           justifyContent: 'center',
         }}
       >
-        <Grid item lg={4} xl={6}>
+        <Grid item lg={6}>
           <PublicDataPublicCodeBox />
         </Grid>
-        <Grid item lg={8} xl={6}>
+        <Grid item lg={6}>
           <VisualizeDataBox />
         </Grid>
         <Grid
