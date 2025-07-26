@@ -163,7 +163,9 @@ export const getRandomSubarray = (arr, size) => {
 
 export const getVideoStatistics = async (videoId) => {
   // videos/?videos=V6x9bXTU0vY
-  const videoStatistics = await fetchTournesolApi(`polls/videos/recommendations/?search=${videoId}`);
+  const videoStatistics = await fetchTournesolApi(
+    `polls/videos/recommendations/?search=${videoId}`
+  );
   if (videoStatistics.status === 200) {
     const responseJson = await videoStatistics.json();
 
@@ -176,7 +178,6 @@ export const getVideoStatistics = async (videoId) => {
 
   return { success: false };
 };
-
 
 const getObjectFromLocalStorage = async (key, default_ = null) => {
   return new Promise((resolve, reject) => {

@@ -24,8 +24,8 @@ if (document.body) {
 }
 
 /*
-* Create the statistics container with the tournesol score, comparisons and contributors.
-*/
+ * Create the statistics container with the tournesol score, comparisons and contributors.
+ */
 function addVideoStatistics() {
   const videoId = new URL(location.href).searchParams.get('v');
   if (!location.pathname.startsWith('/watch') || !videoId) return;
@@ -59,15 +59,23 @@ function addVideoStatistics() {
         infoElem.setAttribute('id', 'tournesol-statistics-info');
         infoElem.className = 'tournesol-statistics-info';
 
-        if (resp && resp.body && resp.body.results && resp.body.results.length === 1) {
+        if (
+          resp &&
+          resp.body &&
+          resp.body.results &&
+          resp.body.results.length === 1
+        ) {
           const details = resp.body.results[0];
           if (details.tournesol_score == 0) {
-            infoElem.textContent = chrome.i18n.getMessage('tournesolNotRatedMessage');
+            infoElem.textContent = chrome.i18n.getMessage(
+              'tournesolNotRatedMessage'
+            );
           } else {
             // Show sunflower icon, score, comparisons, contributors
             const scoreSpan = document.createElement('span');
             scoreSpan.className = 'tournesol-statistics-score';
-            scoreSpan.textContent = details.collective_rating.tournesol_score.toFixed(0);
+            scoreSpan.textContent =
+              details.collective_rating.tournesol_score.toFixed(0);
 
             const sunflowerImg = document.createElement('img');
             sunflowerImg.src = `${frontendUrl}/svg/tournesol.svg`;
@@ -77,11 +85,17 @@ function addVideoStatistics() {
 
             const comparisonsSpan = document.createElement('span');
             comparisonsSpan.className = 'tournesol-statistics-comparisons';
-            comparisonsSpan.textContent = chrome.i18n.getMessage('comparisonsBy', details.collective_rating.n_contributors);
+            comparisonsSpan.textContent = chrome.i18n.getMessage(
+              'comparisonsBy',
+              details.collective_rating.n_contributors
+            );
 
             const contributorsSpan = document.createElement('span');
             contributorsSpan.className = 'tournesol-statistics-contributors';
-            contributorsSpan.textContent = chrome.i18n.getMessage('comparisonsContributors', details.collective_rating.n_comparisons);
+            contributorsSpan.textContent = chrome.i18n.getMessage(
+              'comparisonsContributors',
+              details.collective_rating.n_comparisons
+            );
 
             infoElem.appendChild(scoreSpan);
             infoElem.appendChild(comparisonsSpan);
@@ -89,10 +103,9 @@ function addVideoStatistics() {
           }
         } else {
           infoElem.textContent = chrome.i18n.getMessage('videoNotRatedMessage');
-        } 
+        }
         actionsRow.insertBefore(infoElem, actionsRow.firstChild);
       }
     );
   }
 }
-
