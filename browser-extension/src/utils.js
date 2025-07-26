@@ -161,9 +161,22 @@ export const getRandomSubarray = (arr, size) => {
   return shuffled.slice(0, size);
 };
 
-export const getVideoStatistics = (videoId) => {
-  return fetchTournesolApi(`videos/?video_id=${videoId}`);
+export const getVideoStatistics = async (videoId) => {
+  // videos/?videos=V6x9bXTU0vY
+  const videoStatistics = await fetchTournesolApi(`polls/videos/recommendations/?search=${videoId}`);
+  if (videoStatistics.status === 200) {
+    const responseJson = await videoStatistics.json();
+
+    return {
+      success: videoStatistics.ok,
+      status: videoStatistics.status,
+      body: responseJson,
+    };
+  }
+
+  return { success: false };
 };
+
 
 const getObjectFromLocalStorage = async (key, default_ = null) => {
   return new Promise((resolve, reject) => {

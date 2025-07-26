@@ -1,49 +1,45 @@
-// Youtube doesnt completely load a video page, so content script doesn't lauch correctly without these events
-
-// This part is called on connection for the first time on youtube.com/*
-/* ********************************************************************* */
+/**
+ * Create the statistics container.
+ *
+ * This content script is meant to be run on each YouTube video page.
+ */
 
 import { frontendUrl } from './config.js';
 
+const TS_ACTIONS_ROW_ID = 'ts-video-actions-row';
 var browser = browser || chrome;
 
-document.addEventListener('yt-navigate-finish', process);
+/**
+ * Youtube doesnt completely load a video page, so content script doesn't
+ * launch correctly without these events.
+ *
+ * This part is called on connection for the first time on youtube.com/*
+ */
+document.addEventListener('yt-navigate-finish', addVideoStatistics);
 
-if (document.body) process();
-else document.addEventListener('DOMContentLoaded', process);
+if (document.body) {
+  addVideoStatistics();
+} else {
+  document.addEventListener('DOMContentLoaded', addVideoStatistics);
+}
 
-/* ********************************************************************* */
-
-function process() {
-  // Get video id via URL
-  var videoId = new URL(location.href).searchParams.get('v');
-
-  // Only enable on youtube.com/watch?v=* pages
+/*
+* Create the statistics container with the tournesol score, comparisons and contributors.
+*/
+function addVideoStatistics() {
+  const videoId = new URL(location.href).searchParams.get('v');
   if (!location.pathname.startsWith('/watch') || !videoId) return;
 
-  // Timer will run until needed elements are generated
-  var timer = window.setInterval(createButtonIsReady, 300);
+  const timer = window.setInterval(createStatisticsIsReady, 300);
 
-  function createButtonIsReady() {
-    /*
-     ** Wait for needed elements to be generated
-     ** It seems those elements are generated via javascript, so run-at document_idle in manifest is not enough to prevent errors
-     **
-     ** Some ids on video pages are duplicated, so I take the first non-duplicated id and search in its childs the correct div to add the button
-     ** Note: using .children[index] when child has no id
-     */
-    if (
-      !document.getElementById('menu-container') ||
-      !document.getElementById('menu-container').children.item('menu') ||
-      !document.getElementById('menu-container').children.item('menu')
-        .children[0] ||
-      !document.getElementById('menu-container').children['menu'].children[0]
-        .children['top-level-buttons-computed']
-    )
-      return;
+  /**
+   * Create the statistics container.
+   */
+  function createStatisticsIsReady() {
+    const actionsRow = document.getElementById(TS_ACTIONS_ROW_ID);
+    if (!actionsRow) return;
 
-    // If the button already exists, don't create a new one
-    if (document.getElementById('tournesol-statistics')) {
+    if (document.getElementById('tournesol-statistics-info')) {
       window.clearInterval(timer);
       return;
     }
@@ -56,48 +52,47 @@ function process() {
         video_id: videoId,
       },
       function (resp) {
-        if (document.getElementById('tournesol-details-button')) {
-          return;
-        }
+        const prev = document.getElementById('tournesol-statistics-info');
+        if (prev) prev.remove();
 
-        if (resp && resp.results && resp.results.length == 1) {
-          const details = resp.results[0];
-          if (details.tournesol_score == 0) return;
-          if (details.tournesol_score > 0 && details.tournesol_score < 400)
-            alert(
-              "This video was rated below average by Tournesol's contributors",
-              'Ok'
-            );
-          if (details.tournesol_score < 0)
-            alert(
-              "Be careful! This video was rated very negatively by Tournesol's contributors",
-              'Ok'
-            );
+        const infoElem = document.createElement('span');
+        infoElem.setAttribute('id', 'tournesol-statistics-info');
+        infoElem.className = 'tournesol-statistics-info';
 
-          // Create Button
-          var statisticsButton = document.createElement('button');
-          statisticsButton.setAttribute('id', 'tournesol-details-button');
+        if (resp && resp.body && resp.body.results && resp.body.results.length === 1) {
+          const details = resp.body.results[0];
+          if (details.tournesol_score == 0) {
+            infoElem.textContent = chrome.i18n.getMessage('tournesolNotRatedMessage');
+          } else {
+            // Show sunflower icon, score, comparisons, contributors
+            const scoreSpan = document.createElement('span');
+            scoreSpan.className = 'tournesol-statistics-score';
+            scoreSpan.textContent = details.collective_rating.tournesol_score.toFixed(0);
 
-          // Text td for better vertical alignment
-          var statisticsTextTd = document.createElement('td');
-          statisticsTextTd.setAttribute('valign', 'middle');
-          const statisticsTextTdText = document.createTextNode(
-            `Score: ${details.tournesol_score.toFixed(0)}`
-          );
-          statisticsTextTd.append(statisticsTextTdText);
-          statisticsButton.append(statisticsTextTd);
+            const sunflowerImg = document.createElement('img');
+            sunflowerImg.src = `${frontendUrl}/svg/tournesol.svg`;
+            sunflowerImg.alt = 'Tournesol logo';
+            sunflowerImg.className = 'tournesol-statistics-icon';
+            scoreSpan.appendChild(sunflowerImg);
 
-          // On click
-          statisticsButton.onclick = () => {
-            open(`${frontendUrl}/entities/yt:${videoId}?utm_source=extension`);
-          };
+            const comparisonsSpan = document.createElement('span');
+            comparisonsSpan.className = 'tournesol-statistics-comparisons';
+            comparisonsSpan.textContent = chrome.i18n.getMessage('comparisonsBy', details.collective_rating.n_contributors);
 
-          var div =
-            document.getElementById('menu-container').children['menu']
-              .children[0].children['top-level-buttons-computed'];
-          div.insertBefore(statisticsButton, div.children[2]);
-        }
+            const contributorsSpan = document.createElement('span');
+            contributorsSpan.className = 'tournesol-statistics-contributors';
+            contributorsSpan.textContent = chrome.i18n.getMessage('comparisonsContributors', details.collective_rating.n_comparisons);
+
+            infoElem.appendChild(scoreSpan);
+            infoElem.appendChild(comparisonsSpan);
+            infoElem.appendChild(contributorsSpan);
+          }
+        } else {
+          infoElem.textContent = chrome.i18n.getMessage('videoNotRatedMessage');
+        } 
+        actionsRow.insertBefore(infoElem, actionsRow.firstChild);
       }
     );
   }
 }
+
