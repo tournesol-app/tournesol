@@ -10,6 +10,7 @@ import {
   getUserProof,
   getRecommendationsLanguagesAuthenticated,
   getSingleSetting,
+  getVideoStatistics,
 } from './utils.js';
 
 import { frontendHost } from './config.js';
@@ -145,7 +146,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.message == 'getVideoStatistics') {
-    // getVideoStatistics(request.video_id).then(sendResponse);
+    getVideoStatistics(request.video_id).then(sendResponse);
     return true;
   }
 

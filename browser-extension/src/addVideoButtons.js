@@ -39,11 +39,16 @@ const createVideoActionsRow = () => {
   const videoActions = document.createElement('div');
   videoActions.id = TS_ACTIONS_ROW_ID;
 
+  // Create a container for the buttons
+  const buttonsGroup = document.createElement('div');
+  buttonsGroup.className = 'ts-video-actions-buttons';
+  videoActions.appendChild(buttonsGroup);
+
   const beforeRef = document.getElementById(TS_ACTIONS_ROW_BEFORE_REF);
   const parent = document.getElementById(beforeRef.parentElement.id);
 
   parent.insertBefore(videoActions, beforeRef);
-  return videoActions;
+  return { videoActions, buttonsGroup };
 };
 
 function createVideoActionsRowParent() {
@@ -74,7 +79,13 @@ function addVideoButtons() {
     }
 
     window.clearInterval(timer);
-    const videoActions = createVideoActionsRow();
+    const { videoActions, buttonsGroup } = createVideoActionsRow();
+
+    // Move statistics info to the left of the container if it exists
+    const statsInfo = document.getElementById('tournesol-statistics-info');
+    if (statsInfo) {
+      videoActions.insertBefore(statsInfo, videoActions.firstChild);
+    }
 
     const addVideoButton = ({ id, label, iconSrc, iconClass, onClick }) => {
       // Create Button
@@ -103,7 +114,8 @@ function addVideoButtons() {
       };
 
       button.onclick = onClick;
-      videoActions.appendChild(button);
+      // Instead of appending to videoActions, append to buttonsGroup
+      buttonsGroup.appendChild(button);
 
       return { button, setLabel, setIcon };
     };

@@ -218,5 +218,9 @@
   "rateLaterHistoryStopButtonLabel": {
     "message": "Stop",
     "description": "Texte du bouton permettant d'arrêter le processus d'import de l'historique YouTube."
+  },
+  "videoNotRatedMessage": {
+    "message": "Cette vidéo n'a pas encore été notée sur Tournesol. Soyez le premier à la comparer !",
+    "description": "Message affiché lorsqu'une vidéo n'a pas encore de note sur Tournesol."
   }
 }
