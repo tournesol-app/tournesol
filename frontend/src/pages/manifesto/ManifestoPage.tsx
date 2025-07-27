@@ -1,6 +1,13 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Paper, useTheme, Typography } from '@mui/material';
+import {
+  Paper,
+  useTheme,
+  Typography,
+  Alert,
+  AlertTitle,
+  Link,
+} from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useScrollToLocation } from 'src/hooks';
@@ -19,11 +26,17 @@ const ManifestoPage = () => {
         sx={{
           '&': {
             h3: {
-              mt: 6,
-              mb: 2,
+              mt: '1.6em',
+              mb: '1em',
               textDecorationLine: 'underline',
               textDecorationColor: theme.palette.divider,
               textDecorationThickness: '2px',
+            },
+            'h3[data-number]:before': {
+              content: "attr(data-number) '.'",
+              display: 'inline-block',
+              marginRight: '8px',
+              fontSize: '150%',
             },
             strong: {
               textDecorationLine: 'underline',
@@ -47,15 +60,27 @@ const ManifestoPage = () => {
               fontSize: '90%',
               color: theme.palette.info.dark,
             },
+            '& p': {
+              textAlign: { sm: 'justify' },
+            },
           },
         }}
       >
-        <Paper sx={{ p: 4 }}>
+        <Alert severity="info" sx={{ mb: 1 }}>
+          <AlertTitle>Ceci est une version de travail</AlertTitle>
+          Vous pouvez nous transmettre vos retours en utilisant{' '}
+          <Link color="secondary" href="https://forms.gle/RRsQsS9zhvz7xcmM7">
+            ce formulaire
+          </Link>
+          .
+        </Alert>
+
+        <Paper sx={{ p: { xs: 2, sm: 4 } }}>
           <Typography variant="h1">{t('manifesto.title')}</Typography>
 
           <p>{t('manifesto.intro')}</p>
 
-          <Typography variant="h3" id="part1">
+          <Typography variant="h3" id="part1" data-number="1">
             {t('manifesto.part1.title')}
           </Typography>
 
@@ -108,7 +133,7 @@ const ManifestoPage = () => {
             </Trans>
           </p>
 
-          <Typography variant="h3" id="part2">
+          <Typography variant="h3" id="part2" data-number="2">
             {t('manifesto.part2.title')}
           </Typography>
 
@@ -179,7 +204,7 @@ const ManifestoPage = () => {
             </ul>
           </div>
 
-          <Typography variant="h3" id="part3">
+          <Typography variant="h3" id="part3" data-number="3">
             {t('manifesto.part3.title')}
           </Typography>
 
