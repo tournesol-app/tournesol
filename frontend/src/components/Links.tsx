@@ -43,11 +43,13 @@ export const ExternalLink = React.forwardRef<
       href={href}
       target={target}
       rel="noreferrer"
-      sx={{
-        color: 'revert',
-        textDecoration: 'revert',
-        ...sx,
-      }}
+      sx={[
+        {
+          color: 'revert',
+          textDecoration: 'revert',
+        },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
       {...other} // MUI Tooltip requires to forward both ref and props
     >
       {children}

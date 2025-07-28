@@ -249,9 +249,8 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
   position: relative;
 
   width: calc(
-    100% / min(4, var(--ytd-rich-grid-items-per-row))
-    - var(--ytd-rich-grid-item-margin)
-    - 0.01px
+    100% / var(--ytd-rich-grid-items-per-row)
+    - var(--ytd-rich-grid-item-margin) / 2
   );
 }
 

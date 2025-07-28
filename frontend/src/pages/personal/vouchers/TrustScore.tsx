@@ -54,7 +54,7 @@ const Thumb = ({
       ) : (
         <RadioButtonUncheckedIcon color="disabled" />
       )}
-      <Typography paragraph mb={0}>
+      <Typography sx={{ mb: 0 }}>
         {up ? upDescription : downDescription}
       </Typography>
     </Stack>
@@ -78,7 +78,12 @@ const DescriptionDialog = ({
         t('personalVouchers.trustScore.description.includedInPublicDatabase'),
       ].map((message, index) => {
         return (
-          <Typography key={index} paragraph>
+          <Typography
+            key={index}
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {message}
           </Typography>
         );

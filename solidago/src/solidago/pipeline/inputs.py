@@ -111,12 +111,8 @@ class PipelineInput(ABC):
         entities = pd.DataFrame(index=list(entities_ids))
 
         privacy = PrivacySettings()
-        user_entity_pairs = set(
-            comparisons[["user_id", "entity_a"]].itertuples(index=False, name=None)
-        ).union(comparisons[["user_id", "entity_b"]].itertuples(index=False, name=None))
         for rating in ratings_properties.itertuples():
-            if (rating.user_id, rating.entity_id) in user_entity_pairs:
-                privacy[(rating.user_id, rating.entity_id)] = not rating.is_public
+            privacy[(rating.user_id, rating.entity_id)] = not rating.is_public
 
         judgments = DataFrameJudgments(
             comparisons=comparisons.rename(
@@ -170,6 +166,10 @@ class PipelineInput(ABC):
 
 class TournesolDataset(PipelineInput):
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
+        """
+        Initilialize a Pipeline input, by loading a tournesol dataset (.zip format) from a local file,
+        or a URL.
+        """
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
         ):

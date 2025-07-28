@@ -28,10 +28,12 @@ const Logo = () => {
     <Grid
       item
       xs
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      columnGap={1}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        columnGap: 1,
+      }}
     >
       <IconButton
         onClick={() => dispatch(drawerOpen ? closeDrawer() : openDrawer())}
@@ -41,20 +43,24 @@ const Logo = () => {
       </IconButton>
       <InternalLink to={pollHome || '/'} color="text.primary">
         <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          columnGap={1}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            columnGap: 1,
+          }}
         >
           <img src="/svg/LogoSmall.svg" alt="Tournesol logo" />
 
           {mediumScreen && (
             <Typography
               variant="h1"
-              fontFamily="Poppins-Bold"
-              fontSize="1.5em"
-              fontWeight="bold"
-              lineHeight={1}
+              sx={{
+                fontFamily: 'Poppins-Bold',
+                fontSize: '1.5em',
+                fontWeight: 'bold',
+                lineHeight: 1,
+              }}
             >
               Tournesol
             </Typography>

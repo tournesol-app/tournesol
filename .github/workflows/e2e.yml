@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Prepare extension
         working-directory: browser-extension
@@ -49,7 +49,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - uses: cypress-io/github-action@v6
         with:
@@ -61,7 +61,7 @@ jobs:
       - name: Print dev-env logs
         if: failure()
         working-directory: ./dev-env
-        run: docker-compose logs -t --tail=300
+        run: docker compose logs -t --tail=300
 
       - uses: actions/upload-artifact@v4
         if: failure()

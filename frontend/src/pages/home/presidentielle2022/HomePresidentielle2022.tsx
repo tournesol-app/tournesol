@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Divider, Stack, Button, Typography } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import { Box, Divider, Grid2, Stack, Button, Typography } from '@mui/material';
 
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
@@ -25,15 +24,33 @@ const HomePresidentielle2022Page = () => {
 
   return (
     <>
-      <Box padding={4} color="000000" bgcolor="rgba(0, 0, 0, 0.08)">
+      <Box
+        sx={{
+          padding: 4,
+          color: '000000',
+          bgcolor: 'rgba(0, 0, 0, 0.08)',
+        }}
+      >
         <TitleSection title={t('home.presidentielle2022.title')}>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('home.presidentielle2022.tournesolDescription')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('home.presidentielle2022.whyCompareCandidates')}
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: 2,
+            }}
+          >
             {t('home.presidentielle2022.dataUsage')}
           </Typography>
 
@@ -70,9 +87,18 @@ const HomePresidentielle2022Page = () => {
               </Button>
             </Stack>
           ) : (
-            <Box width="100%">
+            <Box
+              sx={{
+                width: '100%',
+              }}
+            >
               <Divider sx={{ my: 1 }} />
-              <Typography paragraph color="#666">
+              <Typography
+                sx={{
+                  color: '#666',
+                  marginBottom: 2,
+                }}
+              >
                 {t('home.generic.pollIsClosed')}
               </Typography>
               <Stack spacing={2} direction="row">
@@ -109,9 +135,21 @@ const HomePresidentielle2022Page = () => {
           )}
         </TitleSection>
       </Box>
-
-      <Grid2 container width="100%" flexDirection="column" alignItems="center">
-        <Grid2 sx={homeSectionSx} display="flex" justifyContent="center">
+      <Grid2
+        container
+        sx={{
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Grid2
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            ...homeSectionSx,
+          }}
+        >
           <PollListSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
@@ -121,5 +159,4 @@ const HomePresidentielle2022Page = () => {
     </>
   );
 };
-
 export default HomePresidentielle2022Page;

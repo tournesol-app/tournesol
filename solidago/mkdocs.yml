@@ -1,0 +1,123 @@
+site_name: "Solidago | <span style='font-weight: normal'>a toolbox for <b>Solid</b> <b>A</b>lgorithmic <b>Go</b>vernance</span>"
+site_description: "Solid Algorithmic Governance, used by the Tournesol platform"
+strict: true
+
+repo_name: tournesol > solidago
+repo_url: https://github.com/tournesol-app/tournesol/tree/main/solidago
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: amber
+      toggle:
+        icon: material/lightbulb-outline
+        name: "Switch to dark mode"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: amber
+      toggle:
+        icon: material/lightbulb
+        name: "Switch to light mode"
+  features:
+    # - content.code.annotate
+    - content.code.copy
+    # - navigation.tabs
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    # - navigation.sections
+    - navigation.expand
+    # - toc.integrate 
+
+
+nav:
+  - Get Started: "index.md"
+  - Pipeline: "pipeline.md"
+  - Structures:
+    - "structures/scoring_model.md"
+    - "structures/privacy_settings.md"
+  - Modules: 
+    - "modules/trust_propagation.md"
+    - "modules/preference_learning.md"
+    - "modules/voting_rights.md"
+    - "modules/scaling.md"
+    - "modules/aggregation.md"
+    - "modules/post_process.md"
+  - Primitives: "primitives.md"
+  - Tournesol dataset: "tournesol.md"
+
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  # - markdown_include.include:
+      # base_path: solidago
+
+plugins:
+  # - mike:
+  #     alias_type: symlink
+  #     canonical_version: latest
+  - search
+  # - exclude:
+  #     glob:
+  #     - theme/announce.html
+  #     - plugins/*
+  #     - __pycache__/*
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_symbol_type_heading: true
+            members_order: source
+            show_source: false
+            show_labels: false
+            separate_signature: true
+            filters: ["!^_", "^__", "!^__all__", "!__str__"]
+            docstring_options:
+              ignore_init_summary: false
+            merge_init_into_class: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            docstring_style: numpy
+            show_if_no_docstring: true
+            show_root_full_path: false
+            show_root_heading: false
+            show_root_toc_entry: false
+            # extensions:
+            #   - docs/plugins/griffe_doclinks.py
+          inventories:
+            - https://docs.python.org/3/objects.inv
+          # rendering:
+          #   show_root_heading: true
+          #   show_root_full_path: false
+          #   show_source: false
+          #   heading_level: 2
+          #   merge_init_into_class: true
+          #   show_signature_annotations: true
+          #   separate_signature: true
+
+hooks:
+ - 'docs/hooks.py'
+
+watch:
+ - src/
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js
+
+extra:
+  site_title: "Solidago"

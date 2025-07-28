@@ -41,8 +41,7 @@
     "nComparisonsByYou_other": "{{count}} comparisons by you",
     "notYetComparedByYou": "Not yet compared by you",
     "contributionsArePublicMessage": "Your contributions about this item are currently public. Comparisons appear in the public data associated to your profile only if you tag both items as public.",
-    "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores.",
-    "personalScore": "Personal score: {{score}}"
+    "contributionsArePrivateMessage": "Your contributions about this item are currently private. The details of your personal ratings are not published, but they may still be used to compute public aggregated scores."
   },
   "entityCard": {
     "thisElementIsNotAvailable": "This element is not available anymore."
@@ -120,8 +119,8 @@
   },
   "submit": "submit",
   "comparisonCriteriaButtons": {
-    "nextQualityCriterion": "Next quality criterion",
-    "previousQualityCriterion": "Previous quality criterion"
+    "previousQualityCriterion": "Previous quality criterion",
+    "nextQualityCriterion": "Next quality criterion"
   },
   "comparisonSeries": {
     "skipTheSeries": "Skip the series"
@@ -555,9 +554,6 @@
         "topVideosLanguages": "Top videos languages",
         "keepEmptyToSelectAllLang": "Keep empty to select all languages."
       }
-    },
-    "recommendations": {
-      "defaultUploadDate": "Default value of the uploaded date filter"
     }
   },
   "generalUserSettingsForm": {
@@ -683,7 +679,7 @@
     "weThankOurContributors": "We are extremely thankful to many significant contributor who are or have been very impactful for the project.",
     "sergeiDescription": "Sergei was among the few people who decided to start building Tournesol. He took over most of the engineering effort and developed the back end, the algorithms and the front end of the first version of the platform.",
     "sigmikeDescription": "Michael is a volunteer open source contributor who contributes impactful features on our backend, frontend and extension.",
-    "weThankOurPartners": "We thank our partners",
+    "weThankOurPartners": "Partners & Collaborations",
     "partnershipWithCalicarpa": "Partnership with Calicarpa",
     "partnershipWithCalicarpaDetail": "Tournesol is the embodiment of Calicarpa research and open-source efforts. Calicarpa is now the main contributor to the free Solidago python library, which contains implementations of the state-of-the-art digital democracy algorithms developed by a decade of research.",
     "partnershipWithEpfl": "Partnership with EPFL",
@@ -692,6 +688,7 @@
     "partnershipWithPolyconseilDetail": "We are also supported by the technology and consulting company Polyconseil, in the context of their #Tech4Good program. Since August 2021, Polyconseil allocated a software engineering intern one day per week to the technical development of Tournesol and supported us on a monthly basis through organizational support and UX/UI designs. We are very grateful for their help.",
     "partnershipWithKleis": "Partnership with Kleis Technology",
     "partnershipWithKleisDetail": "We received support from the technology and consulting company Kleis to help us shape our organizational processes and adopt efficient development practices. Our partnership with Kleis is extremely structuring for the development of our vision for the product and to bring perspective for foundational technical choices.",
+    "collaborationWithDevoxx": "Devoxx France is a conference for developers held in Paris, committed to a more ethical digital world. The association was invited to present Tournesol during a keynote in 2022.",
     "openSourceContributions": "Open Source Contributions",
     "openSourceContributors": "As Tournesol is an open source project, we have been lucky to benefit from contributions by multiple volunteers. Find our wonderful contributors on <2>GitHub</2>",
     "donateHowTo": "How to make a donation?",
@@ -712,13 +709,13 @@
     "donateWithPaypal": "Donate with PayPal",
     "doYouPreferDirectTransfer": "You prefer direct transfers?",
     "whatDoWeDoQuestion": "How do we spend our funding?",
-    "whatDoWeDoAnswer": "First, we employ a software developer to work on the source code of Tournesol (about 4000€ per month with taxes). Second, we pay for infrastructures and services to host and run the Tournesol platform (about 150€ per month).",
+    "whatDoWeDoAnswer": "Firstly, the Tournesol association was employing a software developer up until August 2024 to work on the source code of Tournesol (about 4000€ per month with taxes). We hope to be able to hire again a software developer in the future. Second, we pay for infrastructures and services to host and run the Tournesol platform (about 300€ per month).",
     "whatWeWouldDoQuestion": "What would we do with more funds?",
-    "whatWeWouldDoAnswer": "Our priority is to promote Tournesol and hire a second employee. The second employee would be either focused on growing the association and funding, or would be an engineer that would develop the website with expertise either in UX/Design or in Machine Learning.",
+    "whatWeWouldDoAnswer": "Our priority is to promote Tournesol and hire an employee. The employee would be either focused on growing the association and funding, or would be an engineer that would develop the website with expertise either in UX/Design or in Machine Learning.",
     "howMuchDoWeHaveQuestion": "How much do we currently have?",
     "howMuchDoWeHaveAnswer": "Since the creation of the association in 2021, we received a few generous donations that greatly helped us build the first version of the platform (approximately 60'000€). Since then, we have received less than 1000€ per month which is not enough to cover our costs for the long term.",
     "howMuchWeCurrentlySpendQuestion": "How much do we currently spend?",
-    "howMuchWeCurrentlySpendAnswer": "The association spends a little bit more than 4000€ per month.",
+    "howMuchWeCurrentlySpendAnswer": "Currently the association spends approximately 300€ per month.",
     "haveWeConsideredQuestion": "Have we considered other funding opportunities?",
     "haveWeConsideredAnswer": "Yes, we have tried to apply to multiple sources of fundings but have not yet been successfully selected. If you are such a funding agency and find our project promising please contact us at hello@tournesol.app."
   },
@@ -1005,7 +1002,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualize the data",
     "youCanQuicklyExploreEtc": "You can quickly explore our public database with our <1>Tournesol Data Visualization</1> application made with Streamlit.",
-    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2023/06/13)."
+    "personCorrelationCoefficientMatrix": "Pearson correlation coefficients matrix of comparison criteria scores (2025/05/12)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "Done!<1></1>If this user exists, an email will be sent with a reset link.",
@@ -1078,9 +1075,7 @@
     "title": "My rate-later list"
   },
   "recommendationsPage": {
-    "chips": {
-      "by": "by"
-    },
+    "basedOnUserPublicContributions": "Based on public contributions by <2></2>",
     "title": {
       "results": "Results",
       "personalRecommendations": "Personal recommendations",

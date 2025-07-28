@@ -1,6 +1,14 @@
 name: Browser extension lint
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - 'browser-extension/**'
+      - '.github/workflows/browser-extension-ci.yml'
+  pull_request:
+    paths:
+      - 'browser-extension/**'
+      - '.github/workflows/browser-extension-ci.yml'
 
 defaults:
   run:
@@ -14,6 +22,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '22'
       - run: yarn install --frozen-lockfile
       - run: yarn lint

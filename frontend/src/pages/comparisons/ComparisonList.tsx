@@ -53,10 +53,20 @@ function ComparisonsPage() {
 
   const noComparisonMessage = (
     <>
-      <Typography variant="h5" paragraph>
+      <Typography
+        variant="h5"
+        sx={{
+          marginBottom: 2,
+        }}
+      >
         {t('myComparisonsPage.noComparisonYet')}
       </Typography>
-      <Box display="flex" justifyContent="center">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         <Button
           component={Link}
           to={`${baseUrl}/comparison`}
@@ -72,8 +82,8 @@ function ComparisonsPage() {
   const nbComparisonsMessage = (
     <Typography
       variant="subtitle1"
-      textAlign="center"
       sx={{
+        textAlign: 'center',
         '& strong': {
           color: 'secondary.main',
           fontSize: '1.4em',

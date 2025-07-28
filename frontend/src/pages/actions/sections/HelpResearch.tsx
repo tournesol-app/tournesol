@@ -52,9 +52,11 @@ const HelpResearch = () => {
     <Box>
       <Typography
         variant="h4"
-        fontStyle="italic"
         gutterBottom
         id="help-research"
+        sx={{
+          fontStyle: 'italic',
+        }}
       >
         {t(
           'actionsPage.helpResearch.helpScientificResearchThatServesPublicInterest'

@@ -14,6 +14,13 @@
   "menuPreferences": {
     "message": "Préférences"
   },
+  "menuRateLaterHistory": {
+    "message": "Importer l'historique YouTube"
+  },
+  "contextMenuRateLater": {
+    "message": "Comparer plus tard sur Tournesol",
+    "description": "Label du menu permettant d'ajouter une vidéo à sa liste à Comparer plus tard (lors d'un clic droit sur un lien)."
+  },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
     "description": "Titre du conteneur principal affichant les recommandations."
@@ -132,6 +139,22 @@
     "message": "Icône de fermeture",
     "description": "Texte alternatif à l'icône de fermeture de la bannière"
   },
+  "alertNotYoutubeVideo": {
+    "message": "Ceci n'est pas une vidéo YouTube.",
+    "description": "Alerte affichée lorsqu'on tente d'utiliser un lien/une page qui n'est pas une vidéo YouTube"
+  },
+  "alertVideoAdded": {
+    "message": "Vidéo ajoutée !",
+    "description": "Message d'alerte indiquant qu'une vidéo a été ajoutée avec succès"
+  },
+  "alertAlreadyAdded": {
+    "message": "Vidéo déjà ajoutée.",
+    "description": "Message d'alerte indiquant qu'une vidéo a déjà été ajoutée"
+  },
+  "alertFailed": {
+    "message": "Échec.",
+    "description": "Message d'alerte indiquant qu'une action a échoué"
+  },
   "rateNowButtonLabel": {
     "message": "Comparer",
     "description": "Label du bouton affiché sur les pages de vidéo."
@@ -147,5 +170,53 @@
   "watchOnTournesolButtonLabel": {
     "message": "Regarder sur Tournesol",
     "description": "Label du bouton affiché sur les pages de vidéo."
+  },
+  "rateLaterHistoryImportButton": {
+    "message": "Importer l'historique dans Tournesol",
+    "description": "Label du  bouton affiché sur l'historique YouTube pour l'importer dans les vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBoxTitle": {
+    "message": "Import de l'historique YouTube",
+    "description": "Titre de l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBoxMessage": {
+    "message": "Appuyez sur Stop quand le nombre de vidéos visibles n'augmente plus ou que vous pensez que suffisamment de vidéos ont été importées.",
+    "description": "Instructions affichées sur l'écran d'import de l'historique YouTube vers la liste des vidéos à comparer plus tard."
+  },
+  "rateLaterHistoryStatusBox429AlertP1" : {
+    "message": "L'import est terminée.",
+    "description": "Premier paragraphe du message d'alerte, lorsque la limite d'import quotidienne est atteinte."
+  },
+  "rateLaterHistoryStatusBox429AlertP2" : {
+    "message": "Vous avez importé le nombre maximal de vidéos autorisé aujourd'hui. Vous pourrez lancer un nouvel import dans 24h.",
+    "description": "Deuxième paragraphe du message d'alerte, lorsque la limite d'import quotidienne est atteinte."
+  },
+  "rateLaterHistoryVideoCount": {
+    "message": "Vidéos visibles dans l'historique :",
+    "description": "Étiquette indiquant le nombre de vidéos trouvées dans l'historique YouTube pendant l'import."
+  },
+  "rateLaterHistoryProcessedCount": {
+    "message": "Vidéos traitées par le processus d'import :",
+    "description": "Étiquette indiquant le nombre total de vidéos traitées par le processus d'import."
+  },
+  "rateLaterHistorySentCount": {
+    "message": "vidéos importées :",
+    "description": "Étiquette indiquant le nombre de vidéos envoyées qui ont été ajoutées avec succès dans la liste à comparer plus tard (inclus les vidéos déjà présentes)."
+  },
+  "rateLaterHistorySkippedCount": {
+    "message": "vidéos évitées (importées précédemment) :",
+    "description": "Étiquette indiquant le nombre de vidéos non envoyées au serveur Tournesol, car déjà présentes dans le cache de vidéos précédement envoyées."
+  },
+  "rateLaterHistoryFailureCount": {
+    "message": "échecs :",
+    "description": "Étiquette indiquant le nombre de vidéos envoyées qui n'ont pas pu être ajoutées à la liste à comparer plus tard, à cause d'une erreur du serveur."
+  },
+  "rateLaterHistoryCloseButtonLabel": {
+    "message": "Fermer",
+    "description": "Texte du bouton permettant de fermer l'écran d'import, lorsque celui-ci est terminé."
+  },
+  "rateLaterHistoryStopButtonLabel": {
+    "message": "Stop",
+    "description": "Texte du bouton permettant d'arrêter le processus d'import de l'historique YouTube."
   }
 }

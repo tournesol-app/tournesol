@@ -1,0 +1,2 @@
+::: solidago.voting_rights
+

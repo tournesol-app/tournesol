@@ -120,9 +120,16 @@ const manifest = {
       all_frames: true,
     },
     {
+      matches: ['https://*.youtube.com/feed/history'],
+      js: ['rateLaterHistory.js'],
+      css: ['rateLaterHistory.css'],
+      run_at: 'document_end',
+      all_frames: true,
+    },
+    {
       matches: selectValue(env, {
         production: ['https://tournesol.app/*'],
-        'dev-env': ['http://localhost:3000/*'],
+        'dev-env': ['http://localhost/*'],
       }),
       js: ['fetchTournesolToken.js'],
       run_at: 'document_end',

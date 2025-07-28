@@ -26,14 +26,21 @@ const CollectiveGoalWeeklyProgress = () => {
 
   return (
     <Box
-      width="100%"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      gap={1}
-      mb={{ xs: 1, sm: 4 }}
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 1,
+        mb: { xs: 1, sm: 4 },
+      }}
     >
-      <Typography variant="h5" textAlign="center">
+      <Typography
+        variant="h5"
+        sx={{
+          textAlign: 'center',
+        }}
+      >
         <Trans
           t={t}
           i18nKey="collectiveGoalWeeklyProgress.weeklyCollectiveGoal"
@@ -49,12 +56,14 @@ const CollectiveGoalWeeklyProgress = () => {
         {`${getWeeklyProgressionEmoji(collectiveComparisonsPercent)}`}
       </Typography>
       <Box
-        width="100%"
-        maxWidth="sm"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        gap={1}
+        sx={{
+          width: '100%',
+          maxWidth: 'sm',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 1,
+        }}
       >
         <LinearProgress
           value={Math.min(collectiveComparisonsPercent, 100)}

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { Grid, Typography, Box, Card, Link, Paper } from '@mui/material';
+import { Grid2, Typography, Box, Card, Link, Paper } from '@mui/material';
 
 import { ContentHeader, ExternalLink, InternalLink } from 'src/components';
 import {
@@ -19,9 +19,6 @@ const useStyles = makeStyles(() => ({
     padding: '32px 0px 32px 0px',
     justifyContent: 'center',
   },
-  noMaxWidth: {
-    maxWidth: '100%',
-  },
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -32,7 +29,7 @@ const useStyles = makeStyles(() => ({
     boxShadow:
       '0px 0px 8px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.05)',
     borderRadius: 4,
-    padding: 8,
+    padding: '16px',
     width: '100%',
     background: '#FFFFFF',
   },
@@ -94,10 +91,19 @@ const ContributorCard = ({
       underline="none"
       color="inherit"
       variant="inherit"
+      sx={{
+        display: 'flex',
+      }}
     >
       <Card className={classes.card}>
-        <Grid container spacing={2}>
-          <Grid item xs={4} container alignItems="center">
+        <Grid2 container spacing={2}>
+          <Grid2
+            container
+            sx={{
+              alignItems: 'center',
+            }}
+            size={4}
+          >
             <img
               src={image}
               width="100%"
@@ -107,12 +113,18 @@ const ContributorCard = ({
                 borderRadius: '50%',
               }}
             />
-          </Grid>
-          <Grid item xs={8}>
+          </Grid2>
+          <Grid2 size={8}>
             <Typography variant="h3">{name}</Typography>
-            <Typography fontSize="90%">{description}</Typography>
-          </Grid>
-        </Grid>
+            <Typography
+              sx={{
+                fontSize: '90%',
+              }}
+            >
+              {description}
+            </Typography>
+          </Grid2>
+        </Grid2>
       </Card>
     </Link>
   );
@@ -121,17 +133,21 @@ const ContributorCard = ({
 const ContentBox = ({
   children,
   className,
+  maxWidth = '640px',
 }: {
   children?: React.ReactNode;
   className?: string;
+  maxWidth?: string;
 }) => {
   return (
     <Box
       className={className}
-      display="flex"
-      flexDirection="column"
-      maxWidth="640px"
-      alignItems="flex-start"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: maxWidth,
+        alignItems: 'flex-start',
+      }}
     >
       {children}
     </Box>
@@ -145,15 +161,19 @@ const AboutPage = () => {
   return (
     <>
       <ContentHeader title={t('menu.about')} />
-      <Grid
+      <Grid2
         container
         className={classes.root}
         sx={{ bgcolor: 'background.emphatic', color: 'white' }}
       >
-        <Grid item xs={12} className={classes.container}>
+        <Grid2 className={classes.container} size={12}>
           <ContentBox>
             <Typography variant="h1">{t('about.whatIsTournesol')}</Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               <Trans t={t} i18nKey="about.introductionTournesol">
                 Tournesol is an open source platform which aims to
                 collaboratively identify top videos of public interest by
@@ -186,48 +206,69 @@ const AboutPage = () => {
               </Trans>
             </Typography>
           </ContentBox>
-        </Grid>
-      </Grid>
-
-      <Grid container className={classes.root}>
-        <Grid item xs={12} className={classes.container}>
+        </Grid2>
+      </Grid2>
+      <Grid2 container className={classes.root}>
+        <Grid2 className={classes.container} size={12}>
           <ContentBox>
             <Typography variant="h4">{t('about.tournesolVision')}</Typography>
             <ul>
               <li>
-                <Typography paragraph className={classes.important}>
+                <Typography
+                  className={classes.important}
+                  sx={{
+                    marginBottom: 2,
+                  }}
+                >
                   {t('about.tournesolVisionRaisingAwareness')}
                 </Typography>
               </li>
               <li>
-                <Typography paragraph className={classes.important}>
+                <Typography
+                  className={classes.important}
+                  sx={{
+                    marginBottom: 2,
+                  }}
+                >
                   {t('about.tournesolVisionCollaborativePlatform')}
                 </Typography>
               </li>
               <li>
-                <Typography paragraph className={classes.important}>
+                <Typography
+                  className={classes.important}
+                  sx={{
+                    marginBottom: 2,
+                  }}
+                >
                   {t('about.tournesolVisionResearchOnEthicsOfAlgorithms')}
                 </Typography>
               </li>
             </ul>
           </ContentBox>
-        </Grid>
-      </Grid>
-
-      <Grid
+        </Grid2>
+      </Grid2>
+      <Grid2
         container
         className={classes.root}
         sx={{ bgcolor: 'background.emphatic', color: 'white' }}
       >
-        <Grid item xs={12} className={classes.container}>
+        <Grid2 className={classes.container} size={12}>
           <ContentBox>
             <Typography variant="h1">
               {t('about.whoBuildsTournesol')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               {t('about.tournesolTransparency')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               <Trans t={t} i18nKey="about.considerHelpingWithDonation">
                 If you can, please consider helping us{' '}
                 <InternalLink
@@ -241,28 +282,45 @@ const AboutPage = () => {
               </Trans>
             </Typography>
           </ContentBox>
-        </Grid>
-      </Grid>
-
-      <Grid
+        </Grid2>
+      </Grid2>
+      <Grid2
         container
         className={classes.root}
         sx={{ bgcolor: 'background.menu' }}
       >
-        <Grid item xs={12} className={classes.container}>
+        <Grid2 className={classes.container} size={12}>
           <ContentBox>
             <img height="64px" src="/logos/Tournesol_Logo.png" />
             <Typography variant="h4">
               {t('about.tournesolAssociation')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               {t('about.tournesolAssociationDetail')}
             </Typography>
           </ContentBox>
-        </Grid>
+        </Grid2>
 
-        <Grid container item xs={12} md={9} className={classes.container}>
-          <Grid item xs={12} sm={4} className={classes.container}>
+        <Grid2
+          container
+          className={classes.container}
+          size={{
+            xs: 12,
+            md: 8,
+            xl: 6,
+          }}
+        >
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Lê Nguyên Hoang"
               image="/people/Le.jpeg"
@@ -271,9 +329,15 @@ const AboutPage = () => {
               title="Dr. in Mathematics"
               job="AI Researcher and Communicator"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Louis Faucon"
               image="/people/Louis.jpeg"
@@ -282,9 +346,15 @@ const AboutPage = () => {
               title="Dr. in Computer Science"
               job="Machine Learning Engineer"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Aidan Jungo"
               image="/people/Aidan.jpg"
@@ -293,9 +363,15 @@ const AboutPage = () => {
               title="Master of Science"
               job="Project Manager"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Romain"
               image="/people/Tournecat.jpeg"
@@ -304,9 +380,15 @@ const AboutPage = () => {
               title=""
               job="Senior Software Engineer"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Adrien Matissart"
               image="/people/Adrien.jpeg"
@@ -315,9 +397,15 @@ const AboutPage = () => {
               role="Technical Lead"
               job="Senior Software Engineer"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Titouan Lustin"
               image="/people/Titouan.jpg"
@@ -326,9 +414,15 @@ const AboutPage = () => {
               role="Communication & Events"
               job="Engineer"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Victor Fersing"
               image="/people/Victor.jpg"
@@ -337,9 +431,15 @@ const AboutPage = () => {
               role="Communication & Events"
               job="Youtuber"
             />
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={4} className={classes.container}>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
             <CoreTeamCard
               name="Jean-Lou"
               image="/people/JeanLou.jpg"
@@ -348,61 +448,81 @@ const AboutPage = () => {
               role="Communication & Events"
               job="Journalist & Youtuber"
             />
-          </Grid>
-        </Grid>
-      </Grid>
-
-      <Grid
-        container
-        className={classes.root}
-        // sx={{ bgcolor: 'background.menu' }}
-      >
-        <Grid item xs={12} className={classes.container}>
+          </Grid2>
+        </Grid2>
+      </Grid2>
+      <Grid2 container className={classes.root}>
+        <Grid2 className={classes.container} size={12}>
           <ContentBox>
             <Typography variant="h3">
               {t('about.significantContributors')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               {t('about.weThankOurContributors')}
             </Typography>
           </ContentBox>
-        </Grid>
+        </Grid2>
 
-        <Grid container item xs={12} md={9} className={classes.container}>
-          <Grid item xs={12} sm={6} className={classes.container}>
+        <Grid2
+          container
+          className={classes.container}
+          size={{
+            xs: 12,
+            md: 9,
+          }}
+        >
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <ContributorCard
               name="Sergei"
               image="/people/Sergei.jpg"
               description={t('about.sergeiDescription')}
               website="https://linkedin.com/in/sergeivolodin"
             />
-          </Grid>
-          <Grid item xs={12} sm={6} className={classes.container}>
+          </Grid2>
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <ContributorCard
               name="Michael Witrant"
               image="/people/sigmike.png"
               description={t('about.sigmikeDescription')}
               website="https://github.com/sigmike"
             />
-          </Grid>
-        </Grid>
-      </Grid>
-
-      <Grid
+          </Grid2>
+        </Grid2>
+      </Grid2>
+      <Grid2
         container
         className={classes.root}
-        sx={{ bgcolor: 'background.menu' }}
+        sx={{
+          maxWidth: '1000px',
+          margin: 'auto',
+        }}
       >
-        <Grid item xs={12} className={classes.container}>
+        <Grid2 className={classes.container} size={12}>
           <ContentBox>
             <Typography variant="h1">
               {t('about.weThankOurPartners')}
             </Typography>
           </ContentBox>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} className={classes.container}>
-          <ContentBox className={classes.card}>
+        <Grid2 className={classes.container} size={12}>
+          <ContentBox className={classes.card} maxWidth="100%">
             <img height="84px" src="/logos/Calicarpa_Logo.svg" />
             <Typography variant="h4">
               {t('about.partnershipWithCalicarpa')}
@@ -411,27 +531,40 @@ const AboutPage = () => {
               {t('about.partnershipWithCalicarpaDetail')}
             </Typography>
           </ContentBox>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} className={classes.container}>
+        <Grid2 item xs={12} className={classes.container}>
           <ContentBox className={classes.card}>
             <img height="84px" src="/logos/EPFL_Logo.png" />
             <Typography variant="h4">
               {t('about.partnershipWithEpfl')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               {t('about.partenershipWithEpflDetail')}
             </Typography>
           </ContentBox>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} md={4} className={classes.container}>
+        <Grid2
+          className={classes.container}
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Link
             href="https://www.polyconseil.fr/"
             rel="noopener"
             underline="none"
             color="inherit"
             variant="inherit"
+            sx={{
+              display: 'flex',
+            }}
           >
             <ContentBox className={classes.card}>
               <img
@@ -442,46 +575,89 @@ const AboutPage = () => {
               <Typography variant="h4">
                 {t('about.partnershipWithPolyconseil')}
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: 2,
+                }}
+              >
                 {t('about.partnershipWithPolyconseilDetail')}
               </Typography>
             </ContentBox>
           </Link>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={12} md={4} className={classes.container}>
+        <Grid2
+          className={classes.container}
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <Link
             href="https://kleis.ch/"
             rel="noopener"
             underline="none"
             color="inherit"
             variant="inherit"
+            sx={{
+              display: 'flex',
+            }}
           >
             <ContentBox className={classes.card}>
               <img height="64px" src="/logos/Kleis_Logo.svg" />
               <Typography variant="h4">
                 {t('about.partnershipWithKleis')}
               </Typography>
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: 2,
+                }}
+              >
                 {t('about.partnershipWithKleisDetail')}
               </Typography>
             </ContentBox>
           </Link>
-        </Grid>
-      </Grid>
+        </Grid2>
 
-      <Grid
-        container
-        className={classes.root}
-        sx={{ bgcolor: 'background.menu' }}
-      >
-        <Grid item xs={12} md={6} className={classes.container}>
+        <Grid2 className={classes.container} size={12}>
+          <Link
+            href="https://www.devoxx.fr/"
+            rel="noopener"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+          >
+            <ContentBox className={classes.card} maxWidth="100%">
+              <img height="64px" src="/logos/devoxx_france_logo.png" />
+              <Typography
+                sx={{
+                  marginBottom: 2,
+                }}
+              >
+                {t('about.collaborationWithDevoxx')}
+              </Typography>
+            </ContentBox>
+          </Link>
+        </Grid2>
+      </Grid2>
+      <Grid2 container className={classes.root}>
+        <Grid2
+          className={classes.container}
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+        >
           <ContentBox>
             <img height="64px" src="/logos/Foss_Logo.png" />
             <Typography variant="h4">
               {t('about.openSourceContributions')}
             </Typography>
-            <Typography paragraph>
+            <Typography
+              sx={{
+                marginBottom: 2,
+              }}
+            >
               <Trans t={t} i18nKey="about.openSourceContributors">
                 As Tournesol is an open source project, we have been lucky to
                 benefit from contributions by multiple volunteers. Find our
@@ -494,29 +670,27 @@ const AboutPage = () => {
               </Trans>
             </Typography>
           </ContentBox>
-        </Grid>
-      </Grid>
-
-      <Grid container className={classes.root}>
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={10}
-          lg={8}
-          xl={8}
+        </Grid2>
+      </Grid2>
+      <Grid2 container className={classes.root}>
+        <Grid2
           className={classes.container}
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 10,
+            lg: 6,
+            xl: 6,
+          }}
         >
-          <ContentBox className={classes.noMaxWidth}>
-            <Paper
-              sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2 }}
-              square
-            >
-              <PublicDownloadSection />
-            </Paper>
-          </ContentBox>
-        </Grid>
-      </Grid>
+          <Paper
+            sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2 }}
+            square
+          >
+            <PublicDownloadSection />
+          </Paper>
+        </Grid2>
+      </Grid2>
     </>
   );
 };

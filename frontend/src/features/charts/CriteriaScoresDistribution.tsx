@@ -203,14 +203,24 @@ const CriteriaScoresDistribution = ({
 
   return (
     <ChartContext.Provider value={contextValue}>
-      <Box px={2} pt={1} pb={1}>
+      <Box
+        sx={{
+          px: 2,
+          pt: 1,
+          pb: 1,
+        }}
+      >
         <CriteriaSelector
           criteria={selectedCriterion}
           setCriteria={setSelectedCriterion}
         />
       </Box>
       {criteriaDistributionScore && (
-        <Box py={1}>
+        <Box
+          sx={{
+            py: 1,
+          }}
+        >
           <CriteriaScoresDistributionChart
             criterion={selectedCriterion}
             criteriaDistributionScore={criteriaDistributionScore}

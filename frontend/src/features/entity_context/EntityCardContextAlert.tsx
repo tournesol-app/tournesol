@@ -30,7 +30,13 @@ const EntityCardContextAlert = ({ uid }: EntityCardContextAlertProps) => {
           },
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <Typography variant="body2">
             {t('entityCardContextAlert.contextHasBeenAddedToThisElement')}
           </Typography>

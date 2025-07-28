@@ -44,8 +44,7 @@
     "nComparisonsByYou_other": "{{count}} comparaisons par vous",
     "notYetComparedByYou": "Vous ne l'avez pas encore comparée",
     "contributionsArePublicMessage": "Vos contributions impliquant cet élement sont actuellement publiques. Une comparaison n'est publiquement associée à votre profil que lorsque vous marquez explicitement ses deux élements comme publics.",
-    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics.",
-    "personalScore": "Score personnel\u00a0: {{score}}"
+    "contributionsArePrivateMessage": "Vos contributions impliquant cet élément sont actuellement privées. Les détails de vos jugements ne sont pas publiés, mais ils sont tout de même pris en compte pour calculer des scores agrégés publics."
   },
   "entityCard": {
     "thisElementIsNotAvailable": "Cet élément n'est plus disponible."
@@ -124,8 +123,8 @@
   },
   "submit": "enregistrer",
   "comparisonCriteriaButtons": {
-    "nextQualityCriterion": "Critère de qualité suivant",
-    "previousQualityCriterion": "Critère de qualité précédent"
+    "previousQualityCriterion": "Critère de qualité précédent",
+    "nextQualityCriterion": "Critère de qualité suivant"
   },
   "comparisonSeries": {
     "skipTheSeries": "Passer la série"
@@ -564,9 +563,6 @@
         "topVideosLanguages": "Langues des Top vidéos",
         "keepEmptyToSelectAllLang": "Laisser vide pour tout sélectionner."
       }
-    },
-    "recommendations": {
-      "defaultUploadDate": "Valeur par défaut du filtre date de mise en ligne"
     }
   },
   "generalUserSettingsForm": {
@@ -692,15 +688,16 @@
     "weThankOurContributors": "Nous sommes extrêmement reconnaissant envers les contributrices et contributeurs qui ont eu un très grand impact sur le projet.",
     "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première vesion de la plateforme.",
     "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
-    "weThankOurPartners": "Nous remercions nos partenaires",
+    "weThankOurPartners": "Partenariats & Collaborations",
     "partnershipWithCalicarpa": "Partenariat avec Calicarpa",
     "partnershipWithCalicarpaDetail": "Tournesol est l'incarnation de la recherche de Calicarpa et de ses efforts de développement open-source. Calicarpa est maintenant le seul contributeur à la bibliothèque python open-source de Solidago, qui contient les implémentations des algorithmes de démocratie numérique à l'état de l'art de la recherche.",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
     "partenershipWithEpflDetail": "Pendant une courte période, un ingénieur de recherche à l'École Polytechnique Fédérale de Lausanne (EPFL) s'est consacré au développement de la plateforme Tournesol. Plusieurs chercheurs et chercheuses du laboratoire d'informatique distributée (DCL) ont également participé à la conception et poursuivent la recherche sur les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
-    "partnershipWithPolyconseilDetail": "Nous sommes également accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Depuis août 2021, Polyconseil met à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous apporte chaque mois des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
+    "partnershipWithPolyconseilDetail": "Nous avons été accompagné par l'entreprise Polyconseil, dans le cadre de leur programme #Tech4Good. Polyconseil a mis à disposition un jour par semaine un ingénieur logiciel en stage pour travailler sur le développement de la plateforme Tournesol et nous a apporté des conseils d'organisation, et de design UX/UI. Merci beaucoup !",
     "partnershipWithKleis": "Partenariat avec Kleis Technology",
     "partnershipWithKleisDetail": "Nous avons pu bénéficier de l'accompagnement de l'entreprise Kleis Technology pour définir nos processus organisationnels, et adopter des pratiques de développement efficaces. Notre partenariat avec Kleis est extrêmement structurant pour le développement de la vision de notre produit et nous apporte des solutions pour réaliser des choix techniques essentiels. Merci beaucoup !",
+    "collaborationWithDevoxx": "Devoxx France est une conférence pour les développeurs et les développeuses organisée à Paris, et qui s'engage pour un numérique plus éthique. L'association a été invitée à y présenter Tournesol lors d'une keynote en 2022. Merci !",
     "openSourceContributions": "Contributions Bénévoles",
     "openSourceContributors": "Tournesol étant un projet de développement ouvert, nous avons la chance de pouvoir bénéficier des contributions de nombreux volontaires. Consultez la liste de nos merveilleux contributeurs sur <2>leur page Github</2>.",
     "donateHowTo": "Comment faire un don ?",
@@ -721,13 +718,13 @@
     "donateWithPaypal": "Faire un don avec PayPal",
     "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
     "whatDoWeDoQuestion": "Comment dépensons-nous nos fonds\u00a0?",
-    "whatDoWeDoAnswer": "Tout d'abord, nous engageons un développeur de logiciels pour travailler sur le code source de Tournesol (environ 4\u00a0000€ par mois avec taxes). Ensuite, nous payons des infrastructures et des services pour héberger et faire fonctionner la plateforme Tournesol (environ 150€ par mois).",
+    "whatDoWeDoAnswer": "Tout d'abord, nous avions employé un développeur de logiciels pour travailler sur le code source de Tournesol (environ 4\u00a0000€ par mois avec taxes) jusqu'à Aout 2024. Nous espérons pouvoir employer à nouveau un développeur dans le futur. Ensuite, nous payons des infrastructures et des services pour héberger et faire fonctionner la plateforme Tournesol (environ 300€ par mois).",
     "whatWeWouldDoQuestion": "Que ferions-nous avec plus de fonds\u00a0?",
-    "whatWeWouldDoAnswer": "Notre priorité est de promouvoir Tournesol et d'embaucher un·e deuxième employé·e. La personne serait soit axée sur la croissance de l'association et le financement, soit serait un·e ingénieur·e qui développerait le site web avec une expertise en UX/Design ou en apprentissage automatique.",
+    "whatWeWouldDoAnswer": "Notre priorité est de promouvoir Tournesol et d'embaucher un·e employé·e. La personne serait soit axée sur la croissance de l'association et le financement, soit serait un·e ingénieur·e qui développerait le site web avec une expertise en UX/Design ou en apprentissage automatique.",
     "howMuchDoWeHaveQuestion": "Combien avons-nous actuellement\u00a0?",
     "howMuchDoWeHaveAnswer": "Depuis la création de l'association en 2021, nous avons reçu plusieurs dons généreux qui nous ont grandement aidés à construire la première version de la plateforme (environ 60\u00a0000€). Depuis lors, nous avons reçu moins de 1\u00a0000€ par mois, ce qui n'est pas suffisant pour couvrir nos coûts à long terme.",
     "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement\u00a0?",
-    "howMuchWeCurrentlySpendAnswer": "L'association dépense un peu plus de 4\u00a0000€ par mois.",
+    "howMuchWeCurrentlySpendAnswer": "L'association dépense environ 300€ par mois.",
     "haveWeConsideredQuestion": "Avons-nous envisagé d'autres opportunités de financement\u00a0?",
     "haveWeConsideredAnswer": "Oui, nous avons essayé de postuler à plusieurs sources de financement mais n'avons pas encore été sélectionnés avec succès. Si vous êtes une agence de financement et que vous trouvez notre projet prometteur, veuillez nous contacter à l'adresse hello\u00a0(at)\u00a0tournesol.app."
   },
@@ -1014,7 +1011,7 @@
   "visualizeDataBox": {
     "visualizeTheData": "Visualisez les données",
     "youCanQuicklyExploreEtc": "Vous pouvez rapidement explorer notre base de données publique en utilisant notre application <1>Tournesol Data Visualization</1> réalisée avec Streamlit.",
-    "personCorrelationCoefficientMatrix": "Matrice des coefficients de corrélation de Pearson entre les scores des critères de comparaison (2023/06/13)."
+    "personCorrelationCoefficientMatrix": "Matrice des coefficients de corrélation de Pearson entre les scores des critères de comparaison (2025/05/12)."
   },
   "reset": {
     "ifUserExistsResetLinkWillBeSent": "C'est fait !<1></1>Si l'identifiant existe, un courriel avec un lien de réinitialisation sera envoyé.",
@@ -1088,9 +1085,7 @@
     "title": "À comparer plus tard"
   },
   "recommendationsPage": {
-    "chips": {
-      "by": "d'après"
-    },
+    "basedOnUserPublicContributions": "Selon les contributions publiques de <2></2>",
     "title": {
       "results": "Résultats",
       "personalRecommendations": "Recommandations personnelles",

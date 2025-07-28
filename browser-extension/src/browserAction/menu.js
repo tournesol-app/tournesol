@@ -1,4 +1,4 @@
-import { addRateLater } from '../utils.js';
+import { addRateLater, extractVideoId } from '../utils.js';
 import { frontendUrl } from '../config.js';
 
 const i18n = chrome.i18n;
@@ -7,7 +7,7 @@ function get_current_tab_video_id() {
   function get_tab_video_id(tabs) {
     for (let tab of tabs) {
       // only one tab is returned
-      var video_id = new URL(tab.url).searchParams.get('v');
+      const video_id = extractVideoId(tab.url);
       if (video_id == null || video_id === '') {
         return Promise.reject(new Error('not a video id'));
       }
@@ -81,7 +81,10 @@ function addToRateLaterAction(event) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a YouTube video page.');
+      button.setAttribute(
+        'data-error',
+        chrome.i18n.getMessage('alertNotYoutubeVideo')
+      );
     }
   );
 }
@@ -99,13 +102,22 @@ function openAnalysisPageAction(event) {
     },
     () => {
       button.disabled = true;
-      button.setAttribute('data-error', 'Not a YouTube video page.');
+      button.setAttribute(
+        'data-error',
+        chrome.i18n.getMessage('alertNotYoutubeVideo')
+      );
     }
   );
 }
 
 function openOptionsPage() {
   chrome.runtime.openOptionsPage();
+}
+
+function rateLaterHistory() {
+  chrome.tabs.create({
+    url: 'https://www.youtube.com/feed/history',
+  });
 }
 
 /**
@@ -117,15 +129,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const rateLaterButton = document.getElementById('rate_later');
   const analysisButton = document.getElementById('analysis');
   const preferencesButton = document.getElementById('preferences');
+  const rateLaterHistoryButton = document.getElementById('rate_later_history');
 
   tournesolHomeLink.addEventListener('click', openTournesolHome);
   rateNowButton.addEventListener('click', rateNowAction);
   rateLaterButton.addEventListener('click', addToRateLaterAction);
   analysisButton.addEventListener('click', openAnalysisPageAction);
   preferencesButton.addEventListener('click', openOptionsPage);
+  rateLaterHistoryButton.addEventListener('click', rateLaterHistory);
 
   rateNowButton.textContent = i18n.getMessage('menuRateNow');
   rateLaterButton.textContent = i18n.getMessage('menuRateLater');
   analysisButton.textContent = i18n.getMessage('menuAnalysis');
   preferencesButton.textContent = i18n.getMessage('menuPreferences');
+  rateLaterHistoryButton.textContent = i18n.getMessage('menuRateLaterHistory');
 });

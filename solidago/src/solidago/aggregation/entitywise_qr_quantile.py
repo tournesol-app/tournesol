@@ -11,13 +11,11 @@ from solidago.primitives import qr_quantile, qr_uncertainty
 
 class EntitywiseQrQuantile(Aggregation):
     def __init__(self, quantile=0.2, lipschitz=0.1, error=1e-5):
-        """ Standardize scores so that only a fraction 1 - dev_quantile
-        of the scores is further than 1 away from the median,
-        and then run qr_median to aggregate the scores.
+        """Aggregates the scores per entity with [`qr_quantile`][solidago.primitives.qr_quantile].
         
         Parameters
         ----------
-        qtl_std_dev: float
+        quantile: float
         lipschitz: float
         error: float
         """

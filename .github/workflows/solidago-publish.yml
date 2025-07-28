@@ -15,7 +15,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,3 +33,9 @@ jobs:
         with:
           packages-dir: solidago/dist/
           password: ${{ secrets.SOLIDAGO_PYPI_API_TOKEN }}
+
+      - name: Publish documentation on GitHub Pages
+        run: |
+          pip install -e .[docs]
+          git fetch origin gh-pages
+          mkdocs gh-deploy

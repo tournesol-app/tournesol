@@ -33,7 +33,7 @@ export const alertOnCurrentTab = async (msg, tab) => {
 };
 
 export const alertUseOnLinkToYoutube = (tab) => {
-  alertOnCurrentTab('This must be used on a link to a youtube video', tab);
+  alertOnCurrentTab(chrome.i18n.getMessage('alertNotYoutubeVideo'), tab);
 };
 
 export const fetchTournesolApi = async (path, options = {}) => {
@@ -74,18 +74,34 @@ export const addRateLater = async (video_id) => {
   if (ratingStatusReponse && ratingStatusReponse.ok) {
     return {
       success: true,
-      message: 'Done!',
+      message: chrome.i18n.getMessage('alertVideoAdded'),
     };
   }
   if (ratingStatusReponse && ratingStatusReponse.status === 409) {
     return {
       success: true,
-      message: 'Already added.',
+      message: chrome.i18n.getMessage('alertAlreadyAdded'),
     };
   }
   return {
     success: false,
-    message: 'Failed.',
+    message: chrome.i18n.getMessage('alertFailed'),
+  };
+};
+
+export const addRateLaterBulk = async (videoIds) => {
+  const rateLaterBulkResponse = await fetchTournesolApi(
+    'users/me/rate_later/videos/_bulk_create',
+    {
+      method: 'POST',
+      data: videoIds.map((videoId) => ({ entity: { uid: 'yt:' + videoId } })),
+    }
+  );
+  const responseJson = await rateLaterBulkResponse.json();
+  return {
+    success: rateLaterBulkResponse.ok,
+    status: rateLaterBulkResponse.status,
+    body: responseJson,
   };
 };
 
@@ -268,3 +284,23 @@ export const getSingleSetting = async (
 
   return settings.body?.[scope]?.[name] ?? default_;
 };
+
+export function extractVideoId(url) {
+  const protocol = /(?:https?:\/\/)?/;
+  const subdomain = /(?:www\.|m\.)?/;
+  const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/|v\/|shorts\/))/;
+  const youtubeShortUrl = /(?:youtu\.be\/)/;
+  const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
+
+  const videoId = /([A-Za-z0-9-_]{11})/;
+  const videoIdOrUid = new RegExp(`(?:yt:)?${videoId.source}`);
+
+  const matchUrl = url.match(
+    new RegExp(
+      `^${protocol.source}${subdomain.source}` +
+        `(?:${youtubeWatchUrl.source}|${youtubeShortUrl.source}|${tournesolEntityUrl.source})` +
+        `${videoIdOrUid.source}`
+    )
+  );
+  return matchUrl ? matchUrl[1] : null;
+}

@@ -22,9 +22,19 @@ const CandidateAnalysisPage = ({ entity: reco }: Props) => {
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
-      <Box py={2}>
+      <Box
+        sx={{
+          py: 2,
+        }}
+      >
         {/* Top level section, containing links and maybe more in the future. */}
-        <Box mb={2} display="flex" justifyContent="flex-end">
+        <Box
+          sx={{
+            mb: 2,
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           <Button
             color="secondary"
             variant="outlined"
@@ -42,7 +52,11 @@ const CandidateAnalysisPage = ({ entity: reco }: Props) => {
           </Grid>
           <Grid item xs={12}>
             <Paper>
-              <Box p={1}>
+              <Box
+                sx={{
+                  p: 1,
+                }}
+              >
                 <EntityCardTitle
                   uid={entity.uid}
                   title={entity.metadata.name}
@@ -63,16 +77,22 @@ const CandidateAnalysisPage = ({ entity: reco }: Props) => {
           <Grid item xs={12} sm={12} md={6}>
             <Paper>
               <Box
-                p={1}
-                bgcolor="rgb(238, 238, 238)"
-                display="flex"
-                justifyContent="center"
+                sx={{
+                  p: 1,
+                  bgcolor: 'rgb(238, 238, 238)',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
               >
                 <Typography variant="h5">
                   {t('entityAnalysisPage.chart.criteriaScores.title')}
                 </Typography>
               </Box>
-              <Box p={1}>
+              <Box
+                sx={{
+                  p: 1,
+                }}
+              >
                 <CriteriaBarChart reco={reco} />
               </Box>
             </Paper>

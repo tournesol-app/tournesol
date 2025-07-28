@@ -2,6 +2,8 @@
   "short_name": "Tournesol",
   "name": "Tournesol",
   "description": "Compare online content and contribute to the development of responsible content recommendations.",
+  "categories": ["video_players", "entertainment", "research", "democracy", "crowdsourcing"],
+  "iarc_rating_id": "5510f1c2-d410-4ef1-9033-56b6459d50e1",
   "icons": [
     {
       "src": "/icons/favicon.ico",
@@ -21,7 +23,8 @@
     {
       "src": "/icons/favicon-512x512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
       "src": "/icons/maskable-icon-512x512.png",
@@ -34,10 +37,16 @@
   "scope": "/",
   "start_url": "/pwa/start?utm_source=pwa",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
+  "orientation": "natural",
   "theme_color": "#ffc800",
   "background_color": "#a09b87",
+  "launch_handler": {
+    "client_mode": ["auto"]
+  },
+  "handle_links": "preferred",
   "share_target": {
-    "action": "/shared-content",
+    "action": "https://tournesol.app/shared-content",
     "method": "GET",
     "params": {
       "title": "title",
@@ -72,5 +81,6 @@
       "form_factor": "narrow",
       "label": "Tournesol comparison page on Mobile"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }

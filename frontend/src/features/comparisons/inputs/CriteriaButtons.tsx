@@ -203,18 +203,39 @@ const CriteriaButtons = ({
 
   if (uidA == uidB) {
     return (
-      <Box mt={2}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <ItemsAreSimilar />
       </Box>
     );
   }
 
   return (
-    <Box display="flex" flexDirection="column" rowGap={1} ref={containerRef}>
+    <Box
+      ref={containerRef}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 1,
+      }}
+    >
       <Box
-        display="flex"
-        justifyContent="center"
-        visibility={navigationDisabled ? 'hidden' : 'visible'}
+        sx={[
+          {
+            display: 'flex',
+            justifyContent: 'center',
+          },
+          navigationDisabled
+            ? {
+                visibility: 'hidden',
+              }
+            : {
+                visibility: 'visible',
+              },
+        ]}
       >
         <MobileIconButton
           color="secondary"
@@ -241,10 +262,18 @@ const CriteriaButtons = ({
           <Fade in={slideIn} appear={true} timeout={SWIPE_TIMEOUT}>
             <Box
               {...bindDrag()}
-              sx={{
-                touchAction: 'none',
-                pointerEvents: disableScoreButtons ? 'none' : undefined,
-              }}
+              sx={[
+                {
+                  touchAction: 'none',
+                },
+                disableScoreButtons
+                  ? {
+                      pointerEvents: 'none',
+                    }
+                  : {
+                      pointerEvents: null,
+                    },
+              ]}
             >
               <CriterionButtons
                 critName={criterion.name}
@@ -257,11 +286,20 @@ const CriteriaButtons = ({
           </Fade>
         </div>
       </Slide>
-
       <Box
-        display="flex"
-        justifyContent="center"
-        visibility={navigationDisabled ? 'hidden' : 'visible'}
+        sx={[
+          {
+            display: 'flex',
+            justifyContent: 'center',
+          },
+          navigationDisabled
+            ? {
+                visibility: 'hidden',
+              }
+            : {
+                visibility: 'visible',
+              },
+        ]}
       >
         <MobileIconButton
           color="secondary"

@@ -7,7 +7,11 @@ const ItemsAreSimilar = () => {
   const { t } = useTranslation();
 
   return (
-    <Typography textAlign="center">
+    <Typography
+      sx={{
+        textAlign: 'center',
+      }}
+    >
       {t('comparison.itemsAreSimilar')}
       {' 🌻'}
     </Typography>

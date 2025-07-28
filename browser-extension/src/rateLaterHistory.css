@@ -1,0 +1,163 @@
+.tournesol-rate-later-history-button {
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Roboto', 'Noto', sans-serif;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 36px;
+  font-size: 14px;
+  border-radius: 18px;
+  white-space: nowrap;
+  font-weight: 500;
+
+  color: #0f0f0f;
+  background: #ffc800;
+}
+.tournesol-rate-later-history-button:hover {
+  background: #b28c00;
+}
+.tournesol-rate-later-history-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  background: #ffc800;
+}
+
+#tournesol-rate-later-history-import-button {
+  justify-content: center;
+}
+
+#tournesol-rate-later-history-overlay {
+  z-index: 10000;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(127, 127, 127, 0.5);
+}
+
+body.tournesol-capturing-history {
+  overflow: hidden;
+}
+
+/* Hide thumbnails during the load to reduce network usage */
+body.tournesol-capturing-history ytd-thumbnail {
+  display: none;
+}
+
+#tournesol-rate-later-history-status-box {
+  position: absolute;
+  --width: min(500px, 60vw);
+  left: calc(50% - var(--width) / 2);
+  width: var(--width);
+  top: min(100px, calc(10vh));
+  max-height: 70vh;
+  overflow: auto;
+  background: #1282b2;
+  color: white;
+  padding: 16px;
+
+  border-radius: 8px;
+  box-shadow: 5px 3px 3px #222;
+
+  font-family: 'Roboto', 'Noto', sans-serif;
+  font-size: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#tournesol-rate-later-history-status-box h3 {
+  margin-bottom: 8px;
+  text-decoration-line: underline;
+  text-decoration-color: rgb(255, 211, 51);
+  text-decoration-thickness: 0.4em;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.2em;
+}
+
+#tournesol-rate-later-history-status-box .alert-box {
+  padding: 16px;
+  border-radius: 4px;
+
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: 0.02em;
+
+  color: rgb(30, 70, 32);
+  background-color: rgb(237, 247, 237);
+}
+
+#tournesol-rate-later-history-status-box .alert-box p:not(:first-child){
+  margin-top: 8px;
+}
+
+#tournesol-rate-later-history-status-box ul {
+  list-style-position: inside;
+}
+
+#tournesol-rate-later-history-status-box ul li:not(:first-child) {
+  margin-top: 6px;
+}
+
+#tournesol-rate-later-history-status-box .counter-section {
+  margin-top: 8px;
+}
+
+#tournesol-rate-later-history-status-box .count {
+  font-weight: bold;
+}
+
+#tournesol-rate-later-history-status-box #when-to-stop {
+  margin-top: 16px;
+}
+
+#tournesol-rate-later-history-stop-button {
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.lds-dual-ring {
+  margin: 16px auto;
+}
+
+.lds-dual-ring,
+.lds-dual-ring:after {
+  box-sizing: border-box;
+}
+.lds-dual-ring {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+}
+.lds-dual-ring:after {
+  content: ' ';
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 4px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.display-none {
+  display: none;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}

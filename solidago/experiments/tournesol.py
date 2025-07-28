@@ -16,20 +16,9 @@ from solidago.post_process import Squash
 from solidago.pipeline import Pipeline
 
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-info_loggers = [
-    __name__, 
-    "solidago.pipeline.pipeline", 
-    "solidago.scaling.mehestan",
-    "solidago.preference_learning.base"
-]
-for module in info_loggers:
-    info_logger = logging.getLogger(module)
-    info_logger.setLevel(logging.INFO)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    info_logger.addHandler(ch)
 
 logger.info("Retrieve public dataset")
 inputs = TournesolDataset.download()

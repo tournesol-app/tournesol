@@ -10,8 +10,8 @@ from solidago import PrivacySettings, Judgments
 from solidago.scoring_model import ScoringModel, ScaledScoringModel
 
 from solidago.trust_propagation import TrustPropagation, TrustAll, LipschiTrust, NoTrustPropagation
-from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
 from solidago.preference_learning import PreferenceLearning, UniformGBT
+from solidago.voting_rights import VotingRights, VotingRightsAssignment, AffineOvertrust, IsTrust
 from solidago.scaling import Scaling, ScalingCompose, Mehestan, QuantileZeroShift, Standardize, NoScaling
 from solidago.aggregation import Aggregation, StandardizedQrMedian, StandardizedQrQuantile, Average, EntitywiseQrQuantile
 from solidago.post_process import PostProcess, Squash, NoPostProcess
@@ -33,15 +33,15 @@ class DefaultPipeline:
         sink_vouch=5.0,
         error=1e-8
     )
-    voting_rights: VotingRightsAssignment = AffineOvertrust(
-        privacy_penalty=0.5, 
-        min_overtrust=2.0,
-        overtrust_ratio=0.1,
-    )
     preference_learning: PreferenceLearning = UniformGBT(
         prior_std_dev=7,
         convergence_error=1e-5,
         cumulant_generating_function_error=1e-5,
+    )
+    voting_rights: VotingRightsAssignment = AffineOvertrust(
+        privacy_penalty=0.5, 
+        min_overtrust=2.0,
+        overtrust_ratio=0.1,
     )
     scaling: Scaling = ScalingCompose(
         Mehestan(
@@ -76,9 +76,10 @@ class DefaultPipeline:
 class Pipeline:
     def __init__(
         self,
+        *,
         trust_propagation: TrustPropagation = DefaultPipeline.trust_propagation,
-        voting_rights: VotingRightsAssignment = DefaultPipeline.voting_rights,
         preference_learning: PreferenceLearning = DefaultPipeline.preference_learning,
+        voting_rights: VotingRightsAssignment = DefaultPipeline.voting_rights,
         scaling: Scaling = DefaultPipeline.scaling,
         aggregation: Aggregation = DefaultPipeline.aggregation,
         post_process: PostProcess = DefaultPipeline.post_process,
@@ -89,10 +90,10 @@ class Pipeline:
         ----------
         trust_propagation: TrustPropagation
             Algorithm to spread trust based on pretrusts and vouches
-        voting_rights: VotingRights
-            Algorithm to assign voting rights to each user
         preference_learning: PreferenceLearning
             Algorithm to learn a user model based on each user's data
+        voting_rights: VotingRights
+            Algorithm to assign voting rights to each user
         scaling: Scaling
             Algorithm to put user models on a common scale
         aggregation: Aggregation
@@ -102,8 +103,8 @@ class Pipeline:
             and make it readily usable for applications.
         """
         self.trust_propagation = trust_propagation
-        self.voting_rights = voting_rights
         self.preference_learning = preference_learning
+        self.voting_rights = voting_rights
         self.scaling = scaling
         self.aggregation = aggregation
         self.post_process = post_process
@@ -113,8 +114,8 @@ class Pipeline:
     def from_json(cls, json) -> "Pipeline":
         return Pipeline(
             trust_propagation=trust_propagation_from_json(json["trust_propagation"]),
-            voting_rights=voting_rights_from_json(json["voting_rights"]),
             preference_learning=preference_learning_from_json(json["preference_learning"]),
+            voting_rights=voting_rights_from_json(json["voting_rights"]),
             scaling=scaling_from_json(json["scaling"]),
             aggregation=aggregation_from_json(json["aggregation"]),
             post_process=post_process_from_json(json["post_process"]),
@@ -126,6 +127,18 @@ class Pipeline:
         criterion: str,
         output: Optional[PipelineOutput] = None
     ):
+        """
+        Executes the pipeline with the given input and criterion.
+
+        Parameters
+        ----------
+        input : PipelineInput
+            The input data for the pipeline.
+        criterion : str
+            The criterion used for the pipeline execution.
+        output : Optional[PipelineOutput], optional
+            The output object to store results, by default None
+        """
         # TODO: `criterion` should be managed by PipelineInput ?
         return self(
             **input.get_pipeline_kwargs(criterion),
@@ -185,20 +198,17 @@ class Pipeline:
         logger.info(f"Pipeline 1. Terminated in {np.round(start_step2 - start_step1, 2)} seconds")
         if output is not None:
             output.save_trust_scores(trusts=users)
-            
-        logger.info(f"Pipeline 2. Computing voting rights with {str(self.voting_rights)}")
-        # WARNING: `privacy` may contain (user, entity) even if user has expressed no judgement
-        # about the entity. These users should not be given a voting right on the entity.
-        # For now, irrelevant privacy values are excluded in `input.get_pipeline_kwargs()`
-        voting_rights, entities = self.voting_rights(users, entities, vouches, privacy)
+        
+        logger.info(f"Pipeline 2. Learning preferences with {str(self.preference_learning)}")
+        user_models = self.preference_learning(judgments, users, entities, init_user_models)
         start_step3 = timeit.default_timer()
         logger.info(f"Pipeline 2. Terminated in {np.round(start_step3 - start_step2, 2)} seconds")
-        
-        logger.info(f"Pipeline 3. Learning preferences with {str(self.preference_learning)}")
-        user_models = self.preference_learning(judgments, users, entities, init_user_models)
-        start_step4 = timeit.default_timer()
-        logger.info(f"Pipeline 3. Terminated in {int(start_step4 - start_step3)} seconds")
         raw_scorings = user_models
+            
+        logger.info(f"Pipeline 3. Computing voting rights with {str(self.voting_rights)}")
+        voting_rights, entities = self.voting_rights(users, entities, vouches, privacy, user_models)
+        start_step4 = timeit.default_timer()
+        logger.info(f"Pipeline 3. Terminated in {np.round(start_step4 - start_step3, 2)} seconds")
         
         logger.info(f"Pipeline 4. Collaborative scaling with {str(self.scaling)}")
         user_models = self.scaling(user_models, users, entities, voting_rights, privacy)

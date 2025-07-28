@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, AlertTitle, Grid } from '@mui/material';
+import { Alert, AlertTitle, Grid2 } from '@mui/material';
 
 import { Notifications_langEnum } from 'src/services/openapi';
 
@@ -34,14 +34,21 @@ const GeneralUserSettingsForm = ({
   const { t } = useTranslation();
 
   return (
-    <Grid container spacing={4} direction="column" alignItems="stretch">
-      <Grid item>
+    <Grid2
+      container
+      spacing={4}
+      direction="column"
+      sx={{
+        alignItems: 'stretch',
+      }}
+    >
+      <Grid2>
         <SettingsHeading
           id="notifications"
           text={t('generalUserSettingsForm.emailNotifications')}
         />
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <Alert severity="info">
           <AlertTitle>
             <strong>
@@ -50,28 +57,35 @@ const GeneralUserSettingsForm = ({
           </AlertTitle>
           {t('generalUserSettingsForm.joinTheResearchStudiesDesc')}
         </Alert>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <NotificationsLang
           value={notificationsLang}
           onChange={setNotificationsLang}
         />
-      </Grid>
-      <Grid item container spacing={1} direction="column" alignItems="stretch">
-        <Grid item>
+      </Grid2>
+      <Grid2
+        container
+        spacing={1}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
+        <Grid2>
           <NotificationsEmailResearch
             value={notificationsEmailResearch}
             onChange={setNotificationsEmailResearch}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <NotificationsEmailNewFeatures
             value={notificationsEmailNewFeatures}
             onChange={setNotificationsEmailNewFeatures}
           />
-        </Grid>
-      </Grid>
-    </Grid>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 };
 

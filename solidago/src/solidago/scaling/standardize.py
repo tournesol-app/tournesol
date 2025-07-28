@@ -10,12 +10,6 @@ from solidago.primitives import qr_standard_deviation
 
 class Standardize(Scaling):
     def __init__(self, dev_quantile: float=0.9, lipschitz: float=0.1, error: float=1e-5):
-        """ The scores are shifted so that their quantile zero_quantile equals zero
-        
-        Parameters
-        ----------
-        zero_quantile: float
-        """
         self.dev_quantile = dev_quantile
         self.lipschitz = lipschitz
         self.error = error

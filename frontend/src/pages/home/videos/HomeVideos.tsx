@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import { Box, Button, Divider, Grid2, Stack, Typography } from '@mui/material';
 
 import WebsiteBanners from 'src/features/banners/WebsiteBanners';
 import UsageStatsSection from 'src/features/statistics/UsageStatsSection';
@@ -29,13 +28,29 @@ const HomeVideosPage = () => {
   return (
     <>
       <WebsiteBanners />
-      <Box padding={4} color="white" bgcolor="background.emphatic">
+      <Box
+        sx={{
+          padding: 4,
+          color: 'white',
+          bgcolor: 'background.emphatic',
+        }}
+      >
         <TitleSection title={t('home.collaborativeContentRecommendations')}>
-          <Typography paragraph fontSize="1.1em">
+          <Typography
+            sx={{
+              fontSize: '1.1em',
+              marginBottom: 2,
+            }}
+          >
             {t('home.tournesolIsAParticipatoryResearchProject')}
           </Typography>
 
-          <Typography paragraph fontSize="1.1em">
+          <Typography
+            sx={{
+              fontSize: '1.1em',
+              marginBottom: 2,
+            }}
+          >
             {t('home.helpUsAdvanceResearch')}
           </Typography>
 
@@ -72,9 +87,17 @@ const HomeVideosPage = () => {
               </Button>
             </Stack>
           ) : (
-            <Box width="100%">
+            <Box
+              sx={{
+                width: '100%',
+              }}
+            >
               <Divider sx={{ my: 1 }} />
-              <Typography paragraph>
+              <Typography
+                sx={{
+                  marginBottom: 2,
+                }}
+              >
                 {t('home.generic.pollIsClosed')}
               </Typography>
               <Stack spacing={2} direction="row">
@@ -96,11 +119,23 @@ const HomeVideosPage = () => {
           )}
         </TitleSection>
       </Box>
-      <Grid2 container width="100%" flexDirection="column" alignItems="center">
+      <Grid2
+        container
+        sx={{
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Grid2 sx={homeSectionSx}>
           <ComparisonSection />
         </Grid2>
-        <Grid2 sx={homeSectionSx} bgcolor="background.emphatic">
+        <Grid2
+          sx={{
+            bgcolor: 'background.emphatic',
+            ...homeSectionSx,
+          }}
+        >
           <RecommendationsSection />
         </Grid2>
         <Grid2 sx={homeSectionSx}>
@@ -116,5 +151,4 @@ const HomeVideosPage = () => {
     </>
   );
 };
-
 export default HomeVideosPage;

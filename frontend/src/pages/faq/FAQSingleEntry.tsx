@@ -44,7 +44,11 @@ const FAQSingleEntry = ({
   const answerParagraphs = entry.answer.split('\n');
 
   return (
-    <Box mb={4}>
+    <Box
+      sx={{
+        mb: 4,
+      }}
+    >
       <Paper square sx={{ p: 2 }}>
         <Grid container>
           <Grid item xs={10}>
@@ -61,11 +65,13 @@ const FAQSingleEntry = ({
           </Grid>
           <Grid item xs={2}>
             <Box
-              display="flex"
-              flexWrap="wrap"
-              alignItems="center"
-              justifyContent="flex-end"
-              gap={0.5}
+              sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: 0.5,
+              }}
             >
               <IconButton
                 aria-label="Copy URI to clipboard"
@@ -95,8 +101,10 @@ const FAQSingleEntry = ({
                 answerParagraphs.map((paragraph, index) => (
                   <Typography
                     key={`$a_{entry.name}_p${index}`}
-                    paragraph
-                    textAlign="justify"
+                    sx={{
+                      textAlign: 'justify',
+                      marginBottom: 2,
+                    }}
                   >
                     {paragraph}
                   </Typography>

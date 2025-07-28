@@ -13,10 +13,8 @@ interface Props {
 }
 
 const helpIcon = <HelpOutline fontSize="inherit" sx={{}} />;
-
 function ScoreModeFilter(props: Props) {
   const { t } = useTranslation();
-
   const scoreModeChoices = {
     [ScoreModeEnum.DEFAULT]: (
       <Tooltip title={t('filter.scoreMode.default.description')}>
@@ -54,7 +52,6 @@ function ScoreModeFilter(props: Props) {
       </Tooltip>
     ),
   };
-
   return (
     <ChoicesFilterSection
       title={t('filter.scoreModeSection')}
@@ -64,5 +61,4 @@ function ScoreModeFilter(props: Props) {
     />
   );
 }
-
 export default ScoreModeFilter;

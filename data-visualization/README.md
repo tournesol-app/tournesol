@@ -12,6 +12,20 @@ Create a new Python virtual environment, and install the requirements. Be sure
 to use one virtual environment per Python projects in the Tournesol repository
 to not mix dependencies.
 
+Initiate venv for the first time:
+
+```bash
+python -m venv venv_dev
+```
+
+Activate venv:
+
+```bash
+./venv_dev/Scripts/activate
+```
+
+Then install project dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```

@@ -70,7 +70,14 @@ const Login = () => {
       <ContentHeader title={t('login.loginToTournesol')} />
       <ContentBox maxWidth="xs">
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3} direction="column" alignItems="stretch">
+          <Grid
+            container
+            spacing={3}
+            direction="column"
+            sx={{
+              alignItems: 'stretch',
+            }}
+          >
             <Grid item xs={12}>
               <TextField
                 required
@@ -112,13 +119,21 @@ const Login = () => {
             </Grid>
           </Grid>
         </form>
-        <Box my={2}>
+        <Box
+          sx={{
+            my: 2,
+          }}
+        >
           <InternalLink to="/forgot">
             {t('login.forgotYourPassword')}
           </InternalLink>
         </Box>
         <Divider />
-        <Box my={2}>
+        <Box
+          sx={{
+            my: 2,
+          }}
+        >
           <Typography variant="subtitle1" gutterBottom>
             {t('login.noAccountYet')}
           </Typography>

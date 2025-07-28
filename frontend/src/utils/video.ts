@@ -4,7 +4,7 @@ export function extractVideoId(
 ) {
   const protocol = /(?:https?:\/\/)?/;
   const subdomain = /(?:www\.|m\.)?/;
-  const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/))/;
+  const youtubeWatchUrl = /(?:youtube\.com\/(?:watch\?v=|live\/|v\/|shorts\/))/;
   const youtubeShortUrl = /(?:youtu\.be\/)/;
   const tournesolEntityUrl = /(?:[.\w]+\/entities\/)/;
 

@@ -17,10 +17,23 @@ const ContentBoxLegalDocument = ({
 }: LegalDocumentProps) => {
   return (
     <ContentBox maxWidth="md">
-      <Typography variant="h3" textAlign="center" mt={2} mb={4}>
+      <Typography
+        variant="h3"
+        sx={{
+          textAlign: 'center',
+          mt: 2,
+          mb: 4,
+        }}
+      >
         {mainTitle}
       </Typography>
-      <Box display="flex" flexDirection="column" gap={4}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+      >
         {children}
       </Box>
     </ContentBox>

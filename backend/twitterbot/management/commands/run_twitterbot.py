@@ -52,4 +52,4 @@ class Command(BaseCommand):
 
             return
 
-        tweet_video_recommendation(bot_name, assumeyes=options["assumeyes"])
+        tweet_video_recommendation(bot_name, assumeyes=options["assumeyes"], dest=["bluesky"])

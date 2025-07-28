@@ -6,30 +6,72 @@ import numpy as np
 
 
 class ScoringModel:
+    """
+    Abstract class that defines the interface for models that can score individual entities.
+
+    !!! note
+        This abstract class provides a default implementation that for `iter_entities()`
+        calling `scored_entities()` and `__call__()` to score each entity.
+        `scored_entities()` and `__call__()` need to be implemented by subclasses.
+    """
+
     @abstractmethod
     def __call__(
         self, 
         entity_id: int, 
         entity_features: Optional[pd.Series] = None,
     ) -> Optional[tuple[float, float, float]]:
-        """ Assigns a score to an entity
+        """
+        Score a single entity and return its evaluation results.
         
         Parameters
         ----------
         entity_id: int
-        entity_features: Series
-            features of the entity
+        entity_features: pd.Series, optional
+            Features of the entity that may be used for scoring.
             
         Returns
         -------
-        out: (score, left_uncertainty, right_uncertainty) or None
+        Optional[tuple[float, float, float]]
+            If scoring is successful, returns a tuple of three float values
+            representing (score, left_uncertainty, right_uncertainty).  
+            Returns `None` if the entity cannot be scored
         """
         raise NotImplementedError
-        
+
+    @abstractmethod
     def scored_entities(self, entities: Optional[pd.DataFrame] = None) -> set[int]:
+        """
+        Get the set of entity IDs that can be scored by this model.
+
+        Parameters
+        ----------
+        entities: pd.DataFrame, optional
+            DataFrame containing entities to score with their features.  
+            If `None`, uses internally stored entities.
+
+        Returns
+        -------
+        set[int] 
+            Set of entity IDs that are available for scoring.
+        """
         raise NotImplementedError
 
     def iter_entities(self, entities = None) -> Iterable[tuple[int, tuple[float, float, float]]]:
+        """
+        Iterate over all available entities and yield their scoring results.
+
+        Parameters
+        ----------
+        entities : pd.DataFrame, optional
+            DataFrame containing entity features.  
+            If `None`, uses internally stored entities.
+
+        Yields
+        -------
+        tuple[int, tuple[float, float, float]]
+            Pairs of (entity_id, scoring_results) for each entity that can be scored.
+        """
         for entity_id in self.scored_entities(entities):
             if entities is None:
                 result = self(entity_id)
@@ -40,6 +82,10 @@ class ScoringModel:
 
 
 class DirectScoringModel(ScoringModel):
+    """
+    A [`ScoringModel`][solidago.scoring_model.ScoringModel] that contains scores
+    directly assigned to each entity.
+    """
     def __init__(
         self, 
         dct: Optional[dict[int, tuple[float, float, float]]]=None
@@ -48,8 +94,6 @@ class DirectScoringModel(ScoringModel):
         self._dict = dict() if dct is None else dct
     
     def __call__(self, entity_id: int, entity_features=None) -> Optional[tuple[float, float, float]]:
-        """ Returns both score and uncertainty
-        """
         return self._dict.get(entity_id)
         
     def __getitem__(self, entity_id: int) -> Optional[tuple[float, float, float]]:
@@ -96,14 +140,19 @@ class ScaledScoringModel(ScoringModel):
         translation_left_uncertainty: float=0.0,
         translation_right_uncertainty: float=0.0,
     ):
-        """ When base_model is itself a scaled scoring model, 
+        """
+        A [`ScoringModel`][solidago.scoring_model.ScoringModel] with scaling parameters applied.
+
+        When `base_model` is itself a scaled scoring model,
         the scalings are aggregated, so that the base model is actually
         the scaled scoring model's base model.
-        Note that this requires aggregating the uncertainties in a heuristic manner.
-        At the core, this is because the uncertainties should grow quadratically
-        with the size of the scores. Put differently, because of uncertainties,
-        the composition of scaled scoring models is not an internal composition law
-        (but it is if uncertainties are not accounted for).        
+
+        !!! note
+            Note that this requires aggregating the uncertainties in a heuristic manner.
+            At the core, this is because the uncertainties should grow quadratically
+            with the size of the scores. Put differently, because of uncertainties,
+            the composition of scaled scoring models is not an internal composition law
+            (but it is if uncertainties are not accounted for).
         """
         if isinstance(base_model, ScaledScoringModel):
             self.base_model = base_model.base_model
@@ -226,7 +275,7 @@ class PostProcessedScoringModel(ScoringModel):
             right = - temp
         return score, left, right
 
-    def scored_entities(self, entities) -> set[int]:
+    def scored_entities(self, entities=None) -> set[int]:
         return self.base_model.scored_entities(entities)
 
     def iter_entities(self, entities=None) -> Iterable[tuple[int, tuple[float, float, float]]]:

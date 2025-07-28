@@ -1,7 +1,9 @@
 import {
   addRateLater,
+  addRateLaterBulk,
   alertOnCurrentTab,
   alertUseOnLinkToYoutube,
+  extractVideoId,
   fetchTournesolApi,
   getAccessToken,
   getRandomSubarray,
@@ -26,13 +28,18 @@ const createContextMenu = function createContextMenu() {
   chrome.contextMenus.removeAll(function () {
     chrome.contextMenus.create({
       id: 'tournesol_add_rate_later',
-      title: 'Rate later on Tournesol',
+      title: chrome.i18n.getMessage('contextMenuRateLater'),
       contexts: ['link'],
+      targetUrlPatterns: [
+        '*://*.youtube.com/*',
+        '*://*.youtu.be/*',
+        '*://tournesol.app/*',
+      ],
     });
   });
 
   chrome.contextMenus.onClicked.addListener(function (e, tab) {
-    var videoId = new URL(e.linkUrl).searchParams.get('v');
+    const videoId = extractVideoId(e.linkUrl);
     if (!videoId) {
       alertUseOnLinkToYoutube(tab);
     } else {
@@ -72,6 +79,12 @@ function getDateThreeWeeksAgo() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Returns a boolean indicating whether the user is logged in on Tournesol from the extension's perspective
+  if (request.message === 'isLoggedIn') {
+    getAccessToken().then((token) => sendResponse(!!token));
+    return true;
+  }
+
   // Return the current access token in the chrome.storage.local.
   if (request.message === 'extAccessTokenNeeded') {
     getAccessToken().then((token) => sendResponse({ access_token: token }));
@@ -112,6 +125,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
+    return true;
+  }
+
+  if (request.message == 'addRateLaterBulk') {
+    addRateLaterBulk(request.videoIds).then(sendResponse);
     return true;
   }
 
@@ -167,14 +185,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const extraNbr = request.additionalVideosNumber;
 
       const recentToLoadRow1 = Math.round(nbrPerRow * RECENT_VIDEOS_RATIO);
-      const oldToLoadRow1 = Math.round(nbrPerRow * (1 - RECENT_VIDEOS_RATIO));
+      const oldToLoadRow1 = nbrPerRow - recentToLoadRow1;
 
       const recentToLoadExtra = Math.round(
         extraNbr * RECENT_VIDEOS_EXTRA_RATIO
       );
-      const oldToLoadExtra = Math.round(
-        extraNbr * (1 - RECENT_VIDEOS_EXTRA_RATIO)
-      );
+      const oldToLoadExtra = extraNbr - recentToLoadExtra;
 
       const process = async () => {
         const threeWeeksAgo = getDateThreeWeeksAgo();

@@ -104,17 +104,27 @@ const GenericEventsPage = ({
     <>
       <ContentHeader title={title} />
       <ContentBox maxWidth="lg">
-        <Box mb={4}>
+        <Box
+          sx={{
+            mb: 4,
+          }}
+        >
           <EventsMenu selected={selectedMenuItem} />
         </Box>
         {header && header}
         {displayFutureEvents && (
-          <Box mb={4}>
+          <Box
+            sx={{
+              mb: 4,
+            }}
+          >
             <Typography
               variant="h6"
               component="h3"
-              mb={2}
-              borderBottom="1px solid #E7E5DB"
+              sx={{
+                mb: 2,
+                borderBottom: '1px solid #E7E5DB',
+              }}
             >
               {t('eventsPage.upcomingEvents')}
             </Typography>
@@ -129,12 +139,18 @@ const GenericEventsPage = ({
           </Box>
         )}
         {pastEvents && pastEvents.length > 0 && (
-          <Box mb={4}>
+          <Box
+            sx={{
+              mb: 4,
+            }}
+          >
             <Typography
               variant="h6"
               component="h3"
-              mb={2}
-              borderBottom="1px solid #E7E5DB"
+              sx={{
+                mb: 2,
+                borderBottom: '1px solid #E7E5DB',
+              }}
             >
               {t('eventsPage.pastEvents')}
             </Typography>

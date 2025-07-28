@@ -1,5 +1,6 @@
 /devenv/
 /dist/
+/site/
 **__pycache__/
 .flake8/
 .pylint/

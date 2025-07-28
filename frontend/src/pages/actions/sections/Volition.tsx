@@ -70,7 +70,13 @@ const BooksToReadAndOffer = () => {
           <ul>
             {booksToReadAndOfferEn.map((book, idx) => (
               <li key={`book_en_${idx}`}>
-                <Box display="flex" flexWrap="wrap" columnGap={1}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    columnGap: 1,
+                  }}
+                >
                   <ExternalLink href={book.href}>{book.text}</ExternalLink>
                   <Typography variant="body2">- {book.authors}</Typography>
                 </Box>
@@ -87,7 +93,14 @@ const Volition = () => {
   const { t } = useTranslation();
   return (
     <Box>
-      <Typography variant="h4" fontStyle="italic" gutterBottom id="volition">
+      <Typography
+        variant="h4"
+        gutterBottom
+        id="volition"
+        sx={{
+          fontStyle: 'italic',
+        }}
+      >
         {t(
           'actionsPage.volition.favourThoughtfulVolitionsToInstinctivePreferences'
         )}

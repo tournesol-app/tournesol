@@ -1,4 +1,4 @@
-""" **Step 2 in the pipeline**
+""" **Step 3 in pipeline**
     
 Voting rights are assigned per user and per entity,
 based on users' trust scores and privacy settings.

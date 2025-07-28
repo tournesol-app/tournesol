@@ -1,19 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, useMediaQuery } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Box, Grid2, useMediaQuery } from '@mui/material';
 
 import FooterSection from 'src/features/frame/components/footer/FooterSection';
 import { theme } from 'src/theme';
 import { getPollName, polls } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
 import {
+  blueskyTournesolBotEnUrl,
+  blueskyTournesolBotFrUrl,
+  blueskyTournesolUrl,
   linkedInTournesolUrl,
   twitchTournesolUrl,
-  twitterTournesolBotEnUrl,
-  twitterTournesolBotFrUrl,
-  twitterTournesolUrl,
   youtubePlaylistEnUrl,
   youtubePlaylistFrUrl,
   discordTournesolInviteUrl,
@@ -21,6 +20,7 @@ import {
   KKBBTournesolEnUrl,
   KKBBTournesolFrUrl,
   paypalTournesolUrl,
+  solidagoDocsUrl,
   tournesolTalksMailingListUrl,
   whitePaperUrl,
   tournesolTalksYTPlaylist,
@@ -53,8 +53,8 @@ const Footer = () => {
           name: t('footer.firefoxExtension'),
           to: getWebExtensionUrl('firefox') || '',
         },
-        { name: 'Twitter Bot EN', to: twitterTournesolBotEnUrl },
-        { name: 'Twitter Bot FR', to: twitterTournesolBotFrUrl },
+        { name: 'Bluesky Bot EN', to: blueskyTournesolBotEnUrl },
+        { name: 'Bluesky Bot FR', to: blueskyTournesolBotFrUrl },
         { name: t('footer.youtubePlaylistEn'), to: youtubePlaylistEnUrl },
         { name: t('footer.youtubePlaylistFr'), to: youtubePlaylistFrUrl },
       ],
@@ -64,7 +64,7 @@ const Footer = () => {
       title: t('footer.followUs'),
       items: [
         { name: t('footer.events'), to: '/events' },
-        { name: 'Twitter', to: twitterTournesolUrl },
+        { name: 'Bluesky', to: blueskyTournesolUrl },
         { name: 'YouTube', to: youtubeTournesolUrl },
         { name: 'Twitch', to: twitchTournesolUrl },
         { name: 'Discord', to: discordTournesolInviteUrl },
@@ -113,6 +113,10 @@ const Footer = () => {
           name: t('footer.tournesolTalksYTPlaylist'),
           to: tournesolTalksYTPlaylist,
         },
+        {
+          name: 'Solidago (Python library)',
+          to: solidagoDocsUrl,
+        },
       ],
     },
     {
@@ -139,12 +143,28 @@ const Footer = () => {
   });
 
   return (
-    <Box p={2} color="#fff" bgcolor="background.emphatic">
-      <Grid
+    <Box
+      sx={{
+        p: 2,
+        color: '#fff',
+        bgcolor: 'background.emphatic',
+      }}
+    >
+      <Grid2
         container
         spacing={2}
-        justifyContent={lessThanLargeScreen ? 'flex-start' : 'space-around'}
-        alignContent="center"
+        sx={[
+          {
+            alignContent: 'center',
+          },
+          lessThanLargeScreen
+            ? {
+                justifyContent: 'flex-start',
+              }
+            : {
+                justifyContent: 'space-around',
+              },
+        ]}
       >
         {footerSections.map((section) => (
           <FooterSection
@@ -155,7 +175,7 @@ const Footer = () => {
             trailingDivider={section.trailingDivider}
           />
         ))}
-      </Grid>
+      </Grid2>
     </Box>
   );
 };

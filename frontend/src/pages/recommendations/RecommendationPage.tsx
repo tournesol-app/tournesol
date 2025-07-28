@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Chip, Grid } from '@mui/material';
 import { Person } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader, LoaderWrapper } from 'src/components';
@@ -134,14 +134,25 @@ function RecommendationsPage() {
       {displayPersonalRecommendations ? (
         <ContentHeader
           title={getRecommendationPageName(t, pollName, true)}
-          chipIcon={<Person />}
-          chipLabel={t('recommendationsPage.chips.by') + ` ${username}`}
+          subtitle={
+            <Trans
+              t={t}
+              i18nKey="recommendationsPage.basedOnUserPublicContributions"
+            >
+              Based on public contributions by{' '}
+              <Chip icon={<Person />} label={username} />
+            </Trans>
+          }
         />
       ) : (
         <ContentHeader title={getRecommendationPageName(t, pollName)} />
       )}
       <ContentBox noMinPaddingX maxWidth="lg">
-        <Box px={{ xs: 2, sm: 0 }}>
+        <Box
+          sx={{
+            px: { xs: 2, sm: 0 },
+          }}
+        >
           <Grid container>
             {/* Filters section. */}
             <Grid item xs={12}>
@@ -149,7 +160,12 @@ function RecommendationsPage() {
               <SearchFilter
                 disableAdvanced={displayPersonalRecommendations}
                 extraActions={
-                  <Box display="flex" gap={1}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 1,
+                    }}
+                  >
                     <ShareMenuButton isIcon />
                   </Box>
                 }

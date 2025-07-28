@@ -65,7 +65,14 @@ const ProfileForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={2} direction="column" alignItems="stretch">
+      <Grid
+        container
+        spacing={2}
+        direction="column"
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid item>
           <TextField
             required
@@ -78,7 +85,9 @@ const ProfileForm = () => {
             variant="outlined"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            inputProps={{ 'data-testid': 'username' }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'username' },
+            }}
           />
           <Typography variant="caption">
             {t('settings.captionUsernameWillAppearInPublicDatabase')}
