@@ -19,7 +19,7 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.1.1",
     "linkify-string": "^4.1",
-    "linkifyjs": "^4.1",
+    "linkifyjs": "^4.3",
     "notistack": "^3.0.2",
     "plausible-tracker": "^0.3.8",
     "precompress": "7.0.1",
