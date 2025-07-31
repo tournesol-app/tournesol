@@ -69,11 +69,6 @@
   "stackedCard": {
     "showAll": "Show all"
   },
-  "tempStudyBanner": {
-    "join": "Join",
-    "loginToParticipate": "Log in to participate",
-    "isTheTournesolProjectReallyEffective": "Is the Tournesol project really effective? We are currently investigating the impact of our browser extension on the YouTube viewers' habits. Join our research study to help us improve Tournesol!"
-  },
   "criteriaScoresDistribution": {
     "lessThan": "< {{score}}",
     "fromTo": "{{from}} to {{to}}",
@@ -642,7 +637,8 @@
     "comparisons": "Comparisons"
   },
   "statsSection": {
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "thankYouForStats": "We thank all contributors who compared videos and built collaboratively Tournesol's recommendations system."
   },
   "tip": {
     "less": "Less",
@@ -944,12 +940,13 @@
       "pollIsClosed": "The poll is now closed.",
       "seeResults": "See the results"
     },
-    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
-    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
-    "helpUsAdvanceResearch": "Help us advance research by giving your opinion on the videos you have watched in order to identify public interest contents that should be largely recommended.",
     "contributeTitle": "Contribute!",
     "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criteria.",
     "compareButton": "Compare now",
+    "installTheMobileAppTitle": "Use our app!",
+    "installTheMobileAppDescription": "The mobile application is the best way to find and watch the high quality videos identified by the Tournesol contributors directly on your mobile.",
+    "collaborativeContentRecommendations": "Collaborative Content Recommendations",
+    "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
     "useOurExtension": "Use our extension!",
     "webExtensionDescription": "The browser extension allows you to display videos recommended by the community directly on your YouTube home page. With just a few clicks you can rate any video or add them to your rate-later list.",
     "getTheExtensionButton": "Get the extension",
@@ -957,7 +954,7 @@
   },
   "comparisonSection": {
     "contribute": "Contribute",
-    "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family?"
+    "theSimpliestWayToContribute": "The simplest way to contribute to Tournesol is to compare videos. What content would you like YouTube to recommend to your friends and family? Create an account to help identify public interest videos."
   },
   "fundingSection": {
     "supportUs": "Support Us!",
@@ -972,9 +969,8 @@
     "compareTheVideos": "Compare the videos"
   },
   "recommendationsSection": {
-    "recommendations": "Recommendations",
-    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users. You too can give your own opinion to improve these recommendations.",
-    "seeMore": "See more"
+    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users.",
+    "seeMore": "See more videos"
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Our data are open",
@@ -990,7 +986,7 @@
   },
   "researchSection": {
     "research": "Research",
-    "weSeekToSupportResearch": "\"We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments.\""
+    "weSeekToSupportResearch": "We seek to support research on the ethics of algorithms by providing a large and reliable database of human judgments."
   },
   "scientificLiteratureBox": {
     "publications": "Publications",
@@ -1015,6 +1011,75 @@
     "confirmNewPassword": "Confirm your new password",
     "passwordsDoNotMatch": "Passwords do not match",
     "resetPasswordButton": "Reset password"
+  },
+  "manifesto": {
+    "header": "",
+    "title": "",
+    "intro": "",
+    "part1": {
+      "title": "",
+      "democracyDepends": "Notre fonctionnement démocratique dépend d’échanges d’informations qui ont désormais souvent lieu sur des plateformes numériques, et sont par conséquent organisés par ces IA de recommandation. Or, de nombreuses études scientifiques montrent que ces IA de recommandation nuisent à l’intérêt général : <2>dégradation sans précédent de la santé mentale</2> chez les jeunes<5><0>[1]</0></5>, <7>polarisation</7> du discours public<9><0>[2]</0></9>, <11>manipulation d’élections</11><12><0>[3]</0></12>, désinformation<14><0>[4]</0></14>, contribution à des <16>génocides</16><17><0>[5]</0></17>.",
+      "toOrganizeInformationFlow": "Pour organiser la circulation des informations, les géants du numérique utilisent ces IA de recommandation, qui fonctionnent selon des critères opaques, servent uniquement leurs intérêts économiques ou idéologiques, ne sont soumises à quasi aucune régulation et donc aucun contrôle démocratique.",
+      "againstPublicInterest": "En somme, les IA de recommandation actuelles favorisent largement des intérêts privés au détriment de l’intérêt général."
+    },
+    "part2": {
+      "title": "",
+      "forRegulation": "Nous défendons l’idée de réguler ces espaces numériques et leurs IA de recommandation, à l’instar d’autres industries à haut risque (aviation, pharmaceutique ou agro-alimentaire).",
+      "existingLawsNotEnforced": "Nous demandons que <2>les lois existantes soient effectivement appliquées</2>, et que le numérique cesse d’être un espace de non-droit. L’Europe s’est dotée de plusieurs lois visant à encadrer les plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont largement inappliquées<4><0>[6]</0></4>.",
+      "existingLawsInsufficient": "Plus encore, nous pensons que <2>ces lois sont insuffisantes</2>. Nous proposons d’introduire dans le corpus législatif de nouveaux principes, tels que:",
+      "propositions": {
+        "authorization": {
+          "main": "",
+          "detail": ""
+        },
+        "nonRecommendability": {
+          "main": "",
+          "detail": ""
+        },
+        "configurationRight": {
+          "main": "",
+          "detail": ""
+        }
+      }
+    },
+    "part3": {
+      "title": "",
+      "buildDemocraticDigitalSpace": "Concrètement, nous pensons que pour que nos espaces numériques soient alignés avec nos standards démocratiques et participent au bon fonctionnement de nos sociétés, il faudrait que leur mécanisme soit à minima,",
+      "requirements": {
+        "transparent": {
+          "title": "",
+          "detail": ""
+        },
+        "robust": {
+          "title": "",
+          "detail": ""
+        },
+        "wellTought": {
+          "title": "",
+          "detail": ""
+        },
+        "commonInformation": {
+          "title": "",
+          "detail": ""
+        }
+      }
+    },
+    "conclusion": {
+      "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, les contenus recommandés massivement sur les réseaux sociaux devraient refléter les intérêts et les opinions de la parole citoyenne",
+      "itIsPossible": "Cela est tout à fait possible, à condition de développer des IA de recommandation fondées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.",
+      "tournesolProject": "Le projet Tournesol.app développe une IA de recommandation alternative de ce type, qui s'appuient sur vos jugements et vos intérêts. Venez essayer la plateforme : <2>https://tournesol.app/</2> !",
+      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste.",
+      "contactAndActions": "Rejoignez-vous sur <2>notre Discord</2>, et impliquez-vous sur cette thématique : <5>https://tournesol.app/actions</5>."
+    },
+    "toGoFurther": "",
+    "notes": {
+      "title": "",
+      "facebookFilesMentalHealth": "D’après les Facebook Files, une étude interne à Facebook/Méta montre qu’Instagram contribue à dégrader la santé mentale des adolescentes [<1>Facebook Knows Instagram Is Toxic for Teen Girls...</1>, <4>The Dangerous Experiment on Teen Girls</4>]. Aux États-Unis, 57% des adolescentes confient éprouver une tristesse persistante ou du désespoir, contre 36% en 2011, et 30% révèlent avoir déjà songé à se suicider, contre 19% en 2011 [<6>CDC Report, pp. 57, 61</6>]. Les tendances sont similaires à travers le monde [<8>International Mental Illness (1/2)</8>;<10>International Mental Illness (2/2)</10>]. D’après des psychologues, l’hypothèse de l’accès constant aux réseaux sociaux explique le mieux cette crise de la santé mentale [<12>13 explanations of mental health crisis</12>].",
+      "facebookFilesPoliticians": "Les Facebook Files révèlent l’influence des IA de recommandation de Facebook sur les politiciens en 2017. Des politiciens européens ont notamment écrit à Facebook, en insistant sur le fait que les IA favorisaient alors beaucoup plus radicalement les discours clivants, ce qui contraignaient ces politiciens à être plus haineux pour survivre politiquement.",
+      "elections": "Plusieurs études rapportent des manipulations de processus électoraux en Roumanie en 2024 sur TikTok, qui ont conduit à l’annulation et au report de l’élection présidentielle [<1>Bader and Szabo 2025</1>; <4>Seceleanu and Garabet 2025</4>; <7>Harward 2024</7>]. Ces cas d’ingérence étrangère font écho à de nombreuses autres sur le même sujet, comme dans le cas de Cambridge Analytica en 2015 et 2016.",
+      "amplification": "La sur-optimisation de l’engagement a des implications très dangereuses sur l’amplification de la polarisation affective et la désinformation [Twitter and Tear Gas 2017, The Hype Machine 2021, Toxic Data 2022].",
+      "genocides": "L’Organisation des Nations Unies et Amnesty International accusent Facebook d’avoir sciemment contribué à des génocides, en particulier au génocide des Rohingyas en Birmanie, en promouvant des discours de haine contre les minorités [<1>Amnesty International #1</1>, <4>Amnesty International #2</4>]."
+    }
   },
   "proofByKeyword": {
     "proofByKeyword": "Proof by keyword",

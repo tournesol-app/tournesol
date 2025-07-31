@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { extractVideoId } from 'src/utils/video';
 import makeStyles from '@mui/styles/makeStyles';
@@ -45,7 +45,7 @@ const useStyles = makeStyles(() => ({
 const Search = () => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const paramsString = useLocation().search;
   const searchParams = new URLSearchParams(paramsString);
   const [search, setSearch] = useState(searchParams.get('search') || '');
@@ -70,9 +70,12 @@ const Search = () => {
     const videoId = extractVideoId(search, { ignoreVideoId: true });
 
     if (videoId) {
-      history.push('/entities/yt:' + videoId.toString());
+      navigate('/entities/yt:' + videoId.toString());
     } else {
-      history.push('/search?' + searchParams.toString());
+      navigate({
+        pathname: '/search',
+        search: searchParams.toString(),
+      });
     }
   };
 

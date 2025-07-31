@@ -5,6 +5,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import packageJson from '../package.json';
 
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    returnNull: false;
+  }
+}
+
 export const SUPPORTED_LANGUAGES = packageJson.config.supported_languages;
 
 export const langIsSupported = (langCode: string) => {
@@ -31,6 +37,7 @@ i18n
     supportedLngs: SUPPORTED_LANGUAGES.map((l) => l.code),
     debug: false,
     returnEmptyString: false,
+    returnNull: false,
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },

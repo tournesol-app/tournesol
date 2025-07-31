@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Redirect, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { i18n as i18nInterface } from 'i18next';
 
@@ -15,8 +15,7 @@ import PersonalVouchersPage from './pages/personal/vouchers/VouchersPage';
 import Frame from './features/frame/Frame';
 
 import { StatsLazyProvider } from './features/statistics/StatsContext';
-import PublicRoute from './features/login/PublicRoute';
-import PrivateRoute from './features/login/PrivateRoute';
+import RouteWrapper from './features/login/RouteWrapper';
 
 import ActionsPage from './pages/actions/ActionsPage';
 import ForgotPassword from './pages/login/ForgotPassword';
@@ -46,6 +45,10 @@ const VideoAnalysisPage = React.lazy(
   () => import('./pages/videos/VideoAnalysisPage')
 );
 
+const ManifestoPage = React.lazy(
+  () => import('./pages/manifesto/ManifestoPage')
+);
+
 const API_URL = import.meta.env.REACT_APP_API_URL;
 
 const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
@@ -68,6 +71,10 @@ const ScrollToTop = () => {
   return null;
 };
 
+const buildParentRoutePath = (path: string) => {
+  return path.endsWith('/') ? `${path}*` : `${path}/*`;
+};
+
 function App() {
   const { i18n } = useTranslation();
   const { isLoggedIn, loginState } = useLoginState();
@@ -86,94 +93,215 @@ function App() {
       <StatsLazyProvider>
         <ScrollToTop />
         <Frame>
-          <Switch>
-            <PublicRoute path="/actions">
-              <ActionsPage />
-            </PublicRoute>
-            <PublicRoute path="/action">
-              {/*
-                https://tournesol.app/action is the URL mentionned
-                in "La Dictature des Algorithmes" (page 318)
-              */}
-              <Redirect to="/actions" />
-            </PublicRoute>
-            <PublicRoute path="/faq">
-              <FAQ />
-            </PublicRoute>
-            <PublicRoute path="/events">
-              <AllEvents />
-            </PublicRoute>
-            <PublicRoute path="/live">
-              <TournesolLivePage />
-            </PublicRoute>
-            <PublicRoute path="/talks">
-              <TournesolTalksPage />
-            </PublicRoute>
+          <Routes>
+            <Route
+              path="/actions"
+              element={
+                <RouteWrapper>
+                  <ActionsPage />
+                </RouteWrapper>
+              }
+            />
+            {/*
+              https://tournesol.app/action is the URL mentionned
+              in "La Dictature des Algorithmes" (page 318)
+            */}
+            <Route
+              path="/action"
+              element={<Navigate to="/actions" replace />}
+            />
+            <Route
+              path="/faq"
+              element={
+                <RouteWrapper>
+                  <FAQ />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <RouteWrapper>
+                  <AllEvents />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/live"
+              element={
+                <RouteWrapper>
+                  <TournesolLivePage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/talks"
+              element={
+                <RouteWrapper>
+                  <TournesolTalksPage />
+                </RouteWrapper>
+              }
+            />
             {/* About routes */}
-            <PublicRoute path="/about/terms-of-service">
-              <TermsOfService />
-            </PublicRoute>
-            <PublicRoute path="/about/privacy_policy">
-              <PrivacyPolicy />
-            </PublicRoute>
-            <PublicRoute path="/about/trusted_domains">
-              <TrustedDomains />
-            </PublicRoute>
-            <PublicRoute path="/about/donate">
-              <DonatePage />
-            </PublicRoute>
-            <PublicRoute path="/about">
-              <About />
-            </PublicRoute>
+            <Route
+              path="/about/terms-of-service"
+              element={
+                <RouteWrapper>
+                  <TermsOfService />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/about/privacy_policy"
+              element={
+                <RouteWrapper>
+                  <PrivacyPolicy />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/about/trusted_domains"
+              element={
+                <RouteWrapper>
+                  <TrustedDomains />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/about/donate"
+              element={
+                <RouteWrapper>
+                  <DonatePage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <RouteWrapper>
+                  <About />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/manifesto"
+              element={
+                <RouteWrapper>
+                  <ManifestoPage />
+                </RouteWrapper>
+              }
+            />
             {/* LEGAGY route used for retro-compatibility */}
-            <PublicRoute path="/video/:video_id">
-              <VideoAnalysisPage />
-            </PublicRoute>
+            <Route
+              path="/video/:video_id"
+              element={
+                <RouteWrapper>
+                  <VideoAnalysisPage />
+                </RouteWrapper>
+              }
+            />
             {/* User Management routes */}
-            <PublicRoute path="/login">
-              <LoginPage />
-            </PublicRoute>
-            <PrivateRoute path="/settings/profile">
-              <SettingsProfilePage />
-            </PrivateRoute>
-            <PrivateRoute path="/settings/account">
-              <SettingsAccountPage />
-            </PrivateRoute>
-            <PrivateRoute path="/settings/preferences">
-              <SettingsPreferencesPage />
-            </PrivateRoute>
-            <PrivateRoute path="/vouching">
-              <PersonalVouchersPage />
-            </PrivateRoute>
-            <PublicRoute path="/signup">
-              {isLoggedIn ? <Redirect to="/" /> : <SignupPage />}
-            </PublicRoute>
-            <PublicRoute path="/verify-user">
-              <VerifySignature verify="user" />
-            </PublicRoute>
-            <PublicRoute path="/verify-email">
-              <VerifySignature verify="email" />
-            </PublicRoute>
-            <PublicRoute path="/forgot">
-              {isLoggedIn ? (
-                <Redirect to="/settings/account" />
-              ) : (
-                <ForgotPassword />
-              )}
-            </PublicRoute>
-            <PublicRoute path="/reset-password">
-              <ResetPassword />
-            </PublicRoute>
-            <PublicRoute path="/shared-content">
-              <SharedContent />
-            </PublicRoute>
+            <Route
+              path="/login"
+              element={
+                <RouteWrapper>
+                  <LoginPage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/settings/profile"
+              element={
+                <RouteWrapper auth={true}>
+                  <SettingsProfilePage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/settings/account"
+              element={
+                <RouteWrapper auth={true}>
+                  <SettingsAccountPage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/settings/preferences"
+              element={
+                <RouteWrapper auth={true}>
+                  <SettingsPreferencesPage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/vouching"
+              element={
+                <RouteWrapper auth={true}>
+                  <PersonalVouchersPage />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <RouteWrapper>
+                  {isLoggedIn ? <Navigate to="/" replace /> : <SignupPage />}
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/verify-user"
+              element={
+                <RouteWrapper>
+                  <VerifySignature verify="user" />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <RouteWrapper>
+                  <VerifySignature verify="email" />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/forgot"
+              element={
+                <RouteWrapper>
+                  {isLoggedIn ? (
+                    <Navigate to="/settings/account" replace />
+                  ) : (
+                    <ForgotPassword />
+                  )}
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <RouteWrapper>
+                  <ResetPassword />
+                </RouteWrapper>
+              }
+            />
+            <Route
+              path="/shared-content"
+              element={
+                <RouteWrapper>
+                  <SharedContent />
+                </RouteWrapper>
+              }
+            />
             {/* Polls */}
             {polls.map(({ name, path }) => (
-              <PublicRoute key={name} path={path}>
-                <PollRoutes pollName={name}></PollRoutes>
-              </PublicRoute>
+              <Route
+                key={name}
+                path={buildParentRoutePath(path)}
+                element={<PollRoutes pollName={name}></PollRoutes>}
+              />
             ))}
-          </Switch>
+          </Routes>
         </Frame>
       </StatsLazyProvider>
     </PollProvider>

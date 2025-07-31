@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useNotifications } from 'src/hooks/useNotifications';
@@ -15,7 +15,8 @@ import { BackofficeService, FAQEntry } from 'src/services/openapi';
  * their questions directly on Discord.
  */
 const FAQ = () => {
-  const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { i18n, t } = useTranslation();
   const { contactAdministrator } = useNotifications();
@@ -26,7 +27,7 @@ const FAQ = () => {
   const [displayedEntries, setDisplayedEntries] = useState<Array<string>>([]);
 
   const currentLang = i18n.resolvedLanguage;
-  const scrollTo = new URLSearchParams(history.location.search).get('scrollTo');
+  const scrollTo = new URLSearchParams(location.search).get('scrollTo');
 
   const displayEntry = (name: string, scroll = false) => {
     if (entries.find((entry) => entry.name === name)) {
@@ -40,11 +41,10 @@ const FAQ = () => {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-      const location = history.location;
+
       const searchParams = new URLSearchParams();
       searchParams.append('scrollTo', name);
-      location.search = searchParams.toString();
-      history.replace(location);
+      navigate({ search: searchParams.toString() }, { replace: true });
     }
   };
 
@@ -72,13 +72,13 @@ const FAQ = () => {
   useEffect(() => {
     // Scroll only one time.
     if (!alreadyScrolled.current) {
-      if (history.location.hash) {
-        const newLocation = history.location;
+      if (location.hash) {
         const searchParams = new URLSearchParams();
-        searchParams.append('scrollTo', history.location.hash.substring(1));
-        newLocation.search = searchParams.toString();
-        newLocation.hash = '';
-        history.replace(newLocation);
+        searchParams.append('scrollTo', location.hash.substring(1));
+        navigate(
+          { search: searchParams.toString(), hash: '' },
+          { replace: true }
+        );
       }
 
       // Do not scroll when it's not required.
@@ -93,7 +93,7 @@ const FAQ = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history.location.hash, entries, scrollTo]);
+  }, [entries, location.hash, scrollTo]);
 
   useEffect(() => {
     async function getFaqEntries() {

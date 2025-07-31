@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { TFunction, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
+import { TFunction } from 'i18next';
 
 import { Box, Button, Container, Grid2, Typography } from '@mui/material';
 
@@ -133,7 +134,7 @@ const EntityAnalysisPage = () => {
     if (!isLoggedIn) {
       return false;
     }
-    const videoId = extractVideoId(uid);
+    const videoId = extractVideoId(uid ?? '');
     if (!videoId) {
       return false;
     }
@@ -156,7 +157,7 @@ const EntityAnalysisPage = () => {
     async function getEntityWithPollStats(): Promise<Recommendation> {
       const entity = await PollsService.pollsEntitiesRetrieve({
         name: pollName,
-        uid,
+        uid: uid || '',
       });
       return entity;
     }

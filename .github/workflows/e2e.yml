@@ -26,7 +26,7 @@ jobs:
       - uses: cypress-io/github-action@v6
         with:
           working-directory: tests
-          browser: chrome
+          browser: chromium
           headed: true
           spec: "cypress/e2e/browser-extension/**/*"
           config: baseUrl=https://www.youtube.com

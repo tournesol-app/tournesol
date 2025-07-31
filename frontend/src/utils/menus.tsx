@@ -2,7 +2,7 @@
  * Configuration of the Tournesol menus and definition of their related types.
  */
 
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'i18next';
 import {
   AccountCircle,
   Settings,

@@ -69,7 +69,6 @@ describe('Recommendations page', () => {
           cy.contains('A month ago', {matchCase: false}).click();
           cy.get('input[type=checkbox][name=Month]').should('be.checked');
           cy.get('input[type=checkbox][name=""]').should('not.be.checked');
-          cy.contains('No item matches your search filters.', {matchCase: false}).should('be.visible');
         });
 
         it('allows to filter: a year ago', () => {

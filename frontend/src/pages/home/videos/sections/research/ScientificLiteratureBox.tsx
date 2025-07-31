@@ -305,7 +305,7 @@ const ScientificLiteratureBox = () => {
           </Tabs>
         </Box>
         <TabPanel value={selectedTab} index={0}>
-          <List>
+          <List disablePadding>
             {chosenArticles.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
@@ -327,7 +327,7 @@ const ScientificLiteratureBox = () => {
           </List>
         </TabPanel>
         <TabPanel value={selectedTab} index={1}>
-          <List>
+          <List disablePadding>
             {studentWorks.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
@@ -349,7 +349,7 @@ const ScientificLiteratureBox = () => {
           </List>
         </TabPanel>
         <TabPanel value={selectedTab} index={2}>
-          <List>
+          <List disablePadding>
             {theyCiteUs.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
@@ -371,7 +371,7 @@ const ScientificLiteratureBox = () => {
           </List>
         </TabPanel>
         <TabPanel value={selectedTab} index={3}>
-          <List>
+          <List disablePadding>
             {inTheMedia.map((article, idx) => (
               <React.Fragment key={article.name.replace(' ', '_')}>
                 <ListItem disablePadding>
