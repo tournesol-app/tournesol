@@ -66,7 +66,7 @@ function addVideoStatistics() {
           resp.body.results.length === 1
         ) {
           const details = resp.body.results[0];
-          if (details.tournesol_score == 0) {
+          if (details.collective_rating?.tournesol_score == null) {
             infoElem.textContent = chrome.i18n.getMessage(
               'tournesolNotRatedMessage'
             );
