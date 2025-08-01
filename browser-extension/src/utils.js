@@ -164,7 +164,7 @@ export const getRandomSubarray = (arr, size) => {
 export const getVideoStatistics = async (videoId) => {
   // videos/?videos=V6x9bXTU0vY
   const videoStatistics = await fetchTournesolApi(
-    `polls/videos/recommendations/?search=${videoId}`
+    `polls/videos/entities/yt:${videoId}`
   );
   if (videoStatistics.status === 200) {
     const responseJson = await videoStatistics.json();
