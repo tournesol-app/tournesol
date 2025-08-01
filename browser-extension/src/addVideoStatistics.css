@@ -29,9 +29,6 @@
 .tournesol-statistics-comparisons,
 .tournesol-statistics-contributors {
   margin-right: 8px;
-  font-size: 18px;
-  color: #ffc800;
-  font-weight: 500;
 }
 
 @media (max-width: 990px) {
