@@ -30,6 +30,17 @@ function addVideoStatistics() {
   const videoId = new URL(location.href).searchParams.get('v');
   if (!location.pathname.startsWith('/watch') || !videoId) return;
 
+  let videoStatsResponse = null;
+  browser.runtime.sendMessage(
+    {
+      message: 'getVideoStatistics',
+      video_id: videoId,
+    },
+    function (resp) {
+      videoStatsResponse = resp;
+    }
+  );
+
   const timer = window.setInterval(createStatisticsIsReady, 300);
 
   /**
@@ -45,67 +56,65 @@ function addVideoStatistics() {
     }
 
     window.clearInterval(timer);
+    
+    const prev = document.getElementById('tournesol-statistics-info');
+    if (prev) prev.remove();
 
-    browser.runtime.sendMessage(
-      {
-        message: 'getVideoStatistics',
-        video_id: videoId,
-      },
-      function (resp) {
-        const prev = document.getElementById('tournesol-statistics-info');
-        if (prev) prev.remove();
+    const infoElem = document.createElement('span');
+    infoElem.setAttribute('id', 'tournesol-statistics-info');
+    infoElem.className = 'tournesol-statistics-info';
 
-        const infoElem = document.createElement('span');
-        infoElem.setAttribute('id', 'tournesol-statistics-info');
-        infoElem.className = 'tournesol-statistics-info';
+    if (
+      videoStatsResponse &&
+      videoStatsResponse.body
+    ) {
+      const details = videoStatsResponse.body.collective_rating;
+      if (details?.tournesol_score == null) {
+        infoElem.textContent = chrome.i18n.getMessage(
+          'tournesolNotRatedMessage'
+        );
+      } else {
+        // Show sunflower icon, score, comparisons, contributors
+        const tournesolScore = document.createElement('span');
+        tournesolScore.className = 'tournesol-statistics-score';
+        tournesolScore.textContent =
+          details.tournesol_score.toFixed(0);
 
-        if (
-          resp &&
-          resp.body &&
-          resp.body.results &&
-          resp.body.results.length === 1
-        ) {
-          const details = resp.body.results[0];
-          if (details.collective_rating?.tournesol_score == null) {
-            infoElem.textContent = chrome.i18n.getMessage(
-              'tournesolNotRatedMessage'
-            );
-          } else {
-            // Show sunflower icon, score, comparisons, contributors
-            const scoreSpan = document.createElement('span');
-            scoreSpan.className = 'tournesol-statistics-score';
-            scoreSpan.textContent =
-              details.collective_rating.tournesol_score.toFixed(0);
+        const dotSpan = document.createElement('span');
+        dotSpan.classList.add('dot');
+        dotSpan.textContent = '\xA0•\xA0';
+        tournesolScore.appendChild(dotSpan);
 
-            const sunflowerImg = document.createElement('img');
-            sunflowerImg.src = `${frontendUrl}/svg/tournesol.svg`;
-            sunflowerImg.alt = 'Tournesol logo';
-            sunflowerImg.className = 'tournesol-statistics-icon';
-            scoreSpan.appendChild(sunflowerImg);
-
-            const comparisonsSpan = document.createElement('span');
-            comparisonsSpan.className = 'tournesol-statistics-comparisons';
-            comparisonsSpan.textContent = chrome.i18n.getMessage(
-              'comparisonsBy',
-              details.collective_rating.n_contributors
-            );
-
-            const contributorsSpan = document.createElement('span');
-            contributorsSpan.className = 'tournesol-statistics-contributors';
-            contributorsSpan.textContent = chrome.i18n.getMessage(
-              'comparisonsContributors',
-              details.collective_rating.n_comparisons
-            );
-
-            infoElem.appendChild(scoreSpan);
-            infoElem.appendChild(comparisonsSpan);
-            infoElem.appendChild(contributorsSpan);
-          }
-        } else {
-          infoElem.textContent = chrome.i18n.getMessage('videoNotRatedMessage');
+        const sunflowerImg = document.createElement('img');
+        sunflowerImg.src = `${frontendUrl}/svg/tournesol.svg`;
+        sunflowerImg.alt = 'Tournesol logo';
+        sunflowerImg.classList.add('tournesol-statistics-icon');
+        if (details.unsafe.status) {
+          sunflowerImg.classList.add('unsafe');
         }
-        actionsRow.insertBefore(infoElem, actionsRow.firstChild);
+        const comparisonsSpan = document.createElement('span');
+        comparisonsSpan.className = 'tournesol-statistics-comparisons';
+        comparisonsSpan.textContent = chrome.i18n.getMessage(
+          'comparisonsBy',
+          details.n_contributors
+        );
+
+        const contributorsSpan = document.createElement('span');
+        contributorsSpan.className = 'tournesol-statistics-contributors';
+        contributorsSpan.textContent = chrome.i18n.getMessage(
+          'comparisonsContributors',
+          details.n_comparisons
+        );
+
+        infoElem.appendChild(sunflowerImg);
+        infoElem.appendChild(tournesolScore);
+
+        infoElem.appendChild(comparisonsSpan);
+        infoElem.appendChild(contributorsSpan);
       }
-    );
+    } else {
+      infoElem.textContent = chrome.i18n.getMessage('videoNotRatedMessage');
+    }
+    actionsRow.insertBefore(infoElem, actionsRow.firstChild);
   }
 }
