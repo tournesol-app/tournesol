@@ -50,15 +50,15 @@ function addVideoStatistics() {
     const actionsRow = document.getElementById(TS_ACTIONS_ROW_ID);
     if (!actionsRow) return;
 
-    if (document.getElementById('tournesol-statistics-info')) {
-      window.clearInterval(timer);
+    if (videoStatsResponse == null) {
       return;
     }
 
     window.clearInterval(timer);
-    
-    const prev = document.getElementById('tournesol-statistics-info');
-    if (prev) prev.remove();
+
+    if (document.getElementById('tournesol-statistics-info')) {
+      return;
+    }
 
     const infoElem = document.createElement('span');
     infoElem.setAttribute('id', 'tournesol-statistics-info');
