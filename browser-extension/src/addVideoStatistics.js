@@ -96,14 +96,14 @@ function addVideoStatistics() {
         comparisonsSpan.className = 'tournesol-statistics-comparisons';
         comparisonsSpan.textContent = chrome.i18n.getMessage(
           'comparisonsBy',
-          details.n_contributors
+          details.n_comparisons
         );
 
         const contributorsSpan = document.createElement('span');
         contributorsSpan.className = 'tournesol-statistics-contributors';
         contributorsSpan.textContent = chrome.i18n.getMessage(
           'comparisonsContributors',
-          details.n_comparisons
+          details.n_contributors
         );
 
         infoElem.appendChild(sunflowerImg);
