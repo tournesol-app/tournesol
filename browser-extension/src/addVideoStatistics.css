@@ -32,20 +32,3 @@
 .unsafe{
   filter: grayscale(100%);
 }
-
-@media (max-width: 990px) {
-  .tournesol-statistics-info {
-    margin-left: 6px;
-    font-size: 16px;
-  }
-  .tournesol-statistics-score,
-  .tournesol-statistics-comparisons,
-  .tournesol-statistics-contributors {
-    margin-right: 6px;
-  }
-  .tournesol-statistics-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 6px;
-  }
-}
