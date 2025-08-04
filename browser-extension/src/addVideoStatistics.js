@@ -71,7 +71,7 @@ function addVideoStatistics() {
       const details = videoStatsResponse.body.collective_rating;
       if (details?.tournesol_score == null) {
         infoElem.textContent = chrome.i18n.getMessage(
-          'tournesolNotRatedMessage'
+          'videoNotRatedMessage'
         );
       } else {
         // Show sunflower icon, score, comparisons, contributors
