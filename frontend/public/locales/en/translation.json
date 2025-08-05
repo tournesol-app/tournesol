@@ -676,6 +676,8 @@
     "sergeiDescription": "Sergei was among the few people who decided to start building Tournesol. He took over most of the engineering effort and developed the back end, the algorithms and the front end of the first version of the platform.",
     "sigmikeDescription": "Michael is a volunteer open source contributor who contributes impactful features on our backend, frontend and extension.",
     "weThankOurPartners": "Partners & Collaborations",
+    "partnershipWithCalicarpa": "Partnership with Calicarpa",
+    "partnershipWithCalicarpaDetail": "Tournesol is the embodiment of Calicarpa research and open-source efforts. Calicarpa is now the main contributor to the free Solidago Python library, which contains implementations of the state-of-the-art digital democracy algorithms developed over a decade of research.",
     "partnershipWithEpfl": "Partnership with EPFL",
     "partenershipWithEpflDetail": "For a short period a research engineer at École Polytechnique Fédérale de Lausanne (EPFL) was dedicated to the development of the Tournesol platform. Many researchers from the Distributed Computing Laboratory have also designed and still contribute to the research about Tournesol algorithms.",
     "partnershipWithPolyconseil": "Partnership with Polyconseil",
