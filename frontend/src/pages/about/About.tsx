@@ -522,19 +522,30 @@ const AboutPage = () => {
         </Grid2>
 
         <Grid2 className={classes.container} size={12}>
-          <ContentBox className={classes.card} maxWidth="100%">
-            <img height="84px" src="/logos/Calicarpa_Logo.svg" />
-            <Typography variant="h4">
-              {t('about.partnershipWithCalicarpa')}
-            </Typography>
-            <Typography paragraph>
-              {t('about.partnershipWithCalicarpaDetail')}
-            </Typography>
-          </ContentBox>
+          <Link
+            href="https://www.calicarpa.com/"
+            rel="noopener"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+            sx={{
+              display: 'flex',
+            }}
+          >
+            <ContentBox className={classes.card} maxWidth="100%">
+              <img height="84px" src="/logos/Calicarpa_Logo.svg" />
+              <Typography variant="h4">
+                {t('about.partnershipWithCalicarpa')}
+              </Typography>
+              <Typography paragraph>
+                {t('about.partnershipWithCalicarpaDetail')}
+              </Typography>
+            </ContentBox>
+          </Link>
         </Grid2>
 
-        <Grid2 item xs={12} className={classes.container}>
-          <ContentBox className={classes.card}>
+        <Grid2 size={12} className={classes.container}>
+          <ContentBox className={classes.card} maxWidth="100%">
             <img height="84px" src="/logos/EPFL_Logo.png" />
             <Typography variant="h4">
               {t('about.partnershipWithEpfl')}
@@ -566,7 +577,7 @@ const AboutPage = () => {
               display: 'flex',
             }}
           >
-            <ContentBox className={classes.card}>
+            <ContentBox className={classes.card} maxWidth="100%">
               <img
                 height="64px"
                 src="/logos/Polyconseil_Logo.png"
@@ -603,7 +614,7 @@ const AboutPage = () => {
               display: 'flex',
             }}
           >
-            <ContentBox className={classes.card}>
+            <ContentBox className={classes.card} maxWidth="100%">
               <img height="64px" src="/logos/Kleis_Logo.svg" />
               <Typography variant="h4">
                 {t('about.partnershipWithKleis')}
