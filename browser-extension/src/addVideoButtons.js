@@ -68,10 +68,10 @@ function addVideoButtons() {
     }
 
     window.clearInterval(timer);
+    const statsInfo = document.getElementById('tournesol-statistics-info');
     const { videoActions, buttonsGroup } = createVideoActionsRow();
 
     // Move statistics info to the left of the container if it exists
-    const statsInfo = document.getElementById('tournesol-statistics-info');
     if (statsInfo) {
       videoActions.insertBefore(statsInfo, videoActions.firstChild);
     }

@@ -39,35 +39,30 @@ function addVideoStatistics() {
     const actionsRow = document.getElementById(TS_ACTIONS_ROW_ID);
     if (!actionsRow) return;
 
+    const existingInfo = document.getElementById('tournesol-statistics-info');
+    if (existingInfo) {
+      existingInfo.remove();
+    }
+
     if (videoStatsResponse == null) {
       return;
     }
 
     window.clearInterval(timer);
 
-    if (document.getElementById('tournesol-statistics-info')) {
-      return;
-    }
-
     const infoElem = document.createElement('span');
     infoElem.setAttribute('id', 'tournesol-statistics-info');
     infoElem.className = 'tournesol-statistics-info';
 
-    if (
-      videoStatsResponse &&
-      videoStatsResponse.body
-    ) {
+    if (videoStatsResponse && videoStatsResponse.body) {
       const details = videoStatsResponse.body.collective_rating;
       if (details?.tournesol_score == null) {
-        infoElem.textContent = chrome.i18n.getMessage(
-          'videoNotRatedMessage'
-        );
+        infoElem.textContent = chrome.i18n.getMessage('videoNotRatedMessage');
       } else {
         // Show sunflower icon, score, comparisons, contributors
         const tournesolScore = document.createElement('span');
         tournesolScore.className = 'tournesol-statistics-score';
-        tournesolScore.textContent =
-          details.tournesol_score.toFixed(0);
+        tournesolScore.textContent = details.tournesol_score.toFixed(0);
 
         const dotSpan = document.createElement('span');
         dotSpan.classList.add('dot');
@@ -83,16 +78,15 @@ function addVideoStatistics() {
         }
         const comparisonsSpan = document.createElement('span');
         comparisonsSpan.className = 'tournesol-statistics-comparisons';
-        comparisonsSpan.textContent = chrome.i18n.getMessage(
-          'comparisonsBy',
-          details.n_comparisons
-        );
+        comparisonsSpan.textContent = chrome.i18n.getMessage('comparisonsBy', [
+          details.n_comparisons,
+        ]);
 
         const contributorsSpan = document.createElement('span');
         contributorsSpan.className = 'tournesol-statistics-contributors';
         contributorsSpan.textContent = chrome.i18n.getMessage(
           'comparisonsContributors',
-          details.n_contributors
+          [details.n_contributors]
         );
 
         infoElem.appendChild(sunflowerImg);
