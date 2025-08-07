@@ -4,17 +4,19 @@
   font-family: 'Roboto', 'Noto', sans-serif;
   font-size: 16px;
   padding: 0 8px;
-  white-space: nowrap;
   border-radius: 12px;
   background-color: #f3bd0020;
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-spec-text-secondary);
   min-height: 36px;
+}
+
+.tournesol-statistics-info span {
+  color: var(--yt-spec-text-primary);
 }
 
 .tournesol-statistics-score {
   display: flex;
   align-items: center;
-  margin-right: 8px;
   font-size: 28px;
 }
 
