@@ -222,7 +222,7 @@
     "description": "Label of the button to stop the YouTube history import process."
   },
   "videoNotRatedMessage": {
-    "message": "This video hasn't been rated on Tournesol yet. Be the first to compare it!",
+    "message": "This video is not rated on Tournesol yet. Be the first to compare it!",
     "description": "Message shown when a video has no ratings on Tournesol."
   }
 }
