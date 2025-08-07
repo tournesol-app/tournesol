@@ -9,19 +9,8 @@ import { frontendUrl } from './config.js';
 const TS_ACTIONS_ROW_ID = 'ts-video-actions-row';
 const TS_ACTIONS_ROW_BEFORE_REF = 'bottom-row';
 
-/**
- * Youtube doesnt completely load a video page, so content script doesn't
- * launch correctly without these events.
- *
- * This part is called on connection for the first time on youtube.com/*
- */
+// Refresh buttons at the end of YT page transition
 document.addEventListener('yt-navigate-finish', addVideoButtons);
-
-if (document.body) {
-  addVideoButtons();
-} else {
-  document.addEventListener('DOMContentLoaded', addVideoButtons);
-}
 
 /**
  * The Tournesol video actions row contains the video actions related to the

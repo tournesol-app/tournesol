@@ -9,19 +9,8 @@ import { frontendUrl } from './config.js';
 const TS_ACTIONS_ROW_ID = 'ts-video-actions-row';
 var browser = browser || chrome;
 
-/**
- * Youtube doesnt completely load a video page, so content script doesn't
- * launch correctly without these events.
- *
- * This part is called on connection for the first time on youtube.com/*
- */
+// Refresh stats at the end of YT page transition
 document.addEventListener('yt-navigate-finish', addVideoStatistics);
-
-if (document.body) {
-  addVideoStatistics();
-} else {
-  document.addEventListener('DOMContentLoaded', addVideoStatistics);
-}
 
 /*
  * Create the statistics container with the tournesol score, comparisons and contributors.
