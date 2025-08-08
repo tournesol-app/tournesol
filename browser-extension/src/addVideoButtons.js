@@ -9,19 +9,8 @@ import { frontendUrl } from './config.js';
 const TS_ACTIONS_ROW_ID = 'ts-video-actions-row';
 const TS_ACTIONS_ROW_BEFORE_REF = 'bottom-row';
 
-/**
- * Youtube doesnt completely load a video page, so content script doesn't
- * launch correctly without these events.
- *
- * This part is called on connection for the first time on youtube.com/*
- */
+// Refresh buttons at the end of YT page transition
 document.addEventListener('yt-navigate-finish', addVideoButtons);
-
-if (document.body) {
-  addVideoButtons();
-} else {
-  document.addEventListener('DOMContentLoaded', addVideoButtons);
-}
 
 /**
  * The Tournesol video actions row contains the video actions related to the
@@ -39,11 +28,16 @@ const createVideoActionsRow = () => {
   const videoActions = document.createElement('div');
   videoActions.id = TS_ACTIONS_ROW_ID;
 
+  // Create a container for the buttons
+  const buttonsGroup = document.createElement('div');
+  buttonsGroup.className = 'ts-video-actions-buttons';
+  videoActions.appendChild(buttonsGroup);
+
   const beforeRef = document.getElementById(TS_ACTIONS_ROW_BEFORE_REF);
   const parent = document.getElementById(beforeRef.parentElement.id);
 
   parent.insertBefore(videoActions, beforeRef);
-  return videoActions;
+  return { videoActions, buttonsGroup };
 };
 
 function createVideoActionsRowParent() {
@@ -74,7 +68,13 @@ function addVideoButtons() {
     }
 
     window.clearInterval(timer);
-    const videoActions = createVideoActionsRow();
+    const statsInfo = document.getElementById('tournesol-statistics-info');
+    const { videoActions, buttonsGroup } = createVideoActionsRow();
+
+    // Move statistics info to the left of the container if it exists
+    if (statsInfo) {
+      videoActions.insertBefore(statsInfo, videoActions.firstChild);
+    }
 
     const addVideoButton = ({ id, label, iconSrc, iconClass, onClick }) => {
       // Create Button
@@ -103,7 +103,8 @@ function addVideoButtons() {
       };
 
       button.onclick = onClick;
-      videoActions.appendChild(button);
+      // Instead of appending to videoActions, append to buttonsGroup
+      buttonsGroup.appendChild(button);
 
       return { button, setLabel, setIcon };
     };
