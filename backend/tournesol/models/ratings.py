@@ -83,6 +83,9 @@ class ContributorRating(models.Model):
     is_public = models.BooleanField(
         default=False, null=False, help_text="Should the rating be public?"
     )
+    entity_seen = models.BooleanField(
+        default=False, null=False, help_text="Has the user already seen, or read, or understood the entity?"
+    )
 
     class Meta:
         unique_together = ["user", "entity", "poll"]
