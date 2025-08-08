@@ -26,6 +26,7 @@
     var(--ytd-rich-grid-items-per-row) *
       (var(--ytd-rich-grid-item-max-width) + var(--ytd-rich-grid-item-margin))
   );
+  z-index: 2020;
 }
 
 /**
