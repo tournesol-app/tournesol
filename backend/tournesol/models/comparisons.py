@@ -111,7 +111,7 @@ class Comparison(models.Model):
         return comparison, True
 
     def mark_compared_entities_as_seen(self):
-        from tournesol.models import ContributorRating
+        from tournesol.models import ContributorRating  # pylint: disable=import-outside-toplevel
 
         ratings = ContributorRating.objects.filter(
             poll=self.poll,
