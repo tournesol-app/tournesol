@@ -131,6 +131,7 @@ class RatingApi(TestCase):
         )
         self.assertEqual(rating.is_public, False)
         self.assertEqual(rating.entity_seen, False)
+
     def test_authenticated_cannot_create_with_unknonwn_non_video_entity(self):
         poll2 = PollFactory(entity_type="candidate_fr_2022")
 
