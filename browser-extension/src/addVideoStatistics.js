@@ -56,13 +56,16 @@ function addVideoStatistics() {
 
     if (videoStatsResponse && videoStatsResponse.body) {
       const details = videoStatsResponse.body.collective_rating;
-      if (details?.tournesol_score == null) {
+      if (!details?.n_comparisons) {
         infoElem.textContent = chrome.i18n.getMessage('videoNotRatedMessage');
       } else {
         // Show sunflower icon, score, comparisons, contributors
         const tournesolScore = document.createElement('span');
         tournesolScore.className = 'tournesol-statistics-score';
-        tournesolScore.textContent = details.tournesol_score.toFixed(0);
+        tournesolScore.textContent =
+          details.tournesol_score == null
+            ? '?'
+            : details.tournesol_score.toFixed(0);
 
         const dotSpan = document.createElement('span');
         dotSpan.classList.add('dot');
