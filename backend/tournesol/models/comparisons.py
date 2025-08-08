@@ -110,6 +110,23 @@ class Comparison(models.Model):
 
         return comparison, True
 
+    def mark_compared_entities_as_seen(self):
+        from tournesol.models import ContributorRating
+
+        ratings = ContributorRating.objects.filter(
+            poll=self.poll,
+            user=self.user,
+            entity__in=[self.entity_1, self.entity_2],
+        )
+
+        for rating in ratings:
+            rating.entity_seen = True
+
+        ContributorRating.objects.bulk_update(
+            ratings,
+            ["entity_seen"],
+        )
+
     def __str__(self):
         return f"{self.user} [{self.entity_1}/{self.entity_2}]"
 

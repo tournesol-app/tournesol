@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import exceptions, generics, mixins
 
-from tournesol.models import Comparison
+from tournesol.models import Comparison, ContributorRating
 from tournesol.serializers.comparison import ComparisonSerializer, ComparisonUpdateSerializer
 from tournesol.views.mixins.poll import PollScopedViewMixin
 
@@ -115,6 +115,8 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_2.update_entity_poll_rating(poll=poll)
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(poll=poll, user=self.request.user)
+
+        comparison.mark_compared_entities_as_seen()
 
         # TODO: online updates are to be implemented in Solidago
         # if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON:
