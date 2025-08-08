@@ -50,3 +50,7 @@ class TestLoadPublicDataset(TransactionTestCase):
 
         self.assertEqual(Comparison.objects.count(), 1)
         self.assertEqual(Entity.objects.filter(type=TYPE_VIDEO).count(), 2)
+
+        for rating in ContributorRating.objects.iterator():
+            self.assertEqual(rating.is_public, True)
+            self.assertEqual(rating.entity_seen, True)

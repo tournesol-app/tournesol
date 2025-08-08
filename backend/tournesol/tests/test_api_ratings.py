@@ -94,8 +94,8 @@ class RatingApi(TestCase):
 
     def test_authenticated_can_create_with_existing_video(self):
         """
-        An authenticated user can create a rating for an existing video. The
-        rating is private by default.
+        An authenticated user can create a rating for an existing video. By
+        default the rating is private, and the entity is considered "unseen".
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
@@ -111,11 +111,13 @@ class RatingApi(TestCase):
             entity__uid=self.video3.uid,
         )
         self.assertEqual(rating.is_public, False)
+        self.assertEqual(rating.entity_seen, False)
 
     def test_authenticated_can_create_with_non_existing_video(self):
         """
         An authenticated user can create a rating even if the video is not
-        already present in the database. The rating is private by default.
+        already present in the database. By default the rating is private,
+        and the entity is considered "unseen".
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
@@ -128,6 +130,7 @@ class RatingApi(TestCase):
             poll=self.poll_videos, user=self.user1, entity__uid="yt:NeADlWSDFAQ"
         )
         self.assertEqual(rating.is_public, False)
+        self.assertEqual(rating.entity_seen, False)
 
     def test_authenticated_cannot_create_with_unknonwn_non_video_entity(self):
         poll2 = PollFactory(entity_type="candidate_fr_2022")
