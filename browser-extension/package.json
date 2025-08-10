@@ -1,6 +1,6 @@
 {
   "name": "tournesol-extension",
-  "version": "3.9.0",
+  "version": "3.9.1",
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
