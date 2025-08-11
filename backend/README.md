@@ -144,8 +144,12 @@ allowed to use the key (not relevant for local development environments).
 ##### Configure the back end with the key
 
 Finally, configure the `YOUTUBE_API_KEY` setting with the API key value in
-your local `SETTINGS_FILE`. If you are using the `dev-env`, the settings file
-is [backend/dev-env/settings-tournesol.yaml](./dev-env/settings-tournesol.yaml).
+your local `SETTINGS_FILE`. 
+
+If you are using the `dev-env`, you must copy the settings file
+[backend/dev-env/settings-tournesol-example.yaml](./dev-env/settings-tournesol-example.yaml)
+to a file at `backend/dev-env/settings-tournesol-local.yaml` which is used as
+the settings file to start the backend.
 
 Restart the back end.
 

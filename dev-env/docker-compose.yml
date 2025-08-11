@@ -25,10 +25,11 @@ services:
       dockerfile: dev-env/Dockerfile
     container_name: tournesol-dev-api
     environment:
-      - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml
+      - SETTINGS_FILE=/backend/dev-env/settings-tournesol-local.yaml
     entrypoint: ["/bin/bash", "-eux", "-c"]
     command:
       - |
+        cp -n ./dev-env/settings-tournesol-example.yaml ./dev-env/settings-tournesol-local.yaml 
         pip install -r tests/requirements.txt -r requirements.txt
         python manage.py createcachetable
         python manage.py migrate
