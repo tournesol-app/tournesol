@@ -116,8 +116,6 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         comparison.entity_2.inner.refresh_metadata()
         comparison.entity_2.auto_remove_from_rate_later(poll=poll, user=self.request.user)
 
-        comparison.mark_compared_entities_as_seen()
-
         # TODO: online updates are to be implemented in Solidago
         # if settings.UPDATE_MEHESTAN_SCORES_ON_COMPARISON:
         #     update_user_scores(poll, user=self.request.user)
