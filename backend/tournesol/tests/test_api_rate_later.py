@@ -551,6 +551,7 @@ class RateLaterDetailTestCase(RateLaterCommonMixinTestCase, TestCase):
                 ],
                 "individual_rating": {
                     "is_public": True,
+                    "entity_seen": False,
                     "n_comparisons": 0,
                 },
                 "collective_rating": {
@@ -729,6 +730,7 @@ class RateLaterFeaturesTestCase(RateLaterCommonMixinTestCase, TestCase):
             response.data["individual_rating"],
             {
                 "is_public": False,
+                "entity_seen": True,
                 "n_comparisons": 4,
             },
         )

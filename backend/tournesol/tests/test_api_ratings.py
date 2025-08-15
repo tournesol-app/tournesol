@@ -169,6 +169,7 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["individual_rating"], {
             "n_comparisons": 0,
             "is_public": True,
+            "entity_seen": False,
             "criteria_scores": [],
             "last_compared_at": None,
         })
@@ -285,6 +286,7 @@ class RatingApi(TestCase):
             {
                 "n_comparisons": 1,
                 "is_public": False,
+                "entity_seen": True,
                 "criteria_scores": [],
                 "last_compared_at": (
                     self.user1.comparisons.last().datetime_lastedit.isoformat().replace("+00:00", "Z")
