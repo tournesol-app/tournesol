@@ -688,6 +688,48 @@ class RatingApi(TestCase):
         rating.refresh_from_db()
         self.assertEqual(rating.is_public, True)
 
+    def test_authenticated_can_update_entity_seen(self):
+        """
+        An authenticated user can update the "seen" status of its
+        rating, in a given poll.
+        """
+        self.client.force_authenticate(self.user1)
+        rating = ContributorRating.objects.get(
+            poll=self.poll_videos, user=self.user1, entity=self.video1
+        )
+
+        rating.entity_seen = False
+        rating.save(update_fields=["entity_seen"])
+
+        # Create contributor score, that will be returned in the PATCH response
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=rating,
+            criteria="test-criteria",
+            score=4,
+        )
+
+        response = self.client.patch(
+            "{}{}/".format(self.ratings_base_url, self.video1.uid),
+            data={"entity_seen": True},
+            format="json",
+        )
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["entity_contexts"], [])
+        self.assertEqual(response_data["individual_rating"]["entity_seen"], True)
+        self.assertEqual(
+            response_data["individual_rating"]["criteria_scores"],
+            [
+                {
+                    "criteria": "test-criteria",
+                    "score": 4.0,
+                    "uncertainty": 0.0,
+                }
+            ],
+        )
+        rating.refresh_from_db()
+        self.assertEqual(rating.entity_seen, True)
+
     def test_authenticated_can_update_public_status_all(self):
         """
         An authenticated user can update the public/private status of all its
