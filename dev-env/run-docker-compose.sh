@@ -7,6 +7,7 @@ DB_DIR="db-data"
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$CURRENT_DIR"
 
+
 export DB_UID=$(id -u)
 export DB_GID=$(id -g)
 DOWNLOAD_PUBLIC_DATASET=false
