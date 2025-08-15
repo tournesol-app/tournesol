@@ -48,7 +48,6 @@ class ContributorRatingSerializer(ModelSerializer):
             "entity_seen": {"write_only": True},
         }
 
-
     def to_internal_value(self, data):
         """
         Determine the poll according to the context provided by the view.
