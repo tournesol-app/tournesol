@@ -3035,6 +3035,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
     ContributorRatingUpdateAll:
       type: object
       properties:
@@ -3385,6 +3389,10 @@ components:
           type: boolean
           readOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          readOnly: true
+          description: Has the user already seen, or read, or understood the entity?
         n_comparisons:
           type: integer
           readOnly: true
@@ -3401,6 +3409,7 @@ components:
           nullable: true
       required:
       - criteria_scores
+      - entity_seen
       - is_public
       - last_compared_at
       - n_comparisons
@@ -3493,11 +3502,16 @@ components:
           type: boolean
           readOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          readOnly: true
+          description: Has the user already seen, or read, or understood the entity?
         n_comparisons:
           type: integer
           readOnly: true
           default: 0
       required:
+      - entity_seen
       - is_public
       - n_comparisons
     IndividualRatingWithScores:
@@ -3507,6 +3521,10 @@ components:
           type: boolean
           readOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          readOnly: true
+          description: Has the user already seen, or read, or understood the entity?
         n_comparisons:
           type: integer
           readOnly: true
@@ -3518,6 +3536,7 @@ components:
           readOnly: true
       required:
       - criteria_scores
+      - entity_seen
       - is_public
       - n_comparisons
     Length3Cycles:
@@ -3905,6 +3924,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
     PatchedContributorRatingUpdateAllRequest:
       type: object
       properties:
