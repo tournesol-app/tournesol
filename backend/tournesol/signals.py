@@ -7,17 +7,26 @@ from tournesol.models import Comparison, ContributorRating
 # pylint: disable=unused-argument
 @receiver(post_save, sender=Comparison)
 def initialize_ratings_on_comparison_creation(sender, instance, created, **kwargs):
+    """
+    Create or update the related ContributorRating records after each
+    Comparison edit.
+    """
+    comparison: Comparison = instance
+
     if not created:
+        comparison.mark_compared_entities_as_seen()
         return
 
-    comparison: Comparison = instance
-    ContributorRating.objects.get_or_create(
+    ContributorRating.objects.update_or_create(
         poll_id=comparison.poll_id,
         user_id=comparison.user_id,
         entity_id=comparison.entity_1_id,
+        defaults={"entity_seen": True},
     )
-    ContributorRating.objects.get_or_create(
+
+    ContributorRating.objects.update_or_create(
         poll_id=comparison.poll_id,
         user_id=comparison.user_id,
         entity_id=comparison.entity_2_id,
+        defaults={"entity_seen": True},
     )

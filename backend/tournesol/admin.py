@@ -200,15 +200,20 @@ class ContributorRatingAdmin(admin.ModelAdmin):
         "get_poll_name",
         "link_to_tournesol",
         "is_public",
+        "entity_seen",
     )
     list_filter = (
         "poll__name",
         "entity__type",
         "is_public",
+        "entity_seen",
     )
     list_select_related = (
         "poll",
         "entity",
+    )
+    readonly_fields = (
+        "entity_seen",
     )
 
     def link_to_tournesol(self, obj):

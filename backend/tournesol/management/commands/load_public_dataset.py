@@ -164,7 +164,7 @@ class Command(BaseCommand):
                 video.update_entity_poll_rating(poll=poll)
 
             self.create_test_user()
-            ContributorRating.objects.update(is_public=True)
+            ContributorRating.objects.update(is_public=True, entity_seen=True)
 
         if settings.YOUTUBE_API_KEY:
             print("Fetching video metadata from Youtube...")

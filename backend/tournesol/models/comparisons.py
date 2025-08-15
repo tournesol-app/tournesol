@@ -110,6 +110,15 @@ class Comparison(models.Model):
 
         return comparison, True
 
+    def mark_compared_entities_as_seen(self):
+        from tournesol.models import ContributorRating  # pylint: disable=import-outside-toplevel
+
+        ContributorRating.objects.filter(
+            poll=self.poll,
+            user=self.user,
+            entity__in=[self.entity_1, self.entity_2],
+        ).update(entity_seen=True)
+
     def __str__(self):
         return f"{self.user} [{self.entity_1}/{self.entity_2}]"
 
