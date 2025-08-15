@@ -113,6 +113,33 @@ class RatingApi(TestCase):
         self.assertEqual(rating.is_public, False)
         self.assertEqual(rating.entity_seen, False)
 
+    def test_authenticated_can_create_with_existing_video_and_optional_fields(self):
+        """
+        An authenticated user can set the "public" and "seen" statuses when
+        creating a new rating.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url,
+            {
+                "uid": self.video3.uid,
+                "is_public": True,
+                "entity_seen": True,
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["entity_contexts"], [])
+
+        rating = ContributorRating.objects.select_related("poll", "user", "entity").get(
+            poll=self.poll_videos,
+            user=self.user1,
+            entity__uid=self.video3.uid,
+        )
+        self.assertEqual(rating.is_public, True)
+        self.assertEqual(rating.entity_seen, True)
+
     def test_authenticated_can_create_with_non_existing_video(self):
         """
         An authenticated user can create a rating even if the video is not

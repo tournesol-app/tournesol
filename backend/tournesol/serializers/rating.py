@@ -65,6 +65,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         fields = [
             "uid",
             "is_public",
+            "entity_seen",
             "entity",
             "entity_contexts",
             "individual_rating",
