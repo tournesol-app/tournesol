@@ -2,8 +2,7 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
 import { useAppSelector } from 'src/app/hooks';
-import { selectLogin } from 'src/features/login/loginSlice';
-import { isLoggedIn } from 'src/features/login/loginUtils';
+import { isLoggedIn, selectLogin } from 'src/features/login';
 
 /**
  * A wrapper around the element rendered by the React Router <Route> component.

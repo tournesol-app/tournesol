@@ -6,9 +6,8 @@ import {
   updateUsername as updateUsernameAction,
   getTokenFromRefreshAsync,
 } from 'src/features/login/loginSlice';
+import { isLoggedIn as isStateLoggedIn, LoginState } from 'src/features/login';
 import { clearSettings } from 'src/features/settings/userSettingsSlice';
-import { LoginState } from 'src/features/login/LoginState.model';
-import { isLoggedIn as isStateLoggedIn } from 'src/features/login/loginUtils';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 
 export const useLoginState = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import RedirectState from 'src/features/login/RedirectState';
+import { RedirectState } from 'src/features/login';
 import { useLoginState } from 'src/hooks';
 import { extractVideoId } from 'src/utils/video';
 
@@ -23,14 +23,9 @@ const SharedContent = () => {
   }
 
   const destination = `/entities/yt:${videoId}`;
+  const redirectState: RedirectState = { from: destination };
   if (!isLoggedIn) {
-    return (
-      <Navigate
-        to="/login"
-        state={{ from: destination } as RedirectState}
-        replace
-      />
-    );
+    return <Navigate to="/login" state={redirectState} replace />;
   }
   return <Navigate to={destination} replace />;
 };
