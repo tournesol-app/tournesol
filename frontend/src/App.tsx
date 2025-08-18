@@ -30,7 +30,6 @@ import TournesolTalksPage from './pages/events/TournesolTalksPage';
 import FAQ from './pages/faq/FAQ';
 
 import { OpenAPI } from 'src/services/openapi';
-import { LoginState } from './features/login/LoginState.model';
 import { polls } from './utils/constants';
 import SharedContent from './app/SharedContent';
 import PollRoutes from './app/PollRoutes';
@@ -51,9 +50,12 @@ const ManifestoPage = React.lazy(
 
 const API_URL = import.meta.env.REACT_APP_API_URL;
 
-const initializeOpenAPI = (loginState: LoginState, i18n: i18nInterface) => {
+const initializeOpenAPI = (
+  getValidAccessToken: () => Promise<string | null>,
+  i18n: i18nInterface
+) => {
   OpenAPI.BASE = API_URL ?? '';
-  OpenAPI.TOKEN = async () => loginState.access_token ?? '';
+  OpenAPI.TOKEN = async () => (await getValidAccessToken()) ?? '';
   OpenAPI.HEADERS = async () => ({
     // Set the current language in API requests to
     // get localized error messages in the response.
@@ -77,14 +79,14 @@ const buildParentRoutePath = (path: string) => {
 
 function App() {
   const { i18n } = useTranslation();
-  const { isLoggedIn, loginState } = useLoginState();
+  const { isLoggedIn, getValidAccessToken } = useLoginState();
 
   // `useState` is used here to call initializeOpenAPI before first render
-  useState(() => initializeOpenAPI(loginState, i18n));
+  useState(() => initializeOpenAPI(getValidAccessToken, i18n));
 
   useEffect(() => {
-    initializeOpenAPI(loginState, i18n);
-  }, [loginState, i18n]);
+    initializeOpenAPI(getValidAccessToken, i18n);
+  }, [getValidAccessToken, i18n]);
 
   useRefreshSettings();
 
