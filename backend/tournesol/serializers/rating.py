@@ -41,8 +41,12 @@ class ContributorRatingSerializer(ModelSerializer):
             "individual_rating",
             "collective_rating",
             "is_public",
+            "entity_seen",
         ]
-        extra_kwargs = {"is_public": {"write_only": True}}
+        extra_kwargs = {
+            "is_public": {"write_only": True},
+            "entity_seen": {"write_only": True},
+        }
 
     def to_internal_value(self, data):
         """
@@ -61,6 +65,7 @@ class ContributorRatingCreateSerializer(ContributorRatingSerializer):
         fields = [
             "uid",
             "is_public",
+            "entity_seen",
             "entity",
             "entity_contexts",
             "individual_rating",
