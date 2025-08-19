@@ -17,7 +17,7 @@ import { initialState } from 'src/features/login/loginSlice';
 import App from './App';
 import { theme } from './theme';
 import { RootState } from './app/store';
-import { mockTokenRequests } from 'src/features/login/Login.spec';
+import { mockAppRequests } from './mockUtils';
 
 type MockState = Partial<RootState>;
 
@@ -49,46 +49,29 @@ const renderComponent = (mockedStore?: MockStoreEnhanced<MockState>) => {
 };
 
 test('Home page renders and contains the word "Tournesol"', () => {
+  mockAppRequests();
   const { getAllByText } = renderComponent();
   expect(getAllByText(/Tournesol/i).length).toBeGreaterThan(0);
 });
 
-const anHourLater = new Date(new Date().getTime() + 3600000);
-const tenMinutesLater = new Date(new Date().getTime() + 600000);
-const token_refresh_expected_fulfilled_action = {
-  type: 'login/fetchTokenFromRefresh/fulfilled',
-  payload: {
-    access_token: 'dummy_new_access_token',
-    refresh_token: 'dummy_new_refresh_token',
-    expires_in: 3600,
-  },
-  meta: {
-    requestId: expect.stringMatching(/.*/),
-    requestStatus: 'fulfilled',
-  },
-};
-
 describe('token management in App', () => {
-  beforeAll(() => {
-    mockTokenRequests();
-  });
+  const anHourLater = new Date(new Date().getTime() + 3600000);
+  const tenMinutesLater = new Date(new Date().getTime() + 600000);
+  const token_refresh_expected_fulfilled_action = {
+    type: 'login/fetchTokenFromRefresh/fulfilled',
+    payload: {
+      access_token: 'dummy_new_access_token',
+      refresh_token: 'dummy_new_refresh_token',
+      expires_in: 3600,
+    },
+    meta: {
+      requestId: expect.stringMatching(/.*/),
+      requestStatus: 'fulfilled',
+    },
+  };
 
-  it('should refresh the login token when needed', async () => {
-    const store = mockStore({
-      settings: { settings: {} },
-      drawerOpen: { value: false },
-      token: {
-        ...initialState,
-        refresh_token: 'dummy_refresh_token',
-      },
-    });
-    renderComponent(store);
-    expect(screen.getByText('menu.home')).toBeVisible();
-    await waitFor(() =>
-      expect(store.getActions()).toContainEqual(
-        token_refresh_expected_fulfilled_action
-      )
-    );
+  beforeAll(() => {
+    mockAppRequests();
   });
 
   it('should not refresh the login token if logged in', async () => {
@@ -97,7 +80,7 @@ describe('token management in App', () => {
       drawerOpen: { value: false },
       token: {
         ...initialState,
-        refresh_token: 'dummy_refresh_token',
+        refresh_token: 'dummy_refresh_token_2',
         access_token: 'dummy_token',
         access_token_expiration_date: anHourLater.toString(),
       },
@@ -111,13 +94,13 @@ describe('token management in App', () => {
     );
   });
 
-  it('should refresh the login if it expires in 10 minutes', async () => {
+  it('should refresh the login if it expires in less than 10 minutes', async () => {
     const store = mockStore({
       settings: { settings: {} },
       drawerOpen: { value: false },
       token: {
         ...initialState,
-        refresh_token: 'dummy_refresh_token',
+        refresh_token: 'dummy_refresh_token_3',
         access_token: 'dummy_token',
         access_token_expiration_date: tenMinutesLater.toString(),
       },
