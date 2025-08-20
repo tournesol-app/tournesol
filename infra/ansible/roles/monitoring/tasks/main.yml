@@ -24,17 +24,10 @@
     install_recommends: no
     update_cache: yes
 
-- name: Add Buster repository
+- name: Remove Buster repository
   apt_repository:
     repo: "deb {{buster_mirror}} buster main"
-    state: present
-
-- name: Install GeoIP database extra from Buster
-  apt:
-    name:
-      - geoip-database-extra
-    install_recommends: no
-    update_cache: yes
+    state: absent
 
 - name: Copy Nginx log format
   copy:
