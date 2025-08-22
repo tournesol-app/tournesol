@@ -3026,6 +3026,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
       required:
       - uid
     ContributorRatingRequest:
@@ -4982,8 +4986,8 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: http://127.0.0.1:8000/o/token/
-          refreshUrl: http://127.0.0.1:8000/o/token/
+          tokenUrl: https://localhost:8000/o/token/
+          refreshUrl: https://localhost:8000/o/token/
           scopes:
             openid: OpenID Connect scope
             read: Read scope
