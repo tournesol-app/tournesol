@@ -4986,8 +4986,8 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: https://localhost:8000/o/token/
-          refreshUrl: https://localhost:8000/o/token/
+          tokenUrl: http://127.0.0.1:8000/o/token/
+          refreshUrl: http://127.0.0.1:8000/o/token/
           scopes:
             openid: OpenID Connect scope
             read: Read scope
