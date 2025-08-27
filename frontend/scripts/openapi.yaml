@@ -3026,6 +3026,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
       required:
       - uid
     ContributorRatingRequest:
