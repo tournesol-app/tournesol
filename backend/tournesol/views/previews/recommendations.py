@@ -2,6 +2,7 @@
 API returning preview images of the recommendations.
 """
 import datetime
+import logging
 
 import numpy
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
@@ -28,6 +29,9 @@ from .default import (
     get_headline,
     get_preview_font_config,
 )
+
+logger = logging.getLogger(__name__)
+
 
 TOURNESOL_RECOMMENDATIONS_HEADLINE_XY = (8, 3)
 
@@ -324,12 +328,16 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         if recommendations:
             for idx, recommendation in enumerate(recommendations):
                 recommendation_y_pos = (40 + idx * 70) * upscale_ratio
-                self.draw_recommendation_box(
-                    recommendation,
-                    preview_image,
-                    upscale_ratio,
-                    (recommendation_x_pos, recommendation_y_pos),
-                )
+                try:
+                    self.draw_recommendation_box(
+                        recommendation,
+                        preview_image,
+                        upscale_ratio,
+                        (recommendation_x_pos, recommendation_y_pos),
+                    )
+                except Exception as exc:   # pylint: disable=broad-except
+                    logger.info("Fallback to default preview, after exception: %s", exc)
+                    return self.default_preview()
         else:
             self.draw_no_recommendations_text(preview_image)
 
