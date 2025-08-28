@@ -4,10 +4,10 @@ import {
   selectLogin,
   logout as logoutAction,
   updateUsername as updateUsernameAction,
+  getTokenFromRefreshAsync,
 } from 'src/features/login/loginSlice';
+import { isLoggedIn as isStateLoggedIn, LoginState } from 'src/features/login';
 import { clearSettings } from 'src/features/settings/userSettingsSlice';
-import { LoginState } from 'src/features/login/LoginState.model';
-import { isLoggedIn as isStateLoggedIn } from 'src/features/login/loginUtils';
 import { autoSuggestionPool } from 'src/features/suggestions/suggestionPool';
 
 export const useLoginState = () => {
@@ -33,10 +33,25 @@ export const useLoginState = () => {
   );
   const isLoggedIn = isStateLoggedIn(loginState);
 
+  const getValidAccessToken = useCallback(async (): Promise<string | null> => {
+    const result = await dispatch(getTokenFromRefreshAsync());
+    if (
+      getTokenFromRefreshAsync.fulfilled.match(result) &&
+      result.payload.access_token
+    ) {
+      // Use the new access token
+      return result.payload.access_token;
+    }
+    // No token refresh was necessary or the refresh failed.
+    // Fallback to the existing token.
+    return loginState.access_token ?? null;
+  }, [dispatch, loginState]);
+
   return {
+    getValidAccessToken,
+    isLoggedIn,
+    loginState,
     logout,
     updateUsername,
-    loginState,
-    isLoggedIn,
   };
 };

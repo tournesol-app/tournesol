@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from '@reduxjs/toolkit';
 import { SnackbarProvider } from 'notistack';
+import { RootState } from 'src/app/store';
 import Login from './Login';
 import { LoginState } from './LoginState.model';
 import {
@@ -19,6 +20,7 @@ import {
   getTokenAsync,
   getTokenFromRefreshAsync,
 } from './loginSlice';
+import { mockAppRequests } from 'src/mockUtils';
 
 export interface MockState {
   token: LoginState;
@@ -26,81 +28,14 @@ export interface MockState {
 
 export const mockStore: MockStoreCreator<
   MockState,
-  ThunkDispatch<LoginState, undefined, AnyAction>
+  ThunkDispatch<RootState, undefined, AnyAction>
 > = configureStore([thunk]);
 
-const client_id = import.meta.env.REACT_APP_OAUTH_CLIENT_ID || '';
-const client_secret = import.meta.env.REACT_APP_OAUTH_CLIENT_SECRET || '';
-fetchMock.mockIf(
-  (req) => {
-    if (req.method !== 'POST') {
-      return false;
-    }
-    return req.url.match('/o/token') != null;
-  },
-  (req) => {
-    const params = new URLSearchParams(req.body?.toString());
-    const hasCorrectAuth =
-      req.headers.get('Authorization') ===
-      'Basic ' + btoa(client_id + ':' + client_secret);
-    const isPassword = params.get('grant_type') === 'password';
-    const isRefreshToken = params.get('grant_type') === 'refresh_token';
-
-    // Valid login
-    if (
-      hasCorrectAuth &&
-      isPassword &&
-      params.get('username') === 'jst' &&
-      params.get('password') === 'yop' &&
-      params.get('scope') === 'read write groups'
-    ) {
-      return {
-        init: {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-        body: JSON.stringify({
-          access_token: 'dummy_new_access_token',
-          refresh_token: 'dummy_new_refresh_token',
-          expires_in: 3600,
-        }),
-      };
-    }
-
-    // Refresh token
-    if (
-      hasCorrectAuth &&
-      isRefreshToken &&
-      params.get('refresh_token') === 'dummy_refresh_token' &&
-      params.get('scope') === 'read write groups'
-    ) {
-      return {
-        init: {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-        body: JSON.stringify({
-          access_token: 'dummy_new_access_token',
-          refresh_token: 'dummy_new_refresh_token',
-          expires_in: 3600,
-        }),
-      };
-    }
-
-    return {
-      init: {
-        status: 401,
-      },
-      body: '{}',
-    };
-  }
-);
-
 describe('login feature', () => {
+  beforeAll(() => {
+    mockAppRequests();
+  });
+
   const component = ({ store }: { store: MockStoreEnhanced<MockState> }) =>
     render(
       <Provider store={store}>
@@ -128,7 +63,6 @@ describe('login feature', () => {
         payload: undefined,
         meta: {
           arg: arg,
-          requestId: expect.stringMatching(/.*/),
           requestStatus: 'pending',
         },
       },
@@ -141,7 +75,6 @@ describe('login feature', () => {
         },
         meta: {
           arg: arg,
-          requestId: expect.stringMatching(/.*/),
           requestStatus: 'fulfilled',
         },
       },
@@ -194,19 +127,19 @@ describe('login feature', () => {
     );
   });
   it('handles token retrieval from refresh_token', async () => {
-    const state = { token: initialState };
+    const state = {
+      token: { ...initialState, refresh_token: 'dummy_refresh_token' },
+    };
     const store = mockStore(state);
     component({ store: store });
     await act(async () => {
-      await store.dispatch(getTokenFromRefreshAsync('dummy_refresh_token'));
+      await store.dispatch(getTokenFromRefreshAsync());
     });
     const want = [
       {
         type: 'login/fetchTokenFromRefresh/pending',
         payload: undefined,
         meta: {
-          arg: 'dummy_refresh_token',
-          requestId: expect.stringMatching(/.*/),
           requestStatus: 'pending',
         },
       },
@@ -218,8 +151,6 @@ describe('login feature', () => {
           expires_in: 3600,
         },
         meta: {
-          arg: 'dummy_refresh_token',
-          requestId: expect.stringMatching(/.*/),
           requestStatus: 'fulfilled',
         },
       },

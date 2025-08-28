@@ -76,9 +76,13 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
   }, [contextValue.name]);
 
   useEffect(() => {
+    let canceled = false;
     // Fetch poll details from API, whenever the current context relates to another poll,
     // or the UI language has changed.
     getPoll(contextValue.name, currentLang).then((poll) => {
+      if (canceled) {
+        return;
+      }
       setContextValue((value) => {
         if (value.name === poll.name) {
           return {
@@ -89,6 +93,9 @@ export const PollProvider = ({ children }: { children: React.ReactNode }) => {
         return value;
       });
     });
+    return () => {
+      canceled = true;
+    };
   }, [currentLang, contextValue.name]);
 
   return (

@@ -1,10 +1,35 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { LoginState } from './LoginState.model';
-import { fetchToken, fetchTokenFromRefresh } from './loginAPI';
+import {
+  fetchToken,
+  fetchTokenFromRefresh,
+  RefreshedTokenPayload,
+} from './loginAPI';
 
 export const initialState: LoginState = {
   status: 'idle',
+};
+
+const TOKEN_MIN_VALIDITY_MS = 600000;
+
+const pendingRefresh: Record<
+  string,
+  Promise<{ data: RefreshedTokenPayload }>
+> = {};
+
+const needsRefresh = (login: LoginState) => {
+  if (!login.refresh_token) {
+    return false;
+  }
+  if (!login.access_token || !login.access_token_expiration_date) {
+    return true;
+  }
+  const expirationDate = new Date(login.access_token_expiration_date);
+  const validityExpected = new Date(
+    new Date().getTime() + TOKEN_MIN_VALIDITY_MS
+  );
+  return expirationDate < validityExpected;
 };
 
 export const getTokenAsync = createAsyncThunk(
@@ -15,11 +40,27 @@ export const getTokenAsync = createAsyncThunk(
   }
 );
 
-export const getTokenFromRefreshAsync = createAsyncThunk(
+export const getTokenFromRefreshAsync = createAsyncThunk<
+  RefreshedTokenPayload,
+  undefined,
+  { state: RootState }
+>(
   'login/fetchTokenFromRefresh',
-  async (refresh_token: string) => {
-    const response = await fetchTokenFromRefresh(refresh_token);
+  async (_, { getState }) => {
+    const refreshToken = getState().token.refresh_token ?? '';
+    if (!pendingRefresh[refreshToken]) {
+      pendingRefresh[refreshToken] = fetchTokenFromRefresh(refreshToken);
+    }
+    const response = await pendingRefresh[refreshToken];
     return response.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const loginState = getState().token;
+      if (!needsRefresh(loginState)) {
+        return false;
+      }
+    },
   }
 );
 
@@ -86,6 +127,7 @@ export const loginSlice = createSlice({
         exp.setTime(new Date().getTime() + 1000 * action.payload.expires_in);
         state.access_token_expiration_date = exp.toString();
         state.refresh_token = action.payload.refresh_token;
+        state.username = action.payload.username;
       })
       .addCase(getTokenFromRefreshAsync.rejected, (state) => {
         state.status = 'idle';
@@ -94,6 +136,7 @@ export const loginSlice = createSlice({
         );
         state.access_token = undefined;
         state.refresh_token = undefined;
+        state.access_token_expiration_date = undefined;
       });
   },
 });

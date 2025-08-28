@@ -14,6 +14,13 @@ export class LoginError extends Error {
   }
 }
 
+export interface RefreshedTokenPayload {
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  username: string;
+}
+
 export const fetchToken = async ({
   username,
   password,
@@ -51,10 +58,12 @@ export const fetchToken = async ({
     }
     return data;
   });
-  return { data: jresp };
+  return { data: await jresp };
 };
 
-export const fetchTokenFromRefresh = async (refresh_token: string) => {
+export const fetchTokenFromRefresh = async (
+  refresh_token: string
+): Promise<{ data: RefreshedTokenPayload }> => {
   const params = new URLSearchParams();
   params.append('refresh_token', refresh_token);
   params.append('grant_type', 'refresh_token');
@@ -80,7 +89,7 @@ export const fetchTokenFromRefresh = async (refresh_token: string) => {
     }
     return data;
   });
-  return { data: jresp };
+  return { data: await jresp };
 };
 
 export const revokeAccessToken = async (token: string) => {
