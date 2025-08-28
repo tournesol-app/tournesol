@@ -11,11 +11,12 @@ from tournesol.models.entity import TYPE_VIDEO
 
 def get_static_index_html() -> str:
     if settings.DEBUG:
+        timeout = 10.0
         try:
             # Try to get index.html from dev-env frontend container
-            resp = requests.get("http://tournesol-dev-front:3000")
+            resp = requests.get("http://tournesol-dev-front:3000", timeout=timeout)
         except requests.ConnectionError:
-            resp = requests.get(settings.TOURNESOL_MAIN_URL)
+            resp = requests.get(settings.TOURNESOL_MAIN_URL, timeout=timeout)
         resp.raise_for_status()
         return resp.text
     return (settings.FRONTEND_STATIC_FILES_PATH / "index.html").read_text()
