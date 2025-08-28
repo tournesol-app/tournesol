@@ -3,6 +3,7 @@ API returning default preview images of the Tournesol website.
 
 Mainly used to provide URLs that can be used by the Open Graph protocol.
 """
+
 import logging
 from io import BytesIO
 from typing import Optional
@@ -15,7 +16,6 @@ from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from PIL import Image, ImageDraw, ImageFont
-from requests.exceptions import Timeout
 from rest_framework.views import APIView
 
 from tournesol.entities.video import TYPE_VIDEO
@@ -77,8 +77,7 @@ class BasePreviewAPIView(APIView):
                 uid=uid
             )
         except Entity.DoesNotExist as exc:
-            logger.error("Preview impossible for entity with UID %s.", uid)
-            logger.error("Exception caught: %s", exc)
+            logger.exception("Preview impossible for entity with UID %s.", uid)
             raise exc
         return entity
 
@@ -89,11 +88,7 @@ class BasePreviewAPIView(APIView):
         return True
 
     def get_ts_logo(self, size: tuple):
-        return (
-            Image.open(BASE_DIR / "tournesol/resources/Logo64.png")
-            .convert("RGBA")
-            .resize(size)
-        )
+        return Image.open(BASE_DIR / "tournesol/resources/Logo64.png").convert("RGBA").resize(size)
 
     def get_yt_thumbnail(
         self, entity: Entity, quality="mq", return_none_on_404=False
@@ -102,9 +97,8 @@ class BasePreviewAPIView(APIView):
         url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
             thumbnail_response = session.get(url, timeout=REQUEST_TIMEOUT)
-        except (ConnectionError, Timeout) as exc:
-            logger.error("Preview failed for entity with UID %s.", entity.uid)
-            logger.error("Exception caught: %s", exc)
+        except requests.RequestException as exc:
+            logger.exception("Preview failed for entity with UID %s.", entity.uid)
             raise exc
 
         if thumbnail_response.status_code == 404 and return_none_on_404:
@@ -123,9 +117,7 @@ class BasePreviewAPIView(APIView):
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
 
     def get_best_quality_yt_thumbnail(self, entity: Entity) -> Optional[Image.Image]:
-        result = self.get_yt_thumbnail(
-            entity, quality="maxres", return_none_on_404=True
-        )
+        result = self.get_yt_thumbnail(entity, quality="maxres", return_none_on_404=True)
         if result is not None:
             return result
 
@@ -250,10 +242,10 @@ def draw_video_duration(image: Image.Image, entity: Entity, thumbnail_bbox, upsc
     overlay_draw = ImageDraw.Draw(overlay)
 
     overlay_draw.text(
-        (padding[0]//2, padding[1]//2),
+        (padding[0] // 2, padding[1] // 2),
         duration_formatted,
         font=font,
-        fill=COLOR_WHITE_FONT
+        fill=COLOR_WHITE_FONT,
     )
 
     image.alpha_composite(

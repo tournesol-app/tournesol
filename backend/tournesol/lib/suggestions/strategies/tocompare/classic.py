@@ -95,7 +95,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             .values_list("entity_id", flat=True)
         )
 
-        return random.sample(list(compared), min(len(compared), self.max_suggestions))
+        return random.sample(
+            # not a cryptographic use # nosec B311
+            list(compared),
+            min(len(compared), self.max_suggestions),
+        )
 
     def _ids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
         """
@@ -110,7 +114,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
             .values_list("entity_id", flat=True)
         )
 
-        return random.sample(list(results), min(len(results), self.max_suggestions))
+        return random.sample(
+            # not a cryptographic use # nosec B311
+            list(results),
+            min(len(results), self.max_suggestions),
+        )
 
     def _ids_from_pool_reco_last_month(self, exclude_ids: list[int]) -> list[int]:
         """
@@ -134,7 +142,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         already_compared = self._get_compared_sufficiently(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
-        return random.sample(results, min(len(results), self.max_suggestions))
+        return random.sample(
+            # not a cryptographic use # nosec B311
+            results,
+            min(len(results), self.max_suggestions),
+        )
 
     def _ids_from_pool_reco_all_time(self, exclude_ids: list[int]) -> list[int]:
         """
@@ -160,7 +172,11 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         already_compared = self._get_compared_sufficiently(entity_filters)
         results = [reco for reco in recommendations if reco not in already_compared]
 
-        return random.sample(results, min(len(results), self.max_suggestions))
+        return random.sample(
+            # not a cryptographic use # nosec B311
+            results,
+            min(len(results), self.max_suggestions),
+        )
 
     def _consolidate_results(self, pool1: IdPool, pool2: IdPool, pool3: IdPool):
         """

@@ -1,5 +1,5 @@
 # Code quality
-bandit==1.7.4
+bandit==1.8.6
 flake8==5.0.4
 flake8-html==0.4.2
 isort==5.10.1
