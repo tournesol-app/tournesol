@@ -6,11 +6,55 @@ import {
   Typography,
   Alert,
   AlertTitle,
-  Link,
+  Collapse,
+  IconButton,
+  ButtonBase,
 } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useScrollToLocation } from 'src/hooks';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+
+const ManifestoSection = ({
+  number,
+  header,
+  children,
+  headerId,
+}: {
+  header: string;
+  headerId: string;
+  number?: number | null;
+  children: React.ReactNode;
+}) => {
+  const [collapsed, setCollapsed] = React.useState(true);
+
+  return (
+    <>
+      <ButtonBase
+        onClick={() => setCollapsed(!collapsed)}
+        component={Typography}
+        variant="h3"
+        id={headerId}
+        data-number={number}
+      >
+        {header}
+        <IconButton
+          disableRipple
+          color="inherit"
+          size="large"
+          sx={{ marginLeft: 'auto' }}
+          edge="end"
+        >
+          {collapsed ? <ExpandMore /> : <ExpandLess />}
+        </IconButton>
+      </ButtonBase>
+
+      <Collapse in={!collapsed} timeout="auto">
+        {children}
+      </Collapse>
+    </>
+  );
+};
 
 const ManifestoPage = () => {
   // Draft is available in french only: force french lang for all users in this section
@@ -26,17 +70,19 @@ const ManifestoPage = () => {
         sx={{
           '&': {
             h3: {
-              mt: '1.6em',
-              mb: '1em',
+              mt: '1.4em',
               textDecorationLine: 'underline',
               textDecorationColor: theme.palette.divider,
               textDecorationThickness: '2px',
+              display: 'flex',
+              alignItems: 'baseline',
             },
             'h3[data-number]:before': {
               content: "attr(data-number) '.'",
               display: 'inline-block',
               marginRight: '8px',
               fontSize: '150%',
+              minWidth: '32px',
             },
             strong: {
               textDecorationLine: 'underline',
@@ -66,210 +112,230 @@ const ManifestoPage = () => {
           },
         }}
       >
-        <Alert severity="info" sx={{ mb: 1 }}>
+        {/* <Alert severity="info" sx={{ mb: 1 }}>
           <AlertTitle>Ceci est une version de travail</AlertTitle>
           Vous pouvez nous transmettre vos retours en utilisant{' '}
           <Link color="secondary" href="https://forms.gle/RRsQsS9zhvz7xcmM7">
             ce formulaire
           </Link>
           .
-        </Alert>
+        </Alert> */}
 
         <Paper sx={{ p: { xs: 2, sm: 4 } }}>
           <Typography variant="h1">{t('manifesto.title')}</Typography>
 
           <p>{t('manifesto.intro')}</p>
 
-          <Typography variant="h3" id="part1" data-number="1">
-            {t('manifesto.part1.title')}
+          <ManifestoSection
+            number={1}
+            header={t('manifesto.part1.title')}
+            headerId="part1"
+          >
+            <p>
+              <Trans i18nKey="manifesto.part1.democracyDepends" t={t}>
+                Notre fonctionnement démocratique dépend d’échanges
+                d’informations qui ont désormais souvent lieu sur des
+                plateformes numériques, et sont par conséquent organisés par ces
+                IA de recommandation. Or, de nombreuses études scientifiques
+                montrent que ces IA de recommandation nuisent à l’intérêt
+                général :{' '}
+                <strong>dégradation sans précédent de la santé mentale</strong>{' '}
+                chez les jeunes
+                <sup id="ref1">
+                  <a href="#note1">[1]</a>
+                </sup>
+                , <strong>polarisation</strong> du discours public
+                <sup id="ref2">
+                  <a href="#note2">[2]</a>
+                </sup>
+                , <strong>manipulation d’élections</strong>
+                <sup id="ref3">
+                  <a href="#note3">[3]</a>
+                </sup>
+                , désinformation
+                <sup id="ref4">
+                  <a href="#note4">[4]</a>
+                </sup>
+                , contribution à des <strong>génocides</strong>
+                <sup id="ref5">
+                  <a href="#note5">[5]</a>
+                </sup>
+                .
+              </Trans>
+            </p>
+
+            <p>
+              <Trans i18nKey="manifesto.part1.toOrganizeInformationFlow" t={t}>
+                Pour organiser la circulation des informations, les géants du
+                numérique utilisent ces IA de recommandation, qui fonctionnent
+                selon des critères opaques, servent uniquement leurs intérêts
+                économiques ou idéologiques, ne sont soumises à quasi aucune
+                régulation et donc aucun contrôle démocratique.
+              </Trans>
+            </p>
+
+            <p>
+              <Trans i18nKey="manifesto.part1.againstPublicInterest" t={t}>
+                En somme, les IA de recommandation actuelles favorisent
+                largement des intérêts privés au détriment de l’intérêt général.
+              </Trans>
+            </p>
+          </ManifestoSection>
+
+          <ManifestoSection
+            number={2}
+            header={t('manifesto.part2.title')}
+            headerId="part2"
+          >
+            <p>
+              <Trans i18nKey="manifesto.part2.forRegulation" t={t}>
+                Nous défendons l’idée de réguler ces espaces numériques et leurs
+                IA de recommandation, à l’instar d’autres industries à haut
+                risque (aviation, pharmaceutique ou agro-alimentaire).
+              </Trans>
+            </p>
+
+            <p>
+              <Trans i18nKey="manifesto.part2.existingLawsNotEnforced" t={t}>
+                Nous demandons que{' '}
+                <strong>
+                  les lois existantes soient effectivement appliquées
+                </strong>
+                , et que le numérique cesse d’être un espace de non-droit.
+                L’Europe s’est dotée de plusieurs lois visant à encadrer les
+                plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont
+                largement inappliquées
+                <sup id="ref6">
+                  <a href="#note6">[6]</a>
+                </sup>
+                .
+              </Trans>
+            </p>
+
+            <div>
+              <Trans i18nKey="manifesto.part2.existingLawsInsufficient" t={t}>
+                Plus encore, nous pensons que{' '}
+                <strong>ces lois sont insuffisantes</strong>. Nous proposons
+                d’introduire dans le corpus législatif de nouveaux principes,
+                tels que:
+              </Trans>
+              <ul>
+                <li>
+                  <p>
+                    {t('manifesto.part2.propositions.authorization.main')}
+                    {' – '}
+                    <span>
+                      {t('manifesto.part2.propositions.authorization.detail')}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    {t('manifesto.part2.propositions.nonRecommendability.main')}
+                    {' – '}
+                    <span>
+                      {t(
+                        'manifesto.part2.propositions.nonRecommendability.detail'
+                      )}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    {t('manifesto.part2.propositions.configurationRight.main')}
+                    {' – '}
+                    <span>
+                      {t(
+                        'manifesto.part2.propositions.configurationRight.detail'
+                      )}
+                    </span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </ManifestoSection>
+
+          <ManifestoSection
+            number={3}
+            header={t('manifesto.part3.title')}
+            headerId="part3"
+          >
+            <div>
+              <p>
+                <Trans
+                  i18nKey="manifesto.part3.buildDemocraticDigitalSpace"
+                  t={t}
+                >
+                  Concrètement, nous pensons que pour que nos espaces numériques
+                  soient alignés avec nos standards démocratiques et participent
+                  au bon fonctionnement de nos sociétés, il faudrait que leur
+                  mécanisme soit à minima,
+                </Trans>
+              </p>
+              <ul>
+                <li>
+                  <p>
+                    {t('manifesto.part3.requirements.transparent.title')}
+                    {' – '}
+                    <span>
+                      {t('manifesto.part3.requirements.transparent.detail')}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    {t('manifesto.part3.requirements.robust.title')}
+                    {' – '}
+                    <span>
+                      {t('manifesto.part3.requirements.robust.detail')}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    {t('manifesto.part3.requirements.wellTought.title')}
+                    {' – '}
+                    <span>
+                      {t('manifesto.part3.requirements.wellTought.detail')}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    {t('manifesto.part3.requirements.commonInformation.title')}
+                    {' – '}
+                    <span>
+                      {t(
+                        'manifesto.part3.requirements.commonInformation.detail'
+                      )}
+                    </span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+
+            <p>
+              <Trans i18nKey="manifesto.conclusion.digitalPlatforms" t={t}>
+                Le mode de fonctionnement des plateformes numériques, lui-même,
+                doit faciliter l’expression de la parole citoyenne. En ce sens,
+                les contenus recommandés massivement sur les réseaux sociaux
+                devraient refléter les intérêts et les opinions de la parole
+                citoyenne
+              </Trans>
+            </p>
+
+            <p>
+              <Trans i18nKey="manifesto.conclusion.itIsPossible" t={t}>
+                Cela est tout à fait possible, à condition de développer des IA
+                de recommandation fondées sur les jugements réfléchis des
+                citoyens, et non sur les intérêts des géants du numérique.
+              </Trans>
+            </p>
+          </ManifestoSection>
+
+          <Typography variant="h3" id="part4">
+            Pour conclure / Concrétement
           </Typography>
-
-          <p>
-            <Trans i18nKey="manifesto.part1.democracyDepends" t={t}>
-              Notre fonctionnement démocratique dépend d’échanges d’informations
-              qui ont désormais souvent lieu sur des plateformes numériques, et
-              sont par conséquent organisés par ces IA de recommandation. Or, de
-              nombreuses études scientifiques montrent que ces IA de
-              recommandation nuisent à l’intérêt général :{' '}
-              <strong>dégradation sans précédent de la santé mentale</strong>{' '}
-              chez les jeunes
-              <sup id="ref1">
-                <a href="#note1">[1]</a>
-              </sup>
-              , <strong>polarisation</strong> du discours public
-              <sup id="ref2">
-                <a href="#note2">[2]</a>
-              </sup>
-              , <strong>manipulation d’élections</strong>
-              <sup id="ref3">
-                <a href="#note3">[3]</a>
-              </sup>
-              , désinformation
-              <sup id="ref4">
-                <a href="#note4">[4]</a>
-              </sup>
-              , contribution à des <strong>génocides</strong>
-              <sup id="ref5">
-                <a href="#note5">[5]</a>
-              </sup>
-              .
-            </Trans>
-          </p>
-
-          <p>
-            <Trans i18nKey="manifesto.part1.toOrganizeInformationFlow" t={t}>
-              Pour organiser la circulation des informations, les géants du
-              numérique utilisent ces IA de recommandation, qui fonctionnent
-              selon des critères opaques, servent uniquement leurs intérêts
-              économiques ou idéologiques, ne sont soumises à quasi aucune
-              régulation et donc aucun contrôle démocratique.
-            </Trans>
-          </p>
-
-          <p>
-            <Trans i18nKey="manifesto.part1.againstPublicInterest" t={t}>
-              En somme, les IA de recommandation actuelles favorisent largement
-              des intérêts privés au détriment de l’intérêt général.
-            </Trans>
-          </p>
-
-          <Typography variant="h3" id="part2" data-number="2">
-            {t('manifesto.part2.title')}
-          </Typography>
-
-          <p>
-            <Trans i18nKey="manifesto.part2.forRegulation" t={t}>
-              Nous défendons l’idée de réguler ces espaces numériques et leurs
-              IA de recommandation, à l’instar d’autres industries à haut risque
-              (aviation, pharmaceutique ou agro-alimentaire).
-            </Trans>
-          </p>
-
-          <p>
-            <Trans i18nKey="manifesto.part2.existingLawsNotEnforced" t={t}>
-              Nous demandons que{' '}
-              <strong>
-                les lois existantes soient effectivement appliquées
-              </strong>
-              , et que le numérique cesse d’être un espace de non-droit.
-              L’Europe s’est dotée de plusieurs lois visant à encadrer les
-              plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont
-              largement inappliquées
-              <sup id="ref6">
-                <a href="#note6">[6]</a>
-              </sup>
-              .
-            </Trans>
-          </p>
-
-          <div>
-            <Trans i18nKey="manifesto.part2.existingLawsInsufficient" t={t}>
-              Plus encore, nous pensons que{' '}
-              <strong>ces lois sont insuffisantes</strong>. Nous proposons
-              d’introduire dans le corpus législatif de nouveaux principes, tels
-              que:
-            </Trans>
-            <ul>
-              <li>
-                <p>
-                  {t('manifesto.part2.propositions.authorization.main')}
-                  {' – '}
-                  <span>
-                    {t('manifesto.part2.propositions.authorization.detail')}
-                  </span>
-                </p>
-              </li>
-              <li>
-                <p>
-                  {t('manifesto.part2.propositions.nonRecommendability.main')}
-                  {' – '}
-                  <span>
-                    {t(
-                      'manifesto.part2.propositions.nonRecommendability.detail'
-                    )}
-                  </span>
-                </p>
-              </li>
-              <li>
-                <p>
-                  {t('manifesto.part2.propositions.configurationRight.main')}
-                  {' – '}
-                  <span>
-                    {t(
-                      'manifesto.part2.propositions.configurationRight.detail'
-                    )}
-                  </span>
-                </p>
-              </li>
-            </ul>
-          </div>
-
-          <Typography variant="h3" id="part3" data-number="3">
-            {t('manifesto.part3.title')}
-          </Typography>
-
-          <div>
-            <Trans i18nKey="manifesto.part3.buildDemocraticDigitalSpace" t={t}>
-              Concrètement, nous pensons que pour que nos espaces numériques
-              soient alignés avec nos standards démocratiques et participent au
-              bon fonctionnement de nos sociétés, il faudrait que leur mécanisme
-              soit à minima,
-            </Trans>
-            <ul>
-              <li>
-                <p>
-                  {t('manifesto.part3.requirements.transparent.title')}
-                  {' – '}
-                  <span>
-                    {t('manifesto.part3.requirements.transparent.detail')}
-                  </span>
-                </p>
-              </li>
-              <li>
-                <p>
-                  {t('manifesto.part3.requirements.robust.title')}
-                  {' – '}
-                  <span>{t('manifesto.part3.requirements.robust.detail')}</span>
-                </p>
-              </li>
-              <li>
-                <p>
-                  {t('manifesto.part3.requirements.wellTought.title')}
-                  {' – '}
-                  <span>
-                    {t('manifesto.part3.requirements.wellTought.detail')}
-                  </span>
-                </p>
-              </li>
-              <li>
-                <p>
-                  {t('manifesto.part3.requirements.commonInformation.title')}
-                  {' – '}
-                  <span>
-                    {t('manifesto.part3.requirements.commonInformation.detail')}
-                  </span>
-                </p>
-              </li>
-            </ul>
-          </div>
-
-          <p>
-            <Trans i18nKey="manifesto.conclusion.digitalPlatforms" t={t}>
-              Le mode de fonctionnement des plateformes numériques, lui-même,
-              doit faciliter l’expression de la parole citoyenne. En ce sens,
-              les contenus recommandés massivement sur les réseaux sociaux
-              devraient refléter les intérêts et les opinions de la parole
-              citoyenne
-            </Trans>
-          </p>
-
-          <p>
-            <Trans i18nKey="manifesto.conclusion.itIsPossible" t={t}>
-              Cela est tout à fait possible, à condition de développer des IA de
-              recommandation fondées sur les jugements réfléchis des citoyens,
-              et non sur les intérêts des géants du numérique.
-            </Trans>
-          </p>
 
           <p>
             <Trans i18nKey="manifesto.conclusion.tournesolProject" t={t}>
@@ -288,7 +354,7 @@ const ManifestoPage = () => {
             </Trans>
           </p>
 
-          <p>
+          {/* <p>
             <Trans i18nKey="manifesto.conclusion.contactAndActions" t={t}>
               Rejoignez-vous sur{' '}
               <a href="https://discord.com/invite/TvsFB8RNBV">notre Discord</a>,
@@ -298,7 +364,52 @@ const ManifestoPage = () => {
               </a>
               .
             </Trans>
-          </p>
+          </p> */}
+
+          <Alert severity="info" icon={false} square>
+            <AlertTitle>
+              Ce manifeste te parle et tu as envie de nous aider ?
+            </AlertTitle>
+            <ul>
+              <li>
+                <b>En moins de 1 minute</b>
+                <p>
+                  Nous suivre sur Linkedin et liker nos meilleures publications
+                  pour entrainer l’algorithme et avoir une chance de voir nos
+                  prochaines publications.
+                </p>
+              </li>
+              <li>
+                <b>En moins de 2 minutes</b>
+                <p>
+                  Installer l’extension et l’application pour bénéficier des
+                  super recommandations démocratiques de la communauté.
+                </p>
+              </li>
+              <li>
+                <b>En moins de 5 minutes</b>
+                <p>
+                  Créer un compte sur la plateforme et faire au moins une
+                  comparaison afin de t’exprimer sur les vidéos qu’il faudrait
+                  largement recommander.
+                </p>
+              </li>
+              <li>
+                <b>Tu veux donner du temps plus régulièrement ?</b>
+                <p>
+                  Trop chouette! Tu peux:
+                  <ul>
+                    <li>
+                      <p>...</p>
+                    </li>
+                    <li>
+                      <p>...</p>
+                    </li>
+                  </ul>
+                </p>
+              </li>
+            </ul>
+          </Alert>
 
           <Typography variant="h3">{t('manifesto.toGoFurther')}</Typography>
 
