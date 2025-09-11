@@ -1026,7 +1026,7 @@
     "title": "Tournesol : pourquoi\u00a0? comment\u00a0?",
     "intro": "Aujourd’hui le contenu que nous regardons sur les grandes plateformes est choisi par des mécanismes qu’on appelle “algorithmes de recommandation” ou “IA de recommandation”.",
     "part1": {
-      "title": "Ces IA de recommandation fragilisent nos démocraties",
+      "title": "Les IA de recommandation fragilisent nos démocraties",
       "democracyDepends": "Notre fonctionnement démocratique dépend d’échanges d’informations qui ont désormais souvent lieu sur des plateformes numériques, et sont par conséquent organisés par ces IA de recommandation. Or, de nombreuses études scientifiques montrent que ces IA de recommandation nuisent à l’intérêt général : <2>dégradation sans précédent de la santé mentale</2> chez les jeunes<5><0>[1]</0></5>, <7>polarisation</7> du discours public<9><0>[2]</0></9>, <11>manipulation d’élections</11><12><0>[3]</0></12>, désinformation<14><0>[4]</0></14>, contribution à des <16>génocides</16><17><0>[5]</0></17>.",
       "toOrganizeInformationFlow": "Pour organiser la circulation des informations, les géants du numérique utilisent ces IA de recommandation, qui fonctionnent selon des critères opaques, servent uniquement leurs intérêts économiques ou idéologiques, ne sont soumises à quasi aucune régulation et donc aucun contrôle démocratique.",
       "againstPublicInterest": "En somme, les IA de recommandation actuelles favorisent largement des intérêts privés au détriment de l’intérêt général."
@@ -1034,12 +1034,12 @@
     "part2": {
       "title": "Les IA de recommandation doivent être vraiment régulées",
       "forRegulation": "Nous défendons l’idée de réguler ces espaces numériques et leurs IA de recommandation, à l’instar d’autres industries à haut risque (aviation, pharmaceutique ou agro-alimentaire).",
-      "existingLawsNotEnforced": "Nous demandons que <2>les lois existantes soient effectivement appliquées</2>, et que le numérique cesse d’être un espace de non-droit. L’Europe s’est dotée de plusieurs lois visant à encadrer les plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont largement inappliquées<4><0>[6]</0></4>.",
+      "existingLawsNotEnforced": "Nous demandons que <2>les lois existantes soient effectivement appliquées</2>, et que le numérique cesse d’être un espace de non-droit. L’Europe s’est dotée de plusieurs lois et réglementations visant à encadrer les plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont largement inappliquées<4><0>[6]</0></4>.",
       "existingLawsInsufficient": "Plus encore, nous pensons que <2>ces lois sont insuffisantes</2>. Nous proposons d’introduire dans le corpus législatif de nouveaux principes, tels que:",
       "propositions": {
         "authorization": {
           "main": "l’autorisation de mise sur le marché de toute nouvelle IA de recommandation",
-          "detail": "À l’instar des industries aéronautiques ou médicales, une IA de recommendation ne doit pas être déployée à large échelle sans avoir prouvé auparavant qu’elle n’engendrera pas de conséquences dramatiques (cyber-harcèlement, polarisation des opinions, amplification de fausses informations, etc)."
+          "detail": "À l’instar des industries aéronautiques ou médicales, une IA de recommendation ne doit pas être déployée à large échelle sans qu'il ait été prouvé auparavant qu’elle n’engendrera pas de conséquences dramatiques (cyber-harcèlement, polarisation des opinions, amplification de fausses informations, etc)."
         },
         "nonRecommendability": {
           "main": "le principe de non-recommandabilité massive des contenus",
@@ -1065,7 +1065,7 @@
         },
         "wellTought": {
           "title": "basé sur des avis réflechis",
-          "detail": "Que les futures recommandations refletent les envies réfléchies des utilisateurs plutôt que leurs réactions impulsives (click, swipe,...)."
+          "detail": "Que les futures recommandations refletent les envies réfléchies des utilisateurs plutôt que leurs réactions impulsives (clic, swipe,...)."
         },
         "commonInformation": {
           "title": "favorable à l’émergence d’un socle informationnel commun",
@@ -1076,9 +1076,24 @@
     "conclusion": {
       "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, les contenus recommandés massivement sur les réseaux sociaux devraient refléter les intérêts et les opinions de la parole citoyenne.",
       "itIsPossible": "Cela est tout à fait possible, à condition de développer des IA de recommandation fondées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.",
-      "tournesolProject": "Le projet Tournesol.app développe une IA de recommandation alternative de ce type, qui s'appuient sur vos jugements et vos intérêts. Venez essayer la plateforme : <2>https://tournesol.app/</2> !",
-      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste.",
-      "contactAndActions": "Rejoignez-vous sur <2>notre Discord</2>, et impliquez-vous sur cette thématique : <5>https://tournesol.app/actions</5>."
+      "title": "Le projet Tournesol",
+      "tournesolProject": "Le projet Tournesol développe une IA de recommandation alternative et plus démocratique, qui s'appuie sur vos jugements et vos intérêts. Venez essayer la plateforme sur <2>tournesol.app</2> !",
+      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste."
+    },
+    "cta": {
+      "title": "Ce manifeste te parle et tu as envie de nous aider ?",
+      "1minute": "En moins de 1 minute",
+      "followLinkedin": "Nous suivre sur <2>Linkedin</2> et liker nos meilleures publications pour entrainer l’algorithme et avoir une chance de voir nos prochaines publications.",
+      "2minutes": "En moins de 2 minutes",
+      "intallExtensionAndApp": "Installer <2>l’extension</2> et <6>l’application</6> pour bénéficier des super recommandations démocratiques de la communauté.",
+      "5minutes": "En moins de 5 minutes",
+      "createAccount": "<0>Créer un compte</0> sur la plateforme, et faire au moins une comparaison afin de t’exprimer sur les vidéos qu’il faudrait largement recommander.",
+      "regularly": "Tu veux donner du temps plus régulièrement ?",
+      "regularlyYouCan": "Trop chouette ! Tu peux :",
+      "getInvolved": "Te présenter <2>par mail</2> ou sur le <6>channel Discord dédié (#intros)</6>: communication, recherche, demande de financement ou stratégie de développement, on a toujours besoin de personnes motivées.",
+      "attendPresentation": "Venir à une présentation de Tournesol, organisée une fois tous les deux mois. Inscription <2>par mail</2>.",
+      "evenMore": "Tu as envie de poncer la thématique ?",
+      "linkToActions": "C’est par là: <2>tournesol.app/actions</2>"
     },
     "toGoFurther": "Pour aller plus loin",
     "notes": {

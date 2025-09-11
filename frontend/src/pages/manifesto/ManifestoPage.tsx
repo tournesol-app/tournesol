@@ -9,11 +9,17 @@ import {
   Collapse,
   IconButton,
   ButtonBase,
+  Divider,
 } from '@mui/material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useScrollToLocation } from 'src/hooks';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { getWebExtensionUrl } from 'src/utils/extension';
+import {
+  googlePlayStoreMobileAppUrl,
+  linkedInTournesolUrl,
+} from 'src/utils/url';
 
 const ManifestoSection = ({
   number,
@@ -22,20 +28,40 @@ const ManifestoSection = ({
   headerId,
 }: {
   header: string;
-  headerId: string;
-  number?: number | null;
+  headerId?: string;
+  number?: number;
   children: React.ReactNode;
 }) => {
   const [collapsed, setCollapsed] = React.useState(true);
+  const contentRef = React.useRef<HTMLElement>();
+
+  React.useEffect(() => {
+    const checkHash = () => {
+      const currentHash = window.location.hash;
+      if (currentHash) {
+        const elt = document.querySelector(currentHash);
+        if (contentRef.current?.contains(elt)) {
+          setCollapsed(false);
+        }
+      }
+    };
+
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => {
+      window.removeEventListener('hashchange', checkHash);
+    };
+  }, []);
 
   return (
     <>
       <ButtonBase
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => setCollapsed((c) => !c)}
         component={Typography}
-        variant="h3"
+        variant="h4"
         id={headerId}
         data-number={number}
+        sx={{ userSelect: 'auto' }}
       >
         {header}
         <IconButton
@@ -49,7 +75,7 @@ const ManifestoSection = ({
         </IconButton>
       </ButtonBase>
 
-      <Collapse in={!collapsed} timeout="auto">
+      <Collapse in={!collapsed} timeout={150} ref={contentRef}>
         {children}
       </Collapse>
     </>
@@ -62,6 +88,8 @@ const ManifestoPage = () => {
   const theme = useTheme();
   useScrollToLocation();
 
+  const extensionUrl = getWebExtensionUrl() ?? getWebExtensionUrl('chrome');
+
   return (
     <>
       <ContentHeader title={t('manifesto.header')} />
@@ -69,15 +97,17 @@ const ManifestoPage = () => {
         maxWidth="md"
         sx={{
           '&': {
-            h3: {
-              mt: '1.4em',
-              textDecorationLine: 'underline',
-              textDecorationColor: theme.palette.divider,
-              textDecorationThickness: '2px',
+            h4: {
+              mt: '1.2em',
               display: 'flex',
               alignItems: 'baseline',
             },
-            'h3[data-number]:before': {
+            'h4[data-number]': {
+              textDecorationLine: 'underline',
+              textDecorationColor: theme.palette.divider,
+              textDecorationThickness: '2px',
+            },
+            'h4[data-number]:before': {
               content: "attr(data-number) '.'",
               display: 'inline-block',
               marginRight: '8px',
@@ -333,253 +363,324 @@ const ManifestoPage = () => {
             </p>
           </ManifestoSection>
 
-          <Typography variant="h3" id="part4">
-            Pour conclure / Concrétement
-          </Typography>
-
-          <p>
-            <Trans i18nKey="manifesto.conclusion.tournesolProject" t={t}>
-              Le projet Tournesol.app développe une IA de recommandation
-              alternative de ce type, qui s&apos;appuient sur vos jugements et
-              vos intérêts. Venez essayer la plateforme :{' '}
-              <a href="https://tournesol.app">https://tournesol.app/</a> !
-            </Trans>
-          </p>
-
-          <p>
-            <Trans i18nKey="manifesto.conclusion.tournesolAssociation" t={t}>
-              Au-delà, l’association Tournesol regroupe des citoyens, des
-              chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour
-              but de défendre les trois principes proposés dans ce manifeste.
-            </Trans>
-          </p>
-
-          {/* <p>
-            <Trans i18nKey="manifesto.conclusion.contactAndActions" t={t}>
-              Rejoignez-vous sur{' '}
-              <a href="https://discord.com/invite/TvsFB8RNBV">notre Discord</a>,
-              et impliquez-vous sur cette thématique :{' '}
-              <a href="https://tournesol.app/actions">
-                https://tournesol.app/actions
-              </a>
-              .
-            </Trans>
-          </p> */}
-
-          <Alert severity="info" icon={false} square>
-            <AlertTitle>
-              Ce manifeste te parle et tu as envie de nous aider ?
+          <Alert severity="info" icon={false} sx={{ mt: 3 }}>
+            <AlertTitle sx={{ fontSize: '140%' }}>
+              {t('manifesto.conclusion.title')}
             </AlertTitle>
+
+            <p>
+              <Trans i18nKey="manifesto.conclusion.tournesolProject" t={t}>
+                Le projet Tournesol développe une IA de recommandation
+                alternative de ce type, qui s&apos;appuient sur vos jugements et
+                vos intérêts. Venez essayer la plateforme :{' '}
+                <a
+                  href="https://tournesol.app"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  https://tournesol.app/
+                </a>{' '}
+                !
+              </Trans>
+            </p>
+
+            <p>
+              <Trans i18nKey="manifesto.conclusion.tournesolAssociation" t={t}>
+                Au-delà, l’association Tournesol regroupe des citoyens, des
+                chercheurs, des vidéastes, des développeurs bénévoles. Elle a
+                pour but de défendre les trois principes proposés dans ce
+                manifeste.
+              </Trans>
+            </p>
+
+            <Divider sx={{ my: 2 }} />
+
+            <AlertTitle>{t('manifesto.cta.title')}</AlertTitle>
             <ul>
               <li>
-                <b>En moins de 1 minute</b>
+                <b>{t('manifesto.cta.1minute')}</b>
                 <p>
-                  Nous suivre sur Linkedin et liker nos meilleures publications
-                  pour entrainer l’algorithme et avoir une chance de voir nos
-                  prochaines publications.
+                  <Trans i18nKey="manifesto.cta.followLinkedin" t={t}>
+                    Nous suivre sur{' '}
+                    <a
+                      href={linkedInTournesolUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Linkedin
+                    </a>{' '}
+                    et liker nos meilleures publications pour entrainer
+                    l’algorithme et avoir une chance de voir nos prochaines
+                    publications.
+                  </Trans>
                 </p>
               </li>
               <li>
-                <b>En moins de 2 minutes</b>
+                <b>{t('manifesto.cta.2minutes')}</b>
                 <p>
-                  Installer l’extension et l’application pour bénéficier des
-                  super recommandations démocratiques de la communauté.
+                  <Trans i18nKey="manifesto.cta.intallExtensionAndApp" t={t}>
+                    Installer{' '}
+                    <a href={extensionUrl} target="_blank" rel="noreferrer">
+                      l’extension
+                    </a>{' '}
+                    et{' '}
+                    <a
+                      href={googlePlayStoreMobileAppUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      l’application
+                    </a>{' '}
+                    pour bénéficier des super recommandations démocratiques de
+                    la communauté.
+                  </Trans>
                 </p>
               </li>
               <li>
-                <b>En moins de 5 minutes</b>
+                <b>{t('manifesto.cta.5minutes')}</b>
                 <p>
-                  Créer un compte sur la plateforme et faire au moins une
-                  comparaison afin de t’exprimer sur les vidéos qu’il faudrait
-                  largement recommander.
+                  <Trans i18nKey="manifesto.cta.createAccount" t={t}>
+                    <a
+                      href="https://tournesol.app/signup"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Créer un compte
+                    </a>{' '}
+                    sur la plateforme et faire au moins une comparaison afin de
+                    t’exprimer sur les vidéos qu’il faudrait largement
+                    recommander.
+                  </Trans>
                 </p>
               </li>
               <li>
-                <b>Tu veux donner du temps plus régulièrement ?</b>
-                <p>
-                  Trop chouette! Tu peux:
+                <b>{t('manifesto.cta.regularly')}</b>
+                <div>
+                  {t('manifesto.cta.regularlyYouCan')}
                   <ul>
                     <li>
-                      <p>...</p>
+                      <p>
+                        <Trans i18nKey="manifesto.cta.getInvolved" t={t}>
+                          Te présenter{' '}
+                          <a href="mailto:hello+intro@tournesol.app">
+                            par mail
+                          </a>{' '}
+                          ou sur le{' '}
+                          <a
+                            href="https://discord.gg/UvAkpGwJCK"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            channel Discord dédié (#intros)
+                          </a>
+                          : communication, recherche, demande de financement ou
+                          stratégie de développement, on a toujours besoin de
+                          personnes motivées.
+                        </Trans>
+                      </p>
                     </li>
                     <li>
-                      <p>...</p>
+                      <p>
+                        <Trans i18nKey="manifesto.cta.attendPresentation" t={t}>
+                          Venir à une présentation de Tournesol, organisée une
+                          fois tous les deux mois, inscription{' '}
+                          <a href="mailto:hello+intro@tournesol.app">
+                            par mail
+                          </a>
+                          .
+                        </Trans>
+                      </p>
                     </li>
                   </ul>
+                </div>
+              </li>
+              <li>
+                <b>{t('manifesto.cta.evenMore')}</b>
+                <p>
+                  <Trans i18nKey="manifesto.cta.linkToActions" t={t}>
+                    C’est par là:{' '}
+                    <a
+                      href="https://tournesol.app/actions"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      tournesol.app/actions
+                    </a>
+                  </Trans>
                 </p>
               </li>
             </ul>
           </Alert>
 
-          <Typography variant="h3">{t('manifesto.toGoFurther')}</Typography>
+          <ManifestoSection header={t('manifesto.toGoFurther')}>
+            <ul>
+              <li>
+                <p>
+                  <em>Prosocial Media</em> (2025). A. Tang.{' '}
+                  <a href="https://arxiv.org/abs/2502.10834">[lien]</a>
+                </p>
+              </li>
+              <li>
+                <p>
+                  <em>
+                    Tournesol: A quest for a large, secure and trustworthy
+                    database of reliable human judgments
+                  </em>{' '}
+                  (2021). <a href="https://arxiv.org/abs/2107.07334">[lien]</a>
+                </p>
+              </li>
+              <li>
+                <p>
+                  <em>
+                    La Dictature des Algorithmes, Une transition démocratique
+                    est possible
+                  </em>{' '}
+                  (2023). J.-L. Fourquet, L. N. Hoang.{' '}
+                  <a href="https://tallandier.com/livre/la-dictature-des-algorithmes/">
+                    [lien]
+                  </a>
+                </p>
+              </li>
+            </ul>
+          </ManifestoSection>
 
-          <ul>
-            <li>
-              <p>
-                <em>Prosocial Media</em> (2025). A. Tang.{' '}
-                <a href="https://arxiv.org/abs/2502.10834">[lien]</a>
-              </p>
-            </li>
-            <li>
-              <p>
-                <em>
-                  Tournesol: A quest for a large, secure and trustworthy
-                  database of reliable human judgments
-                </em>{' '}
-                (2021). <a href="https://arxiv.org/abs/2107.07334">[lien]</a>
-              </p>
-            </li>
-            <li>
-              <p>
-                <em>
-                  La Dictature des Algorithmes, Une transition démocratique est
-                  possible
-                </em>{' '}
-                (2023). J.-L. Fourquet, L. N. Hoang.{' '}
-                <a href="https://tallandier.com/livre/la-dictature-des-algorithmes/">
-                  [lien]
-                </a>
-              </p>
-            </li>
-          </ul>
-
-          <Typography variant="h3">{t('manifesto.notes.title')}</Typography>
-
-          <table>
-            <tbody>
-              <tr>
-                <td id="note1">
-                  <a href="#ref1">[1]</a>
-                </td>
-                <td>
-                  <Trans
-                    i18nKey="manifesto.notes.facebookFilesMentalHealth"
-                    t={t}
-                  >
-                    D’après les Facebook Files, une étude interne à
-                    Facebook/Méta montre qu’Instagram contribue à dégrader la
-                    santé mentale des adolescentes [
-                    <a href="https://www.wsj.com/tech/personal-tech/facebook-knows-instagram-is-toxic-for-teen-girls-company-documents-show-11631620739">
-                      Facebook Knows Instagram Is Toxic for Teen Girls...
-                    </a>
-                    ,{' '}
-                    <a href="https://www.theatlantic.com/ideas/archive/2021/11/facebooks-dangerous-experiment-teen-girls/620767/">
-                      The Dangerous Experiment on Teen Girls
-                    </a>
-                    ]. Aux États-Unis, 57% des adolescentes confient éprouver
-                    une tristesse persistante ou du désespoir, contre 36% en
-                    2011, et 30% révèlent avoir déjà songé à se suicider, contre
-                    19% en 2011 [
-                    <a href="https://www.cdc.gov/yrbs/dstr/index.html">
-                      CDC Report, pp. 57, 61
-                    </a>
-                    ]. Les tendances sont similaires à travers le monde [
-                    <a href="https://www.afterbabel.com/p/international-mental-illness-part-one">
-                      International Mental Illness (1/2)
-                    </a>
-                    ;
-                    <a href="https://www.afterbabel.com/p/international-mental-illness-part-two">
-                      International Mental Illness (2/2)
-                    </a>
-                    ]. D’après des psychologues, l’hypothèse de l’accès constant
-                    aux réseaux sociaux explique le mieux cette crise de la
-                    santé mentale [
-                    <a href="https://www.afterbabel.com/p/13-explanations-mental-health-crisis">
-                      13 explanations of mental health crisis
-                    </a>
-                    ].
-                  </Trans>
-                </td>
-              </tr>
-              <tr>
-                <td id="note2">
-                  <a href="#ref2">[2]</a>
-                </td>
-                <td>
-                  <Trans
-                    i18nKey="manifesto.notes.facebookFilesPoliticians"
-                    t={t}
-                  >
-                    Les Facebook Files révèlent l’influence des IA de
-                    recommandation de Facebook sur les politiciens en 2017. Des
-                    politiciens européens ont notamment écrit à Facebook, en
-                    insistant sur le fait que les IA favorisaient alors beaucoup
-                    plus radicalement les discours clivants, ce qui
-                    contraignaient ces politiciens à être plus haineux pour
-                    survivre politiquement.
-                  </Trans>
-                </td>
-              </tr>
-              <tr>
-                <td id="note3">
-                  <a href="#ref3">[3]</a>
-                </td>
-                <td>
-                  <Trans i18nKey="manifesto.notes.elections" t={t}>
-                    Plusieurs études rapportent des manipulations de processus
-                    électoraux en Roumanie en 2024 sur TikTok, qui ont conduit à
-                    l’annulation et au report de l’élection présidentielle [
-                    <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5243802">
-                      Bader and Szabo 2025
-                    </a>
-                    ;{' '}
-                    <a href="https://www.ceeol.com/search/article-detail?id=1344519">
-                      Seceleanu and Garabet 2025
-                    </a>
-                    ;{' '}
-                    <a href="https://understandingwar.org/sites/default/files/Romania%20special%20edition%20PDF_0.pdf">
-                      Harward 2024
-                    </a>
-                    ]. Ces cas d’ingérence étrangère font écho à de nombreuses
-                    autres sur le même sujet, comme dans le cas de Cambridge
-                    Analytica en 2015 et 2016.
-                  </Trans>
-                </td>
-              </tr>
-              <tr>
-                <td id="note4">
-                  <a href="#ref4">[4]</a>
-                </td>
-                <td>
-                  <Trans i18nKey="manifesto.notes.amplification" t={t}>
-                    La sur-optimisation de l’engagement a des implications très
-                    dangereuses sur l’amplification de la polarisation affective
-                    et la désinformation [Twitter and Tear Gas 2017, The Hype
-                    Machine 2021, Toxic Data 2022].
-                  </Trans>
-                </td>
-              </tr>
-              <tr>
-                <td id="note5">
-                  <a href="#ref5">[5]</a>
-                </td>
-                <td>
-                  <Trans i18nKey="manifesto.notes.genocides" t={t}>
-                    L’Organisation des Nations Unies et Amnesty International
-                    accusent Facebook d’avoir sciemment contribué à des
-                    génocides, en particulier au génocide des Rohingyas en
-                    Birmanie, en promouvant des discours de haine contre les
-                    minorités [
-                    <a href="https://www.amnesty.org/en/latest/news/2022/09/myanmar-facebooks-systems-promoted-violence-against-rohingya-meta-owes-reparations-new-report/">
-                      Amnesty International #1
-                    </a>
-                    ,{' '}
-                    <a href="https://www.amnesty.org/en/documents/asa16/5933/2022/en/">
-                      Amnesty International #2
-                    </a>
-                    ].
-                    {/* [TODO: sourcer ONU] */}
-                  </Trans>
-                </td>
-              </tr>
-              <tr>
-                <td id="note6">
-                  <a href="#ref6">[6]</a>
-                </td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
+          <ManifestoSection header={t('manifesto.notes.title')}>
+            <table>
+              <tbody>
+                <tr>
+                  <td id="note1">
+                    <a href="#ref1">[1]</a>
+                  </td>
+                  <td>
+                    <Trans
+                      i18nKey="manifesto.notes.facebookFilesMentalHealth"
+                      t={t}
+                    >
+                      D’après les Facebook Files, une étude interne à
+                      Facebook/Méta montre qu’Instagram contribue à dégrader la
+                      santé mentale des adolescentes [
+                      <a href="https://www.wsj.com/tech/personal-tech/facebook-knows-instagram-is-toxic-for-teen-girls-company-documents-show-11631620739">
+                        Facebook Knows Instagram Is Toxic for Teen Girls...
+                      </a>
+                      ,{' '}
+                      <a href="https://www.theatlantic.com/ideas/archive/2021/11/facebooks-dangerous-experiment-teen-girls/620767/">
+                        The Dangerous Experiment on Teen Girls
+                      </a>
+                      ]. Aux États-Unis, 57% des adolescentes confient éprouver
+                      une tristesse persistante ou du désespoir, contre 36% en
+                      2011, et 30% révèlent avoir déjà songé à se suicider,
+                      contre 19% en 2011 [
+                      <a href="https://www.cdc.gov/yrbs/dstr/index.html">
+                        CDC Report, pp. 57, 61
+                      </a>
+                      ]. Les tendances sont similaires à travers le monde [
+                      <a href="https://www.afterbabel.com/p/international-mental-illness-part-one">
+                        International Mental Illness (1/2)
+                      </a>
+                      ;
+                      <a href="https://www.afterbabel.com/p/international-mental-illness-part-two">
+                        International Mental Illness (2/2)
+                      </a>
+                      ]. D’après des psychologues, l’hypothèse de l’accès
+                      constant aux réseaux sociaux explique le mieux cette crise
+                      de la santé mentale [
+                      <a href="https://www.afterbabel.com/p/13-explanations-mental-health-crisis">
+                        13 explanations of mental health crisis
+                      </a>
+                      ].
+                    </Trans>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="note2">
+                    <a href="#ref2">[2]</a>
+                  </td>
+                  <td>
+                    <Trans
+                      i18nKey="manifesto.notes.facebookFilesPoliticians"
+                      t={t}
+                    >
+                      Les Facebook Files révèlent l’influence des IA de
+                      recommandation de Facebook sur les politiciens en 2017.
+                      Des politiciens européens ont notamment écrit à Facebook,
+                      en insistant sur le fait que les IA favorisaient alors
+                      beaucoup plus radicalement les discours clivants, ce qui
+                      contraignaient ces politiciens à être plus haineux pour
+                      survivre politiquement.
+                    </Trans>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="note3">
+                    <a href="#ref3">[3]</a>
+                  </td>
+                  <td>
+                    <Trans i18nKey="manifesto.notes.elections" t={t}>
+                      Plusieurs études rapportent des manipulations de processus
+                      électoraux en Roumanie en 2024 sur TikTok, qui ont conduit
+                      à l’annulation et au report de l’élection présidentielle [
+                      <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5243802">
+                        Bader and Szabo 2025
+                      </a>
+                      ;{' '}
+                      <a href="https://www.ceeol.com/search/article-detail?id=1344519">
+                        Seceleanu and Garabet 2025
+                      </a>
+                      ;{' '}
+                      <a href="https://understandingwar.org/sites/default/files/Romania%20special%20edition%20PDF_0.pdf">
+                        Harward 2024
+                      </a>
+                      ]. Ces cas d’ingérence étrangère font écho à de nombreuses
+                      autres sur le même sujet, comme dans le cas de Cambridge
+                      Analytica en 2015 et 2016.
+                    </Trans>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="note4">
+                    <a href="#ref4">[4]</a>
+                  </td>
+                  <td>
+                    <Trans i18nKey="manifesto.notes.amplification" t={t}>
+                      La sur-optimisation de l’engagement a des implications
+                      très dangereuses sur l’amplification de la polarisation
+                      affective et la désinformation [Twitter and Tear Gas 2017,
+                      The Hype Machine 2021, Toxic Data 2022].
+                    </Trans>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="note5">
+                    <a href="#ref5">[5]</a>
+                  </td>
+                  <td>
+                    <Trans i18nKey="manifesto.notes.genocides" t={t}>
+                      L’Organisation des Nations Unies et Amnesty International
+                      accusent Facebook d’avoir sciemment contribué à des
+                      génocides, en particulier au génocide des Rohingyas en
+                      Birmanie, en promouvant des discours de haine contre les
+                      minorités [
+                      <a href="https://www.amnesty.org/en/latest/news/2022/09/myanmar-facebooks-systems-promoted-violence-against-rohingya-meta-owes-reparations-new-report/">
+                        Amnesty International #1
+                      </a>
+                      ,{' '}
+                      <a href="https://www.amnesty.org/en/documents/asa16/5933/2022/en/">
+                        Amnesty International #2
+                      </a>
+                      ].
+                      {/* [TODO: sourcer ONU] */}
+                    </Trans>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="note6">
+                    <a href="#ref6">[6]</a>
+                  </td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </ManifestoSection>
         </Paper>
       </ContentBox>
     </>

@@ -1067,9 +1067,24 @@
     "conclusion": {
       "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, les contenus recommandés massivement sur les réseaux sociaux devraient refléter les intérêts et les opinions de la parole citoyenne",
       "itIsPossible": "Cela est tout à fait possible, à condition de développer des IA de recommandation fondées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.",
+      "title": "",
       "tournesolProject": "Le projet Tournesol.app développe une IA de recommandation alternative de ce type, qui s'appuient sur vos jugements et vos intérêts. Venez essayer la plateforme : <2>https://tournesol.app/</2> !",
-      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste.",
-      "contactAndActions": "Rejoignez-vous sur <2>notre Discord</2>, et impliquez-vous sur cette thématique : <5>https://tournesol.app/actions</5>."
+      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste."
+    },
+    "cta": {
+      "title": "",
+      "1minute": "",
+      "followLinkedin": "Nous suivre sur <2>Linkedin</2> et liker nos meilleures publications pour entrainer l’algorithme et avoir une chance de voir nos prochaines publications.",
+      "2minutes": "",
+      "intallExtensionAndApp": "Installer <2>l’extension</2> et <6>l’application</6> pour bénéficier des super recommandations démocratiques de la communauté.",
+      "5minutes": "",
+      "createAccount": "<0>Créer un compte</0> sur la plateforme et faire au moins une comparaison afin de t’exprimer sur les vidéos qu’il faudrait largement recommander.",
+      "regularly": "",
+      "regularlyYouCan": "",
+      "getInvolved": "Te présenter <2>par mail</2> ou sur le <6>channel Discord dédié (#intros)</6>: communication, recherche, demande de financement ou stratégie de développement, on a toujours besoin de personnes motivées.",
+      "attendPresentation": "Venir à une présentation de Tournesol, organisée une fois tous les deux mois, inscription <2>par mail</2>.",
+      "evenMore": "",
+      "linkToActions": "C’est par là: <2>tournesol.app/actions</2>"
     },
     "toGoFurther": "",
     "notes": {

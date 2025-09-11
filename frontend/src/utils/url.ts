@@ -68,3 +68,10 @@ export const whitePaperUrl = 'https://arxiv.org/abs/2107.07334';
 
 // Solidago
 export const solidagoDocsUrl = 'https://solidago.tournesol.app';
+
+/**
+ * Apps
+ */
+
+export const googlePlayStoreMobileAppUrl =
+  'https://play.google.com/store/apps/details?id=app.tournesol.twa';
