@@ -339,7 +339,10 @@ const RateLaterPage = () => {
                 entities={rateLaterList}
                 actions={rateLaterPageActions}
                 actionsIfUnavailable={[RemoveFromRateLater(loadList)]}
-                cardProps={{ showRatingControl: true }}
+                cardProps={{
+                  showEntitySeenIndicator: true,
+                  showRatingControl: true,
+                }}
                 displayContextAlert={true}
               />
             </LoaderWrapper>

@@ -49,6 +49,7 @@ export interface EntityCardProps {
   actions?: ActionList;
   compact?: boolean;
   isAvailable?: boolean;
+  showEntitySeenIndicator?: boolean;
   showRatingControl?: boolean;
   onRatingChange?: (rating: ContributorRating) => void;
   // Configuration specific to the entity type.
@@ -63,6 +64,7 @@ const EntityCard = ({
   compact = false,
   entityTypeConfig,
   isAvailable = true,
+  showEntitySeenIndicator = false,
   showRatingControl = false,
   onRatingChange,
   displayContextAlert = false,
@@ -113,7 +115,9 @@ const EntityCard = ({
   };
 
   const entitySeen =
-    'individual_rating' in result && result.individual_rating?.entity_seen;
+    showEntitySeenIndicator &&
+    'individual_rating' in result &&
+    result.individual_rating?.entity_seen;
 
   return (
     <Grid2
@@ -122,8 +126,7 @@ const EntityCard = ({
         entitySeen
           ? {
               ...entityCardMainSx,
-              borderBottomWidth: '4px',
-              borderBottomColor: '#43b649',
+              borderBottom: '4px solid #b1e2b3',
             }
           : entityCardMainSx
       }
@@ -294,6 +297,17 @@ export const RowEntityCard = ({
   metadataVariant?: EntityMetadataVariant;
 }) => {
   const entity = result.entity;
+
+  const entitySeen =
+    'individual_rating' in result && result.individual_rating?.entity_seen;
+
+  let extraSx = {};
+  if (entitySeen) {
+    extraSx = {
+      borderRight: '8px solid #b1e2b3',
+    };
+  }
+
   return (
     <Box
       sx={{
@@ -304,6 +318,7 @@ export const RowEntityCard = ({
         height: '90px',
         ...entityCardMainSx,
         bgcolor: 'transparent',
+        ...extraSx,
       }}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>
