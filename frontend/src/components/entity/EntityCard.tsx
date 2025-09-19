@@ -112,10 +112,21 @@ const EntityCard = ({
     setContentDisplayed(!contentDisplayed);
   };
 
+  const entitySeen =
+    'individual_rating' in result && result.individual_rating?.entity_seen;
+
   return (
     <Grid2
       container
-      sx={entityCardMainSx}
+      sx={
+        entitySeen
+          ? {
+              ...entityCardMainSx,
+              borderBottomWidth: '4px',
+              borderBottomColor: '#43b649',
+            }
+          : entityCardMainSx
+      }
       direction={compact ? 'column' : 'row'}
     >
       {!isAvailable && (
