@@ -223,7 +223,7 @@ const EntityCard = ({
           >
             {actions.map((Action, index) =>
               typeof Action === 'function' ? (
-                <Action key={index} uid={entity.uid} />
+                <Action key={index} uid={entity.uid} entity={result} />
               ) : (
                 Action
               )

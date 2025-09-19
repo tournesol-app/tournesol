@@ -18,7 +18,11 @@ import EntityList from 'src/features/entities/EntityList';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
 import { ApiError, RateLater, UsersService } from 'src/services/openapi';
-import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
+import {
+  CompareNowAction,
+  RemoveFromRateLater,
+  ToggleEntitySeen,
+} from 'src/utils/action';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
@@ -176,6 +180,7 @@ const RateLaterPage = () => {
   const rateLaterPageActions = [
     CompareNowAction,
     RemoveFromRateLater(loadList),
+    ToggleEntitySeen(loadList),
   ];
 
   const [where2findVideosOpen, setWhere2findVideosOpen] = useState(false);

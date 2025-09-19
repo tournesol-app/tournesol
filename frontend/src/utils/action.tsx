@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { IconButton, Tooltip } from '@mui/material';
@@ -6,10 +6,13 @@ import CompareIcon from '@mui/icons-material/Compare';
 import AddIcon from '@mui/icons-material/Add';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-import { UsersService } from 'src/services/openapi';
+import { ApiError, UsersService } from 'src/services/openapi';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { addToRateLaterList } from './api/rateLaters';
+import { EntityResult } from './types';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
@@ -33,6 +36,80 @@ export const CompareNowAction = ({ uid }: { uid: string }) => {
       </IconButton>
     </Tooltip>
   );
+};
+
+export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
+  const ToggleEntitySeenComponent = ({
+    uid,
+    entity,
+  }: {
+    uid: string;
+    entity?: EntityResult;
+  }) => {
+    const { isLoggedIn } = useLoginState();
+    const { name: pollName, options } = useCurrentPoll();
+    const [disabled, setDisabled] = useState(false);
+
+    if (!isLoggedIn || !entity || !('individual_rating' in entity)) {
+      return null;
+    }
+
+    const currentSeenStatus = entity.individual_rating?.entity_seen || false;
+
+    const handleUpdateEntitySeen = async () => {
+      setDisabled(true);
+      let success = false;
+
+      try {
+        await UsersService.usersMeContributorRatingsPartialUpdate({
+          pollName,
+          uid,
+          requestBody: {
+            entity_seen: !currentSeenStatus,
+          },
+        });
+
+        success = true;
+      } catch (error) {
+        // TODO: handle unknown error
+        if (error instanceof ApiError) {
+          if (error.status === 404) {
+            // TODO: show error snackbar in case of error
+            await UsersService.usersMeContributorRatingsCreate({
+              pollName,
+              requestBody: {
+                uid: uid,
+                entity_seen: !currentSeenStatus,
+                is_public: options?.comparisonsCanBePublic === true,
+              },
+            });
+
+            success = true;
+          }
+        }
+      } finally {
+        if (success && asyncCallback) {
+          // TODO: handle error
+          await asyncCallback();
+        }
+
+        setDisabled(false);
+      }
+    };
+
+    return (
+      <IconButton
+        size="medium"
+        color="secondary"
+        onClick={handleUpdateEntitySeen}
+        disabled={disabled}
+      >
+        {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
+      </IconButton>
+    );
+  };
+
+  return ToggleEntitySeenComponent;
 };
 
 export const AddToRateLaterList = ({ uid }: { uid: string }) => {
