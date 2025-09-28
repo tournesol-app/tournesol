@@ -235,9 +235,9 @@ const ManifestoPage = () => {
                 L’Europe s’est dotée de plusieurs lois visant à encadrer les
                 plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont
                 largement inappliquées
-                <sup id="ref6">
+                {/* <sup id="ref6">
                   <a href="#note6">[6]</a>
-                </sup>
+                </sup> */}
                 .
               </Trans>
             </p>
@@ -672,12 +672,12 @@ const ManifestoPage = () => {
                     </Trans>
                   </td>
                 </tr>
-                <tr>
+                {/* <tr>
                   <td id="note6">
                     <a href="#ref6">[6]</a>
                   </td>
                   <td></td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </ManifestoSection>
