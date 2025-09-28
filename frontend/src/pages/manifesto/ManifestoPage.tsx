@@ -86,8 +86,7 @@ const ManifestoSection = ({
 };
 
 const ManifestoPage = () => {
-  // Draft is available in french only: force french lang for all users in this section
-  const { t } = useTranslation(undefined, { lng: 'fr' });
+  const { t } = useTranslation();
   const theme = useTheme();
   useScrollToLocation();
 

@@ -1013,87 +1013,87 @@
     "resetPasswordButton": "Reset password"
   },
   "manifesto": {
-    "header": "",
-    "title": "",
-    "intro": "",
+    "header": "Manifesto",
+    "title": "Tournesol: why? how?",
+    "intro": "Today, the content we consume on major platforms is chosen by mechanisms called 'recommendation algorithms' or 'recommendation AIs'.",
     "part1": {
-      "title": "",
-      "democracyDepends": "Notre fonctionnement démocratique dépend d’échanges d’informations qui ont désormais souvent lieu sur des plateformes numériques, et sont par conséquent organisés par ces IA de recommandation. Or, de nombreuses études scientifiques montrent que ces IA de recommandation nuisent à l’intérêt général : <2>dégradation sans précédent de la santé mentale</2> chez les jeunes<5><0>[1]</0></5>, <7>polarisation</7> du discours public<9><0>[2]</0></9>, <11>manipulation d’élections</11><12><0>[3]</0></12>, désinformation<14><0>[4]</0></14>, contribution à des <16>génocides</16><17><0>[5]</0></17>.",
-      "toOrganizeInformationFlow": "Pour organiser la circulation des informations, les géants du numérique utilisent ces IA de recommandation, qui fonctionnent selon des critères opaques, servent uniquement leurs intérêts économiques ou idéologiques, ne sont soumises à quasi aucune régulation et donc aucun contrôle démocratique.",
-      "againstPublicInterest": "En somme, les IA de recommandation actuelles favorisent largement des intérêts privés au détriment de l’intérêt général."
+      "title": "Recommendation AIs weaken our democracies",
+      "democracyDepends": "Our democratic functioning depends on information exchanges that now often take place on digital platforms, and are therefore organized by these recommendation AIs. However, numerous scientific studies show that these recommendation AIs harm the public interest: <2>unprecedented degradation of mental health</2> among young people<5><0>[1]</0></5>, <7>polarization</7> of public discourse<9><0>[2]</0></9>, <11>election manipulation</11><12><0>[3]</0></12>, disinformation<14><0>[4]</0></14>, contribution to <16>genocides</16><17><0>[5]</0></17>.",
+      "toOrganizeInformationFlow": "To organize the flow of information, digital giants use these recommendation AIs, which operate according to opaque criteria, serve only their economic or ideological interests, are subject to virtually no regulation and therefore no democratic control.",
+      "againstPublicInterest": "In short, current recommendation AIs largely favor private interests at the expense of the public interest."
     },
     "part2": {
-      "title": "",
-      "forRegulation": "Nous défendons l’idée de réguler ces espaces numériques et leurs IA de recommandation, à l’instar d’autres industries à haut risque (aviation, pharmaceutique ou agro-alimentaire).",
-      "existingLawsNotEnforced": "Nous demandons que <2>les lois existantes soient effectivement appliquées</2>, et que le numérique cesse d’être un espace de non-droit. L’Europe s’est dotée de plusieurs lois visant à encadrer les plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont largement inappliquées<4><0>[6]</0></4>.",
-      "existingLawsInsufficient": "Plus encore, nous pensons que <2>ces lois sont insuffisantes</2>. Nous proposons d’introduire dans le corpus législatif de nouveaux principes, tels que:",
+      "title": "Recommendation AIs must be truly regulated",
+      "forRegulation": "We advocate regulating these digital spaces and their recommendation AIs, like other high-risk industries (aviation, pharmaceutical, or agri-food).",
+      "existingLawsNotEnforced": "We demand that <2>existing laws be effectively enforced</2>, and that digital spaces cease to be lawless zones. Europe has established several laws and regulations aimed at regulating digital platforms (AI Act, DSA, DMA, GDPR); they are largely unenforced.",
+      "existingLawsInsufficient": "Moreover, we believe that <2>these laws are insufficient</2>. We propose introducing new principles into the legislative corpus, such as:",
       "propositions": {
         "authorization": {
-          "main": "",
-          "detail": ""
+          "main": "marketing authorization for any new recommendation AI",
+          "detail": "Like aerospace or medical industries, recommendation AIs should not be deployed at large scale without prior proof that they will not generate dramatic consequences (cyber-harassment, opinion polarization, false information amplification, etc.)."
         },
         "nonRecommendability": {
-          "main": "",
-          "detail": ""
+          "main": "the principle of non-massive recommendability of content",
+          "detail": "By default, content should not be able to be recommended to millions of users without a specific prior verification process."
         },
         "configurationRight": {
-          "main": "",
-          "detail": ""
+          "main": "the right to configuration",
+          "detail": "Each individual should be able to freely and simply configure the criteria taken into account by the recommendation AIs of the sites/platforms they use, as well as the personal data recorded by them."
         }
       }
     },
     "part3": {
-      "title": "",
-      "buildDemocraticDigitalSpace": "Concrètement, nous pensons que pour que nos espaces numériques soient alignés avec nos standards démocratiques et participent au bon fonctionnement de nos sociétés, il faudrait que leur mécanisme soit à minima,",
+      "title": "We must build a more democratic digital space",
+      "buildDemocraticDigitalSpace": "Concretely, we believe that for our digital spaces to be aligned with our democratic standards and participate in the proper functioning of our societies, their mechanisms should be at minimum:",
       "requirements": {
         "transparent": {
-          "title": "",
-          "detail": ""
+          "title": "transparent",
+          "detail": "That recommendation AIs and digital spaces in general be open, verifiable and understandable by the greatest number."
         },
         "robust": {
-          "title": "",
-          "detail": ""
+          "title": "resistant to attacks",
+          "detail": "That platforms and their recommendation AIs be secured to avoid malicious attacks from billions of fake accounts."
         },
         "wellTought": {
-          "title": "",
-          "detail": ""
+          "title": "based on thoughtful opinions",
+          "detail": "That future recommendations reflect users' thoughtful desires rather than their impulsive reactions (clicks, swipes, ...)."
         },
         "commonInformation": {
-          "title": "",
-          "detail": ""
+          "title": "favorable to the emergence of a common information base",
+          "detail": "That members of these digital spaces can share a common information base (historical facts, scientific knowledge, cultural achievements, ...), rather than risk being locked in hyper-personalized bubbles."
         }
       }
     },
     "conclusion": {
-      "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, les contenus recommandés massivement sur les réseaux sociaux devraient refléter les intérêts et les opinions de la parole citoyenne",
-      "itIsPossible": "Cela est tout à fait possible, à condition de développer des IA de recommandation fondées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.",
-      "title": "",
-      "tournesolProject": "Le projet Tournesol.app développe une IA de recommandation alternative de ce type, qui s'appuient sur vos jugements et vos intérêts. Venez essayer la plateforme : <2>https://tournesol.app/</2> !",
-      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste."
+      "digitalPlatforms": "The operating mode of digital platforms, itself, must facilitate the democratic expression. In this sense, content massively recommended on social networks should reflect the interests and opinions of citizen voice.",
+      "itIsPossible": "This is quite possible, provided we develop recommendation AIs based on citizens' thoughtful judgments, and not on the interests of digital giants.",
+      "title": "The Tournesol project",
+      "tournesolProject": "The Tournesol project develops alternative and more democratic recommendation AIs, which rely on your judgments and your interests. Come try the platform on <2>tournesol.app</2>!",
+      "tournesolAssociation": "Beyond that, the Tournesol association brings together volunteer citizens, researchers, content creators, developers. Its purpose is to defend the three principles proposed in this manifesto."
     },
     "cta": {
-      "title": "",
-      "1minute": "",
-      "followLinkedin": "Nous suivre sur <2>Linkedin</2> et liker nos meilleures publications pour entrainer l’algorithme et avoir une chance de voir nos prochaines publications.",
-      "2minutes": "",
-      "intallExtensionAndApp": "Installer <2>l’extension</2> et <6>l’application</6> pour bénéficier des super recommandations démocratiques de la communauté.",
-      "5minutes": "",
-      "createAccount": "<0>Créer un compte</0> sur la plateforme et faire au moins une comparaison afin de t’exprimer sur les vidéos qu’il faudrait largement recommander.",
-      "regularly": "",
-      "regularlyYouCan": "",
-      "getInvolved": "Te présenter <2>par mail</2> ou sur le <6>channel Discord dédié (#intros)</6>: communication, recherche, demande de financement ou stratégie de développement, on a toujours besoin de personnes motivées.",
-      "attendPresentation": "Venir à une présentation de Tournesol, organisée une fois tous les deux mois, inscription <2>par mail</2>.",
-      "evenMore": "",
-      "linkToActions": "C’est par là: <2>tournesol.app/actions</2>"
+      "title": "This manifesto speaks to you and you want to help us?",
+      "1minute": "In less than 1 minute",
+      "followLinkedin": "Follow us on <2>LinkedIn</2> and like our best publications to train the algorithm and have a chance to see our upcoming posts.",
+      "2minutes": "In less than 2 minutes",
+      "intallExtensionAndApp": "Install <2>the extension</2> and <6>the app</6> to benefit from the community's democratic super recommendations.",
+      "5minutes": "In less than 5 minutes",
+      "createAccount": "<0>Create an account</0> on the platform and make at least one comparison to express yourself on the videos that should be widely recommended.",
+      "regularly": "Do you want to contribute time more regularly?",
+      "regularlyYouCan": "Great! You can:",
+      "getInvolved": "Introduce yourself <2>by email</2> or on the <6>dedicated Discord channel (#intros)</6>: communication, research, funding requests or development strategy, we always need motivated people.",
+      "attendPresentation": "Attend a Tournesol presentation, organized once every two months. Registration <2>by email</2>.",
+      "evenMore": "Do you want to dive deeper into the topic?",
+      "linkToActions": "Find out more on <2>tournesol.app/actions</2>"
     },
-    "toGoFurther": "",
+    "toGoFurther": "To go further",
     "notes": {
-      "title": "",
-      "facebookFilesMentalHealth": "D’après les Facebook Files, une étude interne à Facebook/Méta montre qu’Instagram contribue à dégrader la santé mentale des adolescentes [<1>Facebook Knows Instagram Is Toxic for Teen Girls...</1>, <4>The Dangerous Experiment on Teen Girls</4>]. Aux États-Unis, 57% des adolescentes confient éprouver une tristesse persistante ou du désespoir, contre 36% en 2011, et 30% révèlent avoir déjà songé à se suicider, contre 19% en 2011 [<6>CDC Report, pp. 57, 61</6>]. Les tendances sont similaires à travers le monde [<8>International Mental Illness (1/2)</8>;<10>International Mental Illness (2/2)</10>]. D’après des psychologues, l’hypothèse de l’accès constant aux réseaux sociaux explique le mieux cette crise de la santé mentale [<12>13 explanations of mental health crisis</12>].",
-      "facebookFilesPoliticians": "Les Facebook Files révèlent l’influence des IA de recommandation de Facebook sur les politiciens en 2017. Des politiciens européens ont notamment écrit à Facebook, en insistant sur le fait que les IA favorisaient alors beaucoup plus radicalement les discours clivants, ce qui contraignaient ces politiciens à être plus haineux pour survivre politiquement.",
-      "elections": "Plusieurs études rapportent des manipulations de processus électoraux en Roumanie en 2024 sur TikTok, qui ont conduit à l’annulation et au report de l’élection présidentielle [<1>Bader and Szabo 2025</1>; <4>Seceleanu and Garabet 2025</4>; <7>Harward 2024</7>]. Ces cas d’ingérence étrangère font écho à de nombreuses autres sur le même sujet, comme dans le cas de Cambridge Analytica en 2015 et 2016.",
-      "amplification": "La sur-optimisation de l’engagement a des implications très dangereuses sur l’amplification de la polarisation affective et la désinformation [Twitter and Tear Gas 2017, The Hype Machine 2021, Toxic Data 2022].",
-      "genocides": "L’Organisation des Nations Unies et Amnesty International accusent Facebook d’avoir sciemment contribué à des génocides, en particulier au génocide des Rohingyas en Birmanie, en promouvant des discours de haine contre les minorités [<1>Amnesty International #1</1>, <4>Amnesty International #2</4>]."
+      "title": "Notes",
+      "facebookFilesMentalHealth": "According to the Facebook Files, an internal Facebook/Meta study shows that Instagram contributes to degrading teenage girls' mental health [<1>Facebook Knows Instagram Is Toxic for Teen Girls...</1>, <4>The Dangerous Experiment on Teen Girls</4>]. In the United States, 57% of teenage girls report experiencing persistent sadness or despair, compared to 36% in 2011, and 30% reveal they have considered suicide, compared to 19% in 2011 [<6>CDC Report, pp. 57, 61</6>]. Trends are similar around the world [<8>International Mental Illness (1/2)</8>;<10>International Mental Illness (2/2)</10>]. According to psychologists, the hypothesis of constant access to social networks best explains this mental health crisis [<12>13 explanations of mental health crisis</12>].",
+      "facebookFilesPoliticians": "The Facebook Files reveal the influence of Facebook's recommendation AIs on politicians in 2017. European politicians notably wrote to Facebook, emphasizing that the AIs then much more radically favored divisive discourse, which forced these politicians to be more hateful to survive politically.",
+      "elections": "Several studies report electoral process manipulations in Romania in 2024 on TikTok, which led to the cancellation and postponement of the presidential election [<1>Bader and Szabo 2025</1>; <4>Seceleanu and Garabet 2025</4>; <7>Harward 2024</7>]. These cases of foreign interference echo many others on the same subject, as in the case of Cambridge Analytica in 2015 and 2016.",
+      "amplification": "Over-optimization of engagement has very dangerous implications for amplifying affective polarization and disinformation [Twitter and Tear Gas 2017, The Hype Machine 2021, Toxic Data 2022].",
+      "genocides": "The United Nations and Amnesty International accuse Facebook of knowingly contributing to genocides, particularly the genocide of Rohingyas in Burma, by promoting hate speech against minorities [<1>Amnesty International #1</1>, <4>Amnesty International #2</4>]."
     }
   },
   "proofByKeyword": {
