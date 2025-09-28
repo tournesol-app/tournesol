@@ -61,7 +61,10 @@ const ManifestoSection = ({
         variant="h4"
         id={headerId}
         data-number={number}
-        sx={{ userSelect: 'auto' }}
+        sx={(t) => ({
+          userSelect: 'auto',
+          '&:hover': { bgcolor: t.palette.action.hover },
+        })}
       >
         {header}
         <IconButton
@@ -75,7 +78,7 @@ const ManifestoSection = ({
         </IconButton>
       </ButtonBase>
 
-      <Collapse in={!collapsed} timeout={150} ref={contentRef}>
+      <Collapse in={!collapsed} timeout={200} ref={contentRef}>
         {children}
       </Collapse>
     </>
