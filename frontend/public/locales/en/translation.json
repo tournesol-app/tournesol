@@ -1019,7 +1019,7 @@
     "part1": {
       "title": "Recommendation AIs weaken our democracies",
       "democracyDepends": "Our democratic functioning depends on information exchanges that now often take place on digital platforms, and are therefore organized by these recommendation AIs. However, numerous scientific studies show that these recommendation AIs harm the public interest: <2>unprecedented degradation of mental health</2> among young people<5><0>[1]</0></5>, <7>polarization</7> of public discourse<9><0>[2]</0></9>, <11>election manipulation</11><12><0>[3]</0></12>, disinformation<14><0>[4]</0></14>, contribution to <16>genocides</16><17><0>[5]</0></17>.",
-      "toOrganizeInformationFlow": "To organize the flow of information, digital giants use these recommendation AIs, which operate according to opaque criteria, serve only their economic or ideological interests, are subject to virtually no regulation and therefore no democratic control.",
+      "toOrganizeInformationFlow": "Digital giants use these recommendation AIs to organize the flow of information. They operate according to opaque criteria, serve only their economic or ideological interests, are subject to virtually no regulation and therefore no democratic control.",
       "againstPublicInterest": "In short, current recommendation AIs largely favor private interests at the expense of the public interest."
     },
     "part2": {

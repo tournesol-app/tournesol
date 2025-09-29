@@ -1028,7 +1028,7 @@
     "part1": {
       "title": "Les IA de recommandation fragilisent nos démocraties",
       "democracyDepends": "Notre fonctionnement démocratique dépend d’échanges d’informations qui ont désormais souvent lieu sur des plateformes numériques, et sont par conséquent organisés par ces IA de recommandation. Or, de nombreuses études scientifiques montrent que ces IA de recommandation nuisent à l’intérêt général : <2>dégradation sans précédent de la santé mentale</2> chez les jeunes<5><0>[1]</0></5>, <7>polarisation</7> du discours public<9><0>[2]</0></9>, <11>manipulation d’élections</11><12><0>[3]</0></12>, désinformation<14><0>[4]</0></14>, contribution à des <16>génocides</16><17><0>[5]</0></17>.",
-      "toOrganizeInformationFlow": "Pour organiser la circulation des informations, les géants du numérique utilisent ces IA de recommandation, qui fonctionnent selon des critères opaques, servent uniquement leurs intérêts économiques ou idéologiques, ne sont soumises à quasi aucune régulation et donc aucun contrôle démocratique.",
+      "toOrganizeInformationFlow": "Les géants du numérique utilisent ces IA de recommandation pour organiser la circulation des informations. Elles fonctionnent selon des critères opaques, servent uniquement leurs intérêts économiques ou idéologiques, ne sont soumises à quasi aucune régulation et donc aucun contrôle démocratique.",
       "againstPublicInterest": "En somme, les IA de recommandation actuelles favorisent largement des intérêts privés au détriment de l’intérêt général."
     },
     "part2": {
@@ -1039,7 +1039,7 @@
       "propositions": {
         "authorization": {
           "main": "l’autorisation de mise sur le marché de toute nouvelle IA de recommandation",
-          "detail": "À l’instar des industries aéronautiques ou médicales, une IA de recommendation ne doit pas être déployée à large échelle sans qu'il ait été prouvé auparavant qu’elle n’engendrera pas de conséquences dramatiques (cyber-harcèlement, polarisation des opinions, amplification de fausses informations, etc)."
+          "detail": "À l’instar des industries aéronautiques ou médicales, une IA de recommandation ne doit pas être déployée à large échelle sans qu'il ait été prouvé auparavant qu’elle n’engendrera pas de conséquences dramatiques (cyber-harcèlement, polarisation des opinions, amplification de fausses informations, etc)."
         },
         "nonRecommendability": {
           "main": "le principe de non-recommandabilité massive des contenus",
@@ -1064,8 +1064,8 @@
           "detail": "Que les plateformes et leurs IA de recommandation soient sécurisées pour éviter les attaques malveillantes des milliards de faux comptes."
         },
         "wellTought": {
-          "title": "basé sur des avis réflechis",
-          "detail": "Que les futures recommandations refletent les envies réfléchies des utilisateurs plutôt que leurs réactions impulsives (clic, swipe,...)."
+          "title": "basé sur des avis réfléchis",
+          "detail": "Que les futures recommandations reflètent les envies réfléchies des utilisateurs plutôt que leurs réactions impulsives (clic, swipe,...)."
         },
         "commonInformation": {
           "title": "favorable à l’émergence d’un socle informationnel commun",
@@ -1074,7 +1074,7 @@
       }
     },
     "conclusion": {
-      "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, les contenus recommandés massivement sur les réseaux sociaux devraient refléter les intérêts et les opinions de la parole citoyenne.",
+      "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, celle-ci doit voir ses intérêts et ses opinions représentés par les contenus recommandés massivement sur les réseaux sociaux.",
       "itIsPossible": "Cela est tout à fait possible, à condition de développer des IA de recommandation fondées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.",
       "title": "Le projet Tournesol",
       "tournesolProject": "Le projet Tournesol développe une IA de recommandation alternative et plus démocratique, qui s'appuie sur vos jugements et vos intérêts. Venez essayer la plateforme sur <2>tournesol.app</2> !",
@@ -1083,7 +1083,7 @@
     "cta": {
       "title": "Ce manifeste te parle et tu as envie de nous aider ?",
       "1minute": "En moins de 1 minute",
-      "followLinkedin": "Nous suivre sur <2>Linkedin</2> et liker nos meilleures publications pour entrainer l’algorithme et avoir une chance de voir nos prochaines publications.",
+      "followLinkedin": "Nous suivre sur <2>Linkedin</2> et liker nos meilleures publications pour entraîner l’algorithme et avoir une chance de voir nos prochaines publications.",
       "2minutes": "En moins de 2 minutes",
       "intallExtensionAndApp": "Installer <2>l’extension</2> et <6>l’application</6> pour bénéficier des super recommandations démocratiques de la communauté.",
       "5minutes": "En moins de 5 minutes",
