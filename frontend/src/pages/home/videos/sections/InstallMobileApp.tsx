@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 
 import SectionTitle from './SectionTitle';
+import { googlePlayStoreMobileAppUrl } from 'src/utils/url';
 
 interface UseOurExtensionProps {
   titleColor?: string;
@@ -11,8 +12,6 @@ interface UseOurExtensionProps {
 
 const InstallMobileApp = ({ titleColor }: UseOurExtensionProps) => {
   const { t } = useTranslation();
-  const googlePlayStoreMobileAppUrl =
-    'https://play.google.com/store/apps/details?id=app.tournesol.twa';
 
   return (
     <Box>
