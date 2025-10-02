@@ -347,7 +347,8 @@
   "joinUsButton": "S'inscrire",
   "personalMenu": {
     "yourRecommendations": "Mes recommandations",
-    "vouching": "Me porter garant"
+    "vouching": "Me porter garant",
+    "myActivityStats": "Mes statistiques"
   },
   "logoutButton": "Se déconnecter",
   "pwaBanner": {
@@ -1108,6 +1109,13 @@
   "proofByKeyword": {
     "proofByKeyword": "Preuve par mot-clé",
     "proofFor": "Preuve pour :"
+  },
+  "userActivityStats": {
+    "comparisons": {
+      "title": "Comparaisons",
+      "theLast30Days": "<0>{{value1}}</0> les 30 derniers jours",
+      "total": "<0>{{value2}}</0> au total"
+    }
   },
   "myFeedbackPage": {
     "title": "Mes résultats",
