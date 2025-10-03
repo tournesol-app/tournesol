@@ -41,3 +41,11 @@ export const alreadyComparedWith = (
 
   return alreadyCompared;
 };
+
+export const getEntitySeen = (entity: EntityResult): boolean => {
+  return (
+    'individual_rating' in entity &&
+    entity.individual_rating != null &&
+    entity.individual_rating.entity_seen
+  );
+};
