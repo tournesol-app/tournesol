@@ -42,7 +42,11 @@ import EntityMetadata, {
   VideoMetadata,
 } from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
-import { entityCardMainSx } from './style';
+import {
+  entityCardEntitySeenSx,
+  entityCardMainSx,
+  rowEntityCardEntitySeenSx,
+} from './style';
 
 export interface EntityCardProps {
   result: EntityResult;
@@ -115,20 +119,13 @@ const EntityCard = ({
   };
 
   const entitySeen = showEntitySeenIndicator && getEntitySeen(result);
+  let entitySx = { ...entityCardMainSx };
+  if (entitySeen) {
+    entitySx = { ...entitySx, ...entityCardEntitySeenSx };
+  }
 
   return (
-    <Grid2
-      container
-      sx={
-        entitySeen
-          ? {
-              ...entityCardMainSx,
-              borderBottom: '4px solid #b1e2b3',
-            }
-          : entityCardMainSx
-      }
-      direction={compact ? 'column' : 'row'}
-    >
+    <Grid2 container sx={entitySx} direction={compact ? 'column' : 'row'}>
       {!isAvailable && (
         <Grid2
           container
@@ -298,9 +295,7 @@ export const RowEntityCard = ({
 
   let extraSx = {};
   if (entitySeen) {
-    extraSx = {
-      borderRight: '8px solid #b1e2b3',
-    };
+    extraSx = { ...rowEntityCardEntitySeenSx };
   }
 
   return (
