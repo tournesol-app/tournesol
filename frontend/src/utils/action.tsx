@@ -13,6 +13,7 @@ import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { addToRateLaterList } from './api/rateLaters';
 import { getEntitySeen } from './entity';
 import { EntityResult } from './types';
+import { YOUTUBE_POLL_NAME } from './constants';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
   const { t } = useTranslation();
@@ -58,6 +59,25 @@ export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
     }
 
     const currentSeenStatus = getEntitySeen(entity);
+
+    let toolTip: string;
+
+    switch (pollName) {
+      case YOUTUBE_POLL_NAME:
+        if (currentSeenStatus) {
+          toolTip = t('actions.markVideoAsUnseen');
+        } else {
+          toolTip = t('actions.markVideoAsSeen');
+        }
+
+        break;
+      default:
+        if (currentSeenStatus) {
+          toolTip = t('actions.markAsUnseen');
+        } else {
+          toolTip = t('actions.markAsSeen');
+        }
+    }
 
     const handleUpdateEntitySeen = async () => {
       setDisabled(true);
@@ -114,14 +134,16 @@ export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
     };
 
     return (
-      <IconButton
-        size="medium"
-        color="secondary"
-        onClick={handleUpdateEntitySeen}
-        disabled={disabled}
-      >
-        {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
-      </IconButton>
+      <Tooltip title={toolTip} placement="left">
+        <IconButton
+          size="medium"
+          color="secondary"
+          onClick={handleUpdateEntitySeen}
+          disabled={disabled}
+        >
+          {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </IconButton>
+      </Tooltip>
     );
   };
 
