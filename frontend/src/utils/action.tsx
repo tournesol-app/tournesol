@@ -8,10 +8,10 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
 import { ApiError, UsersService } from 'src/services/openapi';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { addToRateLaterList } from './api/rateLaters';
+import { getEntitySeen } from './entity';
 import { EntityResult } from './types';
 
 export const CompareNowAction = ({ uid }: { uid: string }) => {
@@ -48,13 +48,16 @@ export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
   }) => {
     const { isLoggedIn } = useLoginState();
     const { name: pollName, options } = useCurrentPoll();
+    const { contactAdministrator } = useNotifications();
+    const { t } = useTranslation();
+
     const [disabled, setDisabled] = useState(false);
 
     if (!isLoggedIn || !entity || !('individual_rating' in entity)) {
       return null;
     }
 
-    const currentSeenStatus = entity.individual_rating?.entity_seen || false;
+    const currentSeenStatus = getEntitySeen(entity);
 
     const handleUpdateEntitySeen = async () => {
       setDisabled(true);
@@ -71,26 +74,39 @@ export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
 
         success = true;
       } catch (error) {
-        // TODO: handle unknown error
+        // Create the contributor rating if it doesn't exist.
         if (error instanceof ApiError) {
           if (error.status === 404) {
-            // TODO: show error snackbar in case of error
-            await UsersService.usersMeContributorRatingsCreate({
-              pollName,
-              requestBody: {
-                uid: uid,
-                entity_seen: !currentSeenStatus,
-                is_public: options?.comparisonsCanBePublic === true,
-              },
-            });
+            try {
+              await UsersService.usersMeContributorRatingsCreate({
+                pollName,
+                requestBody: {
+                  uid: uid,
+                  entity_seen: !currentSeenStatus,
+                  is_public: options?.comparisonsCanBePublic === true,
+                },
+              });
+            } catch (error) {
+              contactAdministrator('error');
+            }
 
             success = true;
           }
+        } else {
+          console.error(error);
+          contactAdministrator('error');
         }
       } finally {
         if (success && asyncCallback) {
-          // TODO: handle error
-          await asyncCallback();
+          try {
+            await asyncCallback();
+          } catch (error) {
+            console.error(error);
+            contactAdministrator(
+              'warning',
+              t('actions.toggleEntitySeenSuccessCbError')
+            );
+          }
         }
 
         setDisabled(false);

@@ -1205,6 +1205,7 @@
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
     "compareNow": "Comparer !",
+    "toggleEntitySeenSuccessCbError": "L'opération a réussi mais une erreur secondaire a été détectée.",
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
     "analysis": "Analyse détaillée"
