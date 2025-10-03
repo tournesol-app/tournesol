@@ -32,7 +32,7 @@ import {
 } from 'src/utils/types';
 import EntityCardContextAlert from 'src/features/entity_context/EntityCardContextAlert';
 import { RatingControl } from 'src/features/ratings/RatingControl';
-
+import { getEntitySeen } from 'src/utils/entity';
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
 import EntityContextChip from './EntityContextChip';
@@ -114,10 +114,7 @@ const EntityCard = ({
     setContentDisplayed(!contentDisplayed);
   };
 
-  const entitySeen =
-    showEntitySeenIndicator &&
-    'individual_rating' in result &&
-    result.individual_rating?.entity_seen;
+  const entitySeen = showEntitySeenIndicator && getEntitySeen(result);
 
   return (
     <Grid2
@@ -297,9 +294,7 @@ export const RowEntityCard = ({
   metadataVariant?: EntityMetadataVariant;
 }) => {
   const entity = result.entity;
-
-  const entitySeen =
-    'individual_rating' in result && result.individual_rating?.entity_seen;
+  const entitySeen = getEntitySeen(result);
 
   let extraSx = {};
   if (entitySeen) {
