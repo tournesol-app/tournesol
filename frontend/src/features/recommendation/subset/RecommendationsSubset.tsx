@@ -71,7 +71,7 @@ const RecommendationsSubset = ({
       {displayControls && (
         <Box
           sx={{
-            mb: 2,
+            mb: 1,
           }}
         >
           <RecommendationsSubsetControls
@@ -86,7 +86,7 @@ const RecommendationsSubset = ({
             sx={{
               textAlign: 'center',
               color: '#fff',
-              marginBottom: 2,
+              my: 4,
             }}
           >
             {t('recommendationsSubset.noRecommendationHasBeenFound')}
