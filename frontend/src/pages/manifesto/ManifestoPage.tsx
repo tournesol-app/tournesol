@@ -9,8 +9,8 @@ import {
   Collapse,
   IconButton,
   ButtonBase,
-  Divider,
 } from '@mui/material';
+import { ArrowCircleRightRounded } from '@mui/icons-material';
 
 import { ContentBox, ContentHeader } from 'src/components';
 import { useScrollToLocation } from 'src/hooks';
@@ -365,9 +365,27 @@ const ManifestoPage = () => {
             </p>
           </ManifestoSection>
 
-          <Alert severity="info" icon={false} sx={{ mt: 3 }}>
-            <AlertTitle sx={{ fontSize: '140%' }}>
-              {t('manifesto.conclusion.title')}
+          <Alert
+            icon={false}
+            sx={{
+              mt: 3,
+              bgcolor: (t) => t.palette.background.emphatic,
+              color: 'white',
+              '& a': {
+                color: 'white',
+              },
+            }}
+          >
+            <AlertTitle
+              sx={{
+                fontSize: '140%',
+                alignItems: 'center',
+                display: 'flex',
+                columnGap: 1,
+              }}
+            >
+              <ArrowCircleRightRounded sx={{ fontSize: '200%' }} />
+              <span>{t('manifesto.conclusion.title')}</span>
             </AlertTitle>
 
             <p>
@@ -394,10 +412,12 @@ const ManifestoPage = () => {
                 manifeste.
               </Trans>
             </p>
+          </Alert>
 
-            <Divider sx={{ my: 2 }} />
-
-            <AlertTitle>{t('manifesto.cta.title')}</AlertTitle>
+          <Alert severity="info" icon={false} sx={{ my: 3 }}>
+            <AlertTitle sx={{ fontSize: '140%' }}>
+              {t('manifesto.cta.title')}
+            </AlertTitle>
             <ul>
               <li>
                 <b>{t('manifesto.cta.1minute')}</b>
