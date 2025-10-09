@@ -7,7 +7,7 @@ import { Box, Button, Typography } from '@mui/material';
 import RecommendationsSubset from 'src/features/recommendation/subset/RecommendationsSubset';
 
 import TitleSection from 'src/pages/home/TitleSection';
-import { VideoLibrary } from '@mui/icons-material';
+import { CampaignTwoTone, ExpandCircleDown } from '@mui/icons-material';
 
 /**
  * A home page section that displays a subset of recommended entities.
@@ -43,6 +43,21 @@ const RecommendationsSection = () => {
         >
           {t('recommendationsSection.eachComparisonHelps')}
         </Typography>
+
+        <Button
+          startIcon={<CampaignTwoTone />}
+          color="primary"
+          variant="contained"
+          component={Link}
+          to={`/manifesto`}
+          sx={{
+            px: 4,
+            fontSize: '110%',
+            marginBottom: 2,
+          }}
+        >
+          {t('home.readOurManifesto')}
+        </Button>
       </TitleSection>
 
       <Box
@@ -50,8 +65,8 @@ const RecommendationsSection = () => {
           display: 'flex',
           justifyContent: 'center',
           flexDirection: 'column',
-          gap: 2,
-          pb: 4,
+          gap: 1,
+          mb: 4,
         }}
       >
         <RecommendationsSubset
@@ -67,10 +82,11 @@ const RecommendationsSection = () => {
         >
           <Button
             fullWidth
-            startIcon={<VideoLibrary />}
-            variant="contained"
+            color="secondary"
+            startIcon={<ExpandCircleDown />}
             component={Link}
             to={`/search?date=${seeMoreDate}&language=${currentLang}`}
+            sx={(t) => ({ bgcolor: t.palette.background.paper })}
           >
             {t('recommendationsSection.seeMore')}
           </Button>

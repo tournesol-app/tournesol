@@ -25,7 +25,7 @@ const TitleSection = ({ title, children }: Props) => {
           },
           [theme.breakpoints.down('md')]: {
             maxHeight: '200px',
-            py: '20px',
+            paddingTop: '20px',
           },
           px: '40px',
           '& img': {
@@ -46,7 +46,8 @@ const TitleSection = ({ title, children }: Props) => {
         xs={12}
         md={8}
         sx={{
-          p: 2,
+          py: 2,
+          px: { md: 2 },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -63,7 +64,7 @@ const TitleSection = ({ title, children }: Props) => {
               maxWidth: '100%',
             },
             float: 'right',
-            marginBottom: '24px',
+            marginBottom: 2,
           }}
         >
           {title}
