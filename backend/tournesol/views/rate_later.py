@@ -8,6 +8,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from tournesol.models import Entity, RateLater
+from tournesol.models.ratings import ContributorRating
 from tournesol.serializers.rate_later import RateLaterSerializer
 from tournesol.utils.constants import RATE_LATER_BULK_MAX_SIZE
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -93,6 +94,17 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
 
     def perform_create(self, serializer):
         rate_later_instances = serializer.save()
+
+        if self.request.query_params.get("entity_seen", "false") == "true":
+            for rate_later in serializer.validated_data:
+                ContributorRating.objects.update_or_create(
+                    poll_id=self.poll_from_url.id,
+                    user_id=self.request.user.id,
+                    entity_id=rate_later["entity"]["pk"],
+                    defaults={"entity_seen": True},
+                )
+
+        # TOFIX: rate_later_instances seems to always be an empty list
         for rate_later in rate_later_instances:
             self.prefetch_entity(rate_later)
 
