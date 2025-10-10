@@ -9,6 +9,7 @@ from rest_framework.test import APIClient
 from core.tests.factories.user import UserFactory
 from tournesol.models import RateLater
 from tournesol.models.entity_context import EntityContext, EntityContextLocale
+from tournesol.models.ratings import ContributorRating
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
@@ -279,7 +280,8 @@ class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
     """
     TestCase of the `RateLaterBulkCreate` API.
 
-    The `RateLaterBulkCreate` API provides an endpoint to add multiple entities to the rate-later list.
+    The `RateLaterBulkCreate` API provides an endpoint to add multiple
+    entities to the rate-later list.
     """
 
     _other_uid_not_in_db = "yt:n-oujbO9fdQ"
@@ -401,6 +403,38 @@ class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
         self.assertEqual(
             RateLater.objects.filter(poll=self.poll, user=self.user).count(),
             initial_nbr + 1,
+        )
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_auth_201_create_with_param_entity_seen(self) -> None:
+        self.client.force_authenticate(self.user)
+        data = [
+            {"entity": {"uid": self._uid_not_in_db}},
+            {"entity": {"uid": self._other_uid_not_in_db}},
+        ]
+
+        self.assertEqual(
+            ContributorRating.objects.filter(poll=self.poll, user=self.user).count(),
+            0
+        )
+
+        response = self.client.post(
+            self.rate_later_bulk_base_url + "?entity_seen=true", data, format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertDictEqual(
+            response.data[0]["individual_rating"],
+            {"is_public": True, "entity_seen": True, 'n_comparisons': 0}
+        )
+        self.assertDictEqual(
+            response.data[1]["individual_rating"],
+            {"is_public": True, "entity_seen": True, 'n_comparisons': 0}
+        )
+
+        self.assertEqual(
+            ContributorRating.objects.filter(poll=self.poll, user=self.user).count(),
+            2
         )
 
     @override_settings(YOUTUBE_API_KEY=None)

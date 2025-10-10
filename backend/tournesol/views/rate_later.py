@@ -101,7 +101,7 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
                     poll_id=self.poll_from_url.id,
                     user_id=self.request.user.id,
                     entity_id=rate_later["entity"]["pk"],
-                    defaults={"entity_seen": True},
+                    defaults={"entity_seen": True, "is_public": True},  # XXX: do not set is_public to True during update
                 )
 
         # TOFIX: rate_later_instances seems to always be an empty list
