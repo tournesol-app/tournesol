@@ -16,9 +16,9 @@ export const entityCardMainSx: SxProps = {
 };
 
 export const entityCardEntitySeenSx: SxProps = {
-  borderBottom: '4px solid #b1e2b3',
+  borderBottom: '4px solid #73d877',
 };
 
 export const rowEntityCardEntitySeenSx: SxProps = {
-  borderRight: '8px solid #b1e2b3',
+  borderRight: '8px solid #73d877',
 };
