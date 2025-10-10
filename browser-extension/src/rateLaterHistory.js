@@ -2,8 +2,8 @@ const RATE_LATER_BULK_MAX_SIZE = 20;
 
 // These selectors can change regularly on YT, and become obsolete.
 // We need to check their validity from time to time.
-const YT_VIDEO_CARD_TAG = "ytd-item-section-renderer";
-const YT_VIDEO_CARD_LINK = "a.yt-lockup-metadata-view-model__title"
+const YT_VIDEO_CARD_TAG = 'ytd-item-section-renderer';
+const YT_VIDEO_CARD_LINK = 'a.yt-lockup-metadata-view-model__title';
 
 const onYoutubeReady = (callback) => {
   /**
@@ -290,7 +290,7 @@ const forEachVisibleVideoId = (callback) => {
     if (href.startsWith('https://')) {
       videoId = new URL(href).searchParams.get('v');
     } else {
-      videoId = new URLSearchParams(href).get('v');
+      videoId = new URL('https://www.youtube.com' + href).searchParams.get('v');
     }
 
     if (videoId) callback(videoId);
