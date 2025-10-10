@@ -1196,6 +1196,10 @@
     "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
     "rateLater": "Rate later",
     "compareNow": "Compare now",
+    "markVideoAsUnseen": "Mark the video as unwatched.",
+    "markVideoAsSeen": "Mark the video as watched.",
+    "markAsUnseen": "Mask as unseen.",
+    "markAsSeen": "Mark as seen.",
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list.",
     "analysis": "Detailed analysis"

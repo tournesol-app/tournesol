@@ -1206,6 +1206,10 @@
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
     "compareNow": "Comparer !",
+    "markVideoAsUnseen": "Marquer la vidéo comme non vue.",
+    "markVideoAsSeen": "Marquer la vidéo comme vue.",
+    "markAsUnseen": "Marquer comme non vue.",
+    "markAsSeen": "Marquer comme vue.",
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
     "analysis": "Analyse détaillée"

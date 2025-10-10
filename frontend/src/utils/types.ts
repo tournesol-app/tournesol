@@ -23,7 +23,8 @@ export interface JSONObject {
 }
 
 export type ActionList = Array<
-  (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
+  | (({ uid, entity }: { uid: string; entity?: EntityResult }) => JSX.Element)
+  | React.ReactNode
 >;
 
 export type CriteriaValuesType = { [s: string]: number | undefined };

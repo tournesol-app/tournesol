@@ -383,6 +383,7 @@ const EntitySelectorInnerAuth = ({
             <EntityCard
               compact
               result={rating}
+              showEntitySeenIndicator={true}
               showRatingControl={showRatingControl}
               onRatingChange={handleRatingUpdate}
             ></EntityCard>

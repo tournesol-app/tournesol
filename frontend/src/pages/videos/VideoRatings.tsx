@@ -131,7 +131,10 @@ const VideoRatingsPage = () => {
           <EntityList
             entities={ratings.results}
             emptyMessage={<NoRatingMessage hasFilter={hasFilter} />}
-            cardProps={{ showRatingControl: true }}
+            cardProps={{
+              showEntitySeenIndicator: true,
+              showRatingControl: true,
+            }}
             displayContextAlert={true}
           />
         </LoaderWrapper>
