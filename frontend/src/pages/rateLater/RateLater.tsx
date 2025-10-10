@@ -177,11 +177,14 @@ const RateLaterPage = () => {
     loadList();
   }, [loadList]);
 
-  const rateLaterPageActions = [
-    CompareNowAction,
-    RemoveFromRateLater(loadList),
-    ToggleEntitySeen(loadList),
-  ];
+ const rateLaterPageActions = React.useMemo(
+   () => [
+     CompareNowAction,
+     RemoveFromRateLater(loadList),
+     ToggleEntitySeen(loadList),
+   ],
+   [loadList]
+ );
 
   const [where2findVideosOpen, setWhere2findVideosOpen] = useState(false);
 
