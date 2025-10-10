@@ -1199,7 +1199,6 @@
     "markVideoAsSeen": "Mark the video as watched.",
     "markAsUnseen": "Mask as unseen.",
     "markAsSeen": "Mark as seen.",
-    "toggleEntitySeenSuccessCbError": "The operation was successful, but a minor error was detected.",
     "remove": "Remove",
     "videoDeletedFromRateLaterList": "The video has been deleted from your rate later list.",
     "analysis": "Detailed analysis"

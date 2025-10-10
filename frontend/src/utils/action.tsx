@@ -119,15 +119,7 @@ export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
       } finally {
         setDisabled(false);
         if (success && asyncCallback) {
-          try {
-            await asyncCallback();
-          } catch (error) {
-            console.error(error);
-            contactAdministrator(
-              'warning',
-              t('actions.toggleEntitySeenSuccessCbError')
-            );
-          }
+          await asyncCallback();
         }
       }
     };
