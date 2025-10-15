@@ -10,7 +10,13 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { Logout, VideoLibrary, HowToReg, ListAlt, Stars } from '@mui/icons-material';
+import {
+  Logout,
+  VideoLibrary,
+  HowToReg,
+  ListAlt,
+  Stars,
+} from '@mui/icons-material';
 import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 
