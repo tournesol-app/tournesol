@@ -10,7 +10,8 @@ from tournesol.models.entity import TYPE_VIDEO
 
 
 def get_static_index_html() -> str:
-    if settings.DEBUG:
+    index_html_path = settings.FRONTEND_STATIC_FILES_PATH / "index.html"
+    if settings.DEBUG and not index_html_path.is_file():
         timeout = 10.0
         try:
             # Try to get index.html from dev-env frontend container
@@ -19,7 +20,7 @@ def get_static_index_html() -> str:
             resp = requests.get(settings.TOURNESOL_MAIN_URL, timeout=timeout)
         resp.raise_for_status()
         return resp.text
-    return (settings.FRONTEND_STATIC_FILES_PATH / "index.html").read_text()
+    return index_html_path.read_text()
 
 
 def get_default_meta_tags(request: HttpRequest) -> dict[str, str]:
