@@ -57,5 +57,5 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "discord_infra_alert_private_webhook=${DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK:-""}" \
   -e "discord_twitter_webhook=${DISCORD_TWITTER_WEBHOOK:-""}" \
   -e "plausible_analytics_secret_key=$PLAUSIBLE_ANALYTICS_SECRET_KEY" \
-  -e "atproto_password_tournesolbot_fr=$ATPROTO_PASSWORD_BOT_FR" \
-  -e "atproto_password_tournesolbot_en=$ATPROTO_PASSWORD_BOT_EN" \
+  -e "atproto_password_tournesolbot_fr=${ATPROTO_PASSWORD_BOT_FR:-""}" \
+  -e "atproto_password_tournesolbot_en=${ATPROTO_PASSWORD_BOT_EN:-""}" \

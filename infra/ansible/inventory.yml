@@ -22,7 +22,7 @@ all:
           django_database_name: tournesol
           django_database_user: tournesol
           django_email_backend: console
-          django_enable_api_wikidata_migrations: true
+          django_enable_api_wikidata_migrations: false
           django_api_throttle_email: "5/min"
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
