@@ -3,7 +3,12 @@ API endpoint to manipulate contributor's rate later list
 """
 
 from django.db.models import Prefetch, prefetch_related_objects
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
@@ -74,6 +79,13 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
         responses={
             201: RateLaterSerializer(many=True),
         },
+        parameters=[
+            OpenApiParameter(
+                name="entity_seen",
+                description="If true, also mark the entities as seen/watched/read/understood by the user",
+                required=False,
+            ),
+        ],
     ),
 )
 class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
@@ -103,7 +115,8 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
                     entity_id=rate_later["entity"]["pk"],
                     is_public=True,
                     entity_seen=True,
-                ) for rate_later in serializer.validated_data
+                )
+                for rate_later in serializer.validated_data
             ]
 
             # Let's remember that signals won't be triggered by `bulk_create`
@@ -112,7 +125,7 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
                 contributor_ratings,
                 update_conflicts=True,
                 update_fields=["entity_seen"],
-                unique_fields=["poll_id", "user_id", "entity_id"]
+                unique_fields=["poll_id", "user_id", "entity_id"],
             )
 
         # TOFIX: rate_later_instances seems to always be an empty list
