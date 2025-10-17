@@ -431,11 +431,25 @@ class RateLaterBulkCreateTestCase(RateLaterCommonMixinTestCase, TestCase):
             response.data[1]["individual_rating"],
             {"is_public": True, "entity_seen": True, 'n_comparisons': 0}
         )
-
         self.assertEqual(
             ContributorRating.objects.filter(poll=self.poll, user=self.user).count(),
             2
         )
+
+        # To respect the users' choices, a bulk create must not update the
+        # `is_public` value of existing contributor ratings.
+        ContributorRating.objects.update(entity_seen=False, is_public=False)
+        response = self.client.post(
+            self.rate_later_bulk_base_url + "?entity_seen=true", data, format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data, [])
+        c_ratings = ContributorRating.objects.filter(poll=self.poll, user=self.user)
+        self.assertEqual(c_ratings[0].is_public, False)
+        self.assertEqual(c_ratings[1].is_public, False)
+        self.assertEqual(c_ratings[0].entity_seen, True)
+        self.assertEqual(c_ratings[1].entity_seen, True)
 
     @override_settings(YOUTUBE_API_KEY=None)
     def test_create_size_limit(self) -> None:
