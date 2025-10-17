@@ -2119,7 +2119,7 @@ paths:
         name: entity_seen
         schema:
           type: string
-        description: If true, also mark the entities as seen/watched/read/understood
+        description: If "true", also mark the entities as seen/watched/read/understood
           by the user
       tags:
       - users

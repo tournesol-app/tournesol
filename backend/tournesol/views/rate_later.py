@@ -82,7 +82,7 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
         parameters=[
             OpenApiParameter(
                 name="entity_seen",
-                description="If true, also mark the entities as seen/watched/read/understood by the user",
+                description='If "true", also mark the entities as seen/watched/read/understood by the user',
                 required=False,
             ),
         ],
