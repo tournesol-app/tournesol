@@ -96,14 +96,24 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
         rate_later_instances = serializer.save()
 
         if self.request.query_params.get("entity_seen", "false") == "true":
-            for rate_later in serializer.validated_data:
-                ContributorRating.objects.update_or_create(
+            contributor_ratings = [
+                ContributorRating(
                     poll_id=self.poll_from_url.id,
                     user_id=self.request.user.id,
                     entity_id=rate_later["entity"]["pk"],
-                    # XXX: do not set is_public to True during update
-                    defaults={"entity_seen": True, "is_public": True},
-                )
+                    is_public=True,
+                    entity_seen=True,
+                ) for rate_later in serializer.validated_data
+            ]
+
+            # Let's remember that signals won't be triggered by `bulk_create`
+            # and the .save() method of ContributorRating won't be called.
+            ContributorRating.objects.bulk_create(
+                contributor_ratings,
+                update_conflicts=True,
+                update_fields=["entity_seen"],
+                unique_fields=["poll_id", "user_id", "entity_id"]
+            )
 
         # TOFIX: rate_later_instances seems to always be an empty list
         for rate_later in rate_later_instances:
