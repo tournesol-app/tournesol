@@ -106,11 +106,11 @@ export const ToggleEntitySeen = (asyncCallback?: () => Promise<void>) => {
                   is_public: options?.comparisonsCanBePublic === true,
                 },
               });
+
+              success = true;
             } catch (error) {
               contactAdministrator('error');
             }
-
-            success = true;
           }
         } else {
           console.error(error);
