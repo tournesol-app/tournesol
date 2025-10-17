@@ -3,11 +3,17 @@ API endpoint to manipulate contributor's rate later list
 """
 
 from django.db.models import Prefetch, prefetch_related_objects
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from tournesol.models import Entity, RateLater
+from tournesol.models.ratings import ContributorRating
 from tournesol.serializers.rate_later import RateLaterSerializer
 from tournesol.utils.constants import RATE_LATER_BULK_MAX_SIZE
 from tournesol.views.mixins.poll import PollScopedViewMixin
@@ -73,6 +79,14 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
         responses={
             201: RateLaterSerializer(many=True),
         },
+        parameters=[
+            OpenApiParameter(
+                name="entity_seen",
+                description='If "true", also mark the entities as '
+                "seen/watched/read/understood by the user",
+                required=False,
+            ),
+        ],
     ),
 )
 class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
@@ -93,6 +107,29 @@ class RateLaterBulkCreate(RateLaterQuerysetMixin, generics.CreateAPIView):
 
     def perform_create(self, serializer):
         rate_later_instances = serializer.save()
+
+        if self.request.query_params.get("entity_seen", "false") == "true":
+            contributor_ratings = [
+                ContributorRating(
+                    poll_id=self.poll_from_url.id,
+                    user_id=self.request.user.id,
+                    entity_id=rate_later["entity"]["pk"],
+                    is_public=True,
+                    entity_seen=True,
+                )
+                for rate_later in serializer.validated_data
+            ]
+
+            # Let's remember that signals won't be triggered by `bulk_create`
+            # and the .save() method of ContributorRating won't be called.
+            ContributorRating.objects.bulk_create(
+                contributor_ratings,
+                update_conflicts=True,
+                update_fields=["entity_seen"],
+                unique_fields=["poll_id", "user_id", "entity_id"],
+            )
+
+        # TOFIX: rate_later_instances seems to always be an empty list
         for rate_later in rate_later_instances:
             self.prefetch_entity(rate_later)
 
