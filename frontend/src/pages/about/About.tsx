@@ -58,8 +58,8 @@ const CoreTeamCard = ({
   name: string;
   image: string;
   institution: string;
-  role: string;
-  title: string;
+  role?: string;
+  title?: string;
   job: string;
 }) => {
   const classes = useStyles();
@@ -72,10 +72,14 @@ const CoreTeamCard = ({
         style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: '50%' }}
       />
       <Typography variant="h3">{name}</Typography>
-      <Typography>{role}</Typography>
+      <Typography>
+        <strong>{role}</strong>
+      </Typography>
       <Typography>{title}</Typography>
       <Typography>{job}</Typography>
-      <Typography>{institution}</Typography>
+      <Typography>
+        <em>{institution}</em>
+      </Typography>
     </Card>
   );
 };
@@ -320,27 +324,11 @@ const AboutPage = () => {
             }}
           >
             <CoreTeamCard
-              name="Lê Nguyên Hoang"
-              image="/people/Le.jpeg"
-              institution="Calicarpa"
-              role={t('about.rolePresident')}
-              title="Dr. in Mathematics"
-              job="AI Researcher and Communicator"
-            />
-          </Grid2>
-
-          <Grid2
-            className={classes.container}
-            size={{
-              xs: 12,
-              sm: 4,
-            }}
-          >
-            <CoreTeamCard
               name="Louis Faucon"
               image="/people/Louis.jpeg"
               institution="Oracle Labs"
-              role={t('about.roleTreasurer')}
+              // role={t('about.roleTreasurer')}
+              role={t('about.rolePresident')}
               title="Dr. in Computer Science"
               job="Machine Learning Engineer"
             />
@@ -354,12 +342,46 @@ const AboutPage = () => {
             }}
           >
             <CoreTeamCard
+              name="Adrien Matissart"
+              image="/people/Adrien.jpeg"
+              institution="Akselos"
+              // title="Master of Science"
+              role={t('about.roleTreasurer')}
+              job="Senior Software Engineer"
+            />
+          </Grid2>
+
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
+            <CoreTeamCard
               name="Aidan Jungo"
               image="/people/Aidan.jpg"
-              institution="CFF"
+              institution="SBB CFF FFS"
               role={t('about.roleSecretary')}
-              title="Master of Science"
+              // title="Master of Science"
               job="Project Manager"
+            />
+          </Grid2>
+
+          <Grid2
+            className={classes.container}
+            size={{
+              xs: 12,
+              sm: 4,
+            }}
+          >
+            <CoreTeamCard
+              name="Lê Nguyên Hoang"
+              image="/people/Le.jpeg"
+              role="Scientist"
+              institution="Calicarpa"
+              title="Dr. in Mathematics"
+              job="AI Researcher and Communicator"
             />
           </Grid2>
 
@@ -376,23 +398,6 @@ const AboutPage = () => {
               institution=""
               role="Developer"
               title=""
-              job="Senior Software Engineer"
-            />
-          </Grid2>
-
-          <Grid2
-            className={classes.container}
-            size={{
-              xs: 12,
-              sm: 4,
-            }}
-          >
-            <CoreTeamCard
-              name="Adrien Matissart"
-              image="/people/Adrien.jpeg"
-              institution="Akselos"
-              title="Master of Science"
-              role="Technical Lead"
               job="Senior Software Engineer"
             />
           </Grid2>
