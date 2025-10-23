@@ -36,6 +36,7 @@ export default defineConfig(() => {
       deps: {
         optimizer: {
           web: {
+            enabled: true,
             // Include all MUI icons in the test bundle to prevent Vitest from loading
             // them individually, which significantly slows down unit test collection.
             include: ["@mui/icons-material"],
