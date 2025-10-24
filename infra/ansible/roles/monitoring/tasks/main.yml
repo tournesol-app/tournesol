@@ -24,11 +24,6 @@
     install_recommends: no
     update_cache: yes
 
-- name: Remove Buster repository
-  apt_repository:
-    repo: "deb {{buster_mirror}} buster main"
-    state: absent
-
 - name: Copy Nginx log format
   copy:
     src: nginx-log-format.conf

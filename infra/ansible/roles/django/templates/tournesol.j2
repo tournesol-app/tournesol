@@ -2,11 +2,13 @@ server {
     # if no Host match, close the connection to prevent host spoofing
     listen 80 default_server;
 
+{% if letsencrypt_email is defined %}
     # Nginx requires certificates to be defined here. It would be cleaner to
     # use "ssl_reject_handshake on;" but that requires Nginx >= 1.19.4.
     listen 443 ssl default_server;
     ssl_certificate /etc/letsencrypt/live/{{domain_name}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{domain_name}}/privkey.pem;
+{% endif %}
 
     return 444;
 }
