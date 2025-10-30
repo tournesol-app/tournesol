@@ -26,6 +26,13 @@ schema_config:
       index:
         prefix: index_
         period: 168h
+    - from: 2025-11-06
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
 
 storage_config:
   boltdb:
@@ -34,10 +41,19 @@ storage_config:
   filesystem:
     directory: /tmp/loki/chunks
 
+  tsdb_shipper:
+    active_index_directory: /tmp/loki/tsdb-index
+    cache_location: /tmp/loki/tsdb-cache
+
+compactor:
+  working_directory: /tmp/loki/compactor
+  retention_enabled: true
+
 limits_config:
   enforce_metric_name: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
+  retention_period: 744h
 
 chunk_store_config:
   max_look_back_period: 0s
@@ -45,10 +61,6 @@ chunk_store_config:
     embedded_cache:
       enabled: true
       max_size_mb: 256
-
-table_manager:
-  retention_deletes_enabled: false
-  retention_period: 0s
 
 query_range:
   results_cache:

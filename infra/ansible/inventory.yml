@@ -25,7 +25,7 @@ all:
           django_api_throttle_email: "5/min"
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
-          loki_version: "v2.9.2"
+          loki_version: "v2.9.15"
           grafana:
             dashboard_alerting_uid: kemHo2Mnz
             datasource_loki_uid: j1so19VIz
@@ -91,7 +91,7 @@ all:
           django_api_throttle_email: "5/min"
           chrome_extension_id: iahbndmibajbfljmlaaaikgognekamno
 
-          loki_version: "v2.9.2"
+          loki_version: "v2.9.15"
           grafana:
             dashboard_alerting_uid: kemHo2Mnz
             datasource_loki_uid: j1so19VIz
@@ -168,7 +168,7 @@ all:
           django_api_throttle_email: "12/min"
           chrome_extension_id: nidimbejmadpggdgooppinedbggeacla
 
-          loki_version: "v2.9.2"
+          loki_version: "v2.9.15"
           grafana:
             dashboard_alerting_uid: kemHo2Mnz
             datasource_loki_uid: dFiJRjVSz

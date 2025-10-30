@@ -238,6 +238,16 @@
   notify:
     - Enable and restart Grafana
 
+- name: Disable Grafana internal metrics
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[metrics\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK METRICS"
+    block: |
+      enabled = false
+  notify:
+    - Enable and restart Grafana
+
 - name: Create Grafana Prometheus datasource
   template:
     dest: /etc/grafana/provisioning/datasources/prometheus.yaml
