@@ -46,6 +46,7 @@ storage_config:
     cache_location: /tmp/loki/tsdb-cache
 
 compactor:
+  working_directory: /tmp/loki/compactor
   retention_enabled: true
 
 limits_config:
