@@ -101,7 +101,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               actions={actions}
               displayImage={false}
               showEntitySeenIndicator={true}
-              overrideEntitySeen={contributorRating}
+              overrideEntitySeenIndicator={contributorRating}
             />
           </Grid2>
           {video.entity_contexts.length > 0 && (
