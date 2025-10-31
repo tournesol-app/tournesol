@@ -2,7 +2,7 @@ const RATE_LATER_BULK_MAX_SIZE = 20;
 
 // These selectors can change regularly on YT, and become obsolete.
 // We need to check their validity from time to time.
-const YT_VIDEO_CARD_TAG = 'ytd-item-section-renderer';
+const YT_VIDEO_CARD_TAG = 'ytd-item-section-renderer yt-lockup-view-model';
 const YT_VIDEO_CARD_LINK = 'a.yt-lockup-metadata-view-model__title';
 
 const onYoutubeReady = (callback) => {
