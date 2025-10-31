@@ -1,5 +1,10 @@
 const RATE_LATER_BULK_MAX_SIZE = 20;
 
+// These selectors can change regularly on YT, and become obsolete.
+// We need to check their validity from time to time.
+const YT_VIDEO_CARD_TAG = 'ytd-item-section-renderer yt-lockup-view-model';
+const YT_VIDEO_CARD_LINK = 'a.yt-lockup-metadata-view-model__title';
+
 const onYoutubeReady = (callback) => {
   /**
    * Youtube doesnt completely load a video page, so content script doesn't
@@ -276,18 +281,25 @@ const addVideoIdsToRateLater = async (videoIds) => {
 };
 
 const forEachVisibleVideoId = (callback) => {
-  const previews = document.querySelectorAll('ytd-video-renderer');
+  const previews = document.querySelectorAll(YT_VIDEO_CARD_TAG);
   previews.forEach((preview) => {
-    const title = preview.querySelector('#video-title');
+    const title = preview.querySelector(YT_VIDEO_CARD_LINK);
     const href = title.getAttribute('href');
-    const videoId = new URL(href).searchParams.get('v');
+
+    let videoId;
+    if (href.startsWith('https://')) {
+      videoId = new URL(href).searchParams.get('v');
+    } else {
+      videoId = new URL('https://www.youtube.com' + href).searchParams.get('v');
+    }
+
     if (videoId) callback(videoId);
   });
 };
 
 const loadMoreVideos = () => {
   // Scroll to the bottom of the page to trigger the infinite loader
-  const previews = document.querySelectorAll('ytd-video-renderer');
+  const previews = document.querySelectorAll(YT_VIDEO_CARD_TAG);
   previews[previews.length - 1].scrollIntoView(true);
 };
 
