@@ -14,7 +14,7 @@ import { openTwitterPopup } from 'src/utils/ui';
 import { updateContributorRatingEntitySeen } from 'src/utils/api/contributorRatings';
 
 // in milliseconds
-const FEEDBACK_DURATION = 1200;
+const FEEDBACK_DURATION = 1000;
 
 const VideoAnalysisActionBar = ({
   video,
@@ -28,7 +28,8 @@ const VideoAnalysisActionBar = ({
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
   const { baseUrl, name: pollName, options } = useCurrentPoll();
-  const { showSuccessAlert, showInfoAlert } = useNotifications();
+  const { contactAdministrator, showInfoAlert, showSuccessAlert } =
+    useNotifications();
 
   const [rateLaterInProgress, setRateLaterInProgress] = useState(false);
   const [toggleEntitySeenProgress, setToggleEntitySeenProgress] =
@@ -63,6 +64,8 @@ const VideoAnalysisActionBar = ({
     setToggleEntitySeenProgress(true);
     const currentSeenStatus = contributorRating?.individual_rating.entity_seen;
 
+    let success = false;
+
     try {
       await updateContributorRatingEntitySeen(
         pollName,
@@ -70,14 +73,17 @@ const VideoAnalysisActionBar = ({
         currentSeenStatus == undefined ? true : !currentSeenStatus,
         options?.comparisonsCanBePublic === true
       );
-      // XXX: missing catch statement
+      success = true;
+    } catch {
+      contactAdministrator('error');
     } finally {
-      setTimeout(() => {
+      setTimeout(async () => {
+        if (success) {
+          await onContributorRatingUpdateSuccessCb();
+        }
         setToggleEntitySeenProgress(false);
       }, FEEDBACK_DURATION);
     }
-
-    onContributorRatingUpdateSuccessCb();
   };
 
   const getTweet = () => {

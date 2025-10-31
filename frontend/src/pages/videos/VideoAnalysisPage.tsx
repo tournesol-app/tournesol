@@ -9,18 +9,17 @@ import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
+import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 import EntityCard from 'src/components/entity/EntityCard';
 import { useCurrentPoll, useLoginState, useScrollToLocation } from 'src/hooks';
 import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
+import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
-import linkifyStr from 'linkify-string';
-import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
-import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
-
-import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 import { getContributorRating } from 'src/utils/api/contributorRatings';
+import linkifyStr from 'linkify-string';
+import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 
 export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
   const { t } = useTranslation();
@@ -97,7 +96,13 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
             />
           </Grid2>
           <Grid2 size={12}>
-            <EntityCard result={video} actions={actions} displayImage={false} />
+            <EntityCard
+              result={video}
+              actions={actions}
+              displayImage={false}
+              showEntitySeenIndicator={true}
+              overrideEntitySeen={contributorRating}
+            />
           </Grid2>
           {video.entity_contexts.length > 0 && (
             <Grid2 size={12}>
