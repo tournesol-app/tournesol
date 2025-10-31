@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -9,25 +9,42 @@ import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
+import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 import EntityCard from 'src/components/entity/EntityCard';
-import { useLoginState, useScrollToLocation } from 'src/hooks';
-import { Recommendation } from 'src/services/openapi';
+import { useCurrentPoll, useLoginState, useScrollToLocation } from 'src/hooks';
+import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
+import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
+import { getContributorRating } from 'src/utils/api/contributorRatings';
 import linkifyStr from 'linkify-string';
-import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
-import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
-
 import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 
 export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
   const { t } = useTranslation();
-  const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
+  const { name: pollName } = useCurrentPoll();
+
+  const [contributorRating, setContributorRating] =
+    useState<ContributorRating | null>(null);
+  const [descriptionCollapsed, setDescriptionCollapsed] = useState(false);
 
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
 
   useScrollToLocation();
+
+  const loadContributorRating = useCallback(async () => {
+    try {
+      const res = await getContributorRating(pollName, video.entity.uid);
+      setContributorRating(res);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [pollName, video.entity.uid]);
+
+  useEffect(() => {
+    loadContributorRating();
+  }, [loadContributorRating]);
 
   const entity = video.entity;
   const criteriaScores = video.collective_rating?.criteria_scores ?? [];
@@ -72,10 +89,20 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
             />
           </Grid2>
           <Grid2 size={12}>
-            <VideoAnalysisActionBar video={video} />
+            <VideoAnalysisActionBar
+              video={video}
+              contributorRating={contributorRating}
+              onContributorRatingUpdateSuccessCb={loadContributorRating}
+            />
           </Grid2>
           <Grid2 size={12}>
-            <EntityCard result={video} actions={actions} displayImage={false} />
+            <EntityCard
+              result={video}
+              actions={actions}
+              displayImage={false}
+              showEntitySeenIndicator={true}
+              overrideEntitySeenIndicator={contributorRating}
+            />
           </Grid2>
           {video.entity_contexts.length > 0 && (
             <Grid2 size={12}>
