@@ -129,7 +129,14 @@ const VideoAnalysisActionBar = ({
               <Add />
             </Button>
           </Tooltip>
-          <Tooltip title={`${t('actions.rateLater')}`} placement="bottom">
+          <Tooltip
+            title={
+              contributorRating?.individual_rating.entity_seen
+                ? t('actions.markVideoAsUnseen')
+                : t('actions.markVideoAsSeen')
+            }
+            placement="bottom"
+          >
             <Button
               color="secondary"
               onClick={onToggleEntitySeenClick}
