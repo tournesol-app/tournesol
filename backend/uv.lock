@@ -440,16 +440,16 @@ wheels = [
 
 [[package]]
 name = "flake8-html"
-version = "0.4.2"
+version = "0.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "flake8" },
     { name = "jinja2" },
     { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/95/8e/f3274fc53090745f3996815be58a82c7cc5dc9b2f539ab5107e08e8a0b71/flake8-html-0.4.2.tar.gz", hash = "sha256:6d3f2cbae8a0092d922ca5acf88f971d85a2bd69723d0dceba65e57bcaa0adba", size = 13453, upload-time = "2022-04-13T10:13:56.352Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/44/faae17d4b4e00c8c041e9b90b0ea546f3aef8b799212e71a7bb835ff51e1/flake8-html-0.4.3.tar.gz", hash = "sha256:8b870299620cc4a06f73644a1b4d457799abeca1cc914c62ae71ec5bf65c79a5", size = 13670, upload-time = "2022-12-06T19:06:20.505Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/e7/4af6bce1e6106eb411377b2481e67d8e51827aa771c9877d512a280c7821/flake8_html-0.4.2-py2.py3-none-any.whl", hash = "sha256:5db0439169987509690ef8c90efb00346009bcc5cffb8b94fe0ad30cd655b88c", size = 12985, upload-time = "2022-04-13T10:13:55.085Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/b0/bfd58118e2b9c1d0c5ac156c458c9a33cb599925b658df3ab038b55d30d7/flake8_html-0.4.3-py2.py3-none-any.whl", hash = "sha256:8f126748b1b0edd6cd39e87c6192df56e2f8655b0aa2bb00ffeac8cf27be4325", size = 13120, upload-time = "2022-12-06T19:06:18.917Z" },
 ]
 
 [[package]]
@@ -1168,7 +1168,7 @@ wheels = [
 
 [[package]]
 name = "pylint"
-version = "2.15.3"
+version = "2.15.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astroid" },
@@ -1181,22 +1181,22 @@ dependencies = [
     { name = "tomlkit" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/53/8e/ed0cc7e6a96b3367e31b57f5e7510b94c905378a8be3e5657afd9056df44/pylint-2.15.3.tar.gz", hash = "sha256:5fdfd44af182866999e6123139d265334267339f29961f00c89783155eacc60b", size = 409452, upload-time = "2022-09-19T14:29:33.492Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/84/c8/6d7d7910699518b5188631bcc4a0dc3c116e0b9d7bbf85183bfc9b7607aa/pylint-2.15.10.tar.gz", hash = "sha256:b3dc5ef7d33858f297ac0d06cc73862f01e4f2e74025ec3eff347ce0bc60baf5", size = 411656, upload-time = "2023-01-09T10:59:00.427Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/f8/0c3997743400f998fb10e17b5b4c8d1712d1548173140477513ba2f52070/pylint-2.15.3-py3-none-any.whl", hash = "sha256:7f6aad1d8d50807f7bc64f89ac75256a9baf8e6ed491cc9bc65592bc3f462cf1", size = 507568, upload-time = "2022-09-19T14:29:30.781Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/25/9b0182245b148d7d48fcb9009364f73618d517bd74947a94c17bf799c4a0/pylint-2.15.10-py3-none-any.whl", hash = "sha256:9df0d07e8948a1c3ffa3b6e2d7e6e63d9fb457c5da5b961ed63106594780cc7e", size = 509858, upload-time = "2023-01-09T10:58:58.732Z" },
 ]
 
 [[package]]
 name = "pylint-django"
-version = "2.5.3"
+version = "2.5.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pylint" },
     { name = "pylint-plugin-utils" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/16/b5/c0a61c8c714674508f3181f7b95c42e1dd4515aa91753a7ab08fd449ff9e/pylint-django-2.5.3.tar.gz", hash = "sha256:0ac090d106c62fe33782a1d01bda1610b761bb1c9bf5035ced9d5f23a13d8591", size = 68112, upload-time = "2022-03-25T16:09:25.721Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/80/204a27ecaca2a85571a0de772e96a9b0cc0bc35b816f20284daf25cd2dc5/pylint_django-2.5.5.tar.gz", hash = "sha256:2f339e4bf55776958283395c5139c37700c91bd5ef1d8251ef6ac88b5abbba9b", size = 38135, upload-time = "2023-10-23T13:09:37.945Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/28/33/6165717d672389a6873cd02a293bbb19d7b45439863af01b8a17418fcfed/pylint_django-2.5.3-py3-none-any.whl", hash = "sha256:56b12b6adf56d548412445bd35483034394a1a94901c3f8571980a13882299d5", size = 81163, upload-time = "2022-03-25T16:09:23.437Z" },
+    { url = "https://files.pythonhosted.org/packages/18/af/a12d87924a021ebec74fc79c6742edd09cc63a23d957aca3c32796b8b521/pylint_django-2.5.5-py3-none-any.whl", hash = "sha256:5abd5c2228e0e5e2a4cb6d0b4fc1d1cef1e773d0be911412f4dd4fc1a1a440b7", size = 53262, upload-time = "2023-10-23T13:09:34.578Z" },
 ]
 
 [[package]]
@@ -1235,45 +1235,45 @@ wheels = [
 
 [[package]]
 name = "pytest"
-version = "7.1.3"
+version = "7.4.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "attrs" },
     { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "exceptiongroup" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
-    { name = "py" },
     { name = "tomli" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a4/a7/8c63a4966935b0d0b039fd67ebf2e1ae00f1af02ceb912d838814d772a9a/pytest-7.1.3.tar.gz", hash = "sha256:4f365fec2dff9c1162f834d9f18af1ba13062db0c708bf7b946f8a5c76180c39", size = 1257801, upload-time = "2022-09-02T11:13:15.701Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/80/1f/9d8e98e4133ffb16c90f3b405c43e38d3abb715bb5d7a63a5a684f7e46a3/pytest-7.4.4.tar.gz", hash = "sha256:2cf0005922c6ace4a3e2ec8b4080eb0d9753fdc93107415332f50ce9e7994280", size = 1357116, upload-time = "2023-12-31T12:00:18.035Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/b9/3541bbcb412a9fd56593005ff32183825634ef795a1c01ceb6dee86e7259/pytest-7.1.3-py3-none-any.whl", hash = "sha256:1377bda3466d70b55e3f5cecfa55bb7cfcf219c7964629b967c37cf0bda818b7", size = 298172, upload-time = "2022-09-02T11:13:13.78Z" },
+    { url = "https://files.pythonhosted.org/packages/51/ff/f6e8b8f39e08547faece4bd80f89d5a8de68a38b2d179cc1c4490ffa3286/pytest-7.4.4-py3-none-any.whl", hash = "sha256:b090cdf5ed60bf4c45261be03239c2c1c22df034fbffe691abe93cd80cea01d8", size = 325287, upload-time = "2023-12-31T12:00:13.963Z" },
 ]
 
 [[package]]
 name = "pytest-django"
-version = "4.5.2"
+version = "4.11.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9b/42/6d6563165b82289d4a30ea477f85c04386303e51cf4e4e4651d4f9910830/pytest-django-4.5.2.tar.gz", hash = "sha256:d9076f759bb7c36939dbdd5ae6633c18edfc2902d1a69fdbefd2426b970ce6c2", size = 79949, upload-time = "2021-12-07T14:26:58.991Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/fb/55d580352db26eb3d59ad50c64321ddfe228d3d8ac107db05387a2fadf3a/pytest_django-4.11.1.tar.gz", hash = "sha256:a949141a1ee103cb0e7a20f1451d355f83f5e4a5d07bdd4dcfdd1fd0ff227991", size = 86202, upload-time = "2025-04-03T18:56:09.338Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4b/21/b65ecd6686da400e2f6e3c49c2a428325abd979c9670cd97e1671f53296e/pytest_django-4.5.2-py3-none-any.whl", hash = "sha256:c60834861933773109334fe5a53e83d1ef4828f2203a1d6a0fa9972f4f75ab3e", size = 20752, upload-time = "2021-12-07T14:26:57.714Z" },
+    { url = "https://files.pythonhosted.org/packages/be/ac/bd0608d229ec808e51a21044f3f2f27b9a37e7a0ebaca7247882e67876af/pytest_django-4.11.1-py3-none-any.whl", hash = "sha256:1b63773f648aa3d8541000c26929c1ea63934be1cfa674c76436966d73fe6a10", size = 25281, upload-time = "2025-04-03T18:56:07.678Z" },
 ]
 
 [[package]]
 name = "pytest-html"
-version = "3.1.1"
+version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "py" },
     { name = "pytest" },
     { name = "pytest-metadata" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e2/94/850b36f556ca1f7ad62f38cea0a3955efc2df20b24e1108fca4c2130344f/pytest-html-3.1.1.tar.gz", hash = "sha256:3ee1cf319c913d19fe53aeb0bc400e7b0bc2dbeb477553733db1dad12eb75ee3", size = 38548, upload-time = "2020-12-13T15:24:59.97Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/12/fb/243962e70fc04fa85b4d44b988d45f15f1bde02fd1024a911befe565c866/pytest-html-3.2.0.tar.gz", hash = "sha256:c4e2f4bb0bffc437f51ad2174a8a3e71df81bbc2f6894604e604af18fbe687c3", size = 41955, upload-time = "2022-10-25T12:13:24.221Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/36/6d3c3011751beefafcc7df6255c67b3739c0f8767691d21cbd7c9464aac8/pytest_html-3.1.1-py3-none-any.whl", hash = "sha256:b7f82f123936a3f4d2950bc993c2c1ca09ce262c9ae12f9ac763a2401380b455", size = 14995, upload-time = "2020-12-13T15:24:58.788Z" },
+    { url = "https://files.pythonhosted.org/packages/81/e1/35ae038e10ba11758e7d572f656ea7b99795f3d37d20aa40a5d7e8050091/pytest_html-3.2.0-py3-none-any.whl", hash = "sha256:868c08564a68d8b2c26866f1e33178419bb35b1e127c33784a28622eb827f3f3", size = 16765, upload-time = "2022-10-25T12:13:22.608Z" },
 ]
 
 [[package]]
@@ -1624,17 +1624,17 @@ provides-extras = ["deploy"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "bandit", specifier = "==1.8.6" },
-    { name = "factory-boy", specifier = "==3.2.1" },
-    { name = "flake8", specifier = "==5.0.4" },
-    { name = "flake8-html", specifier = "==0.4.2" },
-    { name = "isort", specifier = "==5.10.1" },
-    { name = "pylint", specifier = "==2.15.3" },
-    { name = "pylint-django", specifier = "==2.5.3" },
-    { name = "pylint-json2html", specifier = "==0.4.0" },
-    { name = "pytest", specifier = "==7.1.3" },
-    { name = "pytest-django", specifier = "==4.5.2" },
-    { name = "pytest-html", specifier = "==3.1.1" },
+    { name = "bandit", specifier = "==1.8.*" },
+    { name = "factory-boy", specifier = "==3.2.*" },
+    { name = "flake8", specifier = "==5.0.*" },
+    { name = "flake8-html", specifier = "==0.4.*" },
+    { name = "isort", specifier = "==5.10.*" },
+    { name = "pylint", specifier = "==2.15.*" },
+    { name = "pylint-django", specifier = "==2.*" },
+    { name = "pylint-json2html", specifier = "==0.4.*" },
+    { name = "pytest", specifier = "==7.*" },
+    { name = "pytest-django", specifier = "==4.*" },
+    { name = "pytest-html", specifier = "==3.*" },
 ]
 
 [[package]]
