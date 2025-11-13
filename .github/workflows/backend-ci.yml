@@ -37,7 +37,7 @@ jobs:
           - 5432:5432
 
     env:
-      UV_PROJECT_ENVIRONMENT=venv
+      UV_PROJECT_ENVIRONMENT: venv
 
     steps:
       - uses: actions/checkout@v3

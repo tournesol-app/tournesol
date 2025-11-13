@@ -131,7 +131,7 @@
         # No change to apply
         exit 10
       fi
-      uv sync --extra --deploy
+      uv sync --extra deploy
   register: uv_sync_result
   failed_when: uv_sync_result.rc not in [0, 10] # 10 for ok, 0 for changed
   changed_when: uv_sync_result.rc == 0

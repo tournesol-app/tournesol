@@ -165,7 +165,7 @@ filesystem path readable and writable by the user running the command.
 uv run python manage.py create_dataset
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api python manage.py create_dataset
+docker exec tournesol-dev-api uv run python manage.py create_dataset
 ```
 
 `python manage.py watch_account_number`
