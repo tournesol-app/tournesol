@@ -31,7 +31,7 @@ services:
     command:
       - |
         cp -n ./dev-env/settings-tournesol-example.yaml ./dev-env/settings-tournesol-local.yaml 
-        pip install uv==0.8.12
+        pip install uv==0.9.9
         uv sync --locked
         uv run python manage.py createcachetable
         uv run python manage.py migrate

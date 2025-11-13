@@ -116,7 +116,7 @@
 - name: Install UV
   pip:
     name:
-      - "uv==0.8.12"
+      - "uv==0.9.9"
   become: yes
 
 - name: "Synchronize virtualenv with uv.lock"
