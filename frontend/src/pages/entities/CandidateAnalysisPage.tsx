@@ -93,7 +93,7 @@ const CandidateAnalysisPage = ({ entity: reco }: Props) => {
                   p: 1,
                 }}
               >
-                <CriteriaBarChart reco={reco} />
+                <CriteriaBarChart entityResult={reco} />
               </Box>
             </Paper>
           </Grid>
