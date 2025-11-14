@@ -214,7 +214,7 @@ const EntityAnalysisPage = () => {
       {entity ? (
         <>
           {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
-            <CandidateAnalysisPage entity={entity} />
+            <CandidateAnalysisPage candidate={entity} />
           )}
           {pollName === YOUTUBE_POLL_NAME && (
             <VideoAnalysis
