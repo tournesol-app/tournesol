@@ -85,6 +85,7 @@
     rsync_opts:
       - "--exclude=venv/"
       - "--exclude=*.pyc"
+      - "--exclude=*.mo"
   delegate_to: "{{ inventory_hostname }}"
   become: yes
   become_user: gunicorn
