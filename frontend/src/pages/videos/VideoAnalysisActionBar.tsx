@@ -18,12 +18,10 @@ const FEEDBACK_DURATION = 1000;
 
 const VideoAnalysisActionBar = ({
   video,
-  contributorRating,
   onContributorRatingUpdateSuccessCb,
 }: {
-  video: Recommendation;
-  contributorRating?: ContributorRating | null;
-  onContributorRatingUpdateSuccessCb: () => Promise<void>;
+  video: Recommendation | ContributorRating;
+  onContributorRatingUpdateSuccessCb?: () => Promise<void>;
 }) => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
@@ -34,6 +32,9 @@ const VideoAnalysisActionBar = ({
   const [rateLaterInProgress, setRateLaterInProgress] = useState(false);
   const [toggleEntitySeenProgress, setToggleEntitySeenProgress] =
     useState(false);
+
+  const currentSeenStatus =
+    'individual_rating' in video ? video.individual_rating.entity_seen : false;
 
   const onRateLaterClick = async () => {
     // Do not trigger any additionnal rendering when the user clicks
@@ -62,8 +63,6 @@ const VideoAnalysisActionBar = ({
     }
 
     setToggleEntitySeenProgress(true);
-    const currentSeenStatus = contributorRating?.individual_rating.entity_seen;
-
     let success = false;
 
     try {
@@ -78,7 +77,7 @@ const VideoAnalysisActionBar = ({
       contactAdministrator('error');
     } finally {
       setTimeout(async () => {
-        if (success) {
+        if (success && onContributorRatingUpdateSuccessCb) {
           await onContributorRatingUpdateSuccessCb();
         }
         setToggleEntitySeenProgress(false);
@@ -131,7 +130,7 @@ const VideoAnalysisActionBar = ({
           </Tooltip>
           <Tooltip
             title={
-              contributorRating?.individual_rating.entity_seen
+              currentSeenStatus
                 ? t('actions.markVideoAsUnseen')
                 : t('actions.markVideoAsSeen')
             }
@@ -142,11 +141,7 @@ const VideoAnalysisActionBar = ({
               onClick={onToggleEntitySeenClick}
               loading={toggleEntitySeenProgress}
             >
-              {contributorRating?.individual_rating.entity_seen ? (
-                <VisibilityOffIcon />
-              ) : (
-                <VisibilityIcon />
-              )}
+              {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
             </Button>
           </Tooltip>
         </ButtonGroup>

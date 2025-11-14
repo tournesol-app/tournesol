@@ -60,9 +60,6 @@ export interface EntityCardProps {
   entityTypeConfig?: { [k in TypeEnum]?: { [k: string]: JSONValue } };
   displayContextAlert?: boolean;
   displayImage?: boolean;
-  // If provided, the "entity seen" indicatator will determined by this
-  // contributor rating, instead of `result`.
-  overrideEntitySeenIndicator?: ContributorRating | null;
 }
 
 const EntityCard = ({
@@ -76,7 +73,6 @@ const EntityCard = ({
   onRatingChange,
   displayContextAlert = false,
   displayImage = true,
-  overrideEntitySeenIndicator = null,
 }: EntityCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -122,9 +118,7 @@ const EntityCard = ({
     setContentDisplayed(!contentDisplayed);
   };
 
-  const entitySeen =
-    showEntitySeenIndicator &&
-    getEntitySeen(overrideEntitySeenIndicator ?? result);
+  const entitySeen = showEntitySeenIndicator && getEntitySeen(result);
   let entitySx = { ...entityCardMainSx };
   if (entitySeen) {
     entitySx = { ...entitySx, ...entityCardEntitySeenSx };

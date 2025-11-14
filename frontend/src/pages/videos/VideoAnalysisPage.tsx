@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -11,40 +11,26 @@ import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistri
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 import EntityCard from 'src/components/entity/EntityCard';
-import { useCurrentPoll, useLoginState, useScrollToLocation } from 'src/hooks';
+import { useLoginState, useScrollToLocation } from 'src/hooks';
 import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
-import { getContributorRating } from 'src/utils/api/contributorRatings';
 import linkifyStr from 'linkify-string';
 import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 
-export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
+export const VideoAnalysis = ({
+  video,
+  onContributorRatingUpdateSuccessCb,
+}: {
+  video: Recommendation | ContributorRating;
+  onContributorRatingUpdateSuccessCb?: () => Promise<void>;
+}) => {
   const { t } = useTranslation();
-  const { name: pollName } = useCurrentPoll();
-
-  const [contributorRating, setContributorRating] =
-    useState<ContributorRating | null>(null);
   const [descriptionCollapsed, setDescriptionCollapsed] = useState(false);
-
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
-
   useScrollToLocation();
-
-  const loadContributorRating = useCallback(async () => {
-    try {
-      const res = await getContributorRating(pollName, video.entity.uid);
-      setContributorRating(res);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [pollName, video.entity.uid]);
-
-  useEffect(() => {
-    loadContributorRating();
-  }, [loadContributorRating]);
 
   const entity = video.entity;
   const criteriaScores = video.collective_rating?.criteria_scores ?? [];
@@ -91,8 +77,9 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           <Grid2 size={12}>
             <VideoAnalysisActionBar
               video={video}
-              contributorRating={contributorRating}
-              onContributorRatingUpdateSuccessCb={loadContributorRating}
+              onContributorRatingUpdateSuccessCb={
+                onContributorRatingUpdateSuccessCb
+              }
             />
           </Grid2>
           <Grid2 size={12}>
@@ -101,7 +88,6 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
               actions={actions}
               displayImage={false}
               showEntitySeenIndicator={true}
-              overrideEntitySeenIndicator={contributorRating}
             />
           </Grid2>
           {video.entity_contexts.length > 0 && (
@@ -181,7 +167,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                         p: 1,
                       }}
                     >
-                      <CriteriaBarChart reco={video} />
+                      <CriteriaBarChart entityResult={video} />
                     </Box>
                   </Paper>
                 </Grid2>
@@ -210,7 +196,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                         p: 1,
                       }}
                     >
-                      <CriteriaScoresDistribution reco={video} />
+                      <CriteriaScoresDistribution entityResult={video} />
                     </Box>
                   </Paper>
                 </Grid2>
