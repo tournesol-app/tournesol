@@ -36,6 +36,9 @@ jobs:
         ports:
           - 5432:5432
 
+    env:
+      UV_PROJECT_ENVIRONMENT: venv
+
     steps:
       - uses: actions/checkout@v3
 
@@ -44,16 +47,19 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.9"
+
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install -r tests/requirements.txt
+        run: uv sync --locked --all-extras
 
       - name: Python Code Quality Checks
-        run: ./scripts/ci/lint.sh
+        run: uv run ./scripts/ci/lint.sh
 
       - name: Run pytest
-        run: pytest
+        run: uv run pytest
 
       - name: Run bandit
-        run: bandit -r . -c bandit.yaml
+        run: uv run bandit -r . -c bandit.yaml

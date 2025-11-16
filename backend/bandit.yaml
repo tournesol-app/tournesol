@@ -2,6 +2,8 @@
 # for security vulnerabilities in our application.
 exclude_dirs:
   - '/tests/'
+  - '/venv/'
+  - '/.venv/'
 
 # This allows us to skip the vulnerabilities concerning pickle as it
 # would require a bit more refactoring to completely get rid of it.

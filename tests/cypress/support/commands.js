@@ -34,7 +34,7 @@ Cypress.Commands.add('getEmailLink', () =>
 )
 
 Cypress.Commands.add('recreateUser', (username, email, password) =>
-  cy.exec(`docker exec tournesol-dev-api python manage.py shell --command="
+  cy.exec(`docker exec tournesol-dev-api uv run python manage.py shell --command="
 from core.models import User
 User.objects.filter(username='${username}').delete()
 User.objects.create_user(username='${username}', email='${email}', password='${password}')
@@ -45,7 +45,7 @@ User.objects.create_user(username='${username}', email='${email}', password='${p
  * Delete a user from the database.
  */
 Cypress.Commands.add('deleteUser', (username) =>
-  cy.exec(`docker exec tournesol-dev-api python manage.py shell --command="
+  cy.exec(`docker exec tournesol-dev-api uv run python manage.py shell --command="
 from core.models import User
 User.objects.filter(username='${username}').delete()
 "`)
