@@ -4,7 +4,7 @@ import {
   EntityCriteriaScore,
   Recommendation,
 } from 'src/services/openapi';
-import usePersonalCriteriaScores from 'src/hooks/usePersonalCriteriaScores';
+import useContributorRating from 'src/hooks/useContributorRating';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
 
@@ -53,7 +53,7 @@ const useCriteriaChartData = ({
   const { name: pollName, criterias: pollCriteria } = useCurrentPoll();
 
   const { personalScoresActivated, personalCriteriaScores } =
-    usePersonalCriteriaScores();
+    useContributorRating();
 
   const clipScore = useCallback(
     (score) =>

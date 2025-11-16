@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { TFunction } from 'i18next';
@@ -9,13 +9,11 @@ import { LoaderWrapper } from 'src/components';
 import { useCurrentPoll, useLoginState, useDocumentTitle } from 'src/hooks';
 import {
   ApiError,
-  ContributorRating,
   PollsService,
   Recommendation,
   RelatedEntity,
   VideoService,
 } from 'src/services/openapi';
-import { getContributorRating } from 'src/utils/api/contributorRatings';
 import {
   DEFAULT_DOCUMENT_TITLE,
   getEntityMetadataName,
@@ -24,6 +22,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { extractVideoId } from 'src/utils/video';
+import { ContributorRatingContextProvider } from 'src/hooks/useContributorRating';
 
 const CandidateAnalysisPage = React.lazy(
   () => import('src/pages/entities/CandidateAnalysisPage')
@@ -114,9 +113,6 @@ const EntityAnalysisPage = () => {
   const currentLang = i18n.resolvedLanguage;
 
   const [entity, setEntity] = useState<Recommendation>();
-  const [contributorRating, setContributorRating] =
-    useState<ContributorRating | null>(null);
-
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState<ApiError>();
   const [pageTitle, setPageTitle] = useState(DEFAULT_DOCUMENT_TITLE);
@@ -156,19 +152,6 @@ const EntityAnalysisPage = () => {
     }
   };
 
-  const loadContributorRating = useCallback(async () => {
-    if (!isLoggedIn || !uid) {
-      return;
-    }
-
-    try {
-      const rating = await getContributorRating(pollName, uid);
-      setContributorRating(rating);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [isLoggedIn, pollName, uid]);
-
   useEffect(() => {
     setIsLoading(true);
 
@@ -196,10 +179,6 @@ const EntityAnalysisPage = () => {
         }
         setApiError(reason);
       }
-
-      if (reco) {
-        await loadContributorRating();
-      }
     }
 
     getEntity().finally(() => {
@@ -211,29 +190,28 @@ const EntityAnalysisPage = () => {
 
   return (
     <LoaderWrapper isLoading={isLoading}>
-      {entity ? (
-        <>
-          {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
-            <CandidateAnalysisPage candidate={entity} />
-          )}
-          {pollName === YOUTUBE_POLL_NAME && (
-            <VideoAnalysis
-              video={contributorRating ? contributorRating : entity}
-              onContributorRatingUpdateSuccessCb={loadContributorRating}
-            />
-          )}
-        </>
-      ) : (
-        <Container>
-          <Box
-            sx={{
-              py: 2,
-            }}
-          >
-            <EntityNotFound apiError={apiError} />
-          </Box>
-        </Container>
-      )}
+      <ContributorRatingContextProvider uid={uid}>
+        {entity ? (
+          <>
+            {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
+              <CandidateAnalysisPage candidate={entity} />
+            )}
+            {pollName === YOUTUBE_POLL_NAME && (
+              <VideoAnalysis entityResult={entity} />
+            )}
+          </>
+        ) : (
+          <Container>
+            <Box
+              sx={{
+                py: 2,
+              }}
+            >
+              <EntityNotFound apiError={apiError} />
+            </Box>
+          </Container>
+        )}
+      </ContributorRatingContextProvider>
     </LoaderWrapper>
   );
 };

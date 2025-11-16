@@ -3,7 +3,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
-import usePersonalCriteriaScores from 'src/hooks/usePersonalCriteriaScores';
+import useContributorRating from 'src/hooks/useContributorRating';
 import { useTranslation } from 'react-i18next';
 
 const PersonalScoreCheckbox = () => {
@@ -13,7 +13,7 @@ const PersonalScoreCheckbox = () => {
     reasonWhyPersonalScoresCannotBeActivated,
     personalScoresActivated,
     setPersonalScoresActivated,
-  } = usePersonalCriteriaScores();
+  } = useContributorRating();
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

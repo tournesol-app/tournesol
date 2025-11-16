@@ -136,13 +136,15 @@ const VideoAnalysisActionBar = ({
             }
             placement="bottom"
           >
-            <Button
-              color="secondary"
-              onClick={onToggleEntitySeenClick}
-              loading={toggleEntitySeenProgress}
-            >
-              {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </Button>
+            <span>
+              <Button
+                color="secondary"
+                onClick={onToggleEntitySeenClick}
+                loading={toggleEntitySeenProgress}
+              >
+                {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </Button>
+            </span>
           </Tooltip>
         </ButtonGroup>
       )}
