@@ -2986,7 +2986,7 @@ components:
           readOnly: true
         collective_rating:
           allOf:
-          - $ref: '#/components/schemas/CollectiveRating'
+          - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
       required:
@@ -3012,7 +3012,7 @@ components:
           readOnly: true
         collective_rating:
           allOf:
-          - $ref: '#/components/schemas/CollectiveRating'
+          - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
       required:
@@ -3298,6 +3298,20 @@ components:
           description: Score of the given criteria
       required:
       - criteria
+    EntityCriteriaScoreRequest:
+      type: object
+      properties:
+        criteria:
+          type: string
+          minLength: 1
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: double
+          description: Score of the given criteria
+      required:
+      - criteria
     EntityNoExtraField:
       type: object
       description: An Entity serializer that doesn't include extra fields.
@@ -3353,12 +3367,12 @@ components:
         * `candidate_fr_2022` - Candidate (FR 2022)
     EventTypeEnum:
       enum:
-      - live
       - talk
+      - live
       type: string
       description: |-
-        * `live` - Tournesol Live
         * `talk` - Tournesol Talk
+        * `live` - Tournesol Live
     ExtendedCollectiveRating:
       type: object
       properties:
@@ -3392,6 +3406,15 @@ components:
       - n_contributors
       - tournesol_score
       - unsafe
+    ExtendedCollectiveRatingRequest:
+      type: object
+      properties:
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCriteriaScoreRequest'
+      required:
+      - criteria_scores
     ExtendedInvididualRating:
       type: object
       properties:

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -9,24 +9,27 @@ import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
+import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 import EntityCard from 'src/components/entity/EntityCard';
 import { useLoginState, useScrollToLocation } from 'src/hooks';
-import { Recommendation } from 'src/services/openapi';
+import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
+import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
-import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
-import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
-
 import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 
-export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
+export const VideoAnalysis = ({
+  video,
+  onContributorRatingUpdateSuccessCb,
+}: {
+  video: Recommendation | ContributorRating;
+  onContributorRatingUpdateSuccessCb?: () => Promise<void>;
+}) => {
   const { t } = useTranslation();
-  const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
-
+  const [descriptionCollapsed, setDescriptionCollapsed] = useState(false);
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
-
   useScrollToLocation();
 
   const entity = video.entity;
@@ -72,10 +75,20 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
             />
           </Grid2>
           <Grid2 size={12}>
-            <VideoAnalysisActionBar video={video} />
+            <VideoAnalysisActionBar
+              video={video}
+              onContributorRatingUpdateSuccessCb={
+                onContributorRatingUpdateSuccessCb
+              }
+            />
           </Grid2>
           <Grid2 size={12}>
-            <EntityCard result={video} actions={actions} displayImage={false} />
+            <EntityCard
+              result={video}
+              actions={actions}
+              displayImage={false}
+              showEntitySeenIndicator={true}
+            />
           </Grid2>
           {video.entity_contexts.length > 0 && (
             <Grid2 size={12}>
@@ -154,7 +167,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                         p: 1,
                       }}
                     >
-                      <CriteriaBarChart reco={video} />
+                      <CriteriaBarChart entityResult={video} />
                     </Box>
                   </Paper>
                 </Grid2>
@@ -183,7 +196,7 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
                         p: 1,
                       }}
                     >
-                      <CriteriaScoresDistribution reco={video} />
+                      <CriteriaScoresDistribution entityResult={video} />
                     </Box>
                   </Paper>
                 </Grid2>

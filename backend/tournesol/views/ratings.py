@@ -45,7 +45,8 @@ class ContributorRatingQuerysetMixin(PollScopedViewMixin):
         return Prefetch(
             "entity",
             queryset=(
-                Entity.objects.with_prefetched_poll_ratings(poll_name=poll.name)
+                Entity.objects.with_prefetched_scores(poll_name=poll.name)
+                              .with_prefetched_poll_ratings(poll_name=poll.name)
             ),
         )
 

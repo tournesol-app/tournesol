@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { Recommendation } from 'src/services/openapi';
+import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { criteriaIcon, criterionColor } from 'src/utils/criteria';
 import useCriteriaChartData, {
@@ -422,12 +422,12 @@ const SizedBarChart = ({
 };
 
 interface Props {
-  reco: Recommendation;
+  entityResult: Recommendation | ContributorRating;
 }
 
-const CriteriaBarChart = ({ reco }: Props) => {
+const CriteriaBarChart = ({ entityResult }: Props) => {
   const { shouldDisplayChart, data, personalScoresActivated, domain } =
-    useCriteriaChartData({ reco });
+    useCriteriaChartData({ entityResult });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number | undefined>(undefined);

@@ -201,6 +201,7 @@ class RatingApi(TestCase):
             "last_compared_at": None,
         })
         self.assertEqual(response.data["collective_rating"], {
+            "criteria_scores": [],
             "tournesol_score": 50,
             "n_contributors": 20,
             "n_comparisons": 30,

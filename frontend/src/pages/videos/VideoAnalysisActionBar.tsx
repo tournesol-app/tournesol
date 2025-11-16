@@ -4,23 +4,37 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { Box, Button, ButtonGroup, Tooltip } from '@mui/material';
 import { Compare, Add, Twitter } from '@mui/icons-material';
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
-import { Recommendation } from 'src/services/openapi';
+import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import { openTwitterPopup } from 'src/utils/ui';
+import { updateContributorRatingEntitySeen } from 'src/utils/api/contributorRatings';
 
 // in milliseconds
-const FEEDBACK_DURATION = 1200;
+const FEEDBACK_DURATION = 1000;
 
-const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
+const VideoAnalysisActionBar = ({
+  video,
+  onContributorRatingUpdateSuccessCb,
+}: {
+  video: Recommendation | ContributorRating;
+  onContributorRatingUpdateSuccessCb?: () => Promise<void>;
+}) => {
   const { t } = useTranslation();
   const { isLoggedIn } = useLoginState();
-  const { baseUrl, name: pollName } = useCurrentPoll();
-  const { showSuccessAlert, showInfoAlert } = useNotifications();
+  const { baseUrl, name: pollName, options } = useCurrentPoll();
+  const { contactAdministrator, showInfoAlert, showSuccessAlert } =
+    useNotifications();
 
   const [rateLaterInProgress, setRateLaterInProgress] = useState(false);
+  const [toggleEntitySeenProgress, setToggleEntitySeenProgress] =
+    useState(false);
+
+  const currentSeenStatus =
+    'individual_rating' in video ? video.individual_rating.entity_seen : false;
 
   const onRateLaterClick = async () => {
     // Do not trigger any additionnal rendering when the user clicks
@@ -39,6 +53,34 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
     } finally {
       setTimeout(() => {
         setRateLaterInProgress(false);
+      }, FEEDBACK_DURATION);
+    }
+  };
+
+  const onToggleEntitySeenClick = async () => {
+    if (toggleEntitySeenProgress && !isLoggedIn) {
+      return;
+    }
+
+    setToggleEntitySeenProgress(true);
+    let success = false;
+
+    try {
+      await updateContributorRatingEntitySeen(
+        pollName,
+        video.entity.uid,
+        currentSeenStatus == undefined ? true : !currentSeenStatus,
+        options?.comparisonsCanBePublic === true
+      );
+      success = true;
+    } catch {
+      contactAdministrator('error');
+    } finally {
+      setTimeout(async () => {
+        if (success && onContributorRatingUpdateSuccessCb) {
+          await onContributorRatingUpdateSuccessCb();
+        }
+        setToggleEntitySeenProgress(false);
       }, FEEDBACK_DURATION);
     }
   };
@@ -76,16 +118,33 @@ const VideoAnalysisActionBar = ({ video }: { video: Recommendation }) => {
         />
       </ButtonGroup>
       {isLoggedIn && (
-        <Tooltip title={`${t('actions.rateLater')}`} placement="bottom">
-          <Button
-            color="secondary"
-            variant="outlined"
-            onClick={onRateLaterClick}
-            disabled={rateLaterInProgress}
+        <ButtonGroup variant="outlined" color="secondary">
+          <Tooltip title={`${t('actions.rateLater')}`} placement="bottom">
+            <Button
+              color="secondary"
+              onClick={onRateLaterClick}
+              loading={rateLaterInProgress}
+            >
+              <Add />
+            </Button>
+          </Tooltip>
+          <Tooltip
+            title={
+              currentSeenStatus
+                ? t('actions.markVideoAsUnseen')
+                : t('actions.markVideoAsSeen')
+            }
+            placement="bottom"
           >
-            <Add />
-          </Button>
-        </Tooltip>
+            <Button
+              color="secondary"
+              onClick={onToggleEntitySeenClick}
+              loading={toggleEntitySeenProgress}
+            >
+              {currentSeenStatus ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
       )}
       <Button
         color="secondary"
