@@ -27,7 +27,7 @@ interface UseContributorRatingValue {
   reasonWhyPersonalScoresCannotBeActivated: ReasonWhyPersonalScoresCannotBeActivated;
   personalScoresActivated: boolean;
   setPersonalScoresActivated: (activated: boolean) => void;
-  contributorRating?: ContributorRating;
+  contributorRating?: ContributorRating | null;
   loadContributorRating?: () => Promise<void>;
   personalCriteriaScores?: ContributorCriteriaScore[];
 }
