@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -9,25 +9,29 @@ import CriteriaBarChart from 'src/components/CriteriaBarChart';
 import { VideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
+import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 import EntityCard from 'src/components/entity/EntityCard';
 import { useLoginState, useScrollToLocation } from 'src/hooks';
-import { Recommendation } from 'src/services/openapi';
-import { PersonalCriteriaScoresContextProvider } from 'src/hooks/usePersonalCriteriaScores';
+import { ContributorRating, Recommendation } from 'src/services/openapi';
+import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
 import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
-import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
-import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
-
 import VideoAnalysisActionBar from './VideoAnalysisActionBar';
+import useContributorRating from 'src/hooks/useContributorRating';
 
-export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
+export const VideoAnalysis = ({
+  entityResult,
+}: {
+  entityResult: Recommendation | ContributorRating;
+}) => {
   const { t } = useTranslation();
-  const [descriptionCollapsed, setDescriptionCollapsed] = React.useState(false);
-
+  const [descriptionCollapsed, setDescriptionCollapsed] = useState(false);
   const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
-
   useScrollToLocation();
+
+  const { contributorRating, loadContributorRating } = useContributorRating();
+  const video = contributorRating ?? entityResult;
 
   const entity = video.entity;
   const criteriaScores = video.collective_rating?.criteria_scores ?? [];
@@ -72,10 +76,18 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
             />
           </Grid2>
           <Grid2 size={12}>
-            <VideoAnalysisActionBar video={video} />
+            <VideoAnalysisActionBar
+              video={video}
+              onContributorRatingUpdateSuccessCb={loadContributorRating}
+            />
           </Grid2>
           <Grid2 size={12}>
-            <EntityCard result={video} actions={actions} displayImage={false} />
+            <EntityCard
+              result={video}
+              actions={actions}
+              displayImage={false}
+              showEntitySeenIndicator={true}
+            />
           </Grid2>
           {video.entity_contexts.length > 0 && (
             <Grid2 size={12}>
@@ -120,74 +132,72 @@ export const VideoAnalysis = ({ video }: { video: Recommendation }) => {
           {/* Data visualization. */}
           {shouldDisplayCharts && (
             <SelectedCriterionProvider>
-              <PersonalCriteriaScoresContextProvider uid={entity.uid}>
-                <Grid2
-                  size={{
-                    xs: 12,
-                    sm: 12,
-                    md: 6,
-                  }}
-                >
-                  <Paper>
-                    <Box
-                      sx={{
-                        p: 1,
-                        bgcolor: 'rgb(238, 238, 238)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography variant="h5">
-                        {t('entityAnalysisPage.chart.criteriaScores.title')}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        px: 2,
-                        pt: 1,
-                      }}
-                    >
-                      <PersonalScoreCheckbox />
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 1,
-                      }}
-                    >
-                      <CriteriaBarChart reco={video} />
-                    </Box>
-                  </Paper>
-                </Grid2>
-                <Grid2
-                  size={{
-                    xs: 12,
-                    sm: 12,
-                    md: 6,
-                  }}
-                >
-                  <Paper sx={{ height: '100%' }}>
-                    <Box
-                      sx={{
-                        p: 1,
-                        bgcolor: 'rgb(238, 238, 238)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography variant="h5">
-                        {t('criteriaScoresDistribution.title')}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        p: 1,
-                      }}
-                    >
-                      <CriteriaScoresDistribution reco={video} />
-                    </Box>
-                  </Paper>
-                </Grid2>
-              </PersonalCriteriaScoresContextProvider>
+              <Grid2
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 6,
+                }}
+              >
+                <Paper>
+                  <Box
+                    sx={{
+                      p: 1,
+                      bgcolor: 'rgb(238, 238, 238)',
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="h5">
+                      {t('entityAnalysisPage.chart.criteriaScores.title')}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      px: 2,
+                      pt: 1,
+                    }}
+                  >
+                    <PersonalScoreCheckbox />
+                  </Box>
+                  <Box
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    <CriteriaBarChart entityResult={video} />
+                  </Box>
+                </Paper>
+              </Grid2>
+              <Grid2
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 6,
+                }}
+              >
+                <Paper sx={{ height: '100%' }}>
+                  <Box
+                    sx={{
+                      p: 1,
+                      bgcolor: 'rgb(238, 238, 238)',
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="h5">
+                      {t('criteriaScoresDistribution.title')}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    <CriteriaScoresDistribution entityResult={video} />
+                  </Box>
+                </Paper>
+              </Grid2>
             </SelectedCriterionProvider>
           )}
         </Grid2>

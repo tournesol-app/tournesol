@@ -22,6 +22,7 @@ import {
   YOUTUBE_POLL_NAME,
 } from 'src/utils/constants';
 import { extractVideoId } from 'src/utils/video';
+import { ContributorRatingContextProvider } from 'src/hooks/useContributorRating';
 
 const CandidateAnalysisPage = React.lazy(
   () => import('src/pages/entities/CandidateAnalysisPage')
@@ -163,9 +164,11 @@ const EntityAnalysisPage = () => {
     }
 
     async function getEntity(createVideo = true): Promise<void> {
+      let reco: Recommendation | null = null;
+
       try {
-        const entity = await getEntityWithPollStats();
-        setEntity(entity);
+        reco = await getEntityWithPollStats();
+        setEntity(reco);
       } catch (error) {
         const reason: ApiError = error;
         if (reason.status === 404 && createVideo) {
@@ -187,24 +190,28 @@ const EntityAnalysisPage = () => {
 
   return (
     <LoaderWrapper isLoading={isLoading}>
-      {entity ? (
-        <>
-          {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
-            <CandidateAnalysisPage entity={entity} />
-          )}
-          {pollName === YOUTUBE_POLL_NAME && <VideoAnalysis video={entity} />}
-        </>
-      ) : (
-        <Container>
-          <Box
-            sx={{
-              py: 2,
-            }}
-          >
-            <EntityNotFound apiError={apiError} />
-          </Box>
-        </Container>
-      )}
+      <ContributorRatingContextProvider uid={uid}>
+        {entity ? (
+          <>
+            {pollName === PRESIDENTIELLE_2022_POLL_NAME && (
+              <CandidateAnalysisPage candidate={entity} />
+            )}
+            {pollName === YOUTUBE_POLL_NAME && (
+              <VideoAnalysis entityResult={entity} />
+            )}
+          </>
+        ) : (
+          <Container>
+            <Box
+              sx={{
+                py: 2,
+              }}
+            >
+              <EntityNotFound apiError={apiError} />
+            </Box>
+          </Container>
+        )}
+      </ContributorRatingContextProvider>
     </LoaderWrapper>
   );
 };
