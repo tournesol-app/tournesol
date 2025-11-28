@@ -6,7 +6,7 @@ import { Box, Collapse, Grid2, Paper, Typography } from '@mui/material';
 
 import CollapseButton from 'src/components/CollapseButton';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
-import { VideoPlayer } from 'src/components/entity/EntityImagery';
+import { YoutubeVideoPlayer } from 'src/components/entity/EntityImagery';
 import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistribution';
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
@@ -69,7 +69,7 @@ export const VideoAnalysis = ({
           }}
         >
           <Grid2 sx={{ aspectRatio: '16 / 9' }} size={12}>
-            <VideoPlayer
+            <YoutubeVideoPlayer
               videoId={entity.metadata.video_id}
               duration={entity.metadata.duration}
               controls
