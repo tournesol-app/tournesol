@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 
 import { Avatar, Box, useTheme } from '@mui/material';
 
 import { InternalLink } from 'src/components';
-import { useCurrentPoll } from 'src/hooks';
+import { useCurrentPoll, useLoginState } from 'src/hooks';
 import { TypeEnum } from 'src/services/openapi';
 import { absolutePollBasePath } from 'src/utils/navigation';
 import { JSONValue, EntityObject } from 'src/utils/types';
 import { convertDurationToClockDuration, idFromUid } from 'src/utils/video';
+import { updateContributorRatingEntitySeen } from 'src/utils/api/contributorRatings';
+import { UID_YT_NAMESPACE } from 'src/utils/constants';
+
+// Check if the video can be considered watched after each tick (in ms).
+const PROGRESS_TICK_MS = 1000;
+// A video is considered watched if more than this fraction of time has
+// passed.
+const WATCHED_FRACTION = 0.66;
 
 export const DurationWrapper = React.forwardRef(function DurationWrapper(
   {
@@ -61,7 +69,7 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
   );
 });
 
-export const VideoPlayer = ({
+export const YoutubeVideoPlayer = ({
   videoId,
   duration,
   controls = true,
@@ -70,6 +78,40 @@ export const VideoPlayer = ({
   duration?: number | null;
   controls?: boolean;
 }) => {
+  const { name: pollName, options } = useCurrentPoll();
+  const { isLoggedIn } = useLoginState();
+
+  const [playRate, setPlayRate] = useState(1);
+  const [secondsPlayed, setSecondsPlayed] = useState(0);
+  const [watched, setWatched] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn || !duration || watched) {
+      return;
+    }
+
+    const markAsWatched = async () => {
+      setWatched(true);
+
+      try {
+        await updateContributorRatingEntitySeen(
+          pollName,
+          `${UID_YT_NAMESPACE}${videoId}`,
+          true,
+          options?.comparisonsCanBePublic === true
+        );
+      } catch {
+        {
+          console.error('Failed to update the contributor rating.');
+        }
+      }
+    };
+
+    if (secondsPlayed > duration * WATCHED_FRACTION) {
+      markAsWatched();
+    }
+  }, [duration, isLoggedIn, pollName, secondsPlayed]);
+
   return (
     <ReactPlayer
       url={`https://youtube.com/watch?v=${videoId}`}
@@ -80,6 +122,14 @@ export const VideoPlayer = ({
       wrapper={DurationWrapper}
       duration={duration}
       controls={controls}
+      progressInterval={PROGRESS_TICK_MS}
+      onProgress={() =>
+        setSecondsPlayed(
+          (current) => current + (playRate * PROGRESS_TICK_MS) / 1000
+        )
+      }
+      playbackRate={playRate}
+      onPlaybackRateChange={(rate: number) => setPlayRate(rate)}
       config={{
         playerVars: {
           /*
@@ -117,7 +167,7 @@ const EntityImagery = ({
             width: '100%',
           }}
         >
-          <VideoPlayer
+          <YoutubeVideoPlayer
             videoId={entity.metadata.video_id}
             duration={entity.metadata.duration}
           />
