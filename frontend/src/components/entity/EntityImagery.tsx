@@ -110,7 +110,15 @@ export const YoutubeVideoPlayer = ({
     if (secondsPlayed > duration * WATCHED_FRACTION) {
       markAsWatched();
     }
-  }, [duration, isLoggedIn, pollName, secondsPlayed]);
+  }, [
+    duration,
+    isLoggedIn,
+    options?.comparisonsCanBePublic,
+    pollName,
+    secondsPlayed,
+    videoId,
+    watched,
+  ]);
 
   return (
     <ReactPlayer
