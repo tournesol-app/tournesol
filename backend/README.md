@@ -41,6 +41,7 @@ Django application; and how to install and configure a PostgreSQL server.
 - `python` >= 3.9
 - `postgresql-13-server`
 - `gettext` >= 0.21
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/) >= 0.9
 
 #### Procedure
 
@@ -64,27 +65,21 @@ Django application; and how to install and configure a PostgreSQL server.
   - `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PASSWORD`
   - `MEDIA_ROOT` and `STATIC_ROOT`
 
-- Create a python env and install the requirements
-  `pip install -r requirements.txt`
+- Create a python env with `uv` and install the requirements  
+  `uv sync --locked`
 
-- Create the database cache `python manage.py createcachetable`
+- Create the database cache  
+  `uv run python manage.py createcachetable`
 
-- Install migrations on database `python manage.py migrate`
+- Install migrations on database  
+  `uv run python manage.py migrate`
 
-- Create superuser `python manage.py createsuperuser`
+- Create superuser  
+  `uv run python manage.py createsuperuser`
 
-- Run the server `python manage.py runserver`
+- Run the server  
+  `uv run python manage.py runserver`
 
-#### Install the development tools
-
-The development tools contain the requirements to run the tests and the code
-quality checks.
-
-These tools are already included in the `dev-env`.
-
-```shell
-pip install -r tests/requirements.txt
-```
 
 ### Set up a Google API Key
 
@@ -167,10 +162,10 @@ filesystem path readable and writable by the user running the command.
 
 ```shell
 # with a manually installed back end
-python manage.py create_dataset
+uv run python manage.py create_dataset
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api python manage.py create_dataset
+docker exec tournesol-dev-api uv run python manage.py create_dataset
 ```
 
 `python manage.py watch_account_number`
@@ -214,20 +209,20 @@ Note that the script must be run from the root of the back end folder.
 
 ```shell
 # with a manually installed back end
-./scripts/ci/lint.sh
+uv run ./scripts/ci/lint.sh
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api scripts/ci/lint.sh
+docker exec tournesol-dev-api uv run scripts/ci/lint.sh
 ```
 
 Files and folders can be passed as parameters.
 
 ```shell
 # with a manually installed back end
-./scripts/ci/lint.sh core/apps.py core/models/
+uv run ./scripts/ci/lint.sh core/apps.py core/models/
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api scripts/ci/lint.sh core/apps.py core/models/
+docker exec tournesol-dev-api uv run scripts/ci/lint.sh core/apps.py core/models/
 ```
 
 An output finishing by `+ exit 0` means all checks have been successful,
@@ -239,10 +234,10 @@ Some tools, like `isort` are able to automatically fixes the target files.
 
 ```shell
 # with a manually installed back end
-./scripts/ci/lint-fix.sh
+uv run ./scripts/ci/lint-fix.sh
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api scripts/ci/lint-fix.sh
+docker exec tournesol-dev-api uv run scripts/ci/lint-fix.sh
 ```
 
 ## F.A.Q.
