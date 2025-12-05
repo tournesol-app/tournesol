@@ -241,6 +241,64 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         # Rate-later items are saved per poll.
         self.assertEqual(RateLater.objects.filter(poll=other_poll, user=self.user).count(), 0)
 
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_auth_201_create_with_param_entity_seen(self) -> None:
+        """
+        An authenticated user can add an entity to its rate-later list and
+        mark it as seen.
+        """
+        initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
+
+        self.assertEqual(
+            ContributorRating.objects.filter(poll=self.poll, user=self.user).count(),
+            0
+        )
+
+        self.client.force_authenticate(self.user)
+        data = {"entity": {"uid": self._uid_not_in_db}}
+        response = self.client.post(self.rate_later_base_url + "?entity_seen=true", data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            RateLater.objects.filter(poll=self.poll, user=self.user).count(),
+            initial_nbr + 1,
+        )
+
+        ratings = ContributorRating.objects.filter(poll=self.poll, user=self.user)
+        rating = ratings[0]
+        self.assertEqual(ratings.count(), 1)
+        # The is_public field should have its default value.
+        self.assertEqual(rating.is_public, False)
+
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_auth_201_create_with_param_entity_seen_and_existing_rating(self) -> None:
+        """
+        An authenticated user can add an entity to its rate-later list and
+        mark it as seen, even if the related ContributorRating already exists.
+        """
+        self.client.force_authenticate(self.user)
+        data = {"entity": {"uid": self._uid_not_in_db}}
+        response = self.client.post(self.rate_later_base_url + "?entity_seen=true", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        rating = ContributorRating.objects.get(poll=self.poll, user=self.user, entity__uid=self._uid_not_in_db)
+        self.assertEqual(rating.entity_seen, True)
+        self.assertEqual(rating.is_public, False)
+
+        rating.is_public = True
+        rating.entity_seen = False
+        rating.save(update_fields=["entity_seen", "is_public"])
+        RateLater.objects.filter(user=self.user).delete()
+
+        response = self.client.post(self.rate_later_base_url + "?entity_seen=true", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        rating.refresh_from_db()
+        # Only the entity_seen field should be updated.
+        self.assertEqual(rating.is_public, True)
+        self.assertEqual(rating.entity_seen, True)
+
+
     @override_settings(YOUTUBE_API_KEY=None)
     def test_auth_409_create_two_times(self) -> None:
         """
