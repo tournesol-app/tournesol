@@ -54,6 +54,14 @@ class RateLaterQuerysetMixin(PollScopedViewMixin):
                 " or there is an other error with the database query."
             ),
         },
+        parameters=[
+            OpenApiParameter(
+                name="entity_seen",
+                description='If "true", also mark the entities as '
+                "seen/watched/read/understood by the user",
+                required=False,
+            ),
+        ],
     ),
 )
 class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
@@ -68,6 +76,15 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         rate_later = serializer.save()
+
+        if self.request.query_params.get("entity_seen", "false") == "true":
+            ContributorRating.objects.update_or_create(
+                poll_id=self.poll_from_url.id,
+                user_id=self.request.user.id,
+                entity_id=rate_later.entity.pk,
+                defaults={"entity_seen": True},
+            )
+
         self.prefetch_entity(rate_later)
 
 

@@ -26,12 +26,12 @@ const BUNDLE_OVERFETCH_FACTOR = 3;
  *       executed here. Investigate if it's possible.
  */
 const createContextMenu = function createContextMenu() {
-  const addToRateLaterContextAction = (infos, tab) => {
+  const addToRateLaterContextAction = (infos, tab, entitySeen = false) => {
     const videoId = extractVideoId(infos.linkUrl);
     if (!videoId) {
       alertUseOnLinkToYoutube(tab);
     } else {
-      addRateLater(videoId).then((response) => {
+      addRateLater(videoId, entitySeen).then((response) => {
         if (!response.success) {
           chrome.tabs.query(
             { active: true, currentWindow: true },
@@ -65,7 +65,7 @@ const createContextMenu = function createContextMenu() {
         '*://*.youtu.be/*',
         '*://tournesol.app/*',
       ],
-      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab),
+      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab, false),
     });
 
     chrome.contextMenus.create({
@@ -77,7 +77,7 @@ const createContextMenu = function createContextMenu() {
         '*://*.youtu.be/*',
         '*://tournesol.app/*',
       ],
-      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab),
+      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab, true),
     });
   });
 };
