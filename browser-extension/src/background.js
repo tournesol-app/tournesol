@@ -26,21 +26,8 @@ const BUNDLE_OVERFETCH_FACTOR = 3;
  *       executed here. Investigate if it's possible.
  */
 const createContextMenu = function createContextMenu() {
-  chrome.contextMenus.removeAll(function () {
-    chrome.contextMenus.create({
-      id: 'tournesol_add_rate_later',
-      title: chrome.i18n.getMessage('contextMenuRateLater'),
-      contexts: ['link'],
-      targetUrlPatterns: [
-        '*://*.youtube.com/*',
-        '*://*.youtu.be/*',
-        '*://tournesol.app/*',
-      ],
-    });
-  });
-
-  chrome.contextMenus.onClicked.addListener(function (e, tab) {
-    const videoId = extractVideoId(e.linkUrl);
+  const addToRateLaterContextAction = (infos, tab) => {
+    const videoId = extractVideoId(infos.linkUrl);
     if (!videoId) {
       alertUseOnLinkToYoutube(tab);
     } else {
@@ -66,8 +53,35 @@ const createContextMenu = function createContextMenu() {
         }
       });
     }
+  };
+
+  chrome.contextMenus.removeAll(function () {
+    chrome.contextMenus.create({
+      id: 'tournesol_add_rate_later',
+      title: chrome.i18n.getMessage('contextMenuRateLater'),
+      contexts: ['link'],
+      targetUrlPatterns: [
+        '*://*.youtube.com/*',
+        '*://*.youtu.be/*',
+        '*://tournesol.app/*',
+      ],
+      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab),
+    });
+
+    chrome.contextMenus.create({
+      id: 'tournesol_add_rate_later_and_watched',
+      title: chrome.i18n.getMessage('contextMenuRateLaterAndWatched'),
+      contexts: ['link'],
+      targetUrlPatterns: [
+        '*://*.youtube.com/*',
+        '*://*.youtu.be/*',
+        '*://tournesol.app/*',
+      ],
+      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab),
+    });
   });
 };
+
 createContextMenu();
 
 function getDateThreeWeeksAgo() {

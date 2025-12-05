@@ -18,8 +18,12 @@
     "message": "Importer l'historique YouTube"
   },
   "contextMenuRateLater": {
-    "message": "Comparer plus tard sur Tournesol",
-    "description": "Label du menu permettant d'ajouter une vidéo à sa liste à Comparer plus tard (lors d'un clic droit sur un lien)."
+    "message": "Comparer plus tard",
+    "description": "Label du menu contextuel permettant d'ajouter une vidéo à sa liste à Comparer plus tard (clic droit sur un lien)."
+  },
+  "contextMenuRateLaterAndWatched": {
+    "message": "Comparer plus tard et marquer comme vu",
+    "description": "Label du menu contextuel permettant d'ajouter une vidéo à sa liste à Comparer plus tard, en marquer la vidéo comme vu."
   },
   "recommendedByTournesol": {
     "message": "Recommandées par Tournesol",
