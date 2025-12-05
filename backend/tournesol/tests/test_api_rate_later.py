@@ -246,7 +246,7 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
     def test_auth_201_create_with_param_entity_seen(self) -> None:
         """
         An authenticated user can add an entity to its rate-later list and
-        mark it as seen.
+        mark it as seen/watched/etc.
         """
         initial_nbr = RateLater.objects.filter(poll=self.poll, user=self.user).count()
 
@@ -276,7 +276,8 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
     def test_auth_201_create_with_param_entity_seen_and_existing_rating(self) -> None:
         """
         An authenticated user can add an entity to its rate-later list and
-        mark it as seen, even if the related ContributorRating already exists.
+        mark it as seen/watched/etc., even if the related ContributorRating
+        already exists.
         """
         self.client.force_authenticate(self.user)
         data = {"entity": {"uid": self._uid_not_in_db}}
