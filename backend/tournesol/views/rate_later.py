@@ -76,6 +76,7 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         rate_later = serializer.save()
+        self.prefetch_entity(rate_later)
 
         if self.request.query_params.get("entity_seen", "false") == "true":
             ContributorRating.objects.update_or_create(
@@ -84,8 +85,6 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
                 entity_id=rate_later.entity.pk,
                 defaults={"entity_seen": True},
             )
-
-        self.prefetch_entity(rate_later)
 
 
 @extend_schema_view(
