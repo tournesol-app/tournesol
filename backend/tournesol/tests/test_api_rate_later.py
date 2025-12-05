@@ -73,7 +73,7 @@ class RateLaterCommonMixinTestCase:
         )
 
 
-class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
+class RateLaterListTestCase(RateLaterCommonMixinTestCase, TransactionTestCase):
     """
     TestCase of the `RateLaterList` API.
 
@@ -268,8 +268,9 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         ratings = ContributorRating.objects.filter(poll=self.poll, user=self.user)
         rating = ratings[0]
         self.assertEqual(ratings.count(), 1)
-        # The is_public field should have its default value.
-        self.assertEqual(rating.is_public, False)
+        # By default, the rate-later API should set the `is_public` field to True.
+        self.assertEqual(rating.is_public, True)
+        self.assertEqual(rating.entity_seen, True)
 
 
     @override_settings(YOUTUBE_API_KEY=None)
@@ -284,10 +285,10 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         response = self.client.post(self.rate_later_base_url + "?entity_seen=true", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         rating = ContributorRating.objects.get(poll=self.poll, user=self.user, entity__uid=self._uid_not_in_db)
+        self.assertEqual(rating.is_public, True)
         self.assertEqual(rating.entity_seen, True)
-        self.assertEqual(rating.is_public, False)
 
-        rating.is_public = True
+        rating.is_public = False
         rating.entity_seen = False
         rating.save(update_fields=["entity_seen", "is_public"])
         RateLater.objects.filter(user=self.user).delete()
@@ -295,8 +296,8 @@ class RateLaterListTestCase(RateLaterCommonMixinTestCase, TestCase):
         response = self.client.post(self.rate_later_base_url + "?entity_seen=true", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         rating.refresh_from_db()
-        # Only the entity_seen field should be updated.
-        self.assertEqual(rating.is_public, True)
+        # Only the `entity_seen` field should be updated.
+        self.assertEqual(rating.is_public, False)
         self.assertEqual(rating.entity_seen, True)
 
 

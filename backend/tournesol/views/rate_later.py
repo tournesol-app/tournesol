@@ -3,6 +3,7 @@ API endpoint to manipulate contributor's rate later list
 """
 
 from django.db.models import Prefetch, prefetch_related_objects
+from django.db.utils import IntegrityError
 from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiResponse,
@@ -79,12 +80,26 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
         self.prefetch_entity(rate_later)
 
         if self.request.query_params.get("entity_seen", "false") == "true":
-            ContributorRating.objects.update_or_create(
-                poll_id=self.poll_from_url.id,
-                user_id=self.request.user.id,
-                entity_id=rate_later.entity.pk,
-                defaults={"entity_seen": True},
-            )
+            # We could have used update_or_create instead of a try/except
+            # block, but this would reset the value of the field `is_public`
+            # with each update, regardless of the user's preferences. In
+            # Django 4.2, update_or_create doesn't distinguish between the
+            # fields that need to be created and those that need to be
+            # updated.
+            try:
+                ContributorRating.objects.create(
+                    poll_id=self.poll_from_url.id,
+                    user_id=self.request.user.id,
+                    entity_id=rate_later.entity.pk,
+                    is_public=True,
+                    entity_seen=True,
+                )
+            except IntegrityError:
+                ContributorRating.objects.filter(
+                    poll_id=self.poll_from_url.id,
+                    user_id=self.request.user.id,
+                    entity_id=rate_later.entity.pk,
+                ).update(entity_seen=True)
 
 
 @extend_schema_view(
