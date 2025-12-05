@@ -3,6 +3,7 @@ API endpoint to manipulate contributor's rate later list
 """
 
 from django.db.models import Prefetch, prefetch_related_objects
+from django.db.utils import IntegrityError
 from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiResponse,
@@ -54,6 +55,14 @@ class RateLaterQuerysetMixin(PollScopedViewMixin):
                 " or there is an other error with the database query."
             ),
         },
+        parameters=[
+            OpenApiParameter(
+                name="entity_seen",
+                description='If "true", also mark the entities as '
+                "seen/watched/read/understood by the user",
+                required=False,
+            ),
+        ],
     ),
 )
 class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
@@ -69,6 +78,28 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
     def perform_create(self, serializer):
         rate_later = serializer.save()
         self.prefetch_entity(rate_later)
+
+        if self.request.query_params.get("entity_seen", "false") == "true":
+            # We could have used update_or_create instead of a try/except
+            # block, but this would reset the value of the field `is_public`
+            # with each update, regardless of the user's preferences. In
+            # Django 4.2, update_or_create doesn't distinguish between the
+            # fields that need to be created and those that need to be
+            # updated.
+            try:
+                ContributorRating.objects.create(
+                    poll_id=self.poll_from_url.id,
+                    user_id=self.request.user.id,
+                    entity_id=rate_later.entity.pk,
+                    is_public=True,
+                    entity_seen=True,
+                )
+            except IntegrityError:
+                ContributorRating.objects.filter(
+                    poll_id=self.poll_from_url.id,
+                    user_id=self.request.user.id,
+                    entity_id=rate_later.entity.pk,
+                ).update(entity_seen=True)
 
 
 @extend_schema_view(
