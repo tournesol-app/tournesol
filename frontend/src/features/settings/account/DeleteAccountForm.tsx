@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { TextField, Typography, Button, useTheme } from '@mui/material';
 
@@ -16,14 +16,14 @@ const DeleteAccountForm = () => {
   const [keyword, setKeyword] = useState('');
   const { logout } = useLoginState();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const deleteAccount = async () => {
     // TODO: track the event only when the deletion is successful
     await UsersService.usersMeDestroy();
     trackEvent(TRACKED_EVENTS.accountDeleted);
     logout();
-    history.push('/');
+    navigate('/');
   };
 
   return (

@@ -6,16 +6,13 @@ import { Box, Button, Grid2, Paper, Typography, useTheme } from '@mui/material';
 import { VolunteerActivism } from '@mui/icons-material';
 
 import SectionTitle from './SectionTitle';
+import SectionDescription from './SectionDescription';
 
 interface FundingSectionProps {
   linkToDonatePage?: boolean;
-  fullWidth?: boolean;
 }
 
-const FundingSection = ({
-  linkToDonatePage = true,
-  fullWidth = false,
-}: FundingSectionProps) => {
+const FundingSection = ({ linkToDonatePage = true }: FundingSectionProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -30,30 +27,10 @@ const FundingSection = ({
 
   return (
     <>
-      <SectionTitle
-        title={t('fundingSection.supportUs')}
-        dividerWidthXl={fullWidth ? '100%' : undefined}
-        headingId="funding"
+      <SectionTitle title={t('fundingSection.supportUs')} headingId="funding" />
+      <SectionDescription
+        description={t('fundingSection.tournesolExistsThanksToYourInvolvement')}
       />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          mb: 6,
-        }}
-      >
-        <Box sx={{ width: { lg: '44%', xl: '44%' } }}>
-          <Typography
-            variant="h3"
-            sx={{
-              textAlign: 'center',
-              letterSpacing: '0.8px',
-            }}
-          >
-            {t('fundingSection.tournesolExistsThanksToYourInvolvement')}
-          </Typography>
-        </Box>
-      </Box>
       <Grid2
         container
         spacing={4}
@@ -66,7 +43,6 @@ const FundingSection = ({
             sm: 12,
             md: 4,
             lg: 4,
-            xl: fullWidth ? 4 : 3,
           }}
         >
           <Paper elevation={0}>
@@ -95,7 +71,6 @@ const FundingSection = ({
             sm: 12,
             md: 4,
             lg: 4,
-            xl: fullWidth ? 4 : 3,
           }}
         >
           <Paper elevation={0}>
@@ -124,7 +99,6 @@ const FundingSection = ({
             sm: 12,
             md: 4,
             lg: 4,
-            xl: fullWidth ? 4 : 3,
           }}
         >
           <Paper elevation={0}>
@@ -150,15 +124,15 @@ const FundingSection = ({
         </Grid2>
         {linkToDonatePage && (
           <Grid2
-            size={9}
+            size={12}
             sx={{
               display: 'flex',
               justifyContent: 'center',
             }}
           >
             <Button
+              fullWidth
               variant="contained"
-              size="large"
               component={Link}
               to="/about/donate"
               startIcon={<VolunteerActivism />}

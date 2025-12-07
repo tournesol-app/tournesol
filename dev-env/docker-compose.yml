@@ -1,7 +1,7 @@
 services:
   db:
     container_name: tournesol-dev-db
-    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2023-10-27}
+    image: ${DB_IMAGE:-ghcr.io/tournesol-app/postgres-dev-env:2025-07-12}
     user: ${DB_UID}:${DB_GID}
     volumes:
       - ./db-data:/var/lib/postgresql/data
@@ -25,18 +25,23 @@ services:
       dockerfile: dev-env/Dockerfile
     container_name: tournesol-dev-api
     environment:
-      - SETTINGS_FILE=/backend/dev-env/settings-tournesol.yaml
+      - SETTINGS_FILE=/backend/dev-env/settings-tournesol-local.yaml
+      - UV_PROJECT_ENVIRONMENT=/backend/venv
     entrypoint: ["/bin/bash", "-eux", "-c"]
     command:
       - |
-        pip install -r tests/requirements.txt -r requirements.txt
-        python manage.py createcachetable
-        python manage.py migrate
-        django-admin compilemessages
-        python manage.py runserver 0.0.0.0:8000
+        cp -n ./dev-env/settings-tournesol-example.yaml ./dev-env/settings-tournesol-local.yaml 
+        pip install uv==0.9.9
+        uv sync --locked
+        uv run python manage.py createcachetable
+        uv run python manage.py migrate
+        uv run django-admin compilemessages
+        uv run python manage.py runserver 0.0.0.0:8000
     volumes:
       - ../backend:/backend
       - ../solidago:/solidago
+      - type: volume  # Use non-mounted volume as virtualenv content may depend on platform
+        target: /backend/venv
     ports:
       - "127.0.0.1:8000:8000"
     networks:

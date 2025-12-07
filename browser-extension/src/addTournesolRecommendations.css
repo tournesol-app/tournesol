@@ -28,6 +28,15 @@
   );
 }
 
+#header[hidden]+#tournesol_container {
+  /*
+  When YT history is disabled (and categories "header" is hidden),
+  in some cases (e.g when going back to the homepage from a watch page)
+  the container would be truncated without this extra margin.
+  */
+  margin-top: 56px;
+}
+
 /**
  * ---- start: style of the main banner ----
  */

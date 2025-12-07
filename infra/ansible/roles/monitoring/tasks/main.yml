@@ -24,18 +24,6 @@
     install_recommends: no
     update_cache: yes
 
-- name: Add Buster repository
-  apt_repository:
-    repo: "deb {{buster_mirror}} buster main"
-    state: present
-
-- name: Install GeoIP database extra from Buster
-  apt:
-    name:
-      - geoip-database-extra
-    install_recommends: no
-    update_cache: yes
-
 - name: Copy Nginx log format
   copy:
     src: nginx-log-format.conf
@@ -247,6 +235,16 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK DATABASE"
     block: |
       wal = true
+  notify:
+    - Enable and restart Grafana
+
+- name: Disable Grafana internal metrics
+  blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: "\\[metrics\\]"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK METRICS"
+    block: |
+      enabled = false
   notify:
     - Enable and restart Grafana
 

@@ -268,6 +268,7 @@ OAUTH2_PROVIDER = {
         "write": "Write scope",
         "groups": "Access to your groups",
     },
+    "DEFAULT_SCOPES": ["read", "write", "groups"],
     "OAUTH2_VALIDATOR_CLASS": "core.oauth_validator.CustomOAuth2Validator",
     "OIDC_ISS_ENDPOINT": server_settings.get("OIDC_ISS_ENDPOINT", ""),
     "ACCESS_TOKEN_EXPIRE_SECONDS": server_settings.get(

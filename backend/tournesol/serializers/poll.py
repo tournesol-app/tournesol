@@ -69,6 +69,7 @@ class IndividualRatingSerializer(ModelSerializer):
         model = ContributorRating
         fields = [
             "is_public",
+            "entity_seen",
             "n_comparisons",
         ]
         read_only_fields = fields

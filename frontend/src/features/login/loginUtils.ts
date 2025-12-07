@@ -12,5 +12,4 @@ export const hasValidToken = (login: LoginState) => {
   return true;
 };
 
-export const isLoggedIn = (login: LoginState) =>
-  login.status === 'idle' && hasValidToken(login);
+export const isLoggedIn = (login: LoginState) => Boolean(login.access_token);

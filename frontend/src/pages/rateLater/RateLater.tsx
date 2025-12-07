@@ -18,7 +18,11 @@ import EntityList from 'src/features/entities/EntityList';
 import RateLaterAddForm from 'src/features/rateLater/RateLaterAddForm';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
 import { ApiError, RateLater, UsersService } from 'src/services/openapi';
-import { CompareNowAction, RemoveFromRateLater } from 'src/utils/action';
+import {
+  CompareNowAction,
+  RemoveFromRateLater,
+  ToggleEntitySeen,
+} from 'src/utils/action';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
 import { getWebExtensionUrl } from 'src/utils/extension';
@@ -173,10 +177,14 @@ const RateLaterPage = () => {
     loadList();
   }, [loadList]);
 
-  const rateLaterPageActions = [
-    CompareNowAction,
-    RemoveFromRateLater(loadList),
-  ];
+  const rateLaterPageActions = React.useMemo(
+    () => [
+      CompareNowAction,
+      RemoveFromRateLater(loadList),
+      ToggleEntitySeen(loadList),
+    ],
+    [loadList]
+  );
 
   const [where2findVideosOpen, setWhere2findVideosOpen] = useState(false);
 
@@ -339,7 +347,10 @@ const RateLaterPage = () => {
                 entities={rateLaterList}
                 actions={rateLaterPageActions}
                 actionsIfUnavailable={[RemoveFromRateLater(loadList)]}
-                cardProps={{ showRatingControl: true }}
+                cardProps={{
+                  showEntitySeenIndicator: true,
+                  showRatingControl: true,
+                }}
                 displayContextAlert={true}
               />
             </LoaderWrapper>

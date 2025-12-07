@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Route, Switch } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { SpyInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
@@ -106,12 +106,13 @@ describe('GenericPollUserSettingsForm', () => {
         render(
           <reactRedux.Provider store={store}>
             <SnackbarProvider maxSnack={6} autoHideDuration={6000}>
-              <MemoryRouter initialEntries={['settings/preferences']}>
-                <Switch>
-                  <Route path="settings/preferences">
-                    <TournesolUserSettingsForm />
-                  </Route>
-                </Switch>
+              <MemoryRouter initialEntries={['/settings/preferences']}>
+                <Routes>
+                  <Route
+                    path="/settings/preferences"
+                    element={<TournesolUserSettingsForm />}
+                  />
+                </Routes>
               </MemoryRouter>
             </SnackbarProvider>
           </reactRedux.Provider>

@@ -94,8 +94,8 @@ class RatingApi(TestCase):
 
     def test_authenticated_can_create_with_existing_video(self):
         """
-        An authenticated user can create a rating for an existing video. The
-        rating is private by default.
+        An authenticated user can create a rating for an existing video. By
+        default the rating is private, and the entity is considered "unseen".
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
@@ -111,11 +111,40 @@ class RatingApi(TestCase):
             entity__uid=self.video3.uid,
         )
         self.assertEqual(rating.is_public, False)
+        self.assertEqual(rating.entity_seen, False)
+
+    def test_authenticated_can_create_with_existing_video_and_optional_fields(self):
+        """
+        An authenticated user can set the "public" and "seen" statuses when
+        creating a new rating.
+        """
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(
+            self.ratings_base_url,
+            {
+                "uid": self.video3.uid,
+                "is_public": True,
+                "entity_seen": True,
+            },
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["entity_contexts"], [])
+
+        rating = ContributorRating.objects.select_related("poll", "user", "entity").get(
+            poll=self.poll_videos,
+            user=self.user1,
+            entity__uid=self.video3.uid,
+        )
+        self.assertEqual(rating.is_public, True)
+        self.assertEqual(rating.entity_seen, True)
 
     def test_authenticated_can_create_with_non_existing_video(self):
         """
         An authenticated user can create a rating even if the video is not
-        already present in the database. The rating is private by default.
+        already present in the database. By default the rating is private,
+        and the entity is considered "unseen".
         """
         self.client.force_authenticate(user=self.user1)
         response = self.client.post(
@@ -128,6 +157,7 @@ class RatingApi(TestCase):
             poll=self.poll_videos, user=self.user1, entity__uid="yt:NeADlWSDFAQ"
         )
         self.assertEqual(rating.is_public, False)
+        self.assertEqual(rating.entity_seen, False)
 
     def test_authenticated_cannot_create_with_unknonwn_non_video_entity(self):
         poll2 = PollFactory(entity_type="candidate_fr_2022")
@@ -166,10 +196,12 @@ class RatingApi(TestCase):
         self.assertEqual(response.data["individual_rating"], {
             "n_comparisons": 0,
             "is_public": True,
+            "entity_seen": False,
             "criteria_scores": [],
             "last_compared_at": None,
         })
         self.assertEqual(response.data["collective_rating"], {
+            "criteria_scores": [],
             "tournesol_score": 50,
             "n_contributors": 20,
             "n_comparisons": 30,
@@ -282,6 +314,7 @@ class RatingApi(TestCase):
             {
                 "n_comparisons": 1,
                 "is_public": False,
+                "entity_seen": True,
                 "criteria_scores": [],
                 "last_compared_at": (
                     self.user1.comparisons.last().datetime_lastedit.isoformat().replace("+00:00", "Z")
@@ -682,6 +715,48 @@ class RatingApi(TestCase):
         )
         rating.refresh_from_db()
         self.assertEqual(rating.is_public, True)
+
+    def test_authenticated_can_update_entity_seen(self):
+        """
+        An authenticated user can update the "seen" status of its
+        rating, in a given poll.
+        """
+        self.client.force_authenticate(self.user1)
+        rating = ContributorRating.objects.get(
+            poll=self.poll_videos, user=self.user1, entity=self.video1
+        )
+
+        rating.entity_seen = False
+        rating.save(update_fields=["entity_seen"])
+
+        # Create contributor score, that will be returned in the PATCH response
+        ContributorRatingCriteriaScoreFactory(
+            contributor_rating=rating,
+            criteria="test-criteria",
+            score=4,
+        )
+
+        response = self.client.patch(
+            "{}{}/".format(self.ratings_base_url, self.video1.uid),
+            data={"entity_seen": True},
+            format="json",
+        )
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["entity_contexts"], [])
+        self.assertEqual(response_data["individual_rating"]["entity_seen"], True)
+        self.assertEqual(
+            response_data["individual_rating"]["criteria_scores"],
+            [
+                {
+                    "criteria": "test-criteria",
+                    "score": 4.0,
+                    "uncertainty": 0.0,
+                }
+            ],
+        )
+        rating.refresh_from_db()
+        self.assertEqual(rating.entity_seen, True)
 
     def test_authenticated_can_update_public_status_all(self):
         """

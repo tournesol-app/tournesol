@@ -2115,6 +2115,12 @@ paths:
         schema:
           type: string
         required: true
+      - in: query
+        name: entity_seen
+        schema:
+          type: string
+        description: If "true", also mark the entities as seen/watched/read/understood
+          by the user
       tags:
       - users
       requestBody:
@@ -2980,7 +2986,7 @@ components:
           readOnly: true
         collective_rating:
           allOf:
-          - $ref: '#/components/schemas/CollectiveRating'
+          - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
       required:
@@ -3006,7 +3012,7 @@ components:
           readOnly: true
         collective_rating:
           allOf:
-          - $ref: '#/components/schemas/CollectiveRating'
+          - $ref: '#/components/schemas/ExtendedCollectiveRating'
           readOnly: true
           nullable: true
       required:
@@ -3026,6 +3032,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
       required:
       - uid
     ContributorRatingRequest:
@@ -3035,6 +3045,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
     ContributorRatingUpdateAll:
       type: object
       properties:
@@ -3284,6 +3298,20 @@ components:
           description: Score of the given criteria
       required:
       - criteria
+    EntityCriteriaScoreRequest:
+      type: object
+      properties:
+        criteria:
+          type: string
+          minLength: 1
+          description: Name of the criteria
+          maxLength: 32
+        score:
+          type: number
+          format: double
+          description: Score of the given criteria
+      required:
+      - criteria
     EntityNoExtraField:
       type: object
       description: An Entity serializer that doesn't include extra fields.
@@ -3339,12 +3367,12 @@ components:
         * `candidate_fr_2022` - Candidate (FR 2022)
     EventTypeEnum:
       enum:
-      - live
       - talk
+      - live
       type: string
       description: |-
-        * `live` - Tournesol Live
         * `talk` - Tournesol Talk
+        * `live` - Tournesol Live
     ExtendedCollectiveRating:
       type: object
       properties:
@@ -3378,6 +3406,15 @@ components:
       - n_contributors
       - tournesol_score
       - unsafe
+    ExtendedCollectiveRatingRequest:
+      type: object
+      properties:
+        criteria_scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityCriteriaScoreRequest'
+      required:
+      - criteria_scores
     ExtendedInvididualRating:
       type: object
       properties:
@@ -3385,6 +3422,10 @@ components:
           type: boolean
           readOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          readOnly: true
+          description: Has the user already seen, or read, or understood the entity?
         n_comparisons:
           type: integer
           readOnly: true
@@ -3401,6 +3442,7 @@ components:
           nullable: true
       required:
       - criteria_scores
+      - entity_seen
       - is_public
       - last_compared_at
       - n_comparisons
@@ -3493,11 +3535,16 @@ components:
           type: boolean
           readOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          readOnly: true
+          description: Has the user already seen, or read, or understood the entity?
         n_comparisons:
           type: integer
           readOnly: true
           default: 0
       required:
+      - entity_seen
       - is_public
       - n_comparisons
     IndividualRatingWithScores:
@@ -3507,6 +3554,10 @@ components:
           type: boolean
           readOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          readOnly: true
+          description: Has the user already seen, or read, or understood the entity?
         n_comparisons:
           type: integer
           readOnly: true
@@ -3518,6 +3569,7 @@ components:
           readOnly: true
       required:
       - criteria_scores
+      - entity_seen
       - is_public
       - n_comparisons
     Length3Cycles:
@@ -3905,6 +3957,10 @@ components:
           type: boolean
           writeOnly: true
           description: Should the rating be public?
+        entity_seen:
+          type: boolean
+          writeOnly: true
+          description: Has the user already seen, or read, or understood the entity?
     PatchedContributorRatingUpdateAllRequest:
       type: object
       properties:

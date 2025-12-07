@@ -21,11 +21,11 @@ const TitleSection = ({ title, children }: Props) => {
           maxWidth: '100%',
           maxHeight: '380px',
           [theme.breakpoints.up('md')]: {
-            py: '20px',
+            py: '40px',
           },
           [theme.breakpoints.down('md')]: {
             maxHeight: '200px',
-            marginBottom: '32px',
+            paddingTop: '20px',
           },
           px: '40px',
           '& img': {
@@ -46,6 +46,8 @@ const TitleSection = ({ title, children }: Props) => {
         xs={12}
         md={8}
         sx={{
+          py: 2,
+          px: { md: 2 },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -62,7 +64,7 @@ const TitleSection = ({ title, children }: Props) => {
               maxWidth: '100%',
             },
             float: 'right',
-            marginBottom: '24px',
+            marginBottom: 2,
           }}
         >
           {title}

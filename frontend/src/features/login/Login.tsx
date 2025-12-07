@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useLocation, Redirect } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -20,6 +20,14 @@ import { LoginState } from './LoginState.model';
 import RedirectState from './RedirectState';
 import { useCurrentPoll, useNotifications } from 'src/hooks';
 
+const prependSlash = (path: string | undefined) => {
+  if (!path) {
+    return '/';
+  }
+
+  return path.startsWith('/') ? path : `/${path}`;
+};
+
 const Login = () => {
   const { t } = useTranslation();
   const { showErrorAlert } = useNotifications();
@@ -28,22 +36,11 @@ const Login = () => {
   const [formHasBeenSubmitted, setFormHasBeenSubmitted] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [validToken, setValidToken] = useState(hasValidToken(login));
   const { baseUrl } = useCurrentPoll();
   const location = useLocation();
   const { from: fromUrl } = (location?.state ?? {}) as RedirectState;
 
-  useEffect(() => {
-    if (hasValidToken(login)) {
-      if (!validToken) {
-        setValidToken(true);
-      }
-    } else {
-      if (validToken) {
-        setValidToken(false);
-      }
-    }
-  }, [login, validToken]);
+  const validToken = hasValidToken(login);
 
   const handleSubmit = async (event: React.FormEvent) => {
     setFormHasBeenSubmitted(true);
@@ -59,9 +56,9 @@ const Login = () => {
 
   if (validToken) {
     if (fromUrl) {
-      return <Redirect to={fromUrl} />;
+      return <Navigate to={fromUrl} replace />;
     } else {
-      return <Redirect to={baseUrl ?? '/'} />;
+      return <Navigate to={prependSlash(baseUrl)} replace />;
     }
   }
 

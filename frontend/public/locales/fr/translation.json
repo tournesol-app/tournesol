@@ -73,11 +73,6 @@
   "stackedCard": {
     "showAll": "Tout montrer"
   },
-  "tempStudyBanner": {
-    "join": "Participer",
-    "loginToParticipate": "Connectez-vous pour participer",
-    "isTheTournesolProjectReallyEffective": "Le projet Tournesol est-il vraiment efficace? Nous étudions actuellement l'impact de notre extension navigateur sur les habitudes d'utilisation de YouTube. Rejoignez notre étude pour nous aider à améliorer Tournesol !"
-  },
   "criteriaScoresDistribution": {
     "lessThan": "< {{score}}",
     "fromTo": "{{from}} à {{to}}",
@@ -215,8 +210,9 @@
     "tournesolTalksMailingList": "Tournesol Talks - liste de diffusion",
     "tournesolTalksYTPlaylist": "Tournesol Talks - playlist YouTube",
     "more": "Plus",
-    "privacyPolicy": "Politique de confidentialité",
-    "takeAction": "Passer à l'action 👈️"
+    "manifesto": "Notre Manifeste 📢",
+    "takeAction": "Passer à l'action 👈️",
+    "privacyPolicy": "Politique de confidentialité"
   },
   "terms": {
     "termsOfService": "Conditions Générales d'Utilisation",
@@ -651,7 +647,8 @@
     "comparisons": "Comparaisons"
   },
   "statsSection": {
-    "statistics": "Statistiques"
+    "statistics": "Statistiques",
+    "thankYouForStats": "Un grand merci à la communauté qui compare des vidéos et construit le système de recommendation de Tournesol."
   },
   "tip": {
     "less": "Moins",
@@ -689,6 +686,8 @@
     "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première vesion de la plateforme.",
     "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
     "weThankOurPartners": "Partenariats & Collaborations",
+    "partnershipWithCalicarpa": "Partenariat avec Calicarpa",
+    "partnershipWithCalicarpaDetail": "Tournesol est l'incarnation de la recherche de Calicarpa et de ses efforts de développement open-source. Calicarpa est maintenant le seul contributeur à la bibliothèque Python open-source Solidago, qui contient les implémentations des algorithmes de démocratie numérique à l'état de l'art de la recherche.",
     "partnershipWithEpfl": "Partenariat avec l'EPFL",
     "partenershipWithEpflDetail": "Pendant une courte période, un ingénieur de recherche à l'École Polytechnique Fédérale de Lausanne (EPFL) s'est consacré au développement de la plateforme Tournesol. Plusieurs chercheurs et chercheuses du laboratoire d'informatique distributée (DCL) ont également participé à la conception et poursuivent la recherche sur les algorithmes de Tournesol.",
     "partnershipWithPolyconseil": "Partenariat avec Polyconseil",
@@ -741,6 +740,8 @@
     "loginInformationDetails": "Si un contributeur possède un compte et se connecte à Tournesol, Tournesol déposera un jeton unique et temporaire afin d'authentifier la session de l'utilisateur auprès des serveurs de Tournesol. Ce jeton ne contient aucune données personnelle, et est utilisé exclusivement à but d'authentification. De plus, Tournesol peut également persister localement sur le navigateur des données relatives aux fonctionnalités de la plateforme, telles que des préférences d'affichage ou de langues. Lors de la déconnexion, les données de connexion sont supprimées. Tournesol n'utilise aucun cookie (ou autre dispositif) à des fins de pistage.",
     "embeddedContentFromOtherWebsites": "Contenu intégré provenant d'autres sites",
     "whatDataCollectEmbeddedWebsites": "Tournesol intègre du contenu vidéo provenant de YouTube et des images provenant de Wikimedia. Le contenu intégré d'autres sites se comporte de la même façon que lorsque l'utilisateur visite le site en question. Ces sites tiers sont susceptibles de collecter des données sur l'utilisateur, d'utiliser leurs propres cookies et intégrer des outils tiers à des fins de pistage. Ils peuvent suivre l'interaction des utilisateurs avec le contenu intégré, y compris en les associant à leur compte existant sur ce site externe si l'utilisateur y est connecté.",
+    "browserExtension": "Extension de navigateur",
+    "browserExtensionDataCollection": "Lors de l'utilisation de l'extension Tournesol pour accéder aux fonctionnalités de Tournesol (telles que noter des vidéos ou voir les recommandations), toutes les sections précédentes de cette politique de confidentialité s'appliquent comme si vous utilisiez le site web de Tournesol. Lorsque l'extension de navigateur obtient des détails supplémentaires sur les vidéos lors de la navigation sur YouTube, elle utilise l'API de Tournesol et le serveur reçoit alors les informations nécessaires pour traiter cette requête. Aucune donnée personnelle n'est collectée lors de ces requêtes API à l'exception des journaux temporaires du serveur qui sont maintenus à des fins techniques et de sécurité.",
     "whoTournesolSharesUsersNContributorsDataWith": "Avec qui Tournesol partage-t-il les données des utilisateurs et des contributeurs ?",
     "whoTournesolSharesUsersNContributorsDataWithParagraph": "Tournesol accorde beaucoup d'importance à la protection des données de ses utilisateurs et contributeurs. En particulier, Tournesol sait que les jugements des contributeurs peuvent entrer en conflit avec les opinions de leaders politiques et d'employeurs. Nous souhaitons que des contributeurs puissent exprimer leurs jugements sans craindre de conséquences sur leur vie personnelle. C'est pourquoi Tournesol offre la possibilité de soumettre des jugements de manière privée ou anonyme. Ces jugements privés ne sont partagés avec aucune tierce partie.",
     "publicData": "Données publiques",
@@ -951,12 +952,14 @@
       "pollIsClosed": "Le scrutin est maintenant fermé.",
       "seeResults": "Voir les résultats"
     },
-    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
-    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommandations.",
-    "helpUsAdvanceResearch": "Aidez-nous à faire avancer la recherche en donnant votre avis sur les vidéos que vous avez regardées pour identifier les vidéos d'utilité publique qui devraient être largement recommandées.",
     "contributeTitle": "Participez !",
     "contributeDetail": "Vous aussi, participez en donnant votre avis sur les vidéos YouTube que vous avez regardées. D'après vous, lesquelles devraient être les plus largement recommandées selon les différents critères identifiés par Tournesol ?",
     "compareButton": "Commencer à comparer",
+    "installTheMobileAppTitle": "Utilisez l'app",
+    "installTheMobileAppDescription": "L'application mobile est la meilleure façon d'accéder aux vidéos de grande qualité identifiées par la communauté directement sur votre smartphone.",
+    "collaborativeContentRecommendations": "Recommandations collaboratives de contenus",
+    "tournesolIsAParticipatoryResearchProject": "Tournesol est un projet de recherche participatif et transparent sur l'éthique des systèmes de recommandations.",
+    "readOurManifesto": "Lire notre manifeste",
     "useOurExtension": "Utilisez l'extension !",
     "webExtensionDescription": "L'extension navigateur vous permet de retrouver les vidéos recommandées par la communauté directement sur votre page d'accueil YouTube. Vous pourrez aussi marquer des vidéos pour les comparer plus tard, ou les comparer directement en quelques clics.",
     "getTheExtensionButton": "Installer l'extension",
@@ -964,7 +967,7 @@
   },
   "comparisonSection": {
     "contribute": "Contribuer",
-    "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ?"
+    "theSimpliestWayToContribute": "Le moyen le plus simple de contribuer à Tournesol est de comparer des vidéos. Quel contenu voudriez-vous que YouTube recommande à vos proches ? Créez un compte pour aider à identifier les vidéos d'utilité publique."
   },
   "fundingSection": {
     "supportUs": "Soutenez-nous !",
@@ -979,9 +982,8 @@
     "compareTheVideos": "Comparer les vidéos"
   },
   "recommendationsSection": {
-    "recommendations": "Recommandations",
-    "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur·rices. Vous aussi, donnez votre avis afin d'améliorer ces recommandations.",
-    "seeMore": "Voir plus"
+    "eachComparisonHelps": "Grâce à toutes les personnes comparant des vidéos, Tournesol peut faire des recommandations de grande qualité à des milliers d'utilisateur·rices.",
+    "seeMore": "Voir plus de vidéos"
   },
   "publicDataPublicCodeBox": {
     "ourDataAreOpen": "Nos données sont ouvertes",
@@ -997,7 +999,7 @@
   },
   "researchSection": {
     "research": "Recherche",
-    "weSeekToSupportResearch": "« Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains. »"
+    "weSeekToSupportResearch": "Nous voulons soutenir la recherche sur l'éthique des algorithmes en publiant une grande base de données fiable de jugements humains."
   },
   "scientificLiteratureBox": {
     "publications": "Publications",
@@ -1022,6 +1024,90 @@
     "confirmNewPassword": "Confirmez votre nouveau mot de passe",
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
     "resetPasswordButton": "Réinitialiser le mot de passe"
+  },
+  "manifesto": {
+    "header": "Manifeste",
+    "title": "Tournesol : pourquoi\u00a0? comment\u00a0?",
+    "intro": "Aujourd’hui le contenu que nous regardons sur les grandes plateformes est choisi par des mécanismes qu’on appelle “algorithmes de recommandation” ou “IA de recommandation”.",
+    "part1": {
+      "title": "Les IA de recommandation fragilisent nos démocraties",
+      "democracyDepends": "Notre fonctionnement démocratique dépend d’échanges d’informations qui ont désormais souvent lieu sur des plateformes numériques, et sont par conséquent organisés par ces IA de recommandation. Or, de nombreuses études scientifiques montrent que ces IA de recommandation nuisent à l’intérêt général : <2>dégradation sans précédent de la santé mentale</2> chez les jeunes<5><0>[1]</0></5>, <7>polarisation</7> du discours public<9><0>[2]</0></9>, <11>manipulation d’élections</11><12><0>[3]</0></12>, désinformation<14><0>[4]</0></14>, contribution à des <16>génocides</16><17><0>[5]</0></17>.",
+      "toOrganizeInformationFlow": "Les géants du numérique utilisent ces IA de recommandation pour organiser la circulation des informations. Elles fonctionnent selon des critères opaques, servent uniquement leurs intérêts économiques ou idéologiques, ne sont soumises à quasi aucune régulation et donc aucun contrôle démocratique.",
+      "againstPublicInterest": "En somme, les IA de recommandation actuelles favorisent largement des intérêts privés au détriment de l’intérêt général."
+    },
+    "part2": {
+      "title": "Les IA de recommandation doivent être vraiment régulées",
+      "forRegulation": "Nous défendons l’idée de réguler ces espaces numériques et leurs IA de recommandation, à l’instar d’autres industries à haut risque (aviation, pharmaceutique ou agro-alimentaire).",
+      "existingLawsNotEnforced": "Nous demandons que <2>les lois existantes soient effectivement appliquées</2>, et que le numérique cesse d’être un espace de non-droit. L’Europe s’est dotée de plusieurs lois et réglementations visant à encadrer les plateformes numériques (AI Act, DSA, DMA, RGPD) ; elles sont largement inappliquées.",
+      "existingLawsInsufficient": "Plus encore, nous pensons que <2>ces lois sont insuffisantes</2>. Nous proposons d’introduire dans le corpus législatif de nouveaux principes, tels que:",
+      "propositions": {
+        "authorization": {
+          "main": "l’autorisation de mise sur le marché de toute nouvelle IA de recommandation",
+          "detail": "À l’instar des industries aéronautiques ou médicales, une IA de recommandation ne doit pas être déployée à large échelle sans qu'il ait été prouvé auparavant qu’elle n’engendrera pas de conséquences dramatiques (cyber-harcèlement, polarisation des opinions, amplification de fausses informations, etc)."
+        },
+        "nonRecommendability": {
+          "main": "le principe de non-recommandabilité massive des contenus",
+          "detail": "Par défaut, les contenus ne doivent pas pouvoir être recommandés à des millions d’usagers sans un processus de vérification spécifique préalable."
+        },
+        "configurationRight": {
+          "main": "le droit au paramétrage",
+          "detail": "Chaque individu doit pouvoir paramétrer librement et simplement les critères pris en compte par les IA de recommandation des sites/plateformes qu’il utilise, ainsi que les données personnelles enregistrées par celles-ci."
+        }
+      }
+    },
+    "part3": {
+      "title": "Nous devons bâtir un numérique plus démocratique",
+      "buildDemocraticDigitalSpace": "Concrètement, nous pensons que pour que nos espaces numériques soient alignés avec nos standards démocratiques et participent au bon fonctionnement de nos sociétés, il faudrait que leur mécanisme soit à minima:",
+      "requirements": {
+        "transparent": {
+          "title": "transparent",
+          "detail": "Que les IA de recommandations et les espaces numériques en général soient ouverts, vérifiables et compréhensibles par le plus grand nombre."
+        },
+        "robust": {
+          "title": "résistant aux attaques",
+          "detail": "Que les plateformes et leurs IA de recommandation soient sécurisées pour éviter les attaques malveillantes des milliards de faux comptes."
+        },
+        "wellTought": {
+          "title": "basé sur des avis réfléchis",
+          "detail": "Que les futures recommandations reflètent les envies réfléchies des utilisateurs plutôt que leurs réactions impulsives (clic, swipe,...)."
+        },
+        "commonInformation": {
+          "title": "favorable à l’émergence d’un socle informationnel commun",
+          "detail": "Que les membres de ces espaces numériques puissent partager une base informationnelle commune (faits historiques, connaissances scientifiques, réalisations culturelles,...), plutôt que de risquer d’être enfermés dans des bulles hyper-personnalisées."
+        }
+      }
+    },
+    "conclusion": {
+      "digitalPlatforms": "Le mode de fonctionnement des plateformes numériques, lui-même, doit faciliter l’expression de la parole citoyenne. En ce sens, celle-ci doit voir ses intérêts et ses opinions représentés par les contenus recommandés massivement sur les réseaux sociaux.",
+      "itIsPossible": "Cela est tout à fait possible, à condition de développer des IA de recommandation fondées sur les jugements réfléchis des citoyens, et non sur les intérêts des géants du numérique.",
+      "title": "Le projet Tournesol",
+      "tournesolProject": "Le projet Tournesol développe une IA de recommandation alternative et plus démocratique, qui s'appuie sur vos jugements et vos intérêts. Venez essayer la plateforme sur <2>tournesol.app</2> !",
+      "tournesolAssociation": "Au-delà, l’association Tournesol regroupe des citoyens, des chercheurs, des vidéastes, des développeurs bénévoles. Elle a pour but de défendre les trois principes proposés dans ce manifeste."
+    },
+    "cta": {
+      "title": "Ce manifeste te parle et tu as envie de nous aider ?",
+      "1minute": "En moins de 1 minute",
+      "followLinkedin": "Nous suivre sur <2>Linkedin</2> et liker nos meilleures publications pour entraîner l’algorithme et avoir une chance de voir nos prochaines publications.",
+      "2minutes": "En moins de 2 minutes",
+      "intallExtensionAndApp": "Installer <2>l’extension</2> et <6>l’application</6> pour bénéficier des super recommandations démocratiques de la communauté.",
+      "5minutes": "En moins de 5 minutes",
+      "createAccount": "<0>Créer un compte</0> sur la plateforme, et faire au moins une comparaison afin de t’exprimer sur les vidéos qu’il faudrait largement recommander.",
+      "regularly": "Tu veux donner du temps plus régulièrement ?",
+      "regularlyYouCan": "Trop chouette ! Tu peux :",
+      "getInvolved": "Te présenter <2>par mail</2> ou sur le <6>channel Discord dédié (#intros)</6>: communication, recherche, demande de financement ou stratégie de développement, on a toujours besoin de personnes motivées.",
+      "attendPresentation": "Venir à une présentation de Tournesol, organisée une fois tous les deux mois. Inscription <2>par mail</2>.",
+      "evenMore": "Tu as envie de poncer la thématique ?",
+      "linkToActions": "C’est par là: <2>tournesol.app/actions</2>"
+    },
+    "toGoFurther": "Pour aller plus loin",
+    "notes": {
+      "title": "Notes",
+      "facebookFilesMentalHealth": "D’après les\u00a0Facebook Files, une étude interne à Facebook/Méta montre qu’Instagram\u00a0contribue à dégrader la santé mentale des adolescentes [<1>Facebook Knows Instagram Is Toxic for Teen Girls...</1>, <4>The Dangerous Experiment on Teen Girls</4>]. Aux États-Unis, 57% des adolescentes confient éprouver une tristesse persistante ou du désespoir, contre 36% en 2011, et 30% révèlent avoir déjà songé à se suicider, contre 19% en 2011 [<6>CDC Report, pp. 57, 61</6>]. Les tendances sont similaires à travers le monde [<8>International Mental Illness (1/2)</8>;<10>International Mental Illness (2/2)</10>]. D’après des psychologues, l’hypothèse de l’accès constant aux réseaux sociaux explique le mieux cette crise de la santé mentale [<12>13 explanations of mental health crisis</12>].",
+      "facebookFilesPoliticians": "Les Facebook Files révèlent l’influence des IA de recommandation de Facebook sur les politiciens en 2017. Des politiciens européens ont notamment écrit à Facebook, en insistant sur le fait que les IA favorisaient alors beaucoup plus radicalement les discours clivants, ce qui contraignaient ces politiciens à être plus haineux pour survivre politiquement.",
+      "elections": "Plusieurs études rapportent des manipulations de processus électoraux en Roumanie en 2024 sur TikTok, qui ont conduit à l’annulation et au report de l’élection présidentielle [<1>Bader and Szabo 2025</1>; <4>Seceleanu and Garabet 2025</4>; <7>Harward 2024</7>]. Ces cas d’ingérence étrangère font écho à de nombreuses autres sur le même sujet, comme dans le cas de Cambridge Analytica en 2015 et 2016.",
+      "amplification": "La sur-optimisation de l’engagement a des implications très dangereuses sur l’amplification de la polarisation affective et la désinformation [Twitter and Tear Gas 2017, The Hype Machine 2021, Toxic Data 2022].",
+      "genocides": "L’Organisation des Nations Unies et Amnesty International accusent Facebook d’avoir sciemment contribué à des génocides, en particulier au génocide des Rohingyas en Birmanie, en promouvant des discours de haine contre les minorités [<1>Amnesty International #1</1>, <4>Amnesty International #2</4>]."
+    }
   },
   "proofByKeyword": {
     "proofByKeyword": "Preuve par mot-clé",
@@ -1120,6 +1206,10 @@
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
     "compareNow": "Comparer !",
+    "markVideoAsUnseen": "Marquer la vidéo comme non vue.",
+    "markVideoAsSeen": "Marquer la vidéo comme vue.",
+    "markAsUnseen": "Marquer comme non vue.",
+    "markAsSeen": "Marquer comme vue.",
     "remove": "Supprimer",
     "videoDeletedFromRateLaterList": "Vidéo bien supprimée de votre liste de vidéos à comparer plus tard.",
     "analysis": "Analyse détaillée"

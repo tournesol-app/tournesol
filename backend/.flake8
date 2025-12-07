@@ -4,4 +4,6 @@ extend-exclude=
     tests
     migrations
     settings
+    venv
+    .venv
 max-line-length=99

@@ -8,17 +8,21 @@ import EntityImagery from 'src/components/entity/EntityImagery';
 import EntityCardTitle from 'src/components/entity/EntityCardTitle';
 import EntityCardScores from 'src/components/entity/EntityCardScores';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
-import { Recommendation, TypeEnum } from 'src/services/openapi';
+import {
+  ContributorRating,
+  Recommendation,
+  TypeEnum,
+} from 'src/services/openapi';
 import CriteriaBarChart from 'src/components/CriteriaBarChart';
 
 interface Props {
-  entity: Recommendation;
+  candidate: Recommendation | ContributorRating;
 }
 
-const CandidateAnalysisPage = ({ entity: reco }: Props) => {
+const CandidateAnalysisPage = ({ candidate }: Props) => {
   const { t } = useTranslation();
   const { baseUrl } = useCurrentPoll();
-  const entity = reco.entity;
+  const entity = candidate.entity;
 
   return (
     <Container sx={{ maxWidth: '1000px !important' }}>
@@ -63,7 +67,7 @@ const CandidateAnalysisPage = ({ entity: reco }: Props) => {
                   compact={false}
                 />
                 <EntityCardScores
-                  result={reco}
+                  result={candidate}
                   showTournesolScore={
                     entity.type !== TypeEnum.CANDIDATE_FR_2022
                   }
@@ -93,7 +97,7 @@ const CandidateAnalysisPage = ({ entity: reco }: Props) => {
                   p: 1,
                 }}
               >
-                <CriteriaBarChart reco={reco} />
+                <CriteriaBarChart entityResult={candidate} />
               </Box>
             </Paper>
           </Grid>

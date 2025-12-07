@@ -10,6 +10,7 @@ import {
   ContributorRating,
   IndividualRating,
 } from 'src/services/openapi';
+import { absolutePollBasePath } from 'src/utils/navigation';
 
 const setPublicStatus = async (
   pollName: string,
@@ -65,7 +66,7 @@ export const RatingControl = ({
         {nComparisons > 0 ? (
           <InternalLink
             color="inherit"
-            to={`${baseUrl}/comparisons/?uid=${uid}`}
+            to={`${absolutePollBasePath(baseUrl)}/comparisons/?uid=${uid}`}
           >
             <Trans t={t} i18nKey="video.nComparisonsByYou" count={nComparisons}>
               {{ count: nComparisons }} comparison by you

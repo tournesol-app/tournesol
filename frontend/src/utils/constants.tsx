@@ -1,4 +1,4 @@
-import { TFunction } from 'react-i18next';
+import { TFunction } from 'i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
 
 import { RelatedEntity } from 'src/services/openapi';

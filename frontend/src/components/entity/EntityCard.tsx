@@ -32,7 +32,7 @@ import {
 } from 'src/utils/types';
 import EntityCardContextAlert from 'src/features/entity_context/EntityCardContextAlert';
 import { RatingControl } from 'src/features/ratings/RatingControl';
-
+import { getEntitySeen } from 'src/utils/entity';
 import EntityCardTitle from './EntityCardTitle';
 import EntityCardScores from './EntityCardScores';
 import EntityContextChip from './EntityContextChip';
@@ -42,13 +42,18 @@ import EntityMetadata, {
   VideoMetadata,
 } from './EntityMetadata';
 import EntityIndividualScores from './EntityIndividualScores';
-import { entityCardMainSx } from './style';
+import {
+  entityCardEntitySeenSx,
+  entityCardMainSx,
+  rowEntityCardEntitySeenSx,
+} from './style';
 
 export interface EntityCardProps {
   result: EntityResult;
   actions?: ActionList;
   compact?: boolean;
   isAvailable?: boolean;
+  showEntitySeenIndicator?: boolean;
   showRatingControl?: boolean;
   onRatingChange?: (rating: ContributorRating) => void;
   // Configuration specific to the entity type.
@@ -63,6 +68,7 @@ const EntityCard = ({
   compact = false,
   entityTypeConfig,
   isAvailable = true,
+  showEntitySeenIndicator = false,
   showRatingControl = false,
   onRatingChange,
   displayContextAlert = false,
@@ -112,12 +118,14 @@ const EntityCard = ({
     setContentDisplayed(!contentDisplayed);
   };
 
+  const entitySeen = showEntitySeenIndicator && getEntitySeen(result);
+  let entitySx = { ...entityCardMainSx };
+  if (entitySeen) {
+    entitySx = { ...entitySx, ...entityCardEntitySeenSx };
+  }
+
   return (
-    <Grid2
-      container
-      sx={entityCardMainSx}
-      direction={compact ? 'column' : 'row'}
-    >
+    <Grid2 container sx={entitySx} direction={compact ? 'column' : 'row'}>
       {!isAvailable && (
         <Grid2
           container
@@ -209,7 +217,7 @@ const EntityCard = ({
           >
             {actions.map((Action, index) =>
               typeof Action === 'function' ? (
-                <Action key={index} uid={entity.uid} />
+                <Action key={index} uid={entity.uid} entity={result} />
               ) : (
                 Action
               )
@@ -283,6 +291,13 @@ export const RowEntityCard = ({
   metadataVariant?: EntityMetadataVariant;
 }) => {
   const entity = result.entity;
+  const entitySeen = getEntitySeen(result);
+
+  let extraSx = {};
+  if (entitySeen) {
+    extraSx = { ...rowEntityCardEntitySeenSx };
+  }
+
   return (
     <Box
       sx={{
@@ -293,6 +308,7 @@ export const RowEntityCard = ({
         height: '90px',
         ...entityCardMainSx,
         bgcolor: 'transparent',
+        ...extraSx,
       }}
     >
       <Box sx={{ aspectRatio: '16 / 9', height: '100%' }}>

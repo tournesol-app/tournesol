@@ -88,6 +88,7 @@ def refresh_metadata(candidate):
             "ids": candidate.uid.split(":")[1],
             "format": "json",
         },
+        timeout=10,
     )
     resp.raise_for_status()
     wd_item = resp.json()["entities"][candidate.uid.split(":")[1]]

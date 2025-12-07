@@ -1,6 +1,6 @@
 import React from 'react';
-import { TFunction } from 'react-i18next';
 import { SvgIconComponent } from '@mui/icons-material';
+import { TFunction } from 'i18next';
 import {
   ContributorRating,
   RateLater,
@@ -23,7 +23,8 @@ export interface JSONObject {
 }
 
 export type ActionList = Array<
-  (({ uid }: { uid: string }) => JSX.Element) | React.ReactNode
+  | (({ uid, entity }: { uid: string; entity?: EntityResult }) => JSX.Element)
+  | React.ReactNode
 >;
 
 export type CriteriaValuesType = { [s: string]: number | undefined };

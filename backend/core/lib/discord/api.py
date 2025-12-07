@@ -13,6 +13,6 @@ def write_in_channel(discord_channel, message) -> bool:
         logging.warning("Cause: empty webhook URL.")
         return False
 
-    resp = requests.post(webhook_url, json={"content": message})
+    resp = requests.post(webhook_url, json={"content": message}, timeout=10)
     resp.raise_for_status()
     return True

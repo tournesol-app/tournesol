@@ -1,10 +1,11 @@
 import React from 'react';
 import ContentBox from './ContentBox';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Paper, SxProps, Typography } from '@mui/material';
 
 interface LegalDocumentProps {
   children: React.ReactNode;
   mainTitle: string;
+  sx?: SxProps;
 }
 
 /**
@@ -14,9 +15,10 @@ interface LegalDocumentProps {
 const ContentBoxLegalDocument = ({
   children,
   mainTitle,
+  sx,
 }: LegalDocumentProps) => {
   return (
-    <ContentBox maxWidth="md">
+    <ContentBox maxWidth="md" sx={sx}>
       <Typography
         variant="h3"
         sx={{

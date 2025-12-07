@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { useTranslation, TFunction } from 'react-i18next';
+import { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import {
   Bar,
   BarChart,
@@ -13,7 +14,7 @@ import {
 
 import { Box } from '@mui/material';
 
-import { Recommendation } from 'src/services/openapi';
+import { ContributorRating, Recommendation } from 'src/services/openapi';
 
 import CriteriaSelector from 'src/features/criteria/CriteriaSelector';
 import useCriterionScoreData, {
@@ -141,15 +142,15 @@ const CriteriaScoresDistributionChart = ({
 };
 
 interface CriteriaScoresDistributionProps {
-  reco: Recommendation;
+  entityResult: Recommendation | ContributorRating;
 }
 
 const CriteriaScoresDistribution = ({
-  reco,
+  entityResult,
 }: CriteriaScoresDistributionProps) => {
   const { name: pollName } = useCurrentPoll();
   const { selectedCriterion, setSelectedCriterion } = useSelectedCriterion();
-  const entity = reco.entity;
+  const entity = entityResult.entity;
 
   const [yAxisMax, setYAxisMax] = useState(0);
   const [criteriaScoresDistribution, setCriteriaScoresDistribution] = useState<
@@ -157,7 +158,7 @@ const CriteriaScoresDistribution = ({
   >([]);
 
   const { data, personalScoresActivated, domain } = useCriteriaChartData({
-    reco,
+    entityResult,
   });
 
   const contextValue = useMemo<ChartContextValue>(

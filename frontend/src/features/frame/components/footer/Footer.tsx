@@ -124,14 +124,18 @@ const Footer = () => {
       title: t('footer.more'),
       items: [
         {
-          name: t('terms.termsOfService'),
-          to: '/about/terms-of-service',
+          name: t('footer.manifesto'),
+          to: '/manifesto',
         },
-        { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         {
           name: t('footer.takeAction'),
           to: '/actions',
         },
+        {
+          name: t('terms.termsOfService'),
+          to: '/about/terms-of-service',
+        },
+        { name: t('footer.privacyPolicy'), to: '/about/privacy_policy' },
         ...linksToPolls,
       ],
       trailingDivider: false,
