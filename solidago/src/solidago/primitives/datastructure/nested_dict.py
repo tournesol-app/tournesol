@@ -1,6 +1,8 @@
 from typing import Union, Optional, Callable, Any, Iterable, Literal
 from copy import deepcopy
 
+Value = Any
+
 
 class NestedDict:
     def __init__(self, value_factory: Callable, depth: int):

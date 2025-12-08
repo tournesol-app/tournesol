@@ -3,7 +3,7 @@ from typing import Optional, Mapping
 import numpy as np
 import pandas as pd
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
 
 

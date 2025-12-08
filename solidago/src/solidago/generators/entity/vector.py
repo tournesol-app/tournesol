@@ -3,7 +3,7 @@ from numpy.random import normal
 
 import numpy as np
 
-from solidago.state import *
+from solidago.poll import *
 from .base import EntityGen
 
 

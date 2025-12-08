@@ -21,5 +21,5 @@ __all__ = [
     "Comparison", "Comparisons",
     "VotingRights",
     "Score", "MultiScore", "ScoringModel", "UserModels",
-    "State", "TournesolExport",
+    "Poll", "TournesolExport",
 ]

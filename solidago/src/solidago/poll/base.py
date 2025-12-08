@@ -2,10 +2,8 @@
 
 from typing import Optional, Union
 from pathlib import Path
-from pandas import DataFrame
 
-import json
-import pandas as pd
+import yaml
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,7 +18,7 @@ from .voting_rights import VotingRights
 from .models import ScoringModel, UserModels
 
 
-class State:
+class Poll:
     users_filename = "users.csv"
     user_scalings_filename = "user_scalings.csv"
     user_direct_scores_filename = "user_direct_scores.csv"
@@ -52,17 +50,11 @@ class State:
         self.global_model = ScoringModel() if global_model is None else global_model
     
     @classmethod
-    def load(cls, directory: Union[Path, str]) -> "State":
-        path = Path(directory)
-        with open(path / "state.json") as f: 
-            j = json.load(f)
-        state = cls()
-        import solidago.state
-        for key, j_value in j.items():
-            assert hasattr(state, key)
-            value = getattr(solidago.state, j_value[0]).load(directory, **j_value[1])
-            setattr(state, key, value)
-        return state
+    def load(cls, directory: Union[Path, str]) -> "Poll":
+        from solidago import load
+        with open(Path(directory) / "poll.yaml") as f: 
+            j = yaml.safe_load(f)
+        return cls(**{key: load(value) for key, value in j.items()})
     
     def save(self, directory: Optional[str]=None) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
@@ -73,35 +65,22 @@ class State:
     
     def save_instructions(self, directory: Optional[str]=None) -> tuple[str, dict]:
         instructions = { key: value.save_instructions() for key, value in self.__dict__.items() }
-        if directory is not None:
-            with open(Path(directory) / "state.json", "w") as f:
-                json.dump(instructions, f, indent=4)
+        if directory:
+            with open(Path(directory) / "poll.yaml", "w") as f:
+                yaml.safe_dump(instructions, f)
         return instructions
 
-    def save_objects(self, types: type, directory: str) -> Union[list, tuple]:
-        if directory is not None:
+    def save_objects(self, saved_keys: list[str], directory: str):
+        """ Method to save only """
+        if directory:
             Path(directory).mkdir(parents=True, exist_ok=True)
-        if types == State:
-            logger.info(f"Saving full state")
-            return self.save(directory)
-        if hasattr(types, "__args__"):
-            return [ self.save_objects(t, directory) for t in types.__args__ ]
-        state_json_filename = Path(directory) / "state.json"
-        if state_json_filename.is_file():
-            with open(state_json_filename) as f:
-                state_json = json.load(f)
-        else:
-            state_json = self.save()
-        for key, value in self.__init__.__annotations__.items():
-            if issubclass(types, value) and getattr(self, key) is not None:
-                logger.info(f"Saving state's {key}")
-                state_json[key] = getattr(self, key).save(directory)
-        with open(Path(directory) / "state.json", "w") as f:
-            json.dump(state_json, f, indent=4)
-        return state_json
+        assert all(hasattr(self, key) for key in saved_keys)
+        for key in saved_keys:
+            logger.info(f"Saving poll's {key}")
+            getattr(self, key).save(directory)
     
     def copy(self):
-        return State(**{ 
+        return Poll(**{ 
             key: value for key, value in self.__dict__.items() 
             if key[0] != "_" and hasattr(value, "save")
         })

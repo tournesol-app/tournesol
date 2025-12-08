@@ -1,10 +1,13 @@
 import math
 import numbers
 
-from typing import Optional, Union, Any, Callable, Iterable
-from pandas import Series, DataFrame
+from typing import Optional, Union, Any, Callable, Iterable, TYPE_CHECKING
+from pandas import Series
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
+
+if TYPE_CHECKING:
+    from solidago.poll.comparisons import Comparisons
 
 
 class Score:

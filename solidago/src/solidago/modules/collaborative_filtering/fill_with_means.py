@@ -1,6 +1,6 @@
 import numpy as np
 
-from solidago.state import *
+from solidago.poll import *
 from .base import CollaborativeFiltering
 
 

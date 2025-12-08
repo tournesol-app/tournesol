@@ -1,4 +1,4 @@
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, TYPE_CHECKING
 from pathlib import Path
 from pandas import DataFrame
 from math import sqrt
@@ -10,6 +10,9 @@ import json
 logger = logging.getLogger(__name__)
 
 from .score import Score, MultiScore
+
+if TYPE_CHECKING:
+    from solidago.poll import Entity, Entities, Comparisons
 
 
 class Multipliers(MultiScore):
@@ -96,7 +99,7 @@ class ScoringModel:
             If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
-        from solidago.state.entities import Entities
+        from solidago.poll.entities import Entities
         if n_sampled_entities is not None:
             if entities is all:
                 entities = Entities(list(self.evaluated_entity_names(criteria)))
@@ -111,7 +114,7 @@ class ScoringModel:
         entities: Union[str, "Entity", "Entities", type]=all, 
         criteria: Union[str, set, type]=all,
     ) -> Union[Score, MultiScore]:
-        from solidago.state.entities import Entities
+        from solidago.poll.entities import Entities
         entities = {e.name for e in entities} if isinstance(entities, Entities) else entities
         base, kwargs = self.composition[0]
         if base == "direct":

@@ -3,7 +3,7 @@ from numpy.random import random, poisson, zipf, gamma, normal
 
 import numpy as np
 
-from solidago.state import *
+from solidago.poll import *
 from .base import UserGen
 
 

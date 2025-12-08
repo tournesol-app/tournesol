@@ -9,7 +9,7 @@ import numpy as np
 from .base import *
 
 
-class TournesolExport(State):
+class TournesolExport(Poll):
     @staticmethod
     def load_dfs(dataset_zip: Union[str, BinaryIO]) -> dict[str, DataFrame]:
         if isinstance(dataset_zip, str) and (
@@ -81,7 +81,7 @@ class TournesolExport(State):
     
     def __init__(self, dataset_zip: Union[str, BinaryIO]):
         dfs = TournesolExport.load_dfs(dataset_zip)
-        from solidago.state import (
+        from solidago.poll import (
             Users, Vouches, Entities, AllPublic, Comparisons, 
             VotingRights, UserModels, ScoringModel, MultiScore
         )

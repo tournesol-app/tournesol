@@ -7,7 +7,7 @@ import numpy as np
 import numpy.typing as npt
 from numba import njit
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.primitives.optimize import coordinate_descent, njit_brentq
 from .generalized_bradley_terry import GeneralizedBradleyTerry, UniformGBT
 

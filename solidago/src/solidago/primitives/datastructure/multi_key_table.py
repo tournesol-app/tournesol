@@ -1,13 +1,14 @@
-from typing import Union, Optional, Callable, Any, Iterable
+from typing import Union, Optional, Any, Iterable
 from pathlib import Path
 from pandas import DataFrame, Series
 from collections import defaultdict
 
 import pandas as pd
-import math
 import csv
 
 from solidago.primitives.datastructure.nested_dict import NestedDict
+
+Value = Any
 
 
 class MultiKeyTable:

@@ -5,7 +5,7 @@ import pandas as pd
 import logging
 import json
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules import StateFunction, Sequential
 
 from .user import UserGen

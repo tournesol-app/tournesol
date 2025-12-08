@@ -1,18 +1,20 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 import numpy as np
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
+from solidago.poll.user_clusters.base import UserClusters
 
 
 class UserClustering(StateFunction, ABC):
     def __init__(self, 
-        pca_dimension: Optional[int]=None, 
-        n_clusters: Union[int, Iterable]=range(2, 5), 
+        pca_dimension: int | None=None, 
+        n_clusters: int | Iterable=range(2, 5), 
         *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
@@ -23,17 +25,29 @@ class UserClustering(StateFunction, ABC):
         users: Users, 
         entities: Entities, 
         user_models: UserModels
+    ) -> tuple[Users, dict[str, UserClusters]]:
+        clusters = dict()
+        for criterion in user_models.criteria():
+            users, c = self.cluster(users, entities, criterion, user_models)
+            clusters[criterion] = c
+        return users, clusters
+
+    def cluster(self, 
+        users: Users, 
+        entities: Entities, 
+        criterion: str,
+        user_models: UserModels
     ) -> tuple[Users, UserClusters]:
         matrix, _, _ = user_models.to_matrices(users, entities, criterion)
         if self.pca_dimension:
             matrix = PCA(n_components=self.pca_dimension).fit_transform(matrix)
         clusters, cluster_assignment = self.matrix2clusters(matrix)
         clusters = UserClusters([users[{users.index2name(i) for i in c}] for c in clusters])
-        return users.assign(cluster_assignment=cluster_assignment), clusters
+        return users.assign(**{f"cluster_assignment_{criterion}": cluster_assignment}), clusters
     
     def matrix2clusters(self, 
         matrix: np.ndarray, 
-        n_clusters: Optional[Union[int, Iterable]]=None,
+        n_clusters: int | Iterable | None=None,
     ) -> tuple[set[int], list[int]]:
         n_clusters = n_clusters or self.n_clusters
         if not isinstance(n_clusters, int):
@@ -47,7 +61,7 @@ class UserClustering(StateFunction, ABC):
 
     def cluster_optimize(self, 
         points: np.ndarray, 
-        n_clusters_set: Optional[Iterable]=None
+        n_clusters_set: Iterable | None=None
     ) -> tuple[list[set], np.ndarray]:
         n_clusters_set = n_clusters_set or self.n_clusters
         top_score, top_clusters, top_cluster_assignment = -float("inf"), None, None

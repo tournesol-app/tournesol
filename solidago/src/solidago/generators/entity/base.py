@@ -1,6 +1,6 @@
 import pandas as pd
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules import StateFunction
 
 

@@ -1,10 +1,13 @@
-from typing import Optional, Callable, Iterable, Union, Any
+from typing import Optional, Iterable, Union, Any, TYPE_CHECKING
 from pandas import Series, DataFrame
 from collections import defaultdict
 
 import numpy as np
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
+
+if TYPE_CHECKING:
+    from solidago.poll.entities import Entity, Entities
 
 
 class Comparison:
@@ -140,7 +143,7 @@ class Comparisons(MultiKeyTable):
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set:
         self.nested_dict("entity_name", "username")
-        from solidago.state.entities import Entity
+        from solidago.poll.entities import Entity
         entity_name = entity.name if isinstance(entity, Entity) else entity
         return self.get(entity_name=entity_name).keys("username")
 

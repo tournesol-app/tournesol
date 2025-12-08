@@ -24,7 +24,7 @@ class Vouches(MultiKeyTable):
     def valuenames(self) -> tuple[str, str]:
         return "weight", "priority"
 
-    def value2tuple(self, value: tuple[float, float]) -> [float, float]:
+    def value2tuple(self, value: tuple[float, float]) -> tuple[float, float]:
         return value
         
     def value2series(self, value: tuple[float, float]) -> Series:

@@ -16,7 +16,7 @@ except ImportError as exc:
         "Install 'solidago[torch]' to get the optional dependencies."
     ) from exc
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.primitives import dichotomy
 from .generalized_bradley_terry import GeneralizedBradleyTerry, UniformGBT
 

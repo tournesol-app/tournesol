@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 import numpy as np
+import logging
 
-from solidago.state import *
-from solidago.modules.base import StateFunction
+logger = logging.getLogger(__name__)
+
+from solidago.poll import *
+from solidago.modules.base import PollFunction
 
 
-class CollaborativeFiltering(StateFunction, ABC):
+class CollaborativeFiltering(PollFunction, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
@@ -42,7 +45,7 @@ class CollaborativeFiltering(StateFunction, ABC):
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         raise NotImplemented
 
-    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_result(self, state: State, directory: str | None=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving user base model")
             state.user_models.save_base_models(directory)

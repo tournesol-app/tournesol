@@ -1,8 +1,10 @@
-from typing import Optional, Callable, Union, Any
+from typing import Optional, Union, Any, TYPE_CHECKING
 from pandas import Series
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
+if TYPE_CHECKING:
+    from solidago.poll.entities import Entity
 
 class Assessment:
     def __init__(self, 

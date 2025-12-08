@@ -1,4 +1,6 @@
-from solidago.state import *
+import numpy as np
+
+from solidago.poll import *
 from .base import PreferenceLearning
 
 

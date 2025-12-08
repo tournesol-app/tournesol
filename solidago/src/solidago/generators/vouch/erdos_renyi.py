@@ -1,6 +1,6 @@
 from numpy.random import random
 
-from solidago.state import Users, Vouches
+from solidago.poll import Users, Vouches
 from .base import VouchGen
 
 

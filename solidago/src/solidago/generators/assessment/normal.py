@@ -1,7 +1,7 @@
 from numpy import sqrt
 from numpy.random import normal
 
-from solidago.state import *
+from solidago.poll import *
 from .base import AssessmentGen
 
 

@@ -12,7 +12,7 @@ from solidago.primitives.lipschitz import qr_median, qr_uncertainty, lipschitz_r
 from solidago.primitives.datastructure.multi_key_table import MultiKeyTable
 from solidago.primitives.pairs import UnorderedPairs
 from solidago.primitives.timer import time
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
 
 

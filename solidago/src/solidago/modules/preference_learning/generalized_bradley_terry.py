@@ -8,7 +8,7 @@ import numpy.typing as npt
 
 import solidago.primitives.dichotomy as dichotomy
 
-from solidago.state import *
+from solidago.poll import *
 from .base import PreferenceLearning
 
 

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives import qr_quantile
 from solidago.primitives.timer import time
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
 
 

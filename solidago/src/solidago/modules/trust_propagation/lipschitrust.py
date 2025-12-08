@@ -7,7 +7,7 @@ from collections import defaultdict
 
 import numpy as np
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
 
 

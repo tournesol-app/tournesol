@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
 from solidago.primitives.timer import time
 

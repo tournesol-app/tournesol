@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from solidago.primitives.dichotomy import solve
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.base import StateFunction
 
 

@@ -1,6 +1,3 @@
-from typing import BinaryIO, Optional, Union
-from urllib.request import urlretrieve
-from pandas import DataFrame, Series
 from io import StringIO
 
 import requests
@@ -9,7 +6,7 @@ import pandas as pd
 from .base import *
 
 
-class PolisExport(State):
+class PolisExport(Poll):
     @staticmethod
     def load(poll_identifier: str, name: str) -> tuple:
         try:
@@ -40,7 +37,7 @@ class PolisExport(State):
     
     def __init__(self, poll_identifier: str):
         summary, users, entities, assessments = PolisExport.load_dfs(poll_identifier)
-        from solidago.state import Users, Entities, AllPublic, Assessments
+        from solidago.poll import Users, Entities, AllPublic, Assessments
         super().__init__(
             users=Users(users),
             entities=Entities(entities),

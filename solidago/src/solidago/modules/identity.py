@@ -1,7 +1,7 @@
 from typing import Union, Optional
 from pathlib import Path
 
-from solidago.state import *
+from solidago.poll import *
 from .base import StateFunction
 
 

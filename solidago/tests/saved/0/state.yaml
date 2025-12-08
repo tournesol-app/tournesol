@@ -1,0 +1,46 @@
+users: 
+  class: Users
+  init_data: users.csv
+entities: 
+  class: Entities
+  init_data: entities.csv
+vouches: 
+  class: Vouches
+  init_data: vouches.csv
+made_public: 
+  class: MadePublic
+  init_data: made_public.csv
+assessments: 
+  class: Assessments
+  init_data: assessments.csv
+comparisons: 
+  class: Comparisons
+  init_data: comparisons.csv
+voting_rights: 
+  class: VotingRights
+  init_data: voting_rights.csv
+user_models:
+  class: UserModels
+  user_directs: user_directs.csv
+  user_scales: user_scales.csv
+  common_scales: common_scales.csv
+  default_composition:
+    - class: direct
+    - class: scale
+      note: mehestan
+    - class: scale
+      note: lipschitz_standardardize
+    - class: scale
+      note: lipschitz_quantile_shift
+    - class: squash
+      score_max: 100
+      note: squash
+global_model: 
+  class: ScoringModel
+  composition:
+    - class: direct
+      note: entitywise_qr_quantile
+    - class: squash
+      score_max: 100
+      note: squash
+  directs: directs.csv

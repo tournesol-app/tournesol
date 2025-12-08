@@ -1,8 +1,6 @@
-from typing import Union, Optional, Iterable
+from typing import Union, Optional, Iterable, TYPE_CHECKING
 from pathlib import Path
-from pandas import DataFrame
 from copy import deepcopy
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import pandas as pd
 import numpy as np
@@ -12,9 +10,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 from solidago.primitives.timer import time
-from solidago.state.users import User, Users
+from solidago.poll.users import User, Users
 from .scoring_model import ScoringModel
 from .score import Score, MultiScore
+
+if TYPE_CHECKING:
+    from solidago.poll import Entity, Entities, Comparisons
 
 
 class UserModels:
@@ -123,7 +124,7 @@ class UserModels:
         n_sampled_entities_per_user: Optional[int]=None,
     ) -> MultiScore:
         keynames = ["username"]
-        from solidago.state.entities import Entities
+        from solidago.poll.entities import Entities
         keynames += ["entity_name"] if isinstance(entities, Entities) or entities is all else list()
         keynames += ["criterion"] if isinstance(criteria, set) or criteria is all else list()
         results = MultiScore(keynames)
@@ -165,7 +166,7 @@ class UserModels:
         value_matrix = np.full((len(users), len(entities)), np.nan)
         left_matrix = np.full((len(users), len(entities)), np.nan)
         right_matrix = np.full((len(users), len(entities)), np.nan)
-        for username, model in user_models:
+        for username, model in self:
             user_index = users.name2index(username)
             for entity_name, score in model(entities, criterion):
                 entity_index = entities.name2index(entity_name)

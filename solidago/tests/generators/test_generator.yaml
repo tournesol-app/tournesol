@@ -1,0 +1,45 @@
+user:
+  class: SvdUser
+  n_users: 10
+  distribution:
+    class: NormalSvd
+    mean: 0.0
+    dimension: 5
+  trust:
+    class: SimpleUserTrust
+    p_trustworthy: 0.8
+    p_pretrusted: 0.2
+  vouch:
+    class: ZipfVouches
+    power_decay: 2.0
+  engagement:
+    bias_std_dev: 1.0
+  comparison:
+    class: AddComparisonModels
+    submodels:
+      - class: ZipfComparisons
+        power_decay: 1.5
+      - class: PoissonComparisons
+        mean: 30.0
+    n_comparisons_per_entity: 3.0
+  multiplier_std_dev: 1.0
+entity:
+  class: SvdEntity
+  n_entities: 20
+  distribution:
+    class: NormalSvd
+    mean: 0.0
+    dimension: 5
+vouch:
+  class: ErdosRenyiVouch
+engagement:
+  class: SimpleEngagement
+  p_public: 0.8
+  p_assessment: 0.5
+  p_comparison: 1.0
+assessment: 
+  class: NormalAssessment
+comparison:
+  class: KnaryGBT
+  n_options: 21 
+  comparison_max: 10

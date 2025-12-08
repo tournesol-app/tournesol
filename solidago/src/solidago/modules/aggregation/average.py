@@ -1,4 +1,4 @@
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.aggregation.entity_criterion_wise import EntityCriterionWise
 
 

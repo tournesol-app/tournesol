@@ -6,39 +6,39 @@ from pandas import Series
 import json
 import os
 
-from solidago.state import *
+from solidago.poll import *
 
 
-class StateFunction:
-    state_cls: type=State
+class PollFunction:
+    poll_cls: type=Poll
     
     def __init__(self, max_workers: Optional[int]=None):
         max_workers = (os.cpu_count() - 1) if max_workers is None else max_workers
         self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
         assert "return" in self.__call__.__annotations__, f"{type(self).__name__} must have a return type"
         for key in self.__call__.__annotations__:
-            if key not in ("return", "state", "save_directory", "seed", "skip_steps"):
-                assert key in self.state_cls.__init__.__annotations__, "" \
-                    f"The argument `{key}` of function `main` of StateFunction {type(self).__name__} " \
-                    f"must be an attribute of {self.state_cls.__name__}, which are " \
-                    f"{set(self.state_cls.__init__.__annotations__.keys())}."
+            if key not in ("return", "poll", "save_directory", "seed", "skip_steps"):
+                assert key in self.poll_cls.__init__.__annotations__, "" \
+                    f"The argument `{key}` of function `main` of PollFunction {type(self).__name__} " \
+                    f"must be an attribute of {self.poll_cls.__name__}, which are " \
+                    f"{set(self.poll_cls.__init__.__annotations__.keys())}."
 
     @abstractmethod
     def __call__(self) -> Any:
         return None
     
-    def state2objects_function(self, state: State) -> Any:
-        """ Must not modify the state """
-        values = self(state) if "state" in self.__call__.__annotations__ else self(**{ 
-            key: getattr(state, key) 
+    def poll2objects_function(self, poll: Poll) -> Any:
+        """ Must not modify the poll """
+        values = self(poll) if "poll" in self.__call__.__annotations__ else self(**{ 
+            key: getattr(poll, key) 
             for key in self.__call__.__annotations__ if key != "return" 
         })
         self.type_check(values, self.__call__.__annotations__)
         return values
     
-    def assign(self, result: State, value: Any):
+    def assign(self, result: Poll, value: Any):
         self.type_check(value, self.__call__.__annotations__)
-        if isinstance(value, State):
+        if isinstance(value, Poll):
             result = value
             return None
         for key, key_type in result.__init__.__annotations__.items():
@@ -55,13 +55,13 @@ class StateFunction:
                 assert isinstance(value, result.__init__.__annotations__[key])
                 setattr(result, key, v)
 
-    def state2state_function(self, state: State, save_directory: Optional[str]=None) -> Any:
-        """ Must not modify the state """
-        if self.__call__.__annotations__["return"] == State:
-            result = self.state2objects_function(state)
+    def poll2poll_function(self, poll: Poll, save_directory: Optional[str]=None) -> Any:
+        """ Must not modify the poll """
+        if self.__call__.__annotations__["return"] == Poll:
+            result = self.poll2objects_function(poll)
         else:
-            result = State() if state is None else state.copy()
-            self.assign(result, self.state2objects_function(state))
+            result = Poll() if poll is None else poll.copy()
+            self.assign(result, self.poll2objects_function(poll))
         self.save_result(result, save_directory)
         return result
     
@@ -96,15 +96,15 @@ class StateFunction:
         return { 
             key: value.save() 
             for key, value in self.__dict__.items()
-            if isinstance(value, StateFunction) 
+            if isinstance(value, PollFunction) 
         }
     
-    def save_result(self, state: State, directory: Optional[str]=None) -> None:
+    def save_result(self, poll: Poll, directory: Optional[str]=None) -> None:
         """ result should be the result of the main function """
         if directory is None:
             return None
-        state.save_objects(type(self).__call__.__annotations__["return"], directory)
-        return state.save_instructions(directory)
+        poll.save_objects(type(self).__call__.__annotations__["return"], directory)
+        return poll.save_instructions(directory)
 
     def json_keys(self) -> list:
         return list(
@@ -118,7 +118,7 @@ class StateFunction:
     def __repr__(self, n_indents: int=0) -> str:
         def sub_repr(key): 
             value = getattr(self, key)
-            return value.__repr__(n_indents + 1) if isinstance(value, StateFunction) else value
+            return value.__repr__(n_indents + 1) if isinstance(value, PollFunction) else value
                         
         indent = "\t" * (n_indents + 1)
         last_indent = "\t" * n_indents

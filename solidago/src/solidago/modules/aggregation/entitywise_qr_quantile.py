@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from solidago.primitives.lipschitz import qr_quantile, qr_uncertainty
-from solidago.state import *
+from solidago.poll import *
 from solidago.modules.aggregation.entity_criterion_wise import EntityCriterionWise
 
 
