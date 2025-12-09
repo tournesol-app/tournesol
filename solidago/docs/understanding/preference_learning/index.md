@@ -1,6 +1,6 @@
 # Preference learning
 
-Bla bla
+**Solidago** considers that 
 
 ## Learning from comparisons
 
