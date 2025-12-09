@@ -36,7 +36,7 @@ class Poll:
         user_models : Optional[UserModels]=None,
         global_model: Optional[ScoringModel]=None,
     ):
-        """ State contains all information being processed by the pipeline 
+        """ Poll contains all information being processed by the pipeline 
         save_directory == False means that no save operation will be performed
         """
         self.users = Users() if users is None else users
@@ -51,9 +51,9 @@ class Poll:
     
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "Poll":
-        from solidago import load
         with open(Path(directory) / "poll.yaml") as f: 
             j = yaml.safe_load(f)
+        from solidago import load
         return cls(**{key: load(value) for key, value in j.items()})
     
     def save(self, directory: Optional[str]=None) -> tuple:
@@ -64,7 +64,8 @@ class Poll:
         return { key: value.save(directory) for key, value in self.__dict__.items() }
     
     def save_instructions(self, directory: Optional[str]=None) -> tuple[str, dict]:
-        instructions = { key: value.save_instructions() for key, value in self.__dict__.items() }
+        instructions = dict(classname=self.__class__.__name__)
+        instructions |= { key: value.save_instructions() for key, value in self.__dict__.items() }
         if directory:
             with open(Path(directory) / "poll.yaml", "w") as f:
                 yaml.safe_dump(instructions, f)

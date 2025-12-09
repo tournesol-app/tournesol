@@ -3,13 +3,13 @@ from typing import Union, Optional, Any
 from pathlib import Path
 from pandas import Series
 
-import json
+import yaml
 import os
 
 from solidago.poll import *
 
 
-class PollFunction:
+class PollFunction(ABC):
     poll_cls: type=Poll
     
     def __init__(self, max_workers: Optional[int]=None):
@@ -89,7 +89,7 @@ class PollFunction:
         j = type(self).__name__, self.args_save()
         if filename is not None:
             with open(filename, "w") as f:
-                json.dump(j, f)
+                yaml.dump(j, f)
         return j
     
     def args_save(self) -> Optional[Union[dict, list]]:
@@ -106,7 +106,7 @@ class PollFunction:
         poll.save_objects(type(self).__call__.__annotations__["return"], directory)
         return poll.save_instructions(directory)
 
-    def json_keys(self) -> list:
+    def yaml_keys(self) -> list:
         return list(
             key for key in self.__init__.__annotations__ 
             if key[0] != "_" and hasattr(self, key)
@@ -123,8 +123,8 @@ class PollFunction:
         indent = "\t" * (n_indents + 1)
         last_indent = "\t" * n_indents
         return f"{type(self).__name__}(\n{indent}" + f",\n{indent}".join([
-            f"{key}={sub_repr(key)}"  for key in self.json_keys()
+            f"{key}={sub_repr(key)}"  for key in self.yaml_keys()
         ]) + f"\n{last_indent})"
 
-    def to_json(self):
-        return type(self).__name__, { key: getattr(self, key) for key in self.json_keys() }
+    def to_yaml(self):
+        return type(self).__name__, { key: getattr(self, key) for key in self.yaml_keys() }

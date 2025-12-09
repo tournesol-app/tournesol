@@ -3,10 +3,10 @@ from typing import Union
 import pandas as pd
 
 from solidago.poll import *
-from solidago.modules import StateFunction
+from solidago.modules import PollFunction
 
 
-class UserGen(StateFunction):
+class UserGen(PollFunction):
     output_key_names: list[str]=["users"]
     
     def __init__(self, n_users: int=30):

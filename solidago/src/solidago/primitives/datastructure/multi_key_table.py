@@ -411,7 +411,7 @@ class MultiKeyTable:
     
     def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
         name = name or f"{self.name}.csv"
-        return type(self).__name__, dict(name=name, keynames=self.keynames)
+        return dict(classname=type(self).__name__, name=name, keynames=self.keynames)
 
     def __repr__(self) -> str:
         r = f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df(5)}"

@@ -5,7 +5,7 @@ from math import sqrt
 
 import pandas as pd
 import logging
-import json
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -223,26 +223,26 @@ class ScoringModel:
             kwargs[name] = MultiScore(kwargs[name]["keynames"], init_data)
         return cls(**kwargs)
 
-    def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
-        (in addition to the json description) """
+        (in addition to the yaml description) """
         for table_name in ("directs", "scales"):
             table = getattr(self, table_name)
             if table:
                 table.save(directory, f"{table_name}.csv")
-        return self.save_instructions(directory, json_dump)
+        return self.save_instructions(directory, yaml_dump)
 
-    def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
-        kwargs = dict(composition=self.composition)
+    def save_instructions(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
+        instructions = dict(classname=type(self).__name__, composition=self.composition)
         for table_name in ("directs", "scales"):
             table = getattr(self, table_name)
             if table:
-                kwargs[table_name] = { "name": f"{table_name}.csv", "keynames": table.keynames }
-        if directory is not None and json_dump:
-            with open(Path(directory) / "model.json", "w") as f:
-                json.dump([type(self).__name__, kwargs], f, indent=4)
-        return type(self).__name__, kwargs
+                instructions[table_name] = { "name": f"{table_name}.csv", "keynames": table.keynames }
+        if directory is not None and yaml_dump:
+            with open(Path(directory) / "model.yaml", "w") as f:
+                yaml.safe_dump(instructions, f, indent=4)
+        return instructions
 
     def matches_composition(self, composition: list) -> bool:
         if len(self.composition) != len(composition):

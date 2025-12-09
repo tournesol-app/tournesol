@@ -1,10 +1,10 @@
 import pandas as pd
 
 from solidago.poll import *
-from solidago.modules import StateFunction
+from solidago.modules import PollFunction
 
 
-class EntityGen(StateFunction):
+class EntityGen(PollFunction):
     def __init__(self, n_entities: int=30):
         assert isinstance(n_entities, int) and n_entities > 0
         self.n_entities = n_entities

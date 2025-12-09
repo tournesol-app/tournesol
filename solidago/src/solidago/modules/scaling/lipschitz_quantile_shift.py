@@ -5,12 +5,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 from solidago.primitives import qr_quantile
-from solidago.primitives.timer import time
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class LipschitzQuantileShift(StateFunction):
+class LipschitzQuantileShift(PollFunction):
     def __init__(self,
         quantile: float = 0.15,
         target_score: float = 0.0,
@@ -76,12 +75,12 @@ class LipschitzQuantileShift(StateFunction):
         ) + self.target_score
         return Score(translation_value, 0, 0)
         
-    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
-            state.user_models.save_common_scales(directory)
-        logger.info("Saving state.json")
-        return state.save_instructions(directory)
+            poll.user_models.save_common_scales(directory)
+        logger.info("Saving poll.yaml")
+        return poll.save_instructions(directory)
 
 
 class LipschitzQuantileZeroShift(LipschitzQuantileShift):

@@ -22,7 +22,7 @@ def save_pipeline_results(seed=None, skip_steps={}):
         seed = range(5)
     if isinstance(seed, int):
         directory = f"tests/saved/{seed}"
-        pipeline(State.load(directory), directory, skip_steps)
+        pipeline(Poll.load(directory), directory, skip_steps)
     else:
         for s in seed:
             save_pipeline_results(s, skip_steps)

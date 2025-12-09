@@ -13,10 +13,10 @@ from solidago.primitives.datastructure.multi_key_table import MultiKeyTable
 from solidago.primitives.pairs import UnorderedPairs
 from solidago.primitives.timer import time
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class Mehestan(StateFunction):
+class Mehestan(PollFunction):
     def __init__(self, 
         lipschitz: float=0.1, 
         min_scaler_activity: float=10.0,
@@ -117,12 +117,12 @@ class Mehestan(StateFunction):
             kwargs[f"is_scaler_{criterion}"] = is_scaler
         return users.assign(**kwargs), user_models.scale(scales, note="mehestan")
 
-    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
-            state.users.save(directory)
-            state.user_models.save_user_scales(directory)
-        with time(logger, "Saving state.json"):
-            instructions = state.save_instructions(directory)
+            poll.users.save(directory)
+            poll.user_models.save_user_scales(directory)
+        with time(logger, "Saving poll.yaml"):
+            instructions = poll.save_instructions(directory)
         return instructions
     
     def scale_criterion(self, 

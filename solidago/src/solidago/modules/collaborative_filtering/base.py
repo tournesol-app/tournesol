@@ -45,9 +45,9 @@ class CollaborativeFiltering(PollFunction, ABC):
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         raise NotImplemented
 
-    def save_result(self, state: State, directory: str | None=None) -> tuple[str, dict]:
+    def save_result(self, poll: Poll, directory: str | None=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving user base model")
-            state.user_models.save_base_models(directory)
-        logger.info("Saving state.json")
-        return state.save_instructions(directory)
+            poll.user_models.save_base_models(directory)
+        logger.info("Saving poll.yaml")
+        return poll.save_instructions(directory)

@@ -4,7 +4,7 @@ from copy import deepcopy
 
 import pandas as pd
 import numpy as np
-import json
+import yaml
 import logging
 
 logger = logging.getLogger(__name__)
@@ -233,21 +233,21 @@ class UserModels:
                 kwargs[name] = MultiScore(keynames, df, name=name)
         return cls(**kwargs)
     
-    def save(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
         for table_name in self.table_keynames:
             filename = self.save_table(directory, table_name)
-        return self.save_instructions(directory, json_dump)
+        return self.save_instructions(directory, yaml_dump)
     
-    def save_instructions(self, directory: Optional[str]=None, json_dump: bool=False) -> tuple[str, dict]:
-        kwargs = { name: f"{name}.csv" for name in self.table_keynames if getattr(self, name) }
-        kwargs["default_composition"] = self.default_composition
+    def save_instructions(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
+        instructions = dict(classname=type(self).__name__)
+        instructions |= { name: f"{name}.csv" for name in self.table_keynames if getattr(self, name) }
+        instructions["default_composition"] = self.default_composition
         if len(self.user_composition) > 0:
-            kwargs["user_composition"] = self.user_composition
-        if directory is not None and json_dump:
-            with open(Path(directory) / "user_models.json", "w") as f:
-                json.dump([type(self).__name__, kwargs], f)
-        return type(self).__name__, kwargs
-        return cls(**kwargs)
+            instructions["user_composition"] = self.user_composition
+        if directory is not None and yaml_dump:
+            with open(Path(directory) / "user_models.yaml", "w") as f:
+                yaml.safe_dump(instructions, f)
+        return instructions
     
     def save_table(self, directory: Union[Path, str], table_name: str) -> str:
         if getattr(self, table_name):

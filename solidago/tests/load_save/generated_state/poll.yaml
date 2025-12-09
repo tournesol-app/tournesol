@@ -1,0 +1,51 @@
+assessments:
+- Assessments
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  name: assessments.csv
+comparisons:
+- Comparisons
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  - other_name
+  name: comparisons.csv
+entities:
+- Entities
+- name: entities
+global_model:
+- ScoringModel
+- composition:
+  - - direct
+    - {}
+made_public:
+- MadePublic
+- keynames:
+  - username
+  - entity_name
+  name: made_public.csv
+user_models:
+- UserModels
+- default_composition:
+  - - direct
+    - {}
+users:
+- Users
+- name: users
+voting_rights:
+- VotingRights
+- keynames:
+  - username
+  - entity_name
+  - criterion
+  name: voting_rights.csv
+vouches:
+- Vouches
+- keynames:
+  - by
+  - to
+  - kind
+  name: vouches.csv

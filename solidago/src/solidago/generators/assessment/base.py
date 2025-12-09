@@ -1,10 +1,10 @@
 import numpy as np
 
 from solidago.poll import *
-from solidago.modules import StateFunction
+from solidago.modules import PollFunction
 
 
-class AssessmentGen(StateFunction):
+class AssessmentGen(PollFunction):
     def __call__(self, 
         users: Users, 
         entities: Entities, 

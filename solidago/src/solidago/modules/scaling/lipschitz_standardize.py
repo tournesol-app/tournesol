@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 from solidago.primitives import qr_standard_deviation
 from solidago.primitives.timer import time
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class LipschitzStandardize(StateFunction):
+class LipschitzStandardize(PollFunction):
     def __init__(self, 
         dev_quantile: float=0.9, 
         lipschitz: float=0.1, 
@@ -69,9 +69,9 @@ class LipschitzStandardize(StateFunction):
         )
         return Score(1./std_dev, 0, 0)
      
-    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
-            state.user_models.save_common_scales(directory)
-        logger.info("Saving state.json")
-        return state.save_instructions(directory)
+            poll.user_models.save_common_scales(directory)
+        logger.info("Saving poll.yaml")
+        return poll.save_instructions(directory)

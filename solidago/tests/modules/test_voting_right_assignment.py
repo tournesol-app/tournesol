@@ -6,16 +6,17 @@ from solidago import *
 from solidago.modules.voting_rights import Trust2VotingRights, AffineOvertrust
 
 
-states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 @pytest.mark.parametrize("seed", range(4))
 def test_is_trust(seed):
-    voting_rights = Trust2VotingRights().state2objects_function(states[seed])
-    for (username, entity_name, criterion), voting_right in voting_rights:
-        if states[seed].made_public.get(username, entity_name):
-            assert voting_right == states[seed].users[username].trust
+    poll = polls[seed]
+    voting_rights = Trust2VotingRights().state2objects_function(poll)
+    for (username, entity_name, _), voting_right in voting_rights:
+        if poll.made_public.get(username, entity_name):
+            assert voting_right == poll.users[username].trust
         else:
-            assert voting_right == 0.5 * states[seed].users[username].trust
+            assert voting_right == 0.5 * poll.users[username].trust
 
 
 ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=2)
@@ -212,6 +213,6 @@ def test_affine_overtrust():
 
 @pytest.mark.parametrize("seed", range(5))
 def test_affine_overtrust_test_data(seed):
-    entities, voting_rights = ao.state2objects_function(states[seed])
+    entities, voting_rights = ao.poll2objects_function(polls[seed])
     for (username, entity_name, criterion), voting_right in voting_rights:
         assert voting_right >= 0

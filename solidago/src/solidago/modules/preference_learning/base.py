@@ -7,11 +7,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
 
-class PreferenceLearning(StateFunction, ABC):
+class PreferenceLearning(PollFunction, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
@@ -103,9 +103,9 @@ class PreferenceLearning(StateFunction, ABC):
         """Learns a scoring model, given user judgments of entities """
         raise NotImplementedError
 
-    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving user base model")
-            state.user_models.save_base_models(directory)
-        logger.info("Saving state.json")
-        return state.save_instructions(directory)
+            poll.user_models.save_base_models(directory)
+        logger.info("Saving poll.yaml")
+        return poll.save_instructions(directory)

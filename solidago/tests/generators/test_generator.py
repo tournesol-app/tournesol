@@ -28,6 +28,6 @@ def test_evaluation_generator():
             
 def test_generative_model():
     for seed in range(5):
-        state = State.load(f"tests/saved/{seed}")
+        state = Poll.load(f"tests/saved/{seed}")
         for key in ("users", "entities", "vouches", "made_public", "assessments", "comparisons"):
             assert len(getattr(state, key)) > 0

@@ -1,8 +1,8 @@
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class Trust2VotingRights(StateFunction):
+class Trust2VotingRights(PollFunction):
     def __init__(self, privacy_penalty: float=0.5, *args, **kwargs):
         """ Computes voting_rights simply as the user trust scores,
         potentially multiplied by the privacy penalty if the vote is private.

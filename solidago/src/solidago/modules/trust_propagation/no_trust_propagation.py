@@ -1,8 +1,8 @@
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class NoTrustPropagation(StateFunction):
+class NoTrustPropagation(PollFunction):
     def __init__(self, pretrust_value: float=0.8, *args, **kwargs):
         """
         Parameters

@@ -2,12 +2,12 @@ from typing import Union, Optional
 from pathlib import Path
 
 from solidago.poll import *
-from .base import StateFunction
+from .base import PollFunction
 
 
-class Identity(StateFunction):
+class Identity(PollFunction):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-    def __call__(self, state: State) -> State:
-        return state.copy()
+    def __call__(self, poll: Poll) -> Poll:
+        return poll.copy()

@@ -1,0 +1,27 @@
+users:
+  class: Users
+  init_data: users.csv
+entities:
+  class: Entities
+  init_data: entities.csv
+vouches:
+  class: Vouches
+  init_data: vouches.csv
+made_public:
+  class: MadePublic
+  init_data: made_public.csv
+assessments:
+  class: Assessments
+  init_data: assessments.csv
+comparisons:
+  class: Comparisons
+  init_data: comparisons.csv
+voting_rights:
+  class: VotingRights
+  init_data: voting_rights.csv
+user_models:
+  class: UserModels
+  default_composition: [ class: direct ]
+global_model:
+  class: ScoringModel
+  composition: [ class: direct ]

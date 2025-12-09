@@ -206,7 +206,7 @@ class Objects:
 
     def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
         name = name or type(self).name
-        return type(self).__name__, dict(name=name)
+        return dict(classname=type(self).__name__, name=name)
 
     def __len__(self) -> int:
         if self.init_data is not None:

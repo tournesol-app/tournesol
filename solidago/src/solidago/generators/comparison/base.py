@@ -3,10 +3,10 @@ from typing import Optional
 import numpy as np
 
 from solidago.poll import *
-from solidago.modules import StateFunction
+from solidago.modules import PollFunction
 
 
-class ComparisonGen(StateFunction):
+class ComparisonGen(PollFunction):
     def __call__(self, 
         users: Users, 
         entities: Entities, 

@@ -3,7 +3,7 @@ import pytest
 from solidago import *
 from solidago.modules.trust_propagation import LipschiTrust, TrustAll
 
-states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 
 def test_lipschitrust_simple():
@@ -25,7 +25,7 @@ def test_lipschitrust_simple():
 def test_lipschitrust_generative(seed):
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8,)
 
-    users = trust_propagator(states[seed].users, states[seed].vouches)
+    users = trust_propagator(polls[seed].users, polls[seed].vouches)
     for user in users:
         assert user.is_trustworthy or (user.trust == 0)
 
@@ -65,7 +65,7 @@ def test_lipschitrust_ten_users():
 @pytest.mark.parametrize("seed", range(4))
 def test_lipschitrust_test_data(seed):
     pipeline = Sequential.load("tests/modules/test_pipeline.json")
-    users = pipeline.modules[0](states[seed].users, states[seed].vouches)
+    users = pipeline.modules[0](polls[seed].users, polls[seed].vouches)
     for user in users:
         assert user["is_trustworthy"] or (user.trust == 0)
 

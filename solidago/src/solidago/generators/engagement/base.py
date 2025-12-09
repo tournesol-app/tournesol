@@ -1,10 +1,10 @@
 from numpy.random import random
 
 from solidago.poll import *
-from solidago.modules import StateFunction
+from solidago.modules import PollFunction
 
 
-class EngagementGen(StateFunction):
+class EngagementGen(PollFunction):
     def __call__(self, users: Users, entities: Entities) -> tuple[MadePublic, Assessments, Comparisons]:
         made_public, assessments, comparisons = MadePublic(), Assessments(), Comparisons()
         for user in users:

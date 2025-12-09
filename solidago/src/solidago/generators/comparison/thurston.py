@@ -107,7 +107,5 @@ class KnaryGBT(DiscreteGBT):
     def __str__(self):
         return f"K-naryGBT(K={self.n_options}, comparison_max={self.comparison_max})"
         
-    def to_json(self):
-        return type(self).__name__, dict(
-            n_options=self.n_options, comparison_max=self.comparison_max
-        )
+    def to_dict(self):
+        return {"class": type(self).__name__} | dict(n_options=self.n_options, comparison_max=self.comparison_max)

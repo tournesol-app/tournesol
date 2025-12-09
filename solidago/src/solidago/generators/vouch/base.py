@@ -1,7 +1,7 @@
 from solidago.poll import *
-from solidago.modules import StateFunction
+from solidago.modules import PollFunction
 
 
-class VouchGen(StateFunction):
+class VouchGen(PollFunction):
     def __call__(self, users: Users) -> Vouches:
         return Vouches()

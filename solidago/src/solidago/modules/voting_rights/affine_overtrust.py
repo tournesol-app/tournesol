@@ -5,10 +5,10 @@ import pandas as pd
 
 from solidago.primitives.dichotomy import solve
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class AffineOvertrust(StateFunction):
+class AffineOvertrust(PollFunction):
     def __init__(self, 
         privacy_penalty: float = 0.5, 
         min_overtrust: float = 2.0,

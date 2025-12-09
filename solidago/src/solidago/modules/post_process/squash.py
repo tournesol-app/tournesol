@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class Squash(StateFunction):
+class Squash(PollFunction):
     def __init__(self, score_max: float = 100.0, *args, **kwargs):
         assert score_max > 0
         super().__init__(*args, **kwargs)
@@ -22,5 +22,5 @@ class Squash(StateFunction):
         by squashing scores into [-self.score_max, self.score_max] """
         return user_models.squash(self.score_max, "squash"), global_model.squash(self.score_max, "squash")
 
-    def save_result(self, state: State, directory: Optional[str]=None) -> tuple[str, dict]:
-        return state.save_instructions(directory)
+    def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
+        return poll.save_instructions(directory)

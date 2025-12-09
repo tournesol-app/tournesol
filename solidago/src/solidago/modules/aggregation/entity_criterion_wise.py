@@ -5,11 +5,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 from solidago.primitives.timer import time
 
 
-class EntityCriterionWise(StateFunction):
+class EntityCriterionWise(PollFunction):
     note: str="entity_criterion_wise_aggregation"
 
     def __init__(self, *args, **kwargs):

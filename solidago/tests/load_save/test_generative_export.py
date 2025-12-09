@@ -4,13 +4,11 @@ import json
 
 
 def test_generative_model():
-    with open("tests/generators/test_generator.json") as f: 
-        generator = Generator.load(json.load(f))
-
+    generator = load("tests/generators/test_generator.yaml")
     s = generator(seed=0)
     
     s.save("tests/load_save/generated_state")
-    s2 = State.load("tests/load_save/generated_state")
+    s2 = Poll.load("tests/load_save/generated_state")
     
     assert "user_7" in s2.users
     assert s.users["user_5"].n_comparisons == s2.users["user_5"].n_comparisons

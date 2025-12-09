@@ -8,10 +8,10 @@ from collections import defaultdict
 import numpy as np
 
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 
 
-class LipschiTrust(StateFunction):
+class LipschiTrust(PollFunction):
     def __init__(self,
         pretrust_value: float = 0.8,
         decay: float = 0.8,

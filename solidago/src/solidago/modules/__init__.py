@@ -1,4 +1,4 @@
-from .base import StateFunction
+from .base import PollFunction
 from .sequential import Sequential
 from .identity import Identity
 

@@ -4,7 +4,7 @@ import numpy as np
 from solidago import *
 from solidago.modules.scaling import Mehestan, LipschitzStandardize, LipschitzQuantileShift
 
-states = [ State.load(f"tests/saved/{seed}") for seed in range(5) ]
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
 
 
 @pytest.mark.parametrize("seed", range(5))
@@ -20,7 +20,7 @@ def test_learned_models(seed):
         error=1e-5,
         max_workers=1
     )
-    s = states[seed]
+    s = polls[seed]
     users, entities, made_public = s.users, s.entities, s.made_public
     base_models = UserModels(s.user_models.user_directs)
     users, scaled_models = mehestan(users, entities, made_public, base_models)
@@ -33,8 +33,8 @@ def test_standardize(seed):
         error=1e-05,
         max_workers=1
     )
-    base_models = UserModels(states[seed].user_models.user_directs)
-    standardized_models = standardize(states[seed].entities, base_models)
+    base_models = UserModels(polls[seed].user_models.user_directs)
+    standardized_models = standardize(polls[seed].entities, base_models)
     values = np.array([s.value for _, s in standardized_models()])
     deviations = np.abs(values - np.median(values))
     quantile = int(0.9 * len(deviations))
@@ -50,6 +50,6 @@ def test_quantile_shift(seed):
         target_score=0.21,
         max_workers=1
     )
-    base_models = UserModels(states[seed].user_models.user_directs)
-    shifted_models = quantile_shift(states[seed].entities, base_models)
+    base_models = UserModels(polls[seed].user_models.user_directs)
+    shifted_models = quantile_shift(polls[seed].entities, base_models)
     assert np.median([s.value for _, s in shifted_models()]) > 0

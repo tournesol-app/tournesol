@@ -99,7 +99,7 @@ class NormalUser(UserGen):
         return user
 
     @classmethod
-    def json_keys(cls):
+    def yaml_keys(cls):
         return ["n_users", "p_trustworthy", "p_pretrusted", "zipf_vouch", "zipf_compare", 
             "poisson_compare", "n_comparisons_per_entity", "mean", 
             "multiplier_std_dev", "engagement_bias_std_dev"]

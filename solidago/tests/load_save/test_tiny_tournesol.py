@@ -42,7 +42,7 @@ def test_export():
     t.save("tests/load_save/save_tiny_tournesol")
 
 def test_reimport():
-    t = State.load("tests/load_save/save_tiny_tournesol")
+    t = Poll.load("tests/load_save/save_tiny_tournesol")
     
     assert "biscuissec" in t.users, t.users
     assert t.users["le_science4all"].trust == 1

@@ -7,11 +7,11 @@ from sklearn.metrics import silhouette_score
 import numpy as np
 
 from solidago.poll import *
-from solidago.modules.base import StateFunction
+from solidago.modules.base import PollFunction
 from solidago.poll.user_clusters.base import UserClusters
 
 
-class UserClustering(StateFunction, ABC):
+class UserClustering(PollFunction, ABC):
     def __init__(self, 
         pca_dimension: int | None=None, 
         n_clusters: int | Iterable=range(2, 5), 
