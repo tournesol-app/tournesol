@@ -15,6 +15,7 @@ from core.utils.time import time_ago, time_ahead
 from tournesol.models import (
     Comparison,
     ComparisonCriteriaScore,
+    ContributorRating,
     ContributorRatingCriteriaScore,
     Entity,
     EntityCriteriaScore,
@@ -301,7 +302,7 @@ class ComparisonApiTestCase(TestCase):
             data["criteria_scores"][0]["weight"],
         )
 
-    def test_creating_comparison_updates_the_ratings(self):
+    def test_creating_comparison_updates_the_entity_poll_ratings(self):
         """
         Ensure the `EntityPollRating`s are automatically created after each
         comparison.
@@ -355,6 +356,39 @@ class ComparisonApiTestCase(TestCase):
         self.assertEqual(rating_a.n_contributors, 2)
         self.assertEqual(rating_b.n_comparisons, 4)
         self.assertEqual(rating_b.n_contributors, 2)
+
+    def test_creating_comparison_updates_the_contributor_ratings(self):
+        """
+        Ensure that the compared entities are marked as "seen" after the
+        comparison.
+        """
+        self.client.force_authenticate(user=self.user)
+
+        rating1, _ = ContributorRating.objects.update_or_create(
+            poll=self.poll_videos,
+            user=self.user,
+            entity=self.videos[0],
+            defaults={"entity_seen": False},
+        )
+
+        rating2, _ = ContributorRating.objects.update_or_create(
+            poll=self.poll_videos,
+            user=self.user,
+            entity=self.videos[2],
+            defaults={"entity_seen": False},
+        )
+
+        self.client.post(
+            self.comparisons_base_url,
+            self.non_existing_comparison,
+            format="json",
+        )
+
+        rating1.refresh_from_db()
+        rating2.refresh_from_db()
+
+        self.assertEqual(rating1.entity_seen, True)
+        self.assertEqual(rating2.entity_seen, True)
 
     def test_authenticated_can_create_without_optional(self):
         """

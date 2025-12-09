@@ -4,6 +4,7 @@
 global_scores.json 
 local_scores.json 
 venv/
+.venv/
 /ml/checkpoints/
 .flake8/
 .pylint/

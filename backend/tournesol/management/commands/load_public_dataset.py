@@ -24,8 +24,10 @@ class Command(BaseCommand):
     help = "Generate a new database for dev purposes, derived from the public dataset"
 
     def add_arguments(self, parser):
-        parser.add_argument("--user-sampling", type=float, default=None)
         parser.add_argument("--dataset-url", type=str, default=PUBLIC_DATASET_URL)
+        sampling_group = parser.add_mutually_exclusive_group()
+        sampling_group.add_argument("--user-sampling", type=float, default=None)
+        sampling_group.add_argument("--videos-limit", type=int, default=None)
 
     def create_user(self, username: str, ml_input: TournesolDataset):
         user = ml_input.users.loc[ml_input.users.public_username == username].iloc[0]
@@ -45,7 +47,7 @@ class Command(BaseCommand):
 
     def create_videos(self, video_ids: pd.Series) -> dict[int, Entity]:
         videos = {}
-        for (entity_id, video_id) in video_ids.items():
+        for entity_id, video_id in video_ids.items():
             videos[entity_id] = Entity.create_from_video_id(video_id, fetch_metadata=False)
         return videos
 
@@ -65,6 +67,39 @@ class Command(BaseCommand):
             username="user1", password="tournesol", email="user1@tournesol.app"
         )
 
+    @staticmethod
+    def apply_videos_limit(limit: int, comparisons: pd.DataFrame):
+        counts_a = (
+            comparisons.drop_duplicates(
+                subset=["entity_a", "public_username"], keep="first", inplace=False
+            )
+            .entity_a.value_counts()
+            .rename("count_a")
+        )
+        counts_b = (
+            comparisons.drop_duplicates(
+                subset=["entity_b", "public_username"], keep="first", inplace=False
+            )
+            .entity_b.value_counts()
+            .rename("count_b")
+        )
+        counts_combined = pd.concat([counts_a, counts_b], axis=1).fillna(0)
+        counts_combined["total_count"] = counts_combined.count_a + counts_combined.count_b
+        videos_to_keep = set(
+            counts_combined.sort_values(by="total_count", ascending=False).index[:limit]
+        )
+        comparisons = comparisons[
+            comparisons.entity_a.isin(videos_to_keep) & comparisons.entity_b.isin(videos_to_keep)
+        ]
+        usernames_to_keep = comparisons.public_username.unique()
+        print(
+            f"Applied video limits: \n"
+            f"- New video count: {len(videos_to_keep)}\n"
+            f"- New user count: {len(usernames_to_keep)}\n"
+            f"- New comparison count: {len(comparisons)}"
+        )
+        return usernames_to_keep, videos_to_keep, comparisons
+
     def handle(self, *args, **options):
         public_dataset = TournesolDataset(options["dataset_url"])
         nb_comparisons = 0
@@ -76,6 +111,8 @@ class Command(BaseCommand):
 
             usernames = public_dataset.users.public_username.unique()
             comparisons = public_dataset.comparisons
+            video_ids = public_dataset.entity_id_to_video_id
+
             if options["user_sampling"]:
                 usernames = set(
                     pd.Series(usernames)
@@ -83,20 +120,28 @@ class Command(BaseCommand):
                     .values
                 ).union(SEED_USERS)
                 comparisons = comparisons[comparisons.public_username.isin(usernames)]
+                video_ids = video_ids[
+                    video_ids.index.isin(set(comparisons.entity_a) | set(comparisons.entity_b))
+                ]
+
+            if options["videos_limit"]:
+                usernames, entity_ids, comparisons = self.apply_videos_limit(
+                    options["videos_limit"], comparisons
+                )
+                video_ids = video_ids[video_ids.index.isin(entity_ids)]
 
             EmailDomain.objects.create(
                 domain="@trusted.example", status=EmailDomain.STATUS_ACCEPTED
             )
-
             users = {
                 username: self.create_user(username, public_dataset) for username in usernames
             }
             print(f"Created {len(users)} users")
 
-            videos = self.create_videos(video_ids=public_dataset.entity_id_to_video_id)
+            videos = self.create_videos(video_ids=video_ids)
             print(f"Created {len(videos)} video entities")
 
-            for ((username, entity_a, entity_b), rows) in comparisons.groupby(
+            for (username, entity_a, entity_b), rows in comparisons.groupby(
                 ["public_username", "entity_a", "entity_b"]
             ):
                 comparison = Comparison.objects.create(
@@ -119,7 +164,7 @@ class Command(BaseCommand):
                 video.update_entity_poll_rating(poll=poll)
 
             self.create_test_user()
-            ContributorRating.objects.update(is_public=True)
+            ContributorRating.objects.update(is_public=True, entity_seen=True)
 
         if settings.YOUTUBE_API_KEY:
             print("Fetching video metadata from Youtube...")

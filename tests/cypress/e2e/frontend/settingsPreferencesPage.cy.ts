@@ -245,10 +245,18 @@ describe('Settings - preferences page', () => {
           cy.contains('A day ago').click();
           cy.contains('Update preferences').click();
 
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
+
           cy.visit('/feed/foryou');
+          cy.wait('@settingsRetrievedFromAPI')
+            .its('response.body')
+            .should(settings => {
+              expect(settings["videos"]["feed_foryou__date"]).equals("TODAY")
+            });
           cy.contains(
             "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('be.visible');
         });
 
@@ -260,11 +268,15 @@ describe('Settings - preferences page', () => {
           cy.contains('A week ago').click();
           cy.contains('Update preferences').click();
 
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
+
           cy.visit('/feed/foryou');
-          cy.contains(
-            "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
-          ).should('be.visible');
+          cy.wait('@settingsRetrievedFromAPI')
+            .its('response.body')
+            .should(settings => {
+              expect(settings["videos"]["feed_foryou__date"]).equals("WEEK")
+            });
         });
 
         it('handles the value A month ago', () => {
@@ -275,12 +287,6 @@ describe('Settings - preferences page', () => {
           cy.get(
             '[data-testid=videos_feed_foryou__date]'
           ).should('have.value', 'MONTH');
-
-          cy.visit('/feed/foryou');
-          cy.contains(
-            "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
-          ).should('be.visible');
         });
 
         it('handles the value A year ago', () => {
@@ -291,11 +297,15 @@ describe('Settings - preferences page', () => {
           cy.contains('A year ago').click();
           cy.contains('Update preferences').click();
 
+          cy.intercept('http://localhost:8000/users/me/settings/')
+            .as('settingsRetrievedFromAPI');
+
           cy.visit('/feed/foryou');
-          cy.contains(
-            "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
-          ).should('not.exist');
+          cy.wait('@settingsRetrievedFromAPI')
+            .its('response.body')
+            .should(settings => {
+              expect(settings["videos"]["feed_foryou__date"]).equals("YEAR")
+            });
         });
 
         it('handles the value All time', () => {
@@ -309,7 +319,7 @@ describe('Settings - preferences page', () => {
           cy.visit('/feed/foryou');
           cy.contains(
             "There doesn't seem to be anything to display at the moment.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('not.exist');
         });
       });
@@ -333,7 +343,7 @@ describe('Settings - preferences page', () => {
 
           cy.contains(
             "The score of this video is below the recommendability threshold defined by Tournesol.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('not.exist');
         });
 
@@ -353,7 +363,7 @@ describe('Settings - preferences page', () => {
 
           cy.contains(
             "The score of this video is below the recommendability threshold defined by Tournesol.",
-            {matchCase: false}
+            { matchCase: false }
           ).should('be.visible');
         });
       });
@@ -361,9 +371,6 @@ describe('Settings - preferences page', () => {
       describe('Setting - exclude compared entities', () => {
         it('handles the value false (include)', () => {
           cy.recreateUser('test_exclude_false', 'test_exclude_false@example.com', 'tournesol');
-
-          cy.intercept('http://localhost:8000/polls/videos/recommendations/*')
-            .as('recommendationsRetrievedFromAPI');
 
           cy.intercept('http://localhost:8000/users/me/settings/')
             .as('settingsRetrievedFromAPI');
@@ -387,17 +394,17 @@ describe('Settings - preferences page', () => {
 
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
+              cy.contains("Comparison successfully submitted.")
 
-              cy.contains('test_exclude_false').click();
-              cy.get('[data-testid="settings-preferences"]').click();
-              cy.wait('@settingsRetrievedFromAPI');
+              cy.intercept('http://localhost:8000/users/me/settings/')
+                .as('settingsRetrievedFromAPI2');
 
-              // Change an additional setting to bypass the cache in /feed/foryou.
-              cy.get('[data-testid="videos_feed_foryou__unsafe"]').check();
-              cy.contains('Update preferences').click();
-
-              cy.visit('/feed/foryou');
-              cy.wait('@recommendationsRetrievedFromAPI');
+              cy.visit("/feed/foryou")
+              cy.wait('@settingsRetrievedFromAPI2')
+                .its('response.body')
+                .should(settings => {
+                  expect(settings["videos"]["feed_foryou__exclude_compared_entities"]).equals(false)
+                });
 
               cy.get('[data-testid="video-card-info"] h5')
                 .first()
@@ -405,14 +412,11 @@ describe('Settings - preferences page', () => {
                 .should('eq', videoTitle);
             });
 
-            cy.deleteUser('test_exclude_false');
+          cy.deleteUser('test_exclude_false');
         });
 
         it('handles the value true (exclude)', () => {
           cy.recreateUser('test_exclude_true', 'test_exclude_true@example.com', 'tournesol');
-
-          cy.intercept('http://localhost:8000/polls/videos/recommendations/*')
-            .as('recommendationsRetrievedFromAPI');
 
           cy.intercept('http://localhost:8000/users/me/settings/')
             .as('settingsRetrievedFromAPI');
@@ -437,23 +441,30 @@ describe('Settings - preferences page', () => {
 
               cy.get('[aria-label="Compare now"').first().click();
               cy.get('button#expert_submit_btn').click();
+              cy.contains("Comparison successfully submitted.")
 
-              cy.contains('test_exclude_true').click();
-              cy.get('[data-testid="settings-preferences"]').click();
-              cy.wait('@settingsRetrievedFromAPI');
+              // Logging out allows to renew the auth token and make sure
+              // the browser cache is ignored when fetching the feed "For You".
+              cy.contains('test_exclude_true').click()
+              cy.contains("Logout").click()
 
-              // Change an additional setting to bypass the cache in /feed/foryou.
-              cy.get('[data-testid="videos_feed_foryou__unsafe"]').check();
-              cy.contains('Update preferences').click();
+              cy.intercept('http://localhost:8000/users/me/settings/')
+                .as('settingsRetrievedFromAPI2');
 
-              cy.visit('/feed/foryou');
-              cy.wait('@recommendationsRetrievedFromAPI');
+              cy.contains("For you").click()
+              login('test_exclude_true');
+
+              cy.wait('@settingsRetrievedFromAPI2')
+                .its('response.body')
+                .should(settings => {
+                  expect(settings["videos"]["feed_foryou__exclude_compared_entities"]).equals(true)
+                });
 
               cy.get('[data-testid="video-card-info"] h5')
                 .first()
                 .invoke('attr', 'title')
                 .should('not.eq', videoTitle);
-          });
+            });
 
           cy.deleteUser('test_exclude_true');
         });

@@ -10,7 +10,13 @@ import {
   MenuList,
   MenuItem,
 } from '@mui/material';
-import { Logout, VideoLibrary, HowToReg } from '@mui/icons-material';
+import {
+  Logout,
+  VideoLibrary,
+  HowToReg,
+  ListAlt,
+  Stars,
+} from '@mui/icons-material';
 import { TournesolMenuItemType, settingsMenu } from 'src/utils/menus';
 import { useCurrentPoll, useLoginState } from 'src/hooks';
 
@@ -64,6 +70,29 @@ const PersonalMenu = ({
             <ListItemText>{t('personalMenu.yourRecommendations')}</ListItemText>
           </MenuItem>,
         ]}
+        <MenuItem
+          key="my-comparisons"
+          component={RouterLink}
+          to={`${baseUrl}/comparisons`}
+          onClick={onItemClick}
+        >
+          <ListItemIcon>
+            <ListAlt fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t('menu.myComparisons')}</ListItemText>
+        </MenuItem>
+        <MenuItem
+          key="my-compared-items"
+          component={RouterLink}
+          to={`${baseUrl}/ratings`}
+          onClick={onItemClick}
+        >
+          <ListItemIcon>
+            <Stars fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{t('menu.comparedItems')}</ListItemText>
+        </MenuItem>
+        <Divider key="my-things-divider" />
         <MenuItem
           key="vouching"
           component={RouterLink}

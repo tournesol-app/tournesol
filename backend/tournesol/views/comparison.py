@@ -99,6 +99,13 @@ class ComparisonListApi(mixins.CreateModelMixin, ComparisonListBaseApi):
         return self.create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
+        """
+        Creating a new comparison also requires updating additional records to
+        keep the database data coherent with each other.
+
+        Some updates are performed here, others are performed by Django
+        signals.
+        """
         poll = serializer.context["poll"]
 
         if self.comparison_already_exists(poll.pk, self.request):

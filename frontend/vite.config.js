@@ -33,6 +33,31 @@ export default defineConfig(() => {
       environment: "jsdom",
       setupFiles: 'src/setupTests.ts',
       clearMocks: true,
+      deps: {
+        optimizer: {
+          web: {
+            enabled: true,
+            // Include all MUI icons in the test bundle to prevent Vitest from loading
+            // them individually, which significantly slows down unit test collection.
+            include: ["@mui/icons-material"],
+            esbuildOptions: {
+              plugins: [
+                {
+                  // This plugin rewrites 'jsx-runtime' imports.
+                  // A bug in React <= 17 prevents 'jsx-runtime' from resolving correctly
+                  // in bundles built by Vitest. See https://github.com/facebook/react/issues/20235.
+                  name: "fix-jsx-runtime",
+                  setup: (build) => {
+                    build.onResolve({ filter: /jsx-runtime$/ }, args => {
+                      return { path: path.resolve(__dirname, "node_modules", `${args.path}.js`) }
+                    })
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   };
 });

@@ -14,3 +14,11 @@ export const entityCardMainSx: SxProps = {
   */
   flex: 1,
 };
+
+export const entityCardEntitySeenSx: SxProps = {
+  borderBottom: '4px solid #73d877',
+};
+
+export const rowEntityCardEntitySeenSx: SxProps = {
+  borderRight: '8px solid #73d877',
+};

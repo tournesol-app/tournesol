@@ -132,3 +132,9 @@ docker buildx build --platform linux/amd64 db --build-arg DUMP_FILE=YOUR_DUMP_FI
 ```
 
 [docker-docs-linuxpostinstall]: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
+
+## Troubleshooting
+
+When starting the dev-env, the backend settings file is copied. This may in
+rare occasions cause the dev-env to encounter errors when starting. To resolve,
+simply delete the file `backend/dev-env/settings-tournesol-local.yaml`.

@@ -1,6 +1,10 @@
 import { useMemo, useCallback } from 'react';
-import { Recommendation, EntityCriteriaScore } from 'src/services/openapi';
-import usePersonalCriteriaScores from 'src/hooks/usePersonalCriteriaScores';
+import {
+  ContributorRating,
+  EntityCriteriaScore,
+  Recommendation,
+} from 'src/services/openapi';
+import useContributorRating from 'src/hooks/useContributorRating';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { PRESIDENTIELLE_2022_POLL_NAME } from 'src/utils/constants';
 
@@ -36,20 +40,20 @@ interface ScoreByCriterion {
 }
 
 const useCriteriaChartData = ({
-  reco,
+  entityResult,
 }: {
-  reco: Recommendation;
+  entityResult: Recommendation | ContributorRating;
 }): UseCriteriaChartDataValue => {
   const criteriaScores: Array<EntityCriteriaScore> = useMemo(
-    () => reco?.collective_rating?.criteria_scores || [],
-    [reco]
+    () => entityResult?.collective_rating?.criteria_scores || [],
+    [entityResult]
   );
   const shouldDisplayChart = criteriaScores && criteriaScores.length > 0;
 
   const { name: pollName, criterias: pollCriteria } = useCurrentPoll();
 
   const { personalScoresActivated, personalCriteriaScores } =
-    usePersonalCriteriaScores();
+    useContributorRating();
 
   const clipScore = useCallback(
     (score) =>

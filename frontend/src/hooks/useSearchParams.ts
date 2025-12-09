@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router';
-import { Location } from 'history';
+import { useLocation, Location } from 'react-router';
 
 const buildSearchParams = (location: Location) =>
   Object.fromEntries(new URLSearchParams(location.search));

@@ -2,6 +2,8 @@
 API returning preview images of entities.
 """
 
+import logging
+
 import numpy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -21,6 +23,9 @@ from .default import (
     font_height,
     get_preview_font_config,
 )
+
+logger = logging.getLogger(__name__)
+
 
 TS_SCORE_OVERLAY_COLOR = (58, 58, 58, 224)
 TS_SCORE_OVERLAY_MARGIN_B = 0
@@ -183,7 +188,8 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
         try:
             youtube_thumbnail = self.get_best_quality_yt_thumbnail(entity)
-        except ConnectionError:
+        except Exception as exc:   # pylint: disable=broad-except
+            logger.info("Fallback to default preview, after exception: %s", exc)
             return self.default_preview()
 
         if youtube_thumbnail is not None:

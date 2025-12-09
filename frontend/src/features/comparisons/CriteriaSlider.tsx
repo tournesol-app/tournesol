@@ -16,6 +16,7 @@ import { HelpOutline } from '@mui/icons-material';
 import { useCurrentPoll } from 'src/hooks/useCurrentPoll';
 import { CriteriaIcon, InternalLink } from 'src/components';
 import { getCriteriaTooltips } from 'src/utils/constants';
+import { absolutePollBasePath } from 'src/utils/navigation';
 import { RouteID } from 'src/utils/types';
 
 export const SLIDER_SCORE_MAX = 10;
@@ -74,7 +75,7 @@ const CriteriaLabelWithLink = ({ children, criteria }: Props) => {
   if (hasCriteriaPage) {
     return (
       <InternalLink
-        to={`${poll.baseUrl}/criteria#${criteria}`}
+        to={`${absolutePollBasePath(poll.baseUrl)}/criteria#${criteria}`}
         id={`id_explanation_${criteria}`}
         target="_blank"
         color="text.secondary"

@@ -1,6 +1,9 @@
 """
 API returning preview images of comparisons.
 """
+
+import logging
+
 import numpy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -23,6 +26,8 @@ from .default import (
     font_height,
     truncate_text,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ComparisonPreviewGenerator:
@@ -353,7 +358,8 @@ class DynamicWebsitePreviewComparison(BasePreviewAPIView, APIView):
         try:
             thumbnail_a = self.get_best_quality_yt_thumbnail(entity_a)
             thumbnail_b = self.get_best_quality_yt_thumbnail(entity_b)
-        except ConnectionError:
+        except Exception as exc:   # pylint: disable=broad-except
+            logger.info("Fallback to default preview, after exception: %s", exc)
             return self.default_preview()
 
         generator = ComparisonPreviewGenerator()

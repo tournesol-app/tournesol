@@ -1,13 +1,36 @@
-button#tournesol-details-button {
-  background: transparent;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
+.tournesol-statistics-info {
+  display: flex;
+  align-items: center;
   font-family: 'Roboto', 'Noto', sans-serif;
-  color: #f3bd00;
-  margin-left: 8px;
-  display: inline-block;
+  font-size: 16px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background-color: #f3bd0020;
+  color: var(--yt-spec-text-secondary);
+  min-height: 36px;
+}
+
+.tournesol-statistics-info span {
+  color: var(--yt-spec-text-primary);
+}
+
+.tournesol-statistics-score {
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+}
+
+.tournesol-statistics-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
   vertical-align: middle;
-  text-transform: uppercase;
-  font-weight: 500;
+}
+
+.tournesol-statistics-comparisons,
+.tournesol-statistics-contributors {
+  margin-right: 8px;
+}
+.unsafe{
+  filter: grayscale(100%);
 }

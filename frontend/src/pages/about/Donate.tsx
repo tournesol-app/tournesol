@@ -135,7 +135,7 @@ const DonatePage = () => {
           }}
         >
           <Grid2 sx={donateSectionSx}>
-            <FundingSection linkToDonatePage={false} fullWidth />
+            <FundingSection linkToDonatePage={false} />
           </Grid2>
           <Grid2 sx={donateSectionSx}>
             <TitledPaper title={t('about.donateHowTo')}>

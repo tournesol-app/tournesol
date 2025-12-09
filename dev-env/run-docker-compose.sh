@@ -7,6 +7,7 @@ DB_DIR="db-data"
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$CURRENT_DIR"
 
+
 export DB_UID=$(id -u)
 export DB_GID=$(id -g)
 DOWNLOAD_PUBLIC_DATASET=false
@@ -105,13 +106,13 @@ function dev_env_init() {
   wait_for is_api_ready "api"
 
   if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
-    docker exec tournesol-dev-api python manage.py load_public_dataset "$@"
+    docker exec tournesol-dev-api uv run python manage.py load_public_dataset "$@"
 
     echo 'Creating Superuser:'
     USERNAME="user"
     PASSWORD="tournesol"
     EMAIL="superuser@example.com"
-    docker exec -e DJANGO_SUPERUSER_USERNAME="$USERNAME" -e DJANGO_SUPERUSER_EMAIL="$EMAIL" -e DJANGO_SUPERUSER_PASSWORD="$PASSWORD" tournesol-dev-api python manage.py createsuperuser --no-input
+    docker exec -e DJANGO_SUPERUSER_USERNAME="$USERNAME" -e DJANGO_SUPERUSER_EMAIL="$EMAIL" -e DJANGO_SUPERUSER_PASSWORD="$PASSWORD" tournesol-dev-api uv run python manage.py createsuperuser --no-input
   fi
 
   echo 'Creating OAuth Application:'
@@ -154,7 +155,7 @@ Commands:
   WARNING: if a Youtube API key has been configured, a large amount of queries
   to the API may be required to fetch metadata about all videos.
     ./run-docker-compose.sh download
-    ./run-docker-compose.sh download --user-sampling 0.1
+    ./run-docker-compose.sh download --videos-limit 8000
 
   restart
   Restart all dev_env services using the existing database and containers.

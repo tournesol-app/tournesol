@@ -195,8 +195,8 @@ describe('Comparison page', () => {
         pasteInVideoInput('aaaabbbbccccdddd');
         cy.contains('0 results for "aaaabbbbccccdddd"');
 
-        pasteInVideoInput('charrue');
-        cy.contains('1 result for "charrue"');
+        pasteInVideoInput('charrue moloch');
+        cy.contains('1 result for "charrue moloch"');
 
         cy.get('button[aria-label="Close search"]').click()
         cy.contains('charrue', {matchCase: false})
@@ -214,11 +214,11 @@ describe('Comparison page', () => {
 
         cy.get("[data-testid=entity-select-button-compact]").first().click();
 
-        pasteInVideoInput('charrue');
-        cy.contains('1 result for "charrue"');
+        pasteInVideoInput('charrue moloch');
+        cy.contains('1 result for "charrue moloch"');
         cy.contains('De la charrue', {matchCase: false}).click();
 
-        cy.contains('1 result for "charrue"')
+        cy.contains('1 result for "charrue moloch"')
           .should('not.exist');
         cy.get('button[aria-label="Close search"]')
           .should('not.exist');

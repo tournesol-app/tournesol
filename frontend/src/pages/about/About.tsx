@@ -2,7 +2,15 @@ import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { Grid2, Typography, Box, Card, Link, Paper } from '@mui/material';
+import {
+  Grid2,
+  Typography,
+  Box,
+  Card,
+  Link,
+  Paper,
+  SxProps,
+} from '@mui/material';
 
 import { ContentHeader, ExternalLink, InternalLink } from 'src/components';
 import {
@@ -16,12 +24,16 @@ import PublicDownloadSection from './PublicDownloadSection';
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
-    padding: '32px 0px 32px 0px',
+    padding: '16px 0',
+    margin: '16px 0',
     justifyContent: 'center',
+    flexDirection: 'column',
   },
   container: {
+    maxWidth: '900px',
+    margin: '0 auto',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'left',
     padding: 8,
   },
   card: {
@@ -32,9 +44,6 @@ const useStyles = makeStyles(() => ({
     padding: '16px',
     width: '100%',
     background: '#FFFFFF',
-  },
-  important: {
-    fontWeight: 'bold',
   },
 }));
 
@@ -133,21 +142,22 @@ const ContributorCard = ({
 const ContentBox = ({
   children,
   className,
-  maxWidth = '640px',
+  maxWidth = '900px',
+  sx,
 }: {
   children?: React.ReactNode;
   className?: string;
   maxWidth?: string;
+  sx?: SxProps;
 }) => {
   return (
     <Box
       className={className}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        maxWidth: maxWidth,
-        alignItems: 'flex-start',
-      }}
+      display="flex"
+      flexDirection="column"
+      maxWidth={maxWidth}
+      alignItems="flex-start"
+      sx={sx}
     >
       {children}
     </Box>
@@ -168,7 +178,9 @@ const AboutPage = () => {
       >
         <Grid2 className={classes.container} size={12}>
           <ContentBox>
-            <Typography variant="h1">{t('about.whatIsTournesol')}</Typography>
+            <Typography variant="h1" mb={1}>
+              {t('about.whatIsTournesol')}
+            </Typography>
             <Typography
               sx={{
                 marginBottom: 2,
@@ -210,39 +222,12 @@ const AboutPage = () => {
       </Grid2>
       <Grid2 container className={classes.root}>
         <Grid2 className={classes.container} size={12}>
-          <ContentBox>
+          <ContentBox sx={{ '& li': { fontWeight: 'bold', marginBottom: 2 } }}>
             <Typography variant="h4">{t('about.tournesolVision')}</Typography>
             <ul>
-              <li>
-                <Typography
-                  className={classes.important}
-                  sx={{
-                    marginBottom: 2,
-                  }}
-                >
-                  {t('about.tournesolVisionRaisingAwareness')}
-                </Typography>
-              </li>
-              <li>
-                <Typography
-                  className={classes.important}
-                  sx={{
-                    marginBottom: 2,
-                  }}
-                >
-                  {t('about.tournesolVisionCollaborativePlatform')}
-                </Typography>
-              </li>
-              <li>
-                <Typography
-                  className={classes.important}
-                  sx={{
-                    marginBottom: 2,
-                  }}
-                >
-                  {t('about.tournesolVisionResearchOnEthicsOfAlgorithms')}
-                </Typography>
-              </li>
+              <li>{t('about.tournesolVisionRaisingAwareness')}</li>
+              <li>{t('about.tournesolVisionCollaborativePlatform')}</li>
+              <li>{t('about.tournesolVisionResearchOnEthicsOfAlgorithms')}</li>
             </ul>
           </ContentBox>
         </Grid2>
@@ -254,7 +239,7 @@ const AboutPage = () => {
       >
         <Grid2 className={classes.container} size={12}>
           <ContentBox>
-            <Typography variant="h1">
+            <Typography variant="h1" mb={1}>
               {t('about.whoBuildsTournesol')}
             </Typography>
             <Typography
@@ -310,8 +295,7 @@ const AboutPage = () => {
           className={classes.container}
           size={{
             xs: 12,
-            md: 8,
-            xl: 6,
+            lg: 8,
           }}
         >
           <Grid2
@@ -507,13 +491,11 @@ const AboutPage = () => {
       </Grid2>
       <Grid2
         container
-        className={classes.root}
-        sx={{
-          maxWidth: '1000px',
-          margin: 'auto',
-        }}
+        className={classes.container}
+        maxWidth={{ md: '75%' }}
+        margin="auto"
       >
-        <Grid2 className={classes.container} size={12}>
+        <Grid2 className={classes.container}>
           <ContentBox>
             <Typography variant="h1">
               {t('about.weThankOurPartners')}
@@ -522,6 +504,29 @@ const AboutPage = () => {
         </Grid2>
 
         <Grid2 className={classes.container} size={12}>
+          <Link
+            href="https://www.calicarpa.com/"
+            rel="noopener"
+            underline="none"
+            color="inherit"
+            variant="inherit"
+            sx={{
+              display: 'flex',
+            }}
+          >
+            <ContentBox className={classes.card} maxWidth="100%">
+              <img height="84px" src="/logos/Calicarpa_Logo.svg" />
+              <Typography variant="h4">
+                {t('about.partnershipWithCalicarpa')}
+              </Typography>
+              <Typography paragraph>
+                {t('about.partnershipWithCalicarpaDetail')}
+              </Typography>
+            </ContentBox>
+          </Link>
+        </Grid2>
+
+        <Grid2 size={12} className={classes.container}>
           <ContentBox className={classes.card} maxWidth="100%">
             <img height="84px" src="/logos/EPFL_Logo.png" />
             <Typography variant="h4">
@@ -554,7 +559,7 @@ const AboutPage = () => {
               display: 'flex',
             }}
           >
-            <ContentBox className={classes.card}>
+            <ContentBox className={classes.card} maxWidth="100%">
               <img
                 height="64px"
                 src="/logos/Polyconseil_Logo.png"
@@ -591,7 +596,7 @@ const AboutPage = () => {
               display: 'flex',
             }}
           >
-            <ContentBox className={classes.card}>
+            <ContentBox className={classes.card} maxWidth="100%">
               <img height="64px" src="/logos/Kleis_Logo.svg" />
               <Typography variant="h4">
                 {t('about.partnershipWithKleis')}
@@ -629,23 +634,13 @@ const AboutPage = () => {
         </Grid2>
       </Grid2>
       <Grid2 container className={classes.root}>
-        <Grid2
-          className={classes.container}
-          size={{
-            xs: 12,
-            md: 6,
-          }}
-        >
-          <ContentBox>
+        <Grid2 className={classes.container}>
+          <ContentBox maxWidth="100%" sx={{ p: 2 }}>
             <img height="64px" src="/logos/Foss_Logo.png" />
             <Typography variant="h4">
               {t('about.openSourceContributions')}
             </Typography>
-            <Typography
-              sx={{
-                marginBottom: 2,
-              }}
-            >
+            <Typography>
               <Trans t={t} i18nKey="about.openSourceContributors">
                 As Tournesol is an open source project, we have been lucky to
                 benefit from contributions by multiple volunteers. Find our
@@ -661,19 +656,9 @@ const AboutPage = () => {
         </Grid2>
       </Grid2>
       <Grid2 container className={classes.root}>
-        <Grid2
-          className={classes.container}
-          size={{
-            xs: 12,
-            sm: 12,
-            md: 10,
-            lg: 6,
-            xl: 6,
-          }}
-        >
+        <Grid2 className={classes.container}>
           <Paper
-            sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2 }}
-            square
+            sx={{ bgcolor: 'background.emphatic', color: 'white', p: 2, m: 1 }}
           >
             <PublicDownloadSection />
           </Paper>
