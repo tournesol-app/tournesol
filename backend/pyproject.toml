@@ -4,7 +4,7 @@ version = "0.1.0"
 readme = "README.md"
 requires-python = "==3.9.*"
 dependencies = [
-    "atproto==0.0.58",
+    "atproto==0.0.64",
     "django==4.2.*",
     "django-computed-property==0.3.*",
     "django-cors-headers==4.3.*",
@@ -32,7 +32,7 @@ dependencies = [
 
 [project.optional-dependencies]
 deploy = [
-    "gunicorn==20.1.0",
+    "gunicorn~=23.0",
     "uvicorn[standard]==0.22.0",
 ]
 
