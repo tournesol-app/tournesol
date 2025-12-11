@@ -81,7 +81,7 @@ class Command(BaseCommand):
             if poll.algorithm != ALGORITHM_MEHESTAN:
                 raise ValueError(f"Unknown algorithm {poll.algorithm!r}")
 
-            is_default_poll = (poll.name == DEFAULT_POLL_NAME)
+            is_default_poll = poll.name == DEFAULT_POLL_NAME
             self.run_poll_pipeline(
                 poll=poll,
                 update_trust_scores=(not options["no_trust_algo"] and is_default_poll),
