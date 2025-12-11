@@ -21,7 +21,7 @@ def test_compute_correlation():
     assert np.allclose(compute_correlation({"a": 1, "b": -2}, {"a": -1, "b": 2}), -1)
     assert np.allclose(compute_correlation({"a": 1, "b": -2, "c": -2, "d": 0}, {"a": -1, "b": 2, "c": 2, "d": 0}), -1)
     assert compute_correlation({"a": 1, "b": 2, "c": 0}, {"a": 3, "b": 3, "c": 1}) < 1
-    assert compute_correlation({"a": 1, "b": 2}, {"a": 3, "b": 3}) == 0
+    assert compute_correlation({"a": 1, "b": 2, "c": 0}, {"a": 3, "b": 0, "c": 0}) == 0
 
 
 def test_compute_slope():
@@ -165,7 +165,7 @@ class CorrelationAPI(TestCase):
         response_json = response.json()
         self.assertEqual(response_json["correlations"], [
             [1, None, None],
-            [0.0, None, None],
+            [None, None, None],
             [None, None, None]
         ])
         self.assertEqual(response_json["slopes"], [
