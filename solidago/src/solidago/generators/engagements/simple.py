@@ -1,14 +1,12 @@
-from typing import Union
 from numpy.random import random, normal
 
-import pandas as pd
 import numpy as np
 
+from solidago.generators.engagements.base import Engagements
 from solidago.poll import *
-from .base import EngagementGen
 
 
-class SimpleEngagement(EngagementGen):
+class Simple(Engagements):
     def __init__(
         self, 
         p_public: float=0.8,
@@ -43,7 +41,6 @@ class SimpleEngagement(EngagementGen):
         
         n_eval_entities = int(2 * user["n_comparisons"] / user["n_comparisons_per_entity"] )
         n_eval_entities = min(len(entities), n_eval_entities)
-        p_compare_ab = 2 * user["n_comparisons"] / n_eval_entities**2
 
         # To implement engagement bias, we construct a noisy score-based sort of the entities
         scores = entities.vectors @ user.vector

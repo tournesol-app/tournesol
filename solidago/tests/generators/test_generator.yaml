@@ -1,45 +1,32 @@
-user:
-  class: SvdUser
-  n_users: 10
-  distribution:
-    class: NormalSvd
-    mean: 0.0
-    dimension: 5
-  trust:
-    class: SimpleUserTrust
-    p_trustworthy: 0.8
-    p_pretrusted: 0.2
-  vouch:
-    class: ZipfVouches
-    power_decay: 2.0
-  engagement:
-    bias_std_dev: 1.0
-  comparison:
-    class: AddComparisonModels
-    submodels:
-      - class: ZipfComparisons
-        power_decay: 1.5
-      - class: PoissonComparisons
-        mean: 30.0
-    n_comparisons_per_entity: 3.0
-  multiplier_std_dev: 1.0
-entity:
-  class: SvdEntity
-  n_entities: 20
-  distribution:
-    class: NormalSvd
-    mean: 0.0
-    dimension: 5
-vouch:
-  class: ErdosRenyiVouch
-engagement:
-  class: SimpleEngagement
-  p_public: 0.8
-  p_assessment: 0.5
-  p_comparison: 1.0
-assessment: 
-  class: NormalAssessment
-comparison:
-  class: KnaryGBT
-  n_options: 21 
-  comparison_max: 10
+- Generator
+- modules:
+  # User and entity generation
+  - [users.Users, {n_users: 10, distribution: [Normal, dimension: 5]}]
+  - [entities.Entities, {n_entities: 20, distribution: [Normal, dimension: 5]}]
+  # User trust generation
+  - [users.AddColumn, {column: is_trustworthy, distribution: [Bernoulli, p: 0.8]}]
+  - [users.BernoulliPretrust, {p_if_trustworthy: 0.2, p_if_untrustworthy: 0.0}] # requires users.is_trustworthy
+  # Vouch generation
+  - [users.AddColumn, {column: expected_n_vouches, distribution: [Zipf, power_decay: 2.0]}]
+  - [vouches.ErdosRenyi, {}] # requires users.expected_n_vouches
+  # Engagement generation
+  - - users.AddColumn
+    - column: n_evaluated_entities
+      distribution: [Add, subdistributions: [[Zipf, power_decay: 1.5], [Poisson, mean: 3.0]]]
+  - [users.AddColumn, {column: engagement_bias, distribution: [Normal, {}]}]
+  - [users.AddColumn, {column: p_public, distribution: [Uniform, {}]}]
+  - [users.AddColumn, {column: p_assess, distribution: [Uniform, {}]}]
+  - [users.AddColumn, {column: n_comparisons_per_entity, distribution: [Uniform, {min: 1.0, max: 5.0}]}]
+  - - engagements.Independent # requires users.{n_evaluated_entities, p_public, p_assess, {p_compare | n_comparisons_per_entity}}
+    - select_entities: [BiasedByScore, noise: [Normal, {}]] # requires users.{vector, n_evaluated_entities, engagement_bias} and entities.vector
+  # User expression generation
+  - [users.AddColumn, {column: translation, distribution: [Normal, std: 1.0]}]
+  - [users.AddColumn, {column: multiplier, distribution: [Gamma, {shape: 1.0, scale: 1.0}]}]
+  # User assessments
+  - - assessments.Independent # requires users.vector and entities.vector
+    - honest: [Noisy, distribution: [Normal, std: 1.0]]
+      malicious: [Negate, honest: [Deterministic, {}]]
+  # User comparisons
+  - - comparisons.Independent
+    - honest: [KnaryGBT, {n_options: 21, comparison_max: 10}]
+      malicious: [Negate, {}]

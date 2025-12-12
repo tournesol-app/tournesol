@@ -86,11 +86,11 @@ class PollFunction(ABC):
                     f"whose annotation is currently `{annotations}`"
     
     def save(self, filename: Optional[Union[str, Path]]=None) -> tuple[str, Optional[Union[dict, list]]]:
-        j = type(self).__name__, self.args_save()
+        y = type(self).__name__, self.args_save()
         if filename is not None:
             with open(filename, "w") as f:
-                yaml.dump(j, f)
-        return j
+                yaml.dump(y, f)
+        return y
     
     def args_save(self) -> Optional[Union[dict, list]]:
         return { 
@@ -116,8 +116,10 @@ class PollFunction(ABC):
         return repr(self)
         
     def __repr__(self, n_indents: int=0) -> str:
-        def sub_repr(key): 
+        def sub_repr(key):
             value = getattr(self, key)
+            if key == "modules":
+                return ", ".join([v.__repr__(n_indents + 1) for v in value])
             return value.__repr__(n_indents + 1) if isinstance(value, PollFunction) else value
                         
         indent = "\t" * (n_indents + 1)

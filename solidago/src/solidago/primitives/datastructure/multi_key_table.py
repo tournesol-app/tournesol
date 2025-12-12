@@ -303,7 +303,7 @@ class MultiKeyTable:
             del kwargs["value"]
         else:
             args, value = args[:-1], args[-1]
-        assert isinstance(value, type(self).value_cls)
+        assert isinstance(value, type(self).value_cls), (value, type(value), type(self).value_cls)
         kwargs = self.keys2kwargs(*args, **kwargs)
         assert all({isinstance(v, (str, int)) for v in kwargs.values()})
         self._main_cache()
@@ -372,10 +372,10 @@ class MultiKeyTable:
         return type(self)(self.keynames, self._cache)
     
     @classmethod
-    def load(cls, directory: str, name: Optional[str]=None, **kwargs) -> "MultiKeyTable":
-        if name is None:
+    def load(cls, directory: str, source: Optional[str]=None, **kwargs) -> "MultiKeyTable":
+        if source is None:
             return cls(**kwargs)
-        filename = f"{directory}/{name}"
+        filename = f"{directory}/{source}"
         try:
             return cls(init_data=pd.read_csv(filename, keep_default_na=False), **kwargs)
         except (pd.errors.EmptyDataError, ValueError):
@@ -409,9 +409,12 @@ class MultiKeyTable:
                 w.writerow(list(keys) + list(self.value2tuple(value)))
         return self.save_instructions(name)
     
-    def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
-        name = name or f"{self.name}.csv"
-        return dict(classname=type(self).__name__, name=name, keynames=self.keynames)
+    def save_instructions(self, source: Optional[str]=None, save_keynames: bool=True) -> tuple[str, dict]:
+        source = source or f"{self.name}.csv"
+        kwargs = dict(source=source)
+        if save_keynames:
+            kwargs["keynames"] = self.keynames
+        return type(self).__name__, kwargs
 
     def __repr__(self) -> str:
         r = f"name={self.name}\nkeynames={self.keynames}\n\n{self.to_df(5)}"

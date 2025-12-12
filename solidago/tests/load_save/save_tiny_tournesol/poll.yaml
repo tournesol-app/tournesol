@@ -1,25 +1,24 @@
 assessments:
-  classname: Assessments
-  keynames:
+- Assessments
+- keynames:
   - username
   - criterion
   - entity_name
-  name: assessments.csv
-classname: TournesolExport
+  source: assessments.csv
 comparisons:
-  classname: Comparisons
-  keynames:
+- Comparisons
+- keynames:
   - username
   - criterion
   - entity_name
   - other_name
-  name: comparisons.csv
+  source: comparisons.csv
 entities:
-  classname: Entities
-  name: entities
+- Entities
+- {}
 global_model:
-  classname: ScoringModel
-  composition:
+- ScoringModel
+- composition:
   - - direct
     - {}
   directs:
@@ -28,14 +27,14 @@ global_model:
     - criterion
     name: directs.csv
 made_public:
-  classname: AllPublic
-  keynames:
+- AllPublic
+- keynames:
   - username
   - entity_name
-  name: made_public.csv
+  source: made_public.csv
 user_models:
-  classname: UserModels
-  common_scales: common_scales.csv
+- UserModels
+- common_scales: common_scales.csv
   default_composition:
   - - direct
     - {}
@@ -46,19 +45,19 @@ user_models:
   user_directs: user_directs.csv
   user_scales: user_scales.csv
 users:
-  classname: Users
-  name: users
+- Users
+- {}
 voting_rights:
-  classname: VotingRights
-  keynames:
+- VotingRights
+- keynames:
   - username
   - entity_name
   - criterion
-  name: voting_rights.csv
+  source: voting_rights.csv
 vouches:
-  classname: Vouches
-  keynames:
+- Vouches
+- keynames:
   - by
   - to
   - kind
-  name: vouches.csv
+  source: vouches.csv

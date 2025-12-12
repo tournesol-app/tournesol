@@ -6,12 +6,19 @@ from typing import Any, Type
 import yaml
 from .__version__ import __version__
 
-from solidago.primitives import *
+from solidago import primitives, modules, generators
+from solidago.primitives import NestedDict, MultiKeyTable, Objects
+
+from solidago.modules import PollFunction, Sequential, Identity
+from solidago.generators import Generator
 from solidago.poll import *
-from solidago.modules import *
-from solidago.generators import *
+
 
 __all__ = [
+    "load",
+    "primitives", "modules", "generators", 
+    "PollFunction", "Sequential", "Identity", 
+    "Generator", 
     "NestedDict", "MultiKeyTable",
     "User", "Users", "Entity", "Entities",
     "Vouches",
@@ -21,30 +28,43 @@ __all__ = [
     "VotingRights",
     "Score", "MultiScore", "ScoringModel", "UserModels",
     "Poll", "TournesolExport",
-    "primitives", "modules", "generators",
-    "PollFunction", "Sequential", "Identity", "Generator", 
-    "load"
 ]
 
-def load(classname: Union[Type, Path, str, tuple, list, dict], *args, **kwargs) -> Any:
+
+def load(
+    classname: MultiKeyTable | Objects | Poll | PollFunction | Type | Path | str | tuple | list | dict, 
+    *args, **kwargs
+) -> Any:
     """ name can either be a filename or the name of an object """
-    if isinstance(classname, Type):
+    if isinstance(classname, (MultiKeyTable, Objects, Poll, PollFunction)):
+        return classname
+    elif isinstance(classname, Type) and issubclass(classname, (MultiKeyTable, Objects, Poll, PollFunction)):
         cls = classname
-        return cls.load(*args, **kwargs) if hasattr(cls, load) else cls(*args, **kwargs)
+        return cls.load(*args, **kwargs) if hasattr(cls, "load") else cls(*args, **kwargs)
+    elif isinstance(classname, (list, tuple)) and len(classname) == 2:
+        classname, kwargs2 = classname
+        assert isinstance(classname, (str, Type)) and isinstance(kwargs, dict)
+        return load(classname, *args, **(kwargs2 | kwargs))
     elif isinstance(classname, dict):
         return load(*args, **classname, **kwargs)
     elif isinstance(classname, Path):
         return load(str(classname), *args, **kwargs)
+    
     if classname.endswith(".yaml"):
         with open(classname) as f:
-            yaml_content = yaml.safe_load(f)
-        path = "/".join(classname.split("/")[:-1])
-        if isinstance(yaml_content, str):
-            return load(yaml_content, path=path)
-        else:
-            assert isinstance(yaml_content, dict) and "name" in yaml_content, yaml_content
-            return load(*args, **yaml_content, **kwargs, path=path)
+            return load(yaml.safe_load(f))
+    
     import solidago
-    assert hasattr(solidago, classname), f"Cannot load {classname}: Object not known"
-    cls = getattr(solidago, classname)
-    return cls.load(*args, **kwargs) if hasattr(cls, load) else cls(*args, **kwargs)
+    classnames, type_recovery, cls = classname.split("."), True, solidago
+    for name in classnames:
+        type_recovery = hasattr(cls, name)
+        if not type_recovery:
+            break
+        cls = getattr(cls, name)
+    
+    if type_recovery:
+        return cls.load(*args, **kwargs) if hasattr(cls, "load") else cls(*args, **kwargs)
+    try:
+        return Poll.load(classname)
+    except FileNotFoundError:
+        raise ValueError(f"Cannot load {classname}: Object not known")

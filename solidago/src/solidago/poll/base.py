@@ -52,9 +52,15 @@ class Poll:
     @classmethod
     def load(cls, directory: Union[Path, str]) -> "Poll":
         with open(Path(directory) / "poll.yaml") as f: 
-            j = yaml.safe_load(f)
+            kwargs = yaml.safe_load(f)
+        assert isinstance(kwargs, dict)
+        for key, value in kwargs.items():
+            assert len(value) == 2, (key, value)
         from solidago import load
-        return cls(**{key: load(value) for key, value in j.items()})
+        return cls(**{
+            key: load(cls, directory=directory, **cls_kwargs) 
+            for key, (cls, cls_kwargs) in kwargs.items()
+        })
     
     def save(self, directory: Optional[str]=None) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
@@ -64,12 +70,11 @@ class Poll:
         return { key: value.save(directory) for key, value in self.__dict__.items() }
     
     def save_instructions(self, directory: Optional[str]=None) -> tuple[str, dict]:
-        instructions = dict(classname=self.__class__.__name__)
-        instructions |= { key: value.save_instructions() for key, value in self.__dict__.items() }
+        kwargs = { key: value.save_instructions() for key, value in self.__dict__.items() }
         if directory:
             with open(Path(directory) / "poll.yaml", "w") as f:
-                yaml.safe_dump(instructions, f)
-        return instructions
+                yaml.safe_dump(kwargs, f)
+        return "Poll", kwargs
 
     def save_objects(self, saved_keys: list[str], directory: str):
         """ Method to save only """

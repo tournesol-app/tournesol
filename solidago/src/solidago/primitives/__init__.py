@@ -4,5 +4,7 @@ from .optimize import njit_brentq, coordinate_descent
 import solidago.primitives.date as date
 import solidago.primitives.dichotomy as dichotomy
 import solidago.primitives.pairs as pairs
+import solidago.primitives.random as random
+
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable, Object, Objects
 

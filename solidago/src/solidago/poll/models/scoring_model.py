@@ -64,10 +64,10 @@ class ScoringModel:
         *args, **kwargs
     ):
         """ The composition of the Tournesol pipeline global model is [
-            ("direct", {"note": "entitywise_qr_quantile"}),
-            ("squash", {"note": "squash", "score_max": 100}),
+            ("direct", dict(note="entitywise_qr_quantile")),
+            ("squash", dict(note="squash", score_max=100})),
         ] """
-        self.composition = composition or [("direct", {})]
+        self.composition = composition or [("direct", dict())]
         if self.composition[0][0] == "direct" and isinstance(note, str):
             self.composition[0][1]["note"] = note
         self.directs = MultiScore(["entity_name", "criterion"], name="directs") if directs is None else directs
@@ -116,10 +116,9 @@ class ScoringModel:
     ) -> Union[Score, MultiScore]:
         from solidago.poll.entities import Entities
         entities = {e.name for e in entities} if isinstance(entities, Entities) else entities
-        base, kwargs = self.composition[0]
-        if base == "direct":
+        if self.composition[0][0] == "direct":
             return self.directs[entities, criteria]
-        raise ValueError(f"Model composition {self.composition} has invalid base")
+        raise ValueError(f"Model composition {self.composition[0]} has invalid base")
     
     def score_process(self, 
         scores: Union[Score, MultiScore], 
@@ -127,11 +126,12 @@ class ScoringModel:
         entities: Union[str, "Entity", "Entities", type]=all, 
         criteria: Union[str, set, type]=all,
     ) -> Union[Score, MultiScore]:
-        operation, kwargs = self.composition[height]
-        if operation == "scale":
+        cls, kwargs = self.composition[height]
+        if cls == "scale":
             return scores * self.multiplier(height, criteria) + self.translation(height, criteria)
-        if operation == "squash":
-            f = lambda x: kwargs["score_max"] * x / sqrt(1 + x**2)
+        if cls == "squash":
+            def f(x):
+                return kwargs["score_max"] * x / sqrt(1 + x**2)
             if isinstance(scores, Score):
                 score = scores
                 value, extremes = f(score.value), [f(score.max), f(score.min)]
@@ -155,14 +155,12 @@ class ScoringModel:
         return Translations(translation.keynames, translation)        
 
     def criteria(self) -> set[str]:
-        base, kwargs = self.composition[0]
-        if base == "direct":
+        if self.composition[0][0] == "direct":
             return self.directs.keys("criterion")
         raise ValueError(f"Model composition {self.composition} has invalid base")
     
     def evaluated_entity_names(self, criteria: Union[str, set, type]=all) -> set[str]:
-        base, kwargs = self.composition[0]
-        if base == "direct":
+        if self.composition[0][0] == "direct":
             if criteria is all:
                 return self.directs.keys("entity_name")
             return self.directs.get(criterion=criteria).keys("entity_name")
@@ -234,24 +232,23 @@ class ScoringModel:
         return self.save_instructions(directory, yaml_dump)
 
     def save_instructions(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
-        instructions = dict(classname=type(self).__name__, composition=self.composition)
+        instructions = dict(composition=self.composition)
         for table_name in ("directs", "scales"):
             table = getattr(self, table_name)
             if table:
                 instructions[table_name] = { "name": f"{table_name}.csv", "keynames": table.keynames }
         if directory is not None and yaml_dump:
             with open(Path(directory) / "model.yaml", "w") as f:
-                yaml.safe_dump(instructions, f, indent=4)
-        return instructions
+                yaml.safe_dump((type(self).__name__, instructions), f, indent=4)
+        return type(self).__name__, instructions
 
     def matches_composition(self, composition: list) -> bool:
         if len(self.composition) != len(composition):
             return False
-        for height, (operation, kwargs) in enumerate(composition):
-            self_operation, self_kwargs = self.composition[height]
-            if self_operation != operation:
+        for height, (cls, kwargs) in enumerate(composition):
+            if cls != self.composition[height][0]:
                 return False
-            if operation == "squash" and kwargs["score_max"] != self_kwargs["score_max"]:
+            if cls == "squash" and cls["score_max"] != self.composition[height][1]["score_max"]:
                 return False
         return True
     

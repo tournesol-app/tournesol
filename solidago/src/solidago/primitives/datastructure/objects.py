@@ -7,10 +7,10 @@ import random
 
 
 class Object:
-    def __init__(self, name: Union[str, int], vector: list=[], **kwargs):
+    def __init__(self, name: Union[str, int], vector: list | None = None, **kwargs):
         assert isinstance(name, (str, int))
         self.name = name
-        self.vector = np.array(vector, dtype=np.float64)
+        self.vector = np.array(list() if vector is None else vector, dtype=np.float64)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -111,9 +111,11 @@ class Objects:
         
     def index2name(self, index: int) -> Union[int, str]:
         self._cache_name2index()
+        assert isinstance(index, (int, np.int64, np.int32)), index
+        assert index < len(self), index
         return self._index2name[index]
         
-    def get_by_index(self, index: int) -> Union[int, str]:
+    def get_by_index(self, index: int) -> Object:
         return self[self.index2name(index)]
     
     def __getitem__(self, name: Union[int, str, Object, Iterable]) -> Object:
@@ -178,6 +180,15 @@ class Objects:
         self._cache()
         for obj in self._dict.values():
             yield obj
+    
+    def iter_pairs(self, shuffle: bool = False) -> Iterable:
+        self._cache()
+        objects = list(self._dict.values())
+        for i in range(len(objects)):
+            for j in range(i):
+                s = shuffle and np.random.random() < 0.5
+                pair = (objects[i], objects[j]) if s else (objects[j], objects[i])
+                yield pair
 
     def to_df(self, n_max: Optional[int]=None) -> pd.DataFrame:
         self._cache()
@@ -190,23 +201,25 @@ class Objects:
         return pd.DataFrame(data).T.rename(columns={"name": index_name}).set_index(index_name)
 
     @classmethod
-    def load(cls, directory: str, name: Optional[str]=None):
-        name = name or cls.name
+    def load(cls, directory: str, source: Optional[str]=None):
+        source = source or cls.name
         try:
-            df = pd.read_csv(f"{directory}/{name}.csv", keep_default_na=False)
+            df = pd.read_csv(f"{directory}/{source}.csv", keep_default_na=False)
             return cls(df)
         except:
             return cls()
 
-    def save(self, directory: Optional[str]=None, name: Optional[str]=None) -> tuple[str, dict]:
-        name = name or type(self).name
+    def save(self, directory: Optional[str]=None, source: Optional[str]=None) -> tuple[str, dict]:
+        source = source or type(self).name
         if directory is not None:
-            self.to_df().to_csv(Path(directory) / f"{name}.csv")
-        return self.save_instructions(name)
+            self.to_df().to_csv(Path(directory) / f"{source}.csv")
+        return self.save_instructions(source)
 
-    def save_instructions(self, name: Optional[str]=None) -> tuple[str, dict]:
-        name = name or type(self).name
-        return dict(classname=type(self).__name__, name=name)
+    def save_instructions(self, source: Optional[str]=None) -> tuple[str, dict]:
+        kwargs = dict()
+        if source is not None and source != self.name:
+            kwargs["source"] = source
+        return type(self).__name__, kwargs
 
     def __len__(self) -> int:
         if self.init_data is not None:

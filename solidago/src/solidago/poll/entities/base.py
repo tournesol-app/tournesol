@@ -1,9 +1,8 @@
-from typing import Union
 from solidago.primitives.datastructure.objects import Object, Objects
 
 
 class Entity(Object):
-    def __init__(self, name: Union[str, int], vector: list=[], **kwargs):
+    def __init__(self, name: str | int, vector: list | None = None, **kwargs):
         super().__init__(name, vector, **kwargs)
 
 

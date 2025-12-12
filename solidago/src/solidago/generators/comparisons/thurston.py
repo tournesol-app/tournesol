@@ -5,10 +5,10 @@ import pandas as pd
 import numpy as np
 
 from solidago.poll import *
-from .base import ComparisonGen
+from .compare import Compare
 
 
-class ThurstonComparison(ComparisonGen):
+class Thurston(Compare):
     def __init__(self, comparison_max: float=float("inf")):
         """ Louis Leon Thurston is a psychologist who modeled comparisons as resulting
         from an evaluation of alternative scores on a common scale,
@@ -17,23 +17,21 @@ class ThurstonComparison(ComparisonGen):
         assert comparison_max > 0
         self.comparison_max = comparison_max
     
-    def score_matrix(self, users: Users, entities: Entities):
-        return users.vectors @ entities.vectors.T / users.vectors.shape[1]
-    
-    def sample(self, comparison: Comparison, user: User, left: Entity, right: Entity, 
-            left_public: bool, right_public: bool, criterion: str) -> Comparison:
-        """ `lpublic` and `rpublic` are not used. Returns comparison max and value. """
+    def __call__(self, 
+        comparison: Comparison, 
+        user: User, left: Entity, right: Entity, 
+        left_public: bool, right_public: bool,
+        criterion: str,
+    ) -> Comparison:
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        comparison = Comparison(self.sample_comparison(score_diff), self.comparison_max)
-        malicious = "is_trustworthy" in user and not user["is_trustworthy"]
-        return - comparison if malicious else comparison 
+        return Comparison(self.sample_comparison(score_diff), self.comparison_max)
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:
         raise NotImplementedError
 
 
-class DiscreteGBT(ThurstonComparison):
+class DiscreteGBT(Thurston):
     """ The Generalized Bradley-Terry model is a score-to-comparison model
     with numerous desirable properties, which was introduced in the paper
     "Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons"

@@ -5,8 +5,8 @@ logging.config.fileConfig('experiments/info.conf')
 
 from solidago import *
 
-generator = Generator.load("tests/generators/test_generator.json")
-pipeline = Sequential.load("tests/modules/test_pipeline.json", max_workers=1)
+generator = load("tests/generators/test_generator.yaml")
+pipeline = load("tests/modules/test_pipeline.yaml", max_workers=1)
 
 def save_generated_data(seed=None):
     if seed is None:

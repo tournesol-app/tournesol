@@ -35,7 +35,7 @@ class UserModels:
     ):
         for name, table in zip(self.table_keynames, (user_directs, user_scales, common_scales)):
             setattr(self, name, MultiScore(self.table_keynames[name], name=name) if table is None else table)
-        self.default_composition = default_composition or [("direct", {})]
+        self.default_composition = default_composition or [("direct", dict())]
         self.user_composition = user_composition or dict()
         self._cache_users = user_models_dict
     
@@ -239,15 +239,14 @@ class UserModels:
         return self.save_instructions(directory, yaml_dump)
     
     def save_instructions(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
-        instructions = dict(classname=type(self).__name__)
-        instructions |= { name: f"{name}.csv" for name in self.table_keynames if getattr(self, name) }
-        instructions["default_composition"] = self.default_composition
+        kwargs = { name: f"{name}.csv" for name in self.table_keynames if getattr(self, name) }
+        kwargs["default_composition"] = self.default_composition
         if len(self.user_composition) > 0:
-            instructions["user_composition"] = self.user_composition
+            kwargs["user_composition"] = self.user_composition
         if directory is not None and yaml_dump:
             with open(Path(directory) / "user_models.yaml", "w") as f:
-                yaml.safe_dump(instructions, f)
-        return instructions
+                yaml.safe_dump((type(self).__name__, kwargs), f)
+        return type(self).__name__, kwargs
     
     def save_table(self, directory: Union[Path, str], table_name: str) -> str:
         if getattr(self, table_name):
