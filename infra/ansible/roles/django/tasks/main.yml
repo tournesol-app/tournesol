@@ -1,7 +1,7 @@
 - name: Install Python and virtualenv
   apt:
     name:
-      - python3.9
+      - python3
       - virtualenv
       - gettext  # Required by django to compile messages
     install_recommends: no

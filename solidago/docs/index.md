@@ -35,7 +35,7 @@ print(output.entity_scores)
 
 ## Installation
 
-**`solidago`** requires **Python >= 3.9**
+**`solidago`** requires **Python >= 3.13**
 
 ### From PyPI
 

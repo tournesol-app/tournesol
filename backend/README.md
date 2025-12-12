@@ -38,7 +38,7 @@ Django application; and how to install and configure a PostgreSQL server.
 
 #### Required packages
 
-- `python` >= 3.9
+- `python` >= 3.13
 - `postgresql-13-server`
 - `gettext` >= 0.21
 - [`uv`](https://docs.astral.sh/uv/getting-started/installation/) >= 0.9
