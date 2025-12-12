@@ -80,7 +80,7 @@ class Poll:
         """ Method to save only """
         if directory:
             Path(directory).mkdir(parents=True, exist_ok=True)
-        assert all(hasattr(self, key) for key in saved_keys)
+        assert all(hasattr(self, key) for key in saved_keys), (self, saved_keys)
         for key in saved_keys:
             logger.info(f"Saving poll's {key}")
             getattr(self, key).save(directory)

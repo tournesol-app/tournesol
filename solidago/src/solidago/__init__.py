@@ -9,8 +9,8 @@ from .__version__ import __version__
 from solidago import primitives, modules, generators
 from solidago.primitives import NestedDict, MultiKeyTable, Objects
 
-from solidago.modules import PollFunction, Sequential, Identity
 from solidago.generators import Generator
+from solidago.modules import *
 from solidago.poll import *
 
 
