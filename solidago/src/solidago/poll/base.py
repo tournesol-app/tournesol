@@ -75,15 +75,28 @@ class Poll:
             with open(Path(directory) / "poll.yaml", "w") as f:
                 yaml.safe_dump(kwargs, f)
         return "Poll", kwargs
-
-    def save_objects(self, saved_keys: list[str], directory: str):
-        """ Method to save only """
-        if directory:
+    
+    def save_objects(self, types: type, directory: str) -> Union[list, tuple]:
+        if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)
-        assert all(hasattr(self, key) for key in saved_keys), (self, saved_keys)
-        for key in saved_keys:
-            logger.info(f"Saving poll's {key}")
-            getattr(self, key).save(directory)
+        if types == Poll:
+            logger.info(f"Saving full state")
+            return self.save(directory)
+        if hasattr(types, "__args__"):
+            return [ self.save_objects(t, directory) for t in types.__args__ ]
+        poll_filename = Path(directory) / "poll.yaml"
+        if poll_filename.is_file():
+            with open(poll_filename) as f:
+                poll_yaml = yaml.safe_load(f)
+        else:
+            poll_yaml = self.save()
+        for key, value in self.__init__.__annotations__.items():
+            if issubclass(types, value) and getattr(self, key) is not None:
+                logger.info(f"Saving state's {key}")
+                poll_yaml[key] = getattr(self, key).save(directory)
+        with open(Path(directory) / "poll.yaml", "w") as f:
+            yaml.safe_dump(poll_yaml, f)
+        return poll_yaml
     
     def copy(self):
         return Poll(**{ 

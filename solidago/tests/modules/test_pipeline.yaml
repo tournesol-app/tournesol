@@ -9,7 +9,7 @@
   - - LBFGSUniformGBT
     - prior_std_dev: 7
       uncertainty_nll_increase: 1.0
-      max_uncertainty: 1.0e3
+      max_uncertainty: 1.0e+3
       convergence_error: 1.0e-5
       max_iter: 100
       cgf_epsilon: 1.0e-8

@@ -11,7 +11,7 @@ polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
 @pytest.mark.parametrize("seed", range(4))
 def test_is_trust(seed):
     poll = polls[seed]
-    voting_rights = Trust2VotingRights().state2objects_function(poll)
+    voting_rights = Trust2VotingRights().poll2objects_function(poll)
     for (username, entity_name, _), voting_right in voting_rights:
         if poll.made_public.get(username, entity_name):
             assert voting_right == poll.users[username].trust

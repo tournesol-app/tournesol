@@ -64,7 +64,8 @@ def test_lipschitrust_ten_users():
 
 @pytest.mark.parametrize("seed", range(4))
 def test_lipschitrust_test_data(seed):
-    pipeline = Sequential.load("tests/modules/test_pipeline.json")
+    pipeline = load("tests/modules/test_pipeline.yaml")
+    assert isinstance(pipeline, Sequential)
     users = pipeline.modules[0](polls[seed].users, polls[seed].vouches)
     for user in users:
         assert user["is_trustworthy"] or (user.trust == 0)

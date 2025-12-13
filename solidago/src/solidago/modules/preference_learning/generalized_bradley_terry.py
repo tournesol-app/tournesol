@@ -42,9 +42,12 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(max_workers)
-        self.prior_std_dev = prior_std_dev
-        self.uncertainty_nll_increase = uncertainty_nll_increase
-        self.max_uncertainty = max_uncertainty
+        assert isinstance(float(prior_std_dev), float), prior_std_dev
+        assert isinstance(float(uncertainty_nll_increase), float), uncertainty_nll_increase
+        assert isinstance(float(max_uncertainty), float), max_uncertainty
+        self.prior_std_dev = float(prior_std_dev)
+        self.uncertainty_nll_increase = float(uncertainty_nll_increase)
+        self.max_uncertainty = float(max_uncertainty)
 
     @abstractmethod
     def cumulant_generating_function_derivative(self, value_diffs: npt.NDArray) -> npt.NDArray:

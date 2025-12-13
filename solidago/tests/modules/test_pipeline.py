@@ -1,7 +1,8 @@
 import pytest
 from solidago import *
 
-pipeline = Sequential.load("tests/modules/test_pipeline.json", max_workers=2)
+pipeline = load("tests/modules/test_pipeline.yaml", max_workers=2)
+assert isinstance(pipeline, Sequential)
 
 
 def test_pipeline_generated_data():
