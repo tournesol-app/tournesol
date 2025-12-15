@@ -22,6 +22,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { selectFrame } from '../../drawerOpenSlice';
 import { topBarHeight } from '../topbar/TopBar';
 import {
+  CampaignTwoTone,
   Compare as CompareIcon,
   EmojiEvents as EmojiEventsIcon,
   Help as HelpIcon,
@@ -188,6 +189,13 @@ const SideBar = ({ beforeInstallPromptEvent }: Props) => {
       IconComponent: HelpIcon,
       displayText: t('menu.faq'),
       ariaLabel: t('menu.FAQAriaLabel'),
+    },
+    {
+      id: RouteID.Manifesto,
+      targetUrl: '/manifesto',
+      IconComponent: CampaignTwoTone,
+      displayText: t('menu.manifesto'),
+      ariaLabel: t('menu.manifestoAriaLabel'),
     },
     {
       id: RouteID.About,
