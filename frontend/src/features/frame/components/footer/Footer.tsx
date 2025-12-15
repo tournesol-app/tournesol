@@ -17,14 +17,14 @@ import {
   youtubePlaylistFrUrl,
   discordTournesolInviteUrl,
   githubTournesolUrl,
-  KKBBTournesolEnUrl,
-  KKBBTournesolFrUrl,
   paypalTournesolUrl,
   solidagoDocsUrl,
   tournesolTalksMailingListUrl,
   whitePaperUrl,
   tournesolTalksYTPlaylist,
   youtubeTournesolUrl,
+  ululeFrUrl,
+  ululeEnUrl,
 } from 'src/utils/url';
 
 const Footer = () => {
@@ -81,9 +81,8 @@ const Footer = () => {
           to: '/about/donate#direct_transfer',
         },
         {
-          name: 'KissKissBankBank',
-          to:
-            currentLanguage === 'fr' ? KKBBTournesolFrUrl : KKBBTournesolEnUrl,
+          name: 'Ulule',
+          to: currentLanguage === 'fr' ? ululeFrUrl : ululeEnUrl,
         },
         { name: 'PayPal', to: paypalTournesolUrl },
         { name: t('footer.compareVideos'), to: '/comparison' },

@@ -20,7 +20,7 @@ const LanguageSelector = ({ languageName = true }: LanguageSelectorProps) => {
   return (
     <Box
       sx={{
-        color: 'neutral.main',
+        color: 'neutral.dark',
       }}
     >
       <MenuButton

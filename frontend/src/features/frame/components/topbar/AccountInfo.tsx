@@ -83,10 +83,9 @@ const AccountInfo = () => {
   return (
     <Grid
       item
-      md={4}
+      md={false}
       xs="auto"
       sx={{
-        padding: 1,
         display: 'flex',
         justifyContent: 'flex-end',
         gap: 1,

@@ -28,6 +28,7 @@ const Logo = () => {
     <Grid
       item
       xs
+      lg={3}
       sx={{
         display: 'flex',
         flexDirection: 'row',

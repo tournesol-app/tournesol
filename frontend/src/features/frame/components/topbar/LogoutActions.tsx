@@ -63,7 +63,7 @@ const LoggedOutActionButtons = () => {
     <>
       <Button
         variant="outlined"
-        color="inherit"
+        color="secondary"
         sx={{
           borderColor: 'rgba(0, 0, 0, 0.23)',
           textTransform: 'initial',
@@ -80,16 +80,17 @@ const LoggedOutActionButtons = () => {
         component={Link}
         variant="contained"
         disableElevation
-        sx={{
+        color="secondary"
+        sx={(t) => ({
           textTransform: 'initial',
           fontWeight: 'bold',
           borderWidth: '2px',
           color: '#FFFFFF',
-          background: '#3198C4',
+          background: t.palette.background.emphatic,
           '&:hover': {
             background: '#269',
           },
-        }}
+        })}
         to="/signup"
       >
         {t('joinUsButton')}
