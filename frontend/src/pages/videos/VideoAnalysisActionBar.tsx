@@ -3,14 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Box, Button, ButtonGroup, Tooltip } from '@mui/material';
-import { Compare, Add, Twitter } from '@mui/icons-material';
+import { Compare, Add } from '@mui/icons-material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useCurrentPoll, useLoginState, useNotifications } from 'src/hooks';
 import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
-import { openTwitterPopup } from 'src/utils/ui';
 import { updateContributorRatingEntitySeen } from 'src/utils/api/contributorRatings';
 
 // in milliseconds
@@ -85,14 +84,6 @@ const VideoAnalysisActionBar = ({
     }
   };
 
-  const getTweet = () => {
-    return (
-      `${t('entityAnalysisPage.twitter.intro')}\n\n` +
-      `${t('entityAnalysisPage.twitter.conclusion')}\n\n` +
-      `${window.location.toString()}`
-    );
-  };
-
   const shareMessage =
     `${t('entityAnalysisPage.video.shareMessageIntro')}\n\n` +
     `${t('entityAnalysisPage.video.shareMessageConclusion')}\n\n` +
@@ -107,9 +98,6 @@ const VideoAnalysisActionBar = ({
       }}
     >
       <ButtonGroup variant="outlined" color="secondary">
-        <Button onClick={() => openTwitterPopup(getTweet())}>
-          <Twitter />
-        </Button>
         <ShareMenuButton
           shareMessage={shareMessage}
           youtubeLink={
