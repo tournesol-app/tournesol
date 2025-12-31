@@ -50,7 +50,9 @@ class Poll:
         self.global_model = ScoringModel() if global_model is None else global_model
     
     @classmethod
-    def load(cls, directory: Union[Path, str]) -> "Poll":
+    def load(cls, directory: Path | str | None = None, **kwargs) -> "Poll":
+        if directory is None:
+            return cls(**kwargs)
         with open(Path(directory) / "poll.yaml") as f: 
             kwargs = yaml.safe_load(f)
         assert isinstance(kwargs, dict)

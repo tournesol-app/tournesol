@@ -1,27 +1,35 @@
 from copy import deepcopy
-from typing import Callable
+from typing import Iterable
 import yaml
 
+from .brackets import map_brackets
 
-class Record:
-    ValueType = list | dict | str | int | float | bool
+
+class Instructions:
+    ValueType = list | tuple | dict | str | int | float | bool | None
     KeyType = int | str | list[int | str]
 
     def __init__(self, value: ValueType):
-        assert isinstance(value, Record.ValueType)
-        if isinstance(value, list):
-            for v in value:
-                Record(v) # test if subvalues are Instructions
-        if isinstance(value, dict):
-            for v in value.values():
-                Record(v) # test if subvalues are Instructions
+        assert isinstance(value, Instructions.ValueType), value
+        if isinstance(value, tuple):
+            value = list(value)
+        if isinstance(value, (list, dict)):
+            iterable = enumerate(value) if isinstance(value, list) else value.items()
+            for k, v in iterable:
+                try:
+                    Instructions(v) # test if subvalues are Instructions
+                except AssertionError as err:
+                    raise ValueError([k], err.args[0])
+                except ValueError as err:
+                    keys, err_value = err.args
+                    raise ValueError(keys + [k], err_value)
         if isinstance(value, str) and value.startswith("range("):
-            value = Record._parse_range(value)
+            value = Instructions._parse_range(value)
         self.value = value
     @classmethod
-    def load(cls, filename: str) -> "Record":
+    def load(cls, filename: str) -> "Instructions":
         with open(filename) as f:
-            return Record(yaml.safe_load(f))
+            return Instructions(yaml.safe_load(f))
         
     def _parse_range(range_txt: str) -> list[int]:
         assert range_txt.startswith("range(") and range_txt[-1] == ")", range_txt
@@ -33,7 +41,26 @@ class Record:
         if len(values) == 3:
             return list(range(int(values[0]), int(values[1]), int(values[2])))
         raise ValueError(f"Failed to parse range {range_txt}")
+    def _solve_references(self):
+        for keys, value in self:
+            if isinstance(value, str) and value.startswith("&"):
+                self[keys] = self[value[1:]]
+    def is_tuple_cls_kwargs(self) -> bool:
+        return isinstance(self.value, list) and len(self.value) == 2 \
+            and isinstance(self.value[0], str) and isinstance(self.value[1], dict)
 
+    def __iter__(self) -> Iterable:
+        if isinstance(self.value, (str, int, float, bool, type(None))):
+            yield list(), self.value
+        elif isinstance(self.value, list):
+            for index, sub in enumerate(self.value):
+                for subkeys, value in Instructions(sub):
+                    yield [str(index)] + subkeys, value
+        else:
+            assert isinstance(self.value, dict), self.value
+            for key, sub in self.value.items():
+                for subkeys, value in Instructions(sub):
+                    yield [key] + subkeys, value
 
     def parse_keys(keys: KeyType) -> list[int | str]:
         """ Idempotent method """
@@ -44,40 +71,52 @@ class Record:
         assert isinstance(keys, list)
         return keys
     def has(self, keys: KeyType) -> bool:
-        keys = Record.parse_keys(keys)
+        keys = Instructions.parse_keys(keys)
         if not keys:
             return True
         if not isinstance(self.value, (list, dict)):
             return False
+        if self.is_tuple_cls_kwargs() and not keys[0].isdigit():
+            return Instructions(self.value[1]).has(keys)
         try:
             key = keys[0] if isinstance(self.value, dict) else int(keys[0])
             value = self.value[key]
-            return Record(value).has(keys[1:])
-        except (ValueError, IndexError):
+            return Instructions(value).has(keys[1:])
+        except (ValueError, IndexError, KeyError):
             return False
     def __getitem__(self, keys: KeyType) -> ValueType:
-        keys = Record.parse_keys(keys)
+        keys = Instructions.parse_keys(keys)
         if not keys:
             return self.value
         assert isinstance(self.value, (list, dict)), (keys, self.value)
+        if self.is_tuple_cls_kwargs() and not keys[0].isdigit():
+            return Instructions(self.value[1])[keys]
         try:
             key = keys[0] if isinstance(self.value, dict) else int(keys[0])
             value = self.value[key]
-            return Record(value)[keys[1:]]
+            return Instructions(value)[keys[1:]]
         except (ValueError, IndexError): 
             raise ValueError(keys, self.value)
     def __setitem__(self, keys: KeyType, value: ValueType):
-        keys = Record.parse_keys(keys)
+        keys = Instructions.parse_keys(keys)
         assert len(keys) > 0, keys # cannot have empty keys list
+        if self.is_tuple_cls_kwargs() and not keys[0].isdigit():
+            Instructions(self.value[1])[keys] = value
+            return
         key = keys[0] if isinstance(self.value, dict) else int(keys[0])
         if len(keys) == 1:
             self.value[key] = value
         else:
-            Record(self.value[key])[keys[1:]] = value
+            Instructions(self.value[key])[keys[1:]] = value
 
     def parse_variables(self, variables: list[str] | list[list[str]] | None) -> tuple[list[list[str]], list[list]]:
         """ Returns varnames, varvalues """
-        parsed = [self.parse_variable(v) for v in (variables or list())]
+        parsed = list()
+        for v in (variables or list()):
+            try:
+                parsed.append(self.parse_variable(v))
+            except AssertionError as e:
+                raise ValueError(v, e.args[0])
         return [v for v, _ in parsed], [v for _, v in parsed]
     def parse_variable(self, variable: str | list[str]) -> tuple[list[str], list[str] | list[int]]:
         if isinstance(variable, list):
@@ -88,28 +127,34 @@ class Record:
             elif "." in variable[1]:
                 values = self[variable[1]]
                 assert isinstance(values, str)
-                values = Record._parse_range(values) if values.startswith("range(") else [values]
+                values = Instructions._parse_range(values) if values.startswith("range(") else [values]
             else:
                 values = variable[1].split(" ")
             return varnames, values
         varnames = variable.split(" ")
         values = self[varnames[0]]
-        assert isinstance(values, (str, list))
+        assert isinstance(values, (str, list)), values
         if isinstance(values, str):
-            values = Record._parse_range(values) if values.startswith("range(") else [values]
+            values = Instructions._parse_range(values) if values.startswith("range(") else [values]
         return varnames, values
     
-    def clone(self) -> "Record":
-        return Record(deepcopy(self.value))
+    def clone(self) -> "Instructions":
+        return Instructions(deepcopy(self.value))
 
-    def extract_indices(self, varnames: list[list[str]], varname_values: list, indices: list[int], varname_index: int = 0) -> "Record":
+    def extract_indices(self, 
+        varnames: list[list[str]], 
+        varname_values: list, 
+        indices: list[int], 
+        varname_index: int = 0
+    ) -> "Instructions":
         assert len(varnames) == len(varname_values), (varnames, varname_values)
         assert len(varnames) == len(indices), (varnames, indices)
-        result = deepcopy(self.value)
+        result = self.clone()
         varname, varname_value = varnames[0][0], varname_values[0][indices[0]]
         if result.has(varname):
-            result[varname] = Record.value_extract(result[varname], varname_value, indices[0], varname_index)
+            result[varname] = Instructions._value_extract(result[varname], varname_value, indices[0], varname_index)
         if len(varnames[0]) == 1 and len(varnames) == 1: # ready to return
+            result._solve_references()
             return result
         elif len(varnames[0]) > 1:
             varnames[0] = varnames[0][1:]
@@ -131,29 +176,3 @@ class Record:
             return map_brackets(values, f)
         return values
 
-def parse_brackets(text: str, brackets: str = "{}") -> tuple[list[str], list[str]]:
-    """ Decompose text into substrings. 
-    The first list contains out of brackets. It initiates the sequence, potentially with "".
-    The second list contains interleaved in-bracket texts. """
-    assert len(brackets) == 2, brackets # must have an open and a close symbol, which could be the same
-    out_brackets, in_brackets, index = list(), list(), 0
-    while brackets[0] in text[index:]:
-        open_bracket_index = index + text[index:].index(brackets[0])
-        if brackets[1] not in text[open_bracket_index:]:
-            break 
-        closed_bracket_index = open_bracket_index + text[open_bracket_index:].index(brackets[1])
-        out_brackets.append(text[index:open_bracket_index])
-        in_brackets.append(text[open_bracket_index+1:closed_bracket_index])
-        index = closed_bracket_index + 1
-    out_brackets.append(text[index:])
-    return out_brackets, in_brackets
-def interleave_texts(texts1: list[str], texts2: list[str]) -> str:
-    assert len(texts1) == len(texts2) or len(texts1) == len(texts2) + 1
-    interleaved = [i for pair in zip(texts1[:len(texts2)], texts2) for i in pair]
-    if len(texts1) == len(texts2) + 1:
-        interleaved.append(texts1[-1])
-    return "".join(interleaved)
-def map_brackets(text: str, function: Callable, brackets: str = "{}") -> str:
-    out_brackets, in_brackets = parse_brackets(text, brackets)
-    filled_in_brackets = [function(text) for text in in_brackets]
-    return interleave_texts(out_brackets, filled_in_brackets)

@@ -51,11 +51,14 @@ class Independent(GeneratorStep):
         return bool(np.random.random() < user.p_public)
 
     def assess(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
-        assert hasattr(user, "p_assess") and user.p_assess >= 0.0
+        if not hasattr(user, "p_assess"):
+            return False
+        assert user.p_assess >= 0.0, user
         return bool(np.random.random() < user.p_assess)
         
     def compare(self, user: User, left: Entity, right: Entity, eval_entities: Entities) -> bool:
-        assert hasattr(user, "p_compare") or hasattr(user, "n_comparisons_per_entity")
+        if not hasattr(user, "p_compare") or not hasattr(user, "n_comparisons_per_entity"):
+            return False
         if hasattr(user, "p_compare"):
             return np.random.random() < user.p_compare
         return bool(np.random.random() < user.n_comparisons_per_entity / len(eval_entities))

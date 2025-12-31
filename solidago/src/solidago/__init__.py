@@ -12,6 +12,7 @@ from solidago.primitives import NestedDict, MultiKeyTable, Objects
 from solidago.generators import Generator
 from solidago.modules import *
 from solidago.poll import *
+from solidago.experiments import *
 
 
 __all__ = [
@@ -28,6 +29,7 @@ __all__ = [
     "VotingRights",
     "Score", "MultiScore", "ScoringModel", "UserModels",
     "Poll", "TournesolExport",
+    "Experiment"
 ]
 
 

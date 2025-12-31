@@ -23,7 +23,7 @@ class Generator(Sequential):
             return cls.load(**kwargs) if hasattr(cls, "load") else cls(**kwargs)
         self.modules: list[PollFunction] = [load(m) for m in modules or list()]
  
-    def __call__(self, poll: Poll | None = None, seed: int | None = None) -> Poll:
+    def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set={}, seed: int | None = None) -> Poll:
         """ Generates a random dataset, presented as a poll.
         No processing of the dataset is performed by the generative model.
         
@@ -32,17 +32,17 @@ class Generator(Sequential):
         poll: Poll or None
             Optional poll to derive computations from
         seed: None or int
-            If int, sets numpy ranom seed for reproducibility
+            If int, sets numpy random seed for reproducibility
             
         Returns
         -------
         poll: Poll
         """
         if seed is not None:
-            assert type(seed) == int
+            assert isinstance(seed, int)
             np.random.seed(seed)
 
-        return super().__call__(poll or Poll())
+        return super().__call__(poll or Poll(), save_directory, skip_steps)
 
 
 class GeneratorStep(PollFunction):

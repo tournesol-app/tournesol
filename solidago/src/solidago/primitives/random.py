@@ -36,7 +36,8 @@ class Deterministic(Distribution):
         self.value = value
 
     def sample(self, n_samples: int = 1) -> np.ndarray:
-        return np.ndarray([deepcopy(self.value) for _ in range(n_samples)])
+        assert isinstance(n_samples, int), n_samples
+        return np.array([deepcopy(self.value) for _ in range(n_samples)])
 
 class Bernoulli(Distribution):
     def __init__(self, p: float):
@@ -48,13 +49,14 @@ class Bernoulli(Distribution):
 
 class Normal(Distribution):
     def __init__(self, 
-        dimension: int = 1,
+        dimension: int | None = None,
         mean: float | np.ndarray = 0.0,
         std: float | np.ndarray = 1.0,
     ):
-        self.dimension = dimension
-        self.mean = (np.zeros(dimension) + mean) if isinstance(mean, float) else mean
-        self.std = (np.zeros(dimension) + std) if isinstance(mean, float) else mean
+        self.dimension = dimension or np.array(mean).size
+        assert isinstance(self.dimension, int)
+        self.mean = (np.zeros(self.dimension) + mean) if isinstance(mean, float) else mean
+        self.std = (np.zeros(self.dimension) + std) if isinstance(mean, float) else mean
 
     def sample(self, n_samples: int = 1) -> np.ndarray:
         if self.dimension == 1:
