@@ -6,18 +6,18 @@ from typing import Any, Type
 import yaml
 from .__version__ import __version__
 
-from solidago import primitives, modules, generators
+from solidago import primitives, functions, generators
 from solidago.primitives import NestedDict, MultiKeyTable, Objects
 
 from solidago.generators import Generator
-from solidago.modules import *
+from solidago.functions import *
 from solidago.poll import *
 from solidago.experiments import *
 
 
 __all__ = [
     "load",
-    "primitives", "modules", "generators", 
+    "primitives", "functions", "generators", 
     "PollFunction", "Sequential", "Identity", 
     "Generator", 
     "NestedDict", "MultiKeyTable",

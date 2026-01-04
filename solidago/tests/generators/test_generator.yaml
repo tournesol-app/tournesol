@@ -1,8 +1,8 @@
 - Generator
 - modules:
   # User and entity generation
-  - [users.Users, {n_users: 10, distribution: [Normal, dimension: 5]}]
-  - [entities.Entities, {n_entities: 20, distribution: [Normal, dimension: 5]}]
+  - [users.Users, {n_users: 4, distribution: [Normal, dimension: 5]}]
+  - [entities.Entities, {n_entities: 6, distribution: [Normal, dimension: 5]}]
   # User trust generation
   - [users.AddColumn, {column: is_trustworthy, distribution: [Bernoulli, p: 0.8]}]
   - [users.BernoulliPretrust, {p_if_trustworthy: 0.2, p_if_untrustworthy: 0.0}] # requires users.is_trustworthy
@@ -12,7 +12,7 @@
   # Engagement generation
   - - users.AddColumn
     - column: n_evaluated_entities
-      distribution: [Add, subdistributions: [[Zipf, power_decay: 1.5], [Poisson, mean: 3.0]]]
+      distribution: [Add, subdistributions: [[Zipf, power_decay: 2.0], [Poisson, mean: 2.0]]]
   - [users.AddColumn, {column: engagement_bias, distribution: [Normal, {}]}]
   - [users.AddColumn, {column: p_public, distribution: [Uniform, {}]}]
   - [users.AddColumn, {column: p_assess, distribution: [Uniform, {}]}]

@@ -1,15 +1,12 @@
 import numpy as np
-import logging
 
 from solidago.poll import Poll
-from solidago.modules import Sequential, PollFunction
-
-logger = logging.getLogger(__name__)
+from solidago.functions import Sequential, PollFunction
 
 
 class Generator(Sequential):
-    def __init__(self, modules: list | None = None, max_workers: int | None = None):
-        super().__init__(None, max_workers=max_workers)
+    def __init__(self, modules: list | None = None, max_workers: int | None = None, seed: int | None = None):
+        super().__init__(name="Generator", max_workers=max_workers, seed=seed)
         from solidago import generators
         def load(module):
             if isinstance(module, PollFunction):
@@ -23,25 +20,7 @@ class Generator(Sequential):
             return cls.load(**kwargs) if hasattr(cls, "load") else cls(**kwargs)
         self.modules: list[PollFunction] = [load(m) for m in modules or list()]
  
-    def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set={}, seed: int | None = None) -> Poll:
-        """ Generates a random dataset, presented as a poll.
-        No processing of the dataset is performed by the generative model.
-        
-        Parameters
-        ----------
-        poll: Poll or None
-            Optional poll to derive computations from
-        seed: None or int
-            If int, sets numpy random seed for reproducibility
-            
-        Returns
-        -------
-        poll: Poll
-        """
-        if seed is not None:
-            assert isinstance(seed, int)
-            np.random.seed(seed)
-
+    def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set={}) -> Poll:
         return super().__call__(poll or Poll(), save_directory, skip_steps)
 
 
@@ -52,7 +31,7 @@ class GeneratorStep(PollFunction):
             if key == "modules":
                 return ", ".join([v.__repr__(n_indents + 1) for v in value])
             return value.__repr__(n_indents + 1) if isinstance(value, PollFunction) else value
-                        
+
         indent = "\t" * (n_indents + 1)
         last_indent = "\t" * n_indents
         t = ".".join(str(type(self)).split(".")[2:])[:-2]

@@ -31,8 +31,13 @@ class SelectEntities:
 class Uniform(SelectEntities):
     """ Requires user.n_evaluated_entities """
     def __call__(self, user: User, entities: Entities) -> Entities:
-        assert hasattr(user, "n_evaluated_entities") and isinstance(user.n_evaluated_entities, int)
-        choice = np.random.choice(user.n_evaluated_entities, len(entities))
+        assert hasattr(user, "n_evaluated_entities"), user
+        n_evaluated_entities = user.n_evaluated_entities
+        assert isinstance(n_evaluated_entities, (int, np.integer)), n_evaluated_entities
+        assert n_evaluated_entities >= 0, n_evaluated_entities
+        if n_evaluated_entities > len(entities):
+            return entities
+        choice = np.random.choice(len(entities), n_evaluated_entities, False)
         return entities[[entities.index2name(i) for i in choice]]
 
 class BiasedByScore(SelectEntities):
@@ -42,7 +47,8 @@ class BiasedByScore(SelectEntities):
 
     def __call__(self, user: User, entities: Entities) -> Entities:
         assert hasattr(user, "n_evaluated_entities"), user
-        assert np.issubdtype(type(user.n_evaluated_entities), np.integer), user.n_evaluated_entities
+        n_evaluated_entities = user.n_evaluated_entities
+        assert isinstance(n_evaluated_entities, (int, np.integer)), n_evaluated_entities
 
         # To implement engagement bias, we construct a noisy score-based sort of the entities
         scores = entities.vectors @ user.vector
@@ -51,7 +57,7 @@ class BiasedByScore(SelectEntities):
         assert noisy_scores.shape == (len(entities),), noisy_scores
         argsort = np.argsort(noisy_scores)
         
-        n_eval_entities = min(len(entities), user.n_evaluated_entities)
+        n_eval_entities = min(len(entities), n_evaluated_entities)
         assert argsort.size == len(entities), argsort
         assert all(isinstance(argsort[i], (int, np.int64)) for i in range(len(entities))), argsort
         return entities[[entities.index2name(argsort[i]) for i in range(n_eval_entities)]]        

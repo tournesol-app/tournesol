@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 
 from solidago import *
-from solidago.modules.post_process import Squash
+from solidago.functions.post_process import Squash
 
 
 user_models = UserModels(

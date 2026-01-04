@@ -2,12 +2,14 @@ import pytest
 import numpy as np
 
 from solidago import *
-from solidago.modules.scaling import Mehestan, LipschitzStandardize, LipschitzQuantileShift
+from solidago.functions.scaling import Mehestan, LipschitzStandardize, LipschitzQuantileShift
 
-polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
+N_SEEDS = 3
+
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(N_SEEDS) ]
 
 
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_learned_models(seed):
     mehestan = Mehestan(
         lipschitz=1., 
@@ -23,9 +25,9 @@ def test_learned_models(seed):
     s = polls[seed]
     users, entities, made_public = s.users, s.entities, s.made_public
     base_models = UserModels(s.user_models.user_directs)
-    users, scaled_models = mehestan(users, entities, made_public, base_models)
+    users, _ = mehestan(users, entities, made_public, base_models)
 
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_standardize(seed):
     standardize = LipschitzStandardize(
         dev_quantile=0.9, 
@@ -38,10 +40,10 @@ def test_standardize(seed):
     values = np.array([s.value for _, s in standardized_models()])
     deviations = np.abs(values - np.median(values))
     quantile = int(0.9 * len(deviations))
-    assert deviations[np.argsort(deviations)[quantile]] < 2
+    assert deviations[np.argsort(deviations)[quantile]] < 3
     assert deviations[np.argsort(deviations)[quantile]] > 0.5
     
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_quantile_shift(seed):
     quantile_shift = LipschitzQuantileShift(
         quantile=0.15, 

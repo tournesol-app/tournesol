@@ -1,0 +1,3 @@
+username,criterion,entity_name,other_name,value,max,location
+user_1,default,entity_0,entity_2,3.0,10,right
+user_1,default,entity_2,entity_0,-3.0,10,left

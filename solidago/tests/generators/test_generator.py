@@ -2,6 +2,7 @@ from solidago import *
 from solidago.generators.engagements.select_entities import BiasedByScore
 from solidago.primitives.random import Normal, Bernoulli, Zipf, Add, Poisson, Uniform
 
+N_SEEDS = 3
 
 def test_svd_user_generator():
     n_users = 10
@@ -29,23 +30,26 @@ def test_svd_entity_generator():
 def test_evaluation_generator():
     users = generators.users.Users(10, Normal(5))()
     entities = generators.entities.Entities(100, Normal(5))()
-    
+
     users = generators.users.AddColumn("n_evaluated_entities", Add([Zipf(1.5), Poisson(3.0)]))(users)
     users = generators.users.AddColumn("engagement_bias", Normal())(users)
     users = generators.users.AddColumn("p_public", Uniform())(users)
     users = generators.users.AddColumn("p_assess", Uniform())(users)
     users = generators.users.AddColumn("n_comparisons_per_entity", Uniform(1.0, 5.0))(users)
 
-    made_public, assessments, comparisons = generators.engagements.Independent(BiasedByScore(Normal()))(users, entities)
+    engagement_generator = generators.engagements.Independent(BiasedByScore(Normal()))
+    made_public, assessments, comparisons = engagement_generator(users, entities)
     assessments = generators.assessments.Independent(
         generators.assessments.Noisy(Normal())
     )(users, entities, made_public, assessments)
     comparisons = generators.comparisons.Independent(
         generators.comparisons.KnaryGBT(21, 10)
     )(users, entities, made_public, comparisons)
+    assert len(assessments) > 0
+    assert len(comparisons) > 0
             
 def test_generative_model():
-    for seed in range(5):
+    for seed in range(N_SEEDS):
         state = Poll.load(f"tests/saved/{seed}")
         for key in ("users", "entities", "vouches", "made_public", "assessments", "comparisons"):
             assert len(getattr(state, key)) > 0

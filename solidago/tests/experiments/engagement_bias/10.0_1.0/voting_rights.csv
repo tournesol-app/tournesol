@@ -1,0 +1,7 @@
+username,entity_name,criterion,voting_right
+user_1,entity_0,default,1.0
+user_1,entity_1,default,1.0
+user_1,entity_2,default,1.0
+user_0,entity_0,default,1.0
+user_0,entity_1,default,1.0
+user_0,entity_2,default,1.0

@@ -1,9 +1,10 @@
 import pytest
 
 from solidago import *
-from solidago.modules.trust_propagation import LipschiTrust, TrustAll
+from solidago.functions.trust_propagation import LipschiTrust, TrustAll
+N_SEEDS = 3
 
-polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(N_SEEDS) ]
 
 
 def test_lipschitrust_simple():
@@ -21,7 +22,7 @@ def test_lipschitrust_simple():
     assert users[2].trust == pytest.approx(0.8 * 0.8 / 2), users
 
 
-@pytest.mark.parametrize("seed", range(4))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_generative(seed):
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8,)
 
@@ -62,7 +63,7 @@ def test_lipschitrust_ten_users():
     assert users["8"].trust > 0.0
 
 
-@pytest.mark.parametrize("seed", range(4))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_test_data(seed):
     pipeline = load("tests/modules/test_pipeline.yaml")
     assert isinstance(pipeline, Sequential)

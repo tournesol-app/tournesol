@@ -1,0 +1,3 @@
+username,entity_name,criterion,value,left_unc,right_unc
+user_1,entity_0,default,-0.45987511080077825,3.387451171875,2.471923828125
+user_1,entity_2,default,0.45999735790592544,2.471923828125,3.387451171875

@@ -1,0 +1,13 @@
+username,criterion,entity_name,other_name,value,max,location
+user_0,default,entity_1,entity_2,8.0,10,right
+user_0,default,entity_1,entity_0,10.0,10,right
+user_0,default,entity_2,entity_1,-8.0,10,left
+user_0,default,entity_2,entity_0,10.0,10,right
+user_0,default,entity_0,entity_1,-10.0,10,left
+user_0,default,entity_0,entity_2,-10.0,10,left
+user_1,default,entity_2,entity_0,-10.0,10,left
+user_1,default,entity_2,entity_1,10.0,10,left
+user_1,default,entity_0,entity_2,10.0,10,right
+user_1,default,entity_0,entity_1,10.0,10,left
+user_1,default,entity_1,entity_2,-10.0,10,right
+user_1,default,entity_1,entity_0,-10.0,10,right

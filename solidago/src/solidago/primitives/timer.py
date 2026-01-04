@@ -5,9 +5,10 @@ import logging
 
 
 @contextmanager
-def time(logger: logging.Logger, log: str):
+def time(logger: logging.Logger, log: str, log_start: bool = False):
     start = timeit.default_timer()
-    logger.info(log)
+    if log_start:
+        logger.info(log)
     try:
         yield None
     finally:

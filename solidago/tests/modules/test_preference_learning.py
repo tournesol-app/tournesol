@@ -1,7 +1,7 @@
 import pytest
 
 from solidago import *
-from solidago.modules.preference_learning import NumbaUniformGBT, LBFGSUniformGBT
+from solidago.functions.preference_learning import NumbaUniformGBT, LBFGSUniformGBT
 
 
 @pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])

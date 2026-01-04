@@ -1,0 +1,4 @@
+username,height,kind,criterion,value,left_unc,right_unc
+user_0,1,multiplier,default,1.0,1.741699988796755e-06,1.741699988796755e-06
+user_0,1,translation,default,0.0,3.058910017748782e-07,3.058910017748782e-07
+user_1,1,translation,default,8.404248452720253e-08,0.04438601848323967,0.04438601848323967

@@ -1,0 +1,58 @@
+assessments:
+- Assessments
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  source: assessments.csv
+comparisons:
+- Comparisons
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  - other_name
+  source: comparisons.csv
+entities:
+- Entities
+- {}
+global_model:
+- ScoringModel
+- composition:
+  - - direct
+    - note: average
+  - - squash
+    - note: squash
+      score_max: 100
+made_public:
+- MadePublic
+- keynames:
+  - username
+  - entity_name
+  source: made_public.csv
+user_models:
+- UserModels
+- default_composition:
+  - - direct
+    - {}
+  - - squash
+    - note: squash
+      score_max: 100
+  user_directs: user_directs.csv
+users:
+- Users
+- {}
+voting_rights:
+- VotingRights
+- keynames:
+  - username
+  - entity_name
+  - criterion
+  source: voting_rights.csv
+vouches:
+- Vouches
+- keynames:
+  - by
+  - to
+  - kind
+  source: vouches.csv

@@ -1,0 +1,30 @@
+overwrite: true
+reproducibility: true
+max_workers: 1
+variables: [generator.seed]
+poll: null
+generator:
+  seed: range(2)
+  modules:
+    - [users.Users, {n_users: 3, distribution: [Normal, mean: [3.0, 0.0]]}]
+    - [entities.Entities, {n_entities: 3, distribution: [Normal, dimension: 2]}]
+    # Engagement generation
+    - [users.AddColumn, {column: n_evaluated_entities, distribution: [Poisson, mean: 2.0]}]
+    - [users.AddColumn, {column: p_public, distribution: [Deterministic, value: 1.0]}]
+    - [users.AddColumn, {column: n_comparisons_per_entity, distribution: [Uniform, {min: 1.0, max: 5.0}]}]
+    - - engagements.Independent # requires users.{p_public, p_assess, {p_compare | n_comparisons_per_entity}}
+      - select_entities: [Uniform, {}] # Requires user.n_evaluated_entities
+    # User comparison
+    - [users.AddColumn, {column: translation, distribution: [Normal, std: 1.0]}]
+    - [users.AddColumn, {column: multiplier, distribution: [Gamma, {shape: 1.0, scale: 1.0}]}]
+    - - comparisons.Independent
+      - honest: [KnaryGBT, {n_options: 21, comparison_max: 10}]
+        malicious: [Negate, {}]
+functions:
+  - - NumbaUniformGBT
+    - prior_std_dev: 7
+      uncertainty_nll_increase: 1.0
+      max_uncertainty: 1.0e+3
+      convergence_error: 1.0e-5
+  - [Average, {}]
+  - [Squash, {score_max: 100}]

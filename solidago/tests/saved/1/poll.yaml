@@ -44,7 +44,7 @@ user_models:
   - - scale
     - note: mehestan
   - - scale
-    - note: lipschitz_quantile_shift
+    - note: lipschitz_standardardize
   - - scale
     - note: lipschitz_quantile_shift
   - - squash

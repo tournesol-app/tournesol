@@ -44,14 +44,13 @@ user_models:
   - - scale
     - note: mehestan
   - - scale
-    - note: lipschitz_quantile_shift
+    - note: lipschitz_standardardize
   - - scale
     - note: lipschitz_quantile_shift
   - - squash
     - note: squash
       score_max: 100
   user_directs: user_directs.csv
-  user_scales: user_scales.csv
 users:
 - Users
 - {}

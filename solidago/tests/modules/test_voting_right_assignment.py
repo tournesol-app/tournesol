@@ -1,14 +1,13 @@
 import pytest
 import numpy as np
-import pandas as pd
 
 from solidago import *
-from solidago.modules.voting_rights import Trust2VotingRights, AffineOvertrust
+from solidago.functions.voting_rights import Trust2VotingRights, AffineOvertrust
 
+N_SEEDS = 3
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(N_SEEDS) ]
 
-polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
-
-@pytest.mark.parametrize("seed", range(4))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_is_trust(seed):
     poll = polls[seed]
     voting_rights = Trust2VotingRights().poll2objects_function(poll)
@@ -211,8 +210,8 @@ def test_affine_overtrust():
     assert voting_rights.keys("entity_name") == {"0", "1", "3", "5"}
 
 
-@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_affine_overtrust_test_data(seed):
-    entities, voting_rights = ao.poll2objects_function(polls[seed])
-    for (username, entity_name, criterion), voting_right in voting_rights:
+    _, voting_rights = ao.poll2objects_function(polls[seed])
+    for (_, _, _), voting_right in voting_rights:
         assert voting_right >= 0

@@ -150,6 +150,8 @@ class Instructions:
         assert len(varnames) == len(varname_values), (varnames, varname_values)
         assert len(varnames) == len(indices), (varnames, indices)
         result = self.clone()
+        if not varnames:
+            return result
         varname, varname_value = varnames[0][0], varname_values[0][indices[0]]
         if result.has(varname):
             result[varname] = Instructions._value_extract(result[varname], varname_value, indices[0], varname_index)

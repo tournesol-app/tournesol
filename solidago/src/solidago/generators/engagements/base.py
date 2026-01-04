@@ -11,7 +11,13 @@ if TYPE_CHECKING:
 
 
 class Independent(GeneratorStep):
-    """ Requires users.{n_evaluated_entities, p_public, p_assess, {p_compare or n_comparisons_per_entity}} """
+    """ 
+    By default, sets
+    user.p_public == 1.0
+    user.p_assess == 0.0
+    user.p_compare == 0.0
+    user.n_comparisons_per_entity == 0.0
+    """
     def __init__(self, 
         select_entities: Union["SelectEntities", list, tuple] | None = None,
         criteria: list[str] | None = None, # by default, will be set to ["default"]
@@ -47,8 +53,9 @@ class Independent(GeneratorStep):
         return made_public, assessments, comparisons
 
     def public(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
-        assert hasattr(user, "p_public") and user.p_public >= 0.0
-        return bool(np.random.random() < user.p_public)
+        p_public = user.p_public if hasattr(user, "p_public") else 1.0
+        assert p_public >= 0.0, p_public
+        return bool(np.random.random() < p_public)
 
     def assess(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
         if not hasattr(user, "p_assess"):
@@ -57,7 +64,7 @@ class Independent(GeneratorStep):
         return bool(np.random.random() < user.p_assess)
         
     def compare(self, user: User, left: Entity, right: Entity, eval_entities: Entities) -> bool:
-        if not hasattr(user, "p_compare") or not hasattr(user, "n_comparisons_per_entity"):
+        if not hasattr(user, "p_compare") and not hasattr(user, "n_comparisons_per_entity"):
             return False
         if hasattr(user, "p_compare"):
             return np.random.random() < user.p_compare

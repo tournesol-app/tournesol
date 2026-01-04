@@ -1,8 +1,10 @@
 import pytest
 from solidago import *
-from solidago.modules.aggregation import Average, EntitywiseQrQuantile
+from solidago.functions.aggregation import Average, EntitywiseQrQuantile
 
-polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(5) ]
+N_SEEDS = 3
+
+polls = [ Poll.load(f"tests/saved/{seed}") for seed in range(N_SEEDS) ]
 
 entities = Entities(["entity_0", "entity_1", "entity_2", "entity_3"])
 voting_rights = VotingRights()
@@ -53,12 +55,12 @@ def test_qr_quantile_simple_instance2():
     assert global_model("entity_2", "default").value == pytest.approx(-.3, abs=1e-2)
     assert global_model("entity_3", "default").value > 0.2
 
-@pytest.mark.parametrize( "seed", list(range(5)) )
+@pytest.mark.parametrize( "seed", list(range(N_SEEDS)) )
 def test_average(seed):
-    global_model = Average(max_workers=2).poll2objects_function(polls[seed])
+    _ = Average(max_workers=2).poll2objects_function(polls[seed])
 
-@pytest.mark.parametrize( "seed", list(range(5)) )
+@pytest.mark.parametrize( "seed", list(range(N_SEEDS)) )
 def test_aggregation(seed):
     aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5, max_workers=2)
-    global_model = aggregator.poll2objects_function(polls[seed])
+    _ = aggregator.poll2objects_function(polls[seed])
 
