@@ -1,21 +1,7 @@
 describe('Signup', () => {
 
   beforeEach(() => {
-    cy.sql(`
-      DELETE FROM oauth2_provider_refreshtoken
-      WHERE user_id IN (
-        SELECT user_id FROM core_user WHERE username = 'test-register'
-      );
-    `);
-
-    cy.sql(`
-      DELETE FROM oauth2_provider_accesstoken
-      WHERE user_id IN (
-        SELECT user_id FROM core_user WHERE username = 'test-register'
-      );
-    `);
-
-    cy.sql("DELETE FROM core_user where username = 'test-register'");
+    cy.deleteUser("test-register")
   });
 
   it('allows users to create an account', () => {

@@ -2,7 +2,7 @@
 name = "tournesol-backend"
 version = "0.1.0"
 readme = "README.md"
-requires-python = "==3.9.*"
+requires-python = "==3.13.*"
 dependencies = [
     "atproto==0.0.64",
     "django==4.2.*",
@@ -17,10 +17,10 @@ dependencies = [
     "google-api-python-client==2.*",
     "google-auth-httplib2==0.1.*",
     "langdetect==1.*",
-    "matplotlib==3.7.*",
-    "numpy==1.26.*",
+    "matplotlib==3.10.*",
+    "numpy==2.3.*",
     "pandas==2.2.*",
-    "pillow==10.3.*",
+    "pillow==12.*",
     "psycopg2-binary==2.9.*",
     "python-dotenv==1.*",
     "pyyaml==6.*",
@@ -40,12 +40,11 @@ deploy = [
 dev = [
     "bandit==1.8.*",
     "factory-boy==3.2.*",
-    "flake8==5.0.*",
+    "flake8==7.*",
     "flake8-html==0.4.*",
     "isort==5.10.*",
-    "pylint==2.15.*",
-    "pylint-django==2.*",
-    "pylint-json2html==0.4.*",
+    "pylint==3.*",
+    "pylint-django==2.6.*",
     "pytest==7.*",
     "pytest-django==4.*",
     "pytest-html==3.*",

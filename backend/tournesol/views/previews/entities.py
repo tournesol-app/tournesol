@@ -48,6 +48,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
 
     @staticmethod
     def draw_score(  # pylint: disable=too-many-arguments
+        *,
         image: Image.Image,
         score_overlay: Image.Image,
         score: float,
