@@ -72,7 +72,12 @@ const UseOurExtension = ({ titleColor }: UseOurExtensionProps) => {
               {t('home.webExtensionDescription')}
             </Typography>
           </Grid>
-          <Grid item width="100%">
+          <Grid
+            item
+            sx={{
+              width: '100%',
+            }}
+          >
             {webExtensionUrl ? (
               <Button
                 fullWidth

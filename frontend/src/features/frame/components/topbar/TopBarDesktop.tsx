@@ -20,7 +20,13 @@ const TopBarDesktop = () => {
       <Grid item xs>
         {options?.withSearchBar && <Search />}
       </Grid>
-      <Box display="flex" flex={0.5} justifyContent="flex-end">
+      <Box
+        sx={{
+          display: 'flex',
+          flex: 0.5,
+          justifyContent: 'flex-end',
+        }}
+      >
         <Button
           variant="text"
           startIcon={<FavoriteBorder />}
