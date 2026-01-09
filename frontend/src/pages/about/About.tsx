@@ -153,11 +153,15 @@ const ContentBox = ({
   return (
     <Box
       className={className}
-      display="flex"
-      flexDirection="column"
-      maxWidth={maxWidth}
-      alignItems="flex-start"
-      sx={sx}
+      sx={[
+        {
+          display: 'flex',
+          flexDirection: 'column',
+          maxWidth: maxWidth,
+          alignItems: 'flex-start',
+        },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
       {children}
     </Box>
@@ -178,7 +182,12 @@ const AboutPage = () => {
       >
         <Grid2 className={classes.container} size={12}>
           <ContentBox>
-            <Typography variant="h1" mb={1}>
+            <Typography
+              variant="h1"
+              sx={{
+                mb: 1,
+              }}
+            >
               {t('about.whatIsTournesol')}
             </Typography>
             <Typography
@@ -239,7 +248,12 @@ const AboutPage = () => {
       >
         <Grid2 className={classes.container} size={12}>
           <ContentBox>
-            <Typography variant="h1" mb={1}>
+            <Typography
+              variant="h1"
+              sx={{
+                mb: 1,
+              }}
+            >
               {t('about.whoBuildsTournesol')}
             </Typography>
             <Typography
@@ -492,8 +506,10 @@ const AboutPage = () => {
       <Grid2
         container
         className={classes.container}
-        maxWidth={{ md: '75%' }}
-        margin="auto"
+        sx={{
+          maxWidth: { md: '75%' },
+          margin: 'auto',
+        }}
       >
         <Grid2 className={classes.container}>
           <ContentBox>
