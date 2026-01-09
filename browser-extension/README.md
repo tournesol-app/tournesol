@@ -77,7 +77,7 @@ and upload the generated .zip file in the corresponding extension web store.
 
 ## Copyright & License
 
-Copyright 2021-2022 Association Tournesol and contributors.
+Copyright 2021-2026 Association Tournesol and contributors.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
