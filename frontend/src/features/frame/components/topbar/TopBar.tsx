@@ -51,6 +51,7 @@ const TopBar = ({ beforeInstallPromptEvent }: Props) => {
           sx={{
             alignItems: 'center',
             width: '100%',
+            columnGap: 1,
           }}
         >
           {isSmallScreen ? <TopBarMobile /> : <TopBarDesktop />}

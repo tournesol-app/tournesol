@@ -318,19 +318,18 @@
     "recommendationsAriaLabel": "Lien vers le classement collectif",
     "compare": "Comparer 🌻",
     "compareAriaLabel": "Lien vers la page comparer",
-    "myComparisons": "Mes comparaisons",
-    "myComparisonsAriaLabel": "Lien vers la page des comparaisons",
-    "comparedItems": "Élements comparés",
-    "myComparedItemsAriaLabel": "Lien vers mes objets comparés",
     "myRateLaterList": "À comparer plus tard",
     "myRateLaterListAriaLabel": "Lien vers ma liste à comparer plus tard",
     "myResults": "Mes résultats",
     "myFeedbackAriaLabel": "Lien vers ma réaction",
     "faq": "FAQ",
     "FAQAriaLabel": "Lien vers la page FAQ",
+    "manifesto": "Notre Manifeste",
     "about": "À propos",
     "aboutAriaLabel": "Lien vers la page à propos",
     "installTheApp": "Installer l'appli",
+    "myComparisons": "Mes comparaisons",
+    "comparedItems": "Élements comparés",
     "donate": "Faire un don"
   },
   "frame": {
@@ -344,7 +343,7 @@
     "storageErrorReloadPageAfterApplyingChanges": "Après avoir appliqué ces changements, veuillez rafraîchir cette page."
   },
   "logoutNonImpactingError": "Une petite erreur est survenue pendant la déconnexion.",
-  "loginButton": "Se connecter",
+  "loginButton": "Connexion",
   "joinUsButton": "S'inscrire",
   "personalMenu": {
     "yourRecommendations": "Mes recommandations",
@@ -357,7 +356,8 @@
     "install": "Installer"
   },
   "topbar": {
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "donate": "Faire un don"
   },
   "collectiveGoalWeeklyProgress": {
     "weeklyCollectiveGoal": "Objectif collectif hebdomadaire - {{collectiveComparisonsPercent}}%"
@@ -711,7 +711,7 @@
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "Si possible, préférez les virements directs (voir au-dessous). Cela permet à l'association de ne pas payer de frais supplémentaires, et permet de tirer le meilleur parti de vos dons.",
-    "donateWithKKBB": "Faire un don avec KissKissBankBank",
+    "donateWithUlule": "Faire un don sur Ulule",
     "donateWithPaypal": "Faire un don avec PayPal",
     "doYouPreferDirectTransfer": "Vous préférez les virements directs ?",
     "whatDoWeDoQuestion": "Comment dépensons-nous nos fonds\u00a0?",
@@ -1205,9 +1205,9 @@
     "videoAddedToRateLaterList": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "videoAlreadyInRateLaterList": "La vidéo se trouve déjà dans votre liste.",
     "rateLater": "Comparer plus tard",
-    "compareNow": "Comparer !",
     "markVideoAsUnseen": "Marquer la vidéo comme non vue.",
     "markVideoAsSeen": "Marquer la vidéo comme vue.",
+    "compareNow": "Comparer !",
     "markAsUnseen": "Marquer comme non vue.",
     "markAsSeen": "Marquer comme vue.",
     "remove": "Supprimer",

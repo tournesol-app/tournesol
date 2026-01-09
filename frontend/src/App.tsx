@@ -67,7 +67,9 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    scrollToTop();
+    if (!location.hash) {
+      scrollToTop();
+    }
   }, [pathname]);
 
   return null;

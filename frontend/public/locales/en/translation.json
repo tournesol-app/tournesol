@@ -311,19 +311,18 @@
     "recommendationsAriaLabel": "Link to the collective ranking",
     "compare": "Compare 🌻",
     "compareAriaLabel": "Link to the comparison page",
-    "myComparisons": "My comparisons",
-    "myComparisonsAriaLabel": "Link to my comparisons page",
-    "comparedItems": "My compared items",
-    "myComparedItemsAriaLabel": "Link to my compared items page",
     "myRateLaterList": "My rate later list",
     "myRateLaterListAriaLabel": "Link to my rate later list",
     "myResults": "My results",
     "myFeedbackAriaLabel": "Link to my feedback page",
     "faq": "FAQ",
     "FAQAriaLabel": "Link to the FAQ page",
+    "manifesto": "Our Manifesto",
     "about": "About",
     "aboutAriaLabel": "Link to the about page",
     "installTheApp": "Install the app",
+    "myComparisons": "My comparisons",
+    "comparedItems": "My compared items",
     "donate": "Donate"
   },
   "frame": {
@@ -350,7 +349,8 @@
     "install": "Install"
   },
   "topbar": {
-    "search": "Search"
+    "search": "Search",
+    "donate": "Donate"
   },
   "collectiveGoalWeeklyProgress": {
     "weeklyCollectiveGoal": "Weekly collective goal - {{collectiveComparisonsPercent}}%"
@@ -702,7 +702,7 @@
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct transfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",
-    "donateWithKKBB": "Donate with KissKissBankBank",
+    "donateWithUlule": "Donate on Ulule",
     "donateWithPaypal": "Donate with PayPal",
     "doYouPreferDirectTransfer": "You prefer direct transfers?",
     "whatDoWeDoQuestion": "How do we spend our funding?",
@@ -1195,9 +1195,9 @@
     "videoAddedToRateLaterList": "The video has been added to your rate later list.",
     "videoAlreadyInRateLaterList": "The video is already in your rate later list.",
     "rateLater": "Rate later",
-    "compareNow": "Compare now",
     "markVideoAsUnseen": "Mark the video as unwatched.",
     "markVideoAsSeen": "Mark the video as watched.",
+    "compareNow": "Compare now",
     "markAsUnseen": "Mask as unseen.",
     "markAsSeen": "Mark as seen.",
     "remove": "Remove",

@@ -60,6 +60,7 @@ export enum RouteID {
   FAQ = 'FAQ',
   TALKS = 'TALKS',
   About = 'about',
+  Manifesto = 'manifesto',
   Criteria = 'criteria',
   // public yet personal routes
   PublicPersonalRecommendationsPage = 'publicPersonalRecommendations',

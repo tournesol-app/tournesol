@@ -22,8 +22,8 @@ import {
 } from 'src/components';
 import FundingSection from 'src/pages/home/videos/sections/FundingSection';
 import {
-  KKBBTournesolEnUrl,
-  KKBBTournesolFrUrl,
+  ululeEnUrl,
+  ululeFrUrl,
   paypalDonateTournesolUrl,
 } from 'src/utils/url';
 
@@ -161,7 +161,6 @@ const DonatePage = () => {
                   }}
                 >
                   <Stack
-                    spacing={2}
                     direction="column"
                     justify-content="space-between"
                     sx={{
@@ -169,27 +168,19 @@ const DonatePage = () => {
                     }}
                   >
                     <ExternalLink
-                      href={
-                        currentLanguage === 'fr'
-                          ? KKBBTournesolFrUrl
-                          : KKBBTournesolEnUrl
-                      }
+                      href={currentLanguage === 'fr' ? ululeFrUrl : ululeEnUrl}
                     >
                       <img
-                        src="/logos/KKBB_Logo.png"
-                        alt="KissKissBankBank logo"
-                        height="90px"
+                        src="/logos/ulule_horizontal.png"
+                        alt="Ulule logo"
+                        height="80px"
                       />
                     </ExternalLink>
                     <Button
                       variant="contained"
-                      href={
-                        currentLanguage === 'fr'
-                          ? KKBBTournesolFrUrl
-                          : KKBBTournesolEnUrl
-                      }
+                      href={currentLanguage === 'fr' ? ululeFrUrl : ululeEnUrl}
                     >
-                      {t('donate.donateWithKKBB')}
+                      {t('donate.donateWithUlule')}
                     </Button>
                   </Stack>
                 </Grid2>
@@ -204,7 +195,6 @@ const DonatePage = () => {
                   }}
                 >
                   <Stack
-                    spacing={2}
                     direction="column"
                     justify-content="space-between"
                     sx={{
@@ -213,12 +203,17 @@ const DonatePage = () => {
                   >
                     <ExternalLink
                       href={paypalDonateTournesolUrl}
-                      sx={{ width: '100%' }}
+                      sx={{
+                        width: '100%',
+                        '& img': {
+                          p: 2,
+                        },
+                      }}
                     >
                       <img
                         src="/logos/PayPal_Logo.svg"
                         alt="PayPal logo"
-                        height="90px"
+                        height="80px"
                         width="100%"
                       />
                     </ExternalLink>

@@ -33,7 +33,7 @@ export const theme = createTheme({
     neutral: {
       light: '#C6BFA5',
       main: '#A09B87',
-      dark: '#806300',
+      dark: '#6c5402',
     },
     text: {
       primary: '#1d1a14',
