@@ -68,10 +68,14 @@ class Comparisons(MultiKeyTable):
         keys1, keys2 = list(), list()
         for keyname in keynames:
             keys1.append(kwargs[keyname])
-            if keyname in {"entity_name", "left_name"}:
-                keys2.append(kwargs["other_name" if keyname == "entity_name" else "right_name"])
-            elif keyname in {"other_name", "right_name"}:
-                keys2.append(kwargs["entity_name" if keyname == "other_name" else "left_name"])
+            if keyname == "entity_name" and "other_name" in kwargs:
+                keys2.append(kwargs["other_name"])
+            elif keyname == "other_name" and "entity_name" in kwargs:
+                keys2.append(kwargs["entity_name"])
+            elif keyname == "left_name" and "right_name" in kwargs:
+                keys2.append(kwargs["right_name"])
+            elif keyname == "right_name" and "left_name" in kwargs:
+                keys2.append(kwargs["right_name"])
             else:
                 keys2.append(kwargs[keyname])
         return tuple(keys1), tuple(keys2)

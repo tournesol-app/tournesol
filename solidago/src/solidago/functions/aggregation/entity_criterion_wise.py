@@ -1,60 +1,42 @@
 from abc import abstractmethod
 
+import numpy as np
+
 from solidago.poll import *
-from solidago.functions.base import PollFunction
+from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.primitives.threading import threading
 from solidago.primitives.timer import time
 
 
-class EntityCriterionWise(PollFunction):
+class EntityCriterionWise(ParallelizedPollFunction):
     note: str="entity_criterion_wise_aggregation"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def _variables(self, entities: Entities, user_models: UserModels) -> list[tuple[Entity, str]]:
+        return [(entity, criterion) for entity in entities for criterion in user_models.criteria()]
     
-    def __call__(self, 
-        entities: Entities,
+    def _args(self,
+        variable: tuple[Entity, str], 
         voting_rights: VotingRights,
         user_models: UserModels,
-    ) -> ScoringModel:
-        """ Returns weighted average of user's scores """
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        entity, criterion = variable
+        vrights, values, lefts, rights = list(), list(), list(), list()
+        for (username,), score in user_models(entity, criterion):
+            assert isinstance(score, Score)
+            vrights.append(voting_rights.get(username=username, entity_name=entity, criterion=criterion))
+            values.append(score.value)
+            lefts.append(score.left_unc)
+            rights.append(score.right_unc)
+        def f(array):
+            return np.array(array, dtype=np.float64)
+        return f(vrights), f(values), f(lefts), f(rights)
+
+    def _process_results(self, variables: list, nonargs_list: list, results: list, *args_lists) -> ScoringModel:
         global_model = ScoringModel(note=type(self).note)
-        voting_rights = voting_rights.reorder("entity_name", "criterion", "username")
-        scores = user_models(entities, max_workers=self.max_workers)
-        scores = scores.reorder("entity_name", "criterion", "username")
-        args = entities, voting_rights, scores, user_models.criteria()
-        
-        if self.max_workers == 1:
-            for (entity_name, criterion), score in self.batch(0, *args).items():
-                global_model[entity_name, criterion] = score
-            return global_model
-        
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
-            results = [f.result() for f in as_completed(futures)]
-        for result in results:
-            for (entity_name, criterion), score in result.items():
-                global_model[entity_name, criterion] = score
+        for (entity_name, criterion), (value, left, right) in zip(variables, results):
+            global_model[entity_name, criterion] = Score(value, left, right)
         return global_model
     
-    def batch(self, 
-        batch_number: int,
-        entities: Entities, 
-        voting_rights: VotingRights, # keynames == ["entity_name", "criterion", "username"]
-        scores: MultiScore, # keynames == ["entity_name", "criterion", "username"]
-        criteria: list[str],
-    ) -> dict[tuple[str, str], Score]:
-        indices = range(batch_number, len(entities), self.max_workers)
-        batch_entities = {entities.get_by_index(i) for i in indices}
-        results = dict()
-        for index, e in enumerate(batch_entities):
-            for c in criteria:
-                results[(e.name, c)] = self.aggregate(scores[e, c], voting_rights[e, c])
-        return results
-        
-    @abstractmethod
-    def aggregate(self, 
-        scores: MultiScore, # keynames == "username"
-        voting_rights: VotingRights, # keynames == "username"
-    ) -> Score:
-        raise NotImplemented

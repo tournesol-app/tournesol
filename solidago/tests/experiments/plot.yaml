@@ -1,0 +1,19 @@
+- XYZPlot
+- filename: cross_entropy
+  data_source: main
+  control_varnames: [model]
+  xvarname: n_parameters
+  yvarname: evaluation.cross_entropy
+  zvarname: attack.poison_ratio
+  xlegend: Number of parameters
+  ylegend: Cross entropy on test set
+  zlegend: Poison ratio
+  title: Poisoning effectiveness in high dimension
+  format: pdf
+  xmin: 0 
+  xmax: null  # adjusted based on data
+  ymin: null
+  ymax: 1
+  confidence: True
+  y_logscale: False
+  x_logscale: False

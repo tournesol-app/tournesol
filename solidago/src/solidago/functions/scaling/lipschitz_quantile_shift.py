@@ -2,6 +2,8 @@ from typing import Optional
 
 import numpy as np
 import logging
+
+from solidago.primitives.threading import threading
 logger = logging.getLogger(__name__)
 
 from solidago.primitives import qr_quantile
@@ -32,62 +34,33 @@ class LipschitzQuantileShift(PollFunction):
         self.n_sampled_entities_per_user = n_sampled_entities_per_user
 
     def __call__(self, entities: Entities, user_models: UserModels) -> UserModels:
-        """ Returns scaled user models
-        
-        Returns
-        -------
-        out[user]: ScoringModel
-            Will be scaled by the Scaling method
-        """
+        args_lists = self._args_lists(entities, user_models)
+        translations = threading(self.max_workers, qr_quantile, *args_lists)
         scales = MultiScore(["kind", "criterion"])
-        args = entities, user_models
-
-        if self.max_workers == 1:
-            for criterion in user_models.criteria():
-                scales["translation", criterion] = self.translation(*args, criterion)
-            return user_models.scale(scales, note="lipschitz_quantile_shift")
-
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.translation, *args, c): c for c in user_models.criteria()}
-            for f in as_completed(futures):
-                criterion = futures[f]
-                scales["translation", criterion] = f.result()
-        return user_models.scale(scales, note="lipschitz_quantile_shift")
-
-    def translation(self, entities: Entities, user_models: UserModels, criterion: str) -> Score:
+        for criterion, translation in zip(user_models.criteria(), translations):
+            scales["multiplier", criterion] = Score(self.target_score - translation, 0, 0)
+        return user_models.scale(scales, note="lipschitz_standardardize")
+    
+    def _args_lists(self, entities: Entities, user_models: UserModels):
+        criteria = user_models.criteria()
+        args = [self._args(entities, user_models, c) for c in criteria]
+        values, lefts, rights, voting_rights = list(zip(*args))
+        lipschitz = [self.lipschitz] * len(criteria)
+        quantile = [self.quantile] * len(criteria)
+        error = [self.error] * len(criteria)
+        return lipschitz, quantile, values, voting_rights, lefts, rights, error
+    def _args(self, entities: Entities, user_models: UserModels, criterion: str):
         scores = user_models(entities, criterion, self.n_sampled_entities_per_user)
-        # scores.keynames == ["username", "entity_name"]
         n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
         values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
         lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
-        for index, ((username, entity_name), score) in enumerate(scores):
+        for index, ((username, _), score) in enumerate(scores):
             values[index], lefts[index], rights[index] = score.to_triplet()
             voting_rights[index] = 1. / n_scored_entities[username]
-        translation_value = - qr_quantile(
-            lipschitz=self.lipschitz,
-            quantile=self.quantile,
-            values=values,
-            voting_rights=voting_rights,
-            left_uncertainties=lefts,
-            right_uncertainties=rights,
-            error=self.error,
-        ) + self.target_score
-        return Score(translation_value, 0, 0)
+        return values, lefts, rights, voting_rights
         
     def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
             poll.user_models.save_common_scales(directory)
-        logger.info("Saving poll.yaml")
         return poll.save_instructions(directory)
-
-
-class LipschitzQuantileZeroShift(LipschitzQuantileShift):
-    def __init__(self,
-        zero_quantile: float = 0.15,
-        lipschitz: float = 0.1,
-        error: float = 0.00001
-    ):
-        super().__init__(zero_quantile, target_score=0.0, lipschitz=lipschitz, error=error)
-

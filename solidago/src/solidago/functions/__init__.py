@@ -1,4 +1,5 @@
 from .base import PollFunction
+from .parallelized import ParallelizedPollFunction
 from .sequential import Sequential
 from .identity import Identity
 

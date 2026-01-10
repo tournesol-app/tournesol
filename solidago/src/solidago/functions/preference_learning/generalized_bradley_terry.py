@@ -1,10 +1,7 @@
 from abc import abstractmethod
-from functools import cached_property
-from typing import Optional, Callable, Union, Mapping
+from typing import Optional
 
-import pandas as pd
-import numpy as np
-import numpy.typing as npt
+import numpy as np, numpy.typing as npt
 
 import solidago.primitives.dichotomy as dichotomy
 
@@ -14,7 +11,7 @@ from .base import PreferenceLearning
 
 class GeneralizedBradleyTerry(PreferenceLearning):
     def __init__(self, 
-        prior_std_dev: float=7.0,
+        prior_std: float=7.0,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         max_workers: int=1,
@@ -31,7 +28,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         
         Parameters
         ----------
-        prior_std_dev: float=7.0
+        prior_std: float=7.0
             Typical scale of score values. 
             Technical, it should be the standard deviation of the gaussian prior.
         uncertainty_nll_increase: float=1.0
@@ -42,10 +39,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(max_workers)
-        assert isinstance(float(prior_std_dev), float), prior_std_dev
+        assert isinstance(float(prior_std), float), prior_std
         assert isinstance(float(uncertainty_nll_increase), float), uncertainty_nll_increase
         assert isinstance(float(max_uncertainty), float), max_uncertainty
-        self.prior_std_dev = float(prior_std_dev)
+        self.prior_std = float(prior_std)
         self.uncertainty_nll_increase = float(uncertainty_nll_increase)
         self.max_uncertainty = float(max_uncertainty)
 
@@ -249,7 +246,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
 
 class UniformGBT(GeneralizedBradleyTerry):
     def __init__(self,
-        prior_std_dev: float = 7.0,
+        prior_std: float = 7.0,
         uncertainty_nll_increase: float = 1.0,
         max_uncertainty: float=1e3,
         max_workers: int=1,
@@ -263,7 +260,7 @@ class UniformGBT(GeneralizedBradleyTerry):
         
         Parameters
         ----------
-        prior_std_dev: float=7.0
+        prior_std: float=7.0
             Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         uncertainty_nll_increase: float=1.0
@@ -274,7 +271,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(
-            prior_std_dev=prior_std_dev,
+            prior_std=prior_std,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             max_workers=max_workers,

@@ -45,9 +45,9 @@ class Experiment:
     def _instructions(self) -> Instructions:
         return Instructions(dict(poll=self.poll, generator=self.generator, functions=self.functions))
     @classmethod
-    def load(cls, source: str, ignore_ongoing_run: bool | None = None):
+    def load(cls, source: str, ignore_ongoing_run: bool | None = None, **kwargs):
         with open(source) as f:
-            kwargs = yaml.safe_load(f)
+            kwargs = yaml.safe_load(f) | kwargs
         return cls(source=source, ignore_ongoing_run=ignore_ongoing_run, **kwargs)        
 
     def overwrite_dialog(self, source: str, ignore_ongoing_run: bool | None):

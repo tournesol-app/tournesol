@@ -1,4 +1,4 @@
-from typing import Union, Optional, Iterable, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING, Union
 from pathlib import Path
 from copy import deepcopy
 
@@ -9,10 +9,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from solidago.primitives.timer import time
 from solidago.poll.users import User, Users
 from .scoring_model import ScoringModel
-from .score import Score, MultiScore
+from .score import MultiScore
+from solidago.primitives.threading import threading
 
 if TYPE_CHECKING:
     from solidago.poll import Entity, Entities, Comparisons
@@ -26,12 +26,12 @@ class UserModels:
     }
     
     def __init__(self, 
-        user_directs: Optional[MultiScore]=None,
-        user_scales: Optional[MultiScore]=None,
-        common_scales: Optional[MultiScore]=None,
-        default_composition: list[tuple[str, dict]]=None,
-        user_composition: Optional[dict[str, tuple]]=None,
-        user_models_dict: Optional[dict[str, ScoringModel]]=None,
+        user_directs: MultiScore | None = None,
+        user_scales: MultiScore | None = None,
+        common_scales: MultiScore | None = None,
+        default_composition: list[tuple[str, dict]] | None = None,
+        user_composition: dict[str, tuple] | None = None,
+        user_models_dict: dict[str, ScoringModel] | None = None,
     ):
         for name, table in zip(self.table_keynames, (user_directs, user_scales, common_scales)):
             setattr(self, name, MultiScore(self.table_keynames[name], name=name) if table is None else table)
@@ -39,7 +39,7 @@ class UserModels:
         self.user_composition = user_composition or dict()
         self._cache_users = user_models_dict
     
-    def get_composition(self, user: Union[int, str, "User"]) -> tuple[str, dict]:
+    def get_composition(self, user: Union[str, "User"]) -> tuple[str, dict]:
         username = user.name if isinstance(user, User) else user
         if username in self.user_composition:
             return self.user_composition[username]
@@ -89,49 +89,44 @@ class UserModels:
             self._cache_users[username] = model
 
     def __call__(self, 
-        entities: Union[str, "Entity", "Entities", type]=all,
-        criteria: Union[str, set, type]=all,
-        n_sampled_entities_per_user: Optional[int]=None,
+        entities: Union[str, "Entity", "Entities", type] = all,
+        criteria: Union[str, set, type] = all,
+        n_sampled_entities_per_user: int | None = None,
         max_workers: int=1,
     ) -> MultiScore:
         return self.score(entities, criteria, n_sampled_entities_per_user, max_workers)
     
     def score(self, 
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-        n_sampled_entities_per_user: Optional[int]=None,
+        entities: Union[str, "Entity", "Entities", type] = all,
+        criteria: Union[str, set, type] = all,
+        n_sampled_entities_per_user: int | None = None,
         max_workers: int=1,
-    ) -> MultiScore:
-        if max_workers == 1:
-            return type(self)._score(self, entities, criteria, n_sampled_entities_per_user)
-        batches = [list() for _ in range(max_workers)]
-        for index, (username, model) in enumerate(self):
-            batches[index % max_workers].append((username, model))
-        args = entities, criteria, n_sampled_entities_per_user
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        with ProcessPoolExecutor(max_workers=max_workers) as e:
-            futures = {e.submit(UserModels._score, batch, *args) for batch in batches}
-            batch_results = [f.result() for f in as_completed(futures)]
-        results = MultiScore(next(iter(batch_results)).keynames)
-        for result in batch_results:
-            results |= result
-        return results
-    
-    def _score(
-        user_models: Union["UserModels", list[tuple[str, ScoringModel]]], 
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-        n_sampled_entities_per_user: Optional[int]=None,
     ) -> MultiScore:
         keynames = ["username"]
         from solidago.poll.entities import Entities
         keynames += ["entity_name"] if isinstance(entities, Entities) or entities is all else list()
         keynames += ["criterion"] if isinstance(criteria, set) or criteria is all else list()
+
+        all_scores = threading(max_workers, UserModels._score, 
+            [model for _, model in self], 
+            [entities] * len(self), 
+            [criteria] * len(self), 
+            [n_sampled_entities_per_user] * len(self)
+        )
+        usernames = [username for username, _ in self]
         results = MultiScore(keynames)
-        for username, model in user_models:
-            for keys, score in model(entities, criteria, n_sampled_entities_per_user):
+        for username, scores in zip(usernames, all_scores):
+            for keys, score in scores:
                 results[username, *keys] = score
         return results
+    
+    def _score(
+        model: ScoringModel, 
+        entities: Union[str, "Entity", "Entities", type] = all,
+        criteria: Union[str, set, type] = all,
+        n_sampled_entities: int | None = None,
+    ) -> MultiScore:
+        return model(entities, criteria, n_sampled_entities)
 
     def __len__(self) -> int:
         if self._cache_users is None:
@@ -152,7 +147,7 @@ class UserModels:
     def default_height(self) -> int:
         return len(self.default_composition)
     
-    def height(self, user: Optional[Union[str, "User"]]=None) -> int:
+    def height(self, user: Union[str, "User"] | None = None) -> int:
         username = user.name if isinstance(user, User) else user
         if username is None or username not in self.user_composition:
             return self.default_height()
@@ -233,12 +228,12 @@ class UserModels:
                 kwargs[name] = MultiScore(keynames, df, name=name)
         return cls(**kwargs)
     
-    def save(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: str | None = None, yaml_dump: bool=False) -> tuple[str, dict]:
         for table_name in self.table_keynames:
             filename = self.save_table(directory, table_name)
         return self.save_instructions(directory, yaml_dump)
     
-    def save_instructions(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
+    def save_instructions(self, directory: str | None = None, yaml_dump: bool=False) -> tuple[str, dict]:
         kwargs = { name: f"{name}.csv" for name in self.table_keynames if getattr(self, name) }
         kwargs["default_composition"] = self.default_composition
         if len(self.user_composition) > 0:
@@ -248,19 +243,19 @@ class UserModels:
                 yaml.safe_dump((type(self).__name__, kwargs), f)
         return type(self).__name__, kwargs
     
-    def save_table(self, directory: Union[Path, str], table_name: str) -> str:
+    def save_table(self, directory: Path | str, table_name: str) -> str:
         if getattr(self, table_name):
             getattr(self, table_name).save(directory, f"{table_name}.csv")
             return f"{table_name}.csv"
         return None
     
-    def save_base_models(self, directory: Optional[str]=None) -> str:
+    def save_base_models(self, directory: str | None = None) -> str:
         return self.save_table(directory, "user_directs")
     
-    def save_user_scales(self, directory: Optional[str]=None) -> str:
+    def save_user_scales(self, directory: str | None = None) -> str:
         return self.save_table(directory, "user_scales")
     
-    def save_common_scales(self, directory: Optional[str]=None) -> str:
+    def save_common_scales(self, directory: str | None = None) -> str:
         return self.save_table(directory, "common_scales")
 
     def __repr__(self) -> str:

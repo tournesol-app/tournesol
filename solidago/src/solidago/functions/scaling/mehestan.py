@@ -5,6 +5,8 @@ import numpy as np
 import numpy.typing as npt
 import logging
 
+from solidago.primitives.threading import threading
+
 logger = logging.getLogger(__name__)
 
 from solidago.primitives.lipschitz import qr_median, qr_uncertainty, lipschitz_resilient_mean
@@ -91,26 +93,12 @@ class Mehestan(PollFunction):
         """
         logger.info("Starting Mehestan's collaborative scaling")
         scores = user_models(entities)
-        fixed_args = users, entities, made_public
-        args_list = [(c, scores.get(criterion=c)) for c in user_models.criteria()]
-
-        if self.max_workers == 1:
-            results = [(c, self.scale_criterion(*fixed_args, s)) for c, s in args_list]
-            return self.results2output(users, user_models, results)
-
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.scale_criterion, *fixed_args, s): c for c, s in args_list}
-            results = [(futures[f], f.result()) for f in as_completed(futures)]
-        return self.results2output(users, user_models, results)
-    
-    def results2output(self, 
-        users: Users, 
-        user_models: UserModels, 
-        results: list
-    ) -> tuple[Users, UserModels]:
+        criteria = list(user_models.criteria())
+        args_lists = [users] * len(criteria), [entities] * len(criteria), [made_public] * len(criteria)
+        scores_list = [scores.get(criterion=c).detach() for c in criteria]
+        results = threading(self.max_workers, self.scale_criterion, *args_lists, scores_list)
         scales, kwargs = MultiScore(keynames=["username", "kind", "criterion"]), dict()
-        for criterion, (subscales, activities, is_scaler) in results:
+        for criterion, (subscales, activities, is_scaler) in zip(criteria, results):
             scales |= subscales.prepend(criterion=criterion)
             kwargs[f"activities_{criterion}"] = activities
             kwargs[f"is_scaler_{criterion}"] = is_scaler
@@ -120,9 +108,7 @@ class Mehestan(PollFunction):
         if directory is not None:
             poll.users.save(directory)
             poll.user_models.save_user_scales(directory)
-        with time(logger, "Saving poll.yaml"):
-            instructions = poll.save_instructions(directory)
-        return instructions
+        return poll.save_instructions(directory)
     
     def scale_criterion(self, 
         users: Users,

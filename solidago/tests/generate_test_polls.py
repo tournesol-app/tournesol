@@ -9,7 +9,7 @@ N_SEEDS = 3
 generator = load("tests/generators/test_generator.yaml")
 assert isinstance(generator, Generator)
 
-pipeline = load("tests/modules/test_pipeline.yaml")
+pipeline = load("tests/functions/test_pipeline.yaml")
 assert isinstance(pipeline, Sequential)
 
 

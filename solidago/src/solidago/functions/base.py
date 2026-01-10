@@ -15,8 +15,8 @@ class PollFunction(ABC):
     def __init__(self, max_workers: Optional[int]=None):
         max_workers = (os.cpu_count() - 1) if max_workers is None else max_workers
         self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
-        assert "return" in self.__call__.__annotations__, f"{type(self).__name__} must have a return type"
-        for key in self.__call__.__annotations__:
+        assert "return" in self.annotations(), f"{type(self).__name__} must have a return type"
+        for key in self.annotations():
             if key not in ("return", "poll", "save_directory", "seed", "skip_steps"):
                 assert key in self.poll_cls.__init__.__annotations__, "" \
                     f"The argument `{key}` of function `main` of PollFunction {type(self).__name__} " \
@@ -27,17 +27,20 @@ class PollFunction(ABC):
     def __call__(self) -> Any:
         return None
     
+    def annotations(self) -> dict:
+        return self.__call__.__annotations__
+    
     def poll2objects_function(self, poll: Poll) -> Any:
         """ Must not modify the poll """
-        values = self(poll) if "poll" in self.__call__.__annotations__ else self(**{ 
+        values = self(poll) if "poll" in self.annotations() else self(**{ 
             key: getattr(poll, key) 
-            for key in self.__call__.__annotations__ if key != "return" 
+            for key in self.annotations() if key != "return" 
         })
-        self.type_check(values, self.__call__.__annotations__)
+        self.type_check(values, self.annotations())
         return values
     
     def assign(self, result: Poll, value: Any):
-        self.type_check(value, self.__call__.__annotations__)
+        self.type_check(value, self.annotations())
         if isinstance(value, Poll):
             result = value
             return None
@@ -57,7 +60,7 @@ class PollFunction(ABC):
 
     def poll2poll_function(self, poll: Poll, save_directory: Optional[str]=None) -> Any:
         """ Must not modify the poll """
-        if self.__call__.__annotations__["return"] == Poll:
+        if self.annotations()["return"] == Poll:
             result = self.poll2objects_function(poll)
         else:
             result = Poll() if poll is None else poll.copy()
@@ -103,7 +106,7 @@ class PollFunction(ABC):
         """ result should be the result of the main function """
         if directory is None:
             return None
-        poll.save_objects(type(self).__call__.__annotations__["return"], directory)
+        poll.save_objects(self.annotations()["return"], directory)
         return poll.save_instructions(directory)
 
     def yaml_keys(self) -> list:
@@ -116,6 +119,9 @@ class PollFunction(ABC):
         return repr(self)
         
     def __repr__(self, n_indents: int=0) -> str:
+        if not self.yaml_keys():
+            return f"{type(self).__name__}()"
+
         def sub_repr(key):
             value = getattr(self, key)
             if key == "modules":

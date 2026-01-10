@@ -1,4 +1,0 @@
-entity_name,n_assessments,n_comparisons,n_assessers,n_comparers,n_evaluators,default_cumulative_trust,default_min_voting_right,default_overtrust,vector_0,vector_1
-entity_0,0,2,0,2,2,2.0,1.0,0.0,0.9500884175255894,-0.1513572082976979
-entity_1,0,2,0,2,2,2.0,1.0,0.0,-0.10321885179355784,0.41059850193837233
-entity_2,0,2,0,2,2,2.0,1.0,0.0,0.144043571160878,1.454273506962975

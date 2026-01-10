@@ -1,0 +1,49 @@
+- Sequential
+- name: TestPipeline
+  modules:
+  - - LipschiTrust
+    - pretrust_value: 0.8
+      decay: 0.8
+      sink_vouch: 5.0
+      error: 1.0e-8
+  - - NumbaUniformGBT
+    - prior_std: 7
+      uncertainty_nll_increase: 1.0
+      max_uncertainty: 1.0e+3
+      convergence_error: 1.0e-1
+  - - AffineOvertrust
+    - privacy_penalty: 0.5
+      min_overtrust: 2.0
+      overtrust_ratio: 0.1
+  - - Sequential
+    - name: Scaling
+      modules:
+      - - Mehestan
+        - lipschitz: 1.0
+          min_scaler_activity: 1.0
+          n_scalers_max: 100
+          privacy_penalty: 0.5
+          user_comparison_lipschitz: 10.0
+          p_norm_for_multiplicative_resilience: 4.0
+          n_entity_to_fully_compare_max: 100
+          n_diffs_sample_max: 1000
+          default_multiplier_dev: 0.5
+          default_translation_dev: 1.0
+          error: 1.0e-2
+      - - LipschitzStandardize
+        - dev_quantile: 0.9
+          lipschitz: 10.0
+          error: 1.0e-2
+          n_sampled_entities_per_user: 100
+      - - LipschitzQuantileShift
+        - quantile: 0.15
+          lipschitz: 10.0
+          error: 1.0e-2
+          target_score: 0.21
+          n_sampled_entities_per_user: 100
+  - - EntitywiseQrQuantile
+    - quantile: 0.2
+      lipschitz: 0.1
+      error: 1.0e-5
+  - - Squash
+    - score_max: 100

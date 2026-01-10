@@ -22,7 +22,7 @@ default_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
     def __init__(self,
-        prior_std_dev: float=7,
+        prior_std: float=7,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
@@ -41,7 +41,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
 
         Parameters
         ----------
-        prior_std_dev: float=7.0
+        prior_std: float=7.0
             Typical scale of scores. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
@@ -56,7 +56,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
             Maximal number of iterations used
         """
         super().__init__(
-            prior_std_dev=prior_std_dev,
+            prior_std=prior_std,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             max_workers=max_workers,
@@ -138,12 +138,12 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         value_diffs = values[left_indices] - values[right_indices]
         loss = self.torch_cumulant_generating_function(value_diffs).sum()
         loss += (value_diffs * normalized_comparisons).sum()
-        return loss + (values**2).sum() / (2 * self.prior_std_dev**2)
+        return loss + (values**2).sum() / (2 * self.prior_std**2)
 
 
 class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
     def __init__(self,
-        prior_std_dev: float=7,
+        prior_std: float=7,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
@@ -163,7 +163,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
         
         Parameters
         ----------
-        prior_std_dev: float=7.0
+        prior_std: float=7.0
             Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
@@ -176,7 +176,7 @@ class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT):
             Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(
-            prior_std_dev=prior_std_dev,
+            prior_std=prior_std,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             convergence_error=convergence_error,

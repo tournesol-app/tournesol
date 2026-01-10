@@ -1,4 +1,0 @@
-username,is_trustworthy,is_pretrusted,expected_n_vouches,n_evaluated_entities,engagement_bias,p_public,n_comparisons_per_entity,translation,multiplier,n_assessments,n_comparisons,trust,activities_default,is_scaler_default,vector_0,vector_1
-user_0,True,True,1,3,-10.485529650670927,0.8,4.953495352236905,-0.8707971491818818,1.765741077631358,0,3,1.0,1.0,True,8.292157037902992,0.0
-user_1,False,False,1,3,-14.200179371789751,0.8,1.4081792429921123,-0.5788496647644155,0.004706534570697675,0,3,0.0,0.0,False,5.9362139523172175,0.0
-user_2,True,False,1,0,-17.062701906250126,0.8,1.8355070243793388,-0.31155253212737266,1.1326341341877955,0,0,0.8,0.0,False,8.602673970449903,0.0

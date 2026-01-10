@@ -2,8 +2,9 @@
 
 from pathlib import Path
 from typing import Any, Type
-
 import yaml
+from inspect import getfullargspec
+
 from .__version__ import __version__
 
 from solidago import primitives, functions, generators
@@ -33,10 +34,9 @@ __all__ = [
 ]
 
 
-def load(
-    classname: MultiKeyTable | Objects | Poll | PollFunction | Type | Path | str | tuple | list | dict, 
-    *args, **kwargs
-) -> Any:
+LoadableType = MultiKeyTable | Objects | Poll | PollFunction | Type | Path | str | tuple | list | dict
+
+def load(classname: LoadableType, *args, **kwargs) -> Any:
     """ name can either be a filename or the name of an object """
     if isinstance(classname, (MultiKeyTable, Objects, Poll, PollFunction)):
         return classname
@@ -53,8 +53,15 @@ def load(
         return load(str(classname), *args, **kwargs)
     
     if classname.endswith(".yaml"):
+        path = "/".join(classname.split("/")[:-1])
         with open(classname) as f:
-            return load(yaml.safe_load(f))
+            yaml_content = yaml.safe_load(f)
+        if isinstance(yaml_content, dict):
+            return load(*args, **(yaml_content | kwargs), path=path)
+        assert isinstance(yaml_content, list), yaml_content
+        assert len(yaml_content) == 2, yaml_content
+        cls, kwargs2 = yaml_content
+        return load(cls, **(kwargs2 | kwargs), path=path)
     
     import solidago
     classnames, type_recovery, cls = classname.split("."), True, solidago
@@ -65,7 +72,10 @@ def load(
         cls = getattr(cls, name)
     
     if type_recovery:
-        return cls.load(*args, **kwargs) if hasattr(cls, "load") else cls(*args, **kwargs)
+        f = cls.load if hasattr(cls, "load") else cls
+        if "path" in kwargs and "path" not in getfullargspec(f).args:
+            del kwargs["path"]
+        return f(*args, **kwargs)
     try:
         return Poll.load(classname)
     except FileNotFoundError:

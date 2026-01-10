@@ -1,20 +1,19 @@
 from abc import abstractmethod
 from functools import cached_property
-from typing import Optional, Callable, Union
+from typing import Callable
 
-import pandas as pd
 import numpy as np
 import numpy.typing as npt
 from numba import njit
 
 from solidago.poll import *
-from solidago.primitives.optimize import coordinate_descent, njit_brentq
+from solidago.primitives.optimize import coordinate_descent
 from .generalized_bradley_terry import GeneralizedBradleyTerry, UniformGBT
 
 
 class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
     def __init__(self, 
-        prior_std_dev: float=7.0,
+        prior_std: float=7.0,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
@@ -30,7 +29,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         
         Parameters
         ----------
-        prior_std_dev: float=7.0
+        prior_std: float=7.0
             Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
@@ -43,7 +42,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(
-            prior_std_dev=prior_std_dev,
+            prior_std=prior_std,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             max_workers=max_workers,
@@ -109,7 +108,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         The computation evidently depends on the dataset,
         which is given by coordinate_comparisons.
         """
-        prior_var = self.prior_std_dev**2
+        prior_var = self.prior_std**2
         cgf_deriv = self.cumulant_generating_function_derivative
 
         @njit
@@ -137,7 +136,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
 
 class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
     def __init__(self,
-        prior_std_dev: float=7.0,
+        prior_std: float=7.0,
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
@@ -153,7 +152,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         
         Parameters
         ----------
-        prior_std_dev: float=7.0
+        prior_std: float=7.0
             Typical scale of values. 
             Technical, it should be the standard deviation of the gaussian prior.
         convergence_error: float=1e-5
@@ -166,7 +165,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
             Replaces infinite uncertainties with max_uncertainty
         """
         super().__init__(
-            prior_std_dev=prior_std_dev,
+            prior_std=prior_std,
             uncertainty_nll_increase=uncertainty_nll_increase,
             max_uncertainty=max_uncertainty,
             convergence_error=convergence_error,

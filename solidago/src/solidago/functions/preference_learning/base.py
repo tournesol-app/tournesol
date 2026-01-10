@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-import pandas as pd
 import logging
 
+from solidago.primitives.threading import threading
 logger = logging.getLogger(__name__)
 
 from solidago.poll import *
 from solidago.functions.base import PollFunction
 
+from solidago.primitives.timer import time
 
 
 class PreferenceLearning(PollFunction, ABC):
@@ -23,21 +24,19 @@ class PreferenceLearning(PollFunction, ABC):
         user_models: UserModels
     ) -> tuple[Users, Entities, UserModels]:
         """ Learns a scoring model, given user judgments of entities """
+        users_list = [user for user in users]
+        entities_list = [entities] * len(users)
+        assessments_list = [assessments.get(username=user).detach() for user in users]
+        comparisons_list = [comparisons.get(username=user).detach() for user in users]
+        user_models_list = [user_models[user].base_model() for user in users]
+        args_lists = users_list, entities_list, assessments_list, comparisons_list, user_models_list
+        
+        models = threading(self.max_workers, self.user_learn, *args_lists)
         learned_models = UserModels()
+        for user, model in zip(users, models):
+            learned_models[user] = model
+
         args = users, entities, assessments, comparisons, user_models
-
-        if self.max_workers == 1:
-            for username, score in self.batch(0, *args).items():
-                learned_models[username] = score
-            return self.add_user_stats(*args), self.add_entity_stats(*args), learned_models
-
-        from concurrent.futures import ProcessPoolExecutor, as_completed
-        with ProcessPoolExecutor(max_workers=self.max_workers) as e:
-            futures = {e.submit(self.batch, i, *args) for i in range(self.max_workers)}
-            results = [f.result() for f in as_completed(futures)]
-        for result in results:
-            for username, model in result.items():
-                learned_models[username] = model
         return self.add_user_stats(*args), self.add_entity_stats(*args), learned_models
     
     def add_user_stats(self, 

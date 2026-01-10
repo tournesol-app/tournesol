@@ -364,7 +364,7 @@ class MultiKeyTable:
     def reorder(self, *keynames) -> "MultiKeyTable":
         self._main_cache()
         keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
-        assert len(keynames) == self.depth
+        assert len(keynames) == self.depth, (keynames, self.depth)
         return type(self)(keynames, self._cache)
     
     def detach(self) -> "MultiKeyTable":

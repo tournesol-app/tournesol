@@ -1,0 +1,71 @@
+assessments:
+- Assessments
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  source: assessments.csv
+comparisons:
+- Comparisons
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  - other_name
+  source: comparisons.csv
+entities:
+- Entities
+- {}
+global_model:
+- ScoringModel
+- composition:
+  - - direct
+    - note: entitywise_qr_quantile
+  - - squash
+    - note: squash
+      score_max: 100
+  directs:
+    keynames:
+    - entity_name
+    - criterion
+    name: directs.csv
+made_public:
+- AllPublic
+- keynames:
+  - username
+  - entity_name
+  source: made_public.csv
+user_models:
+- UserModels
+- common_scales: common_scales.csv
+  default_composition:
+  - - direct
+    - {}
+  - - scale
+    - note: mehestan
+  - - scale
+    - note: lipschitz_quantile_shift
+  - - scale
+    - note: lipschitz_quantile_shift
+  - - squash
+    - note: squash
+      score_max: 100
+  user_directs: user_directs.csv
+  user_scales: user_scales.csv
+users:
+- Users
+- {}
+voting_rights:
+- VotingRights
+- keynames:
+  - username
+  - entity_name
+  - criterion
+  source: voting_rights.csv
+vouches:
+- Vouches
+- keynames:
+  - by
+  - to
+  - kind
+  source: vouches.csv

@@ -49,5 +49,4 @@ class CollaborativeFiltering(PollFunction, ABC):
         if directory is not None:
             logger.info("Saving user base model")
             poll.user_models.save_base_models(directory)
-        logger.info("Saving poll.yaml")
         return poll.save_instructions(directory)
