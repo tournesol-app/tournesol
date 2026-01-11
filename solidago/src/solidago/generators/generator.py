@@ -1,5 +1,3 @@
-import numpy as np
-
 from solidago.poll import Poll
 from solidago.functions import Sequential, PollFunction
 

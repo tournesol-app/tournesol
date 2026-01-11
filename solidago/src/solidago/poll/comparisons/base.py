@@ -1,8 +1,6 @@
-from typing import Optional, Iterable, Union, Any, TYPE_CHECKING
+from typing import Iterable, Any, TYPE_CHECKING, Union
 from pandas import Series, DataFrame
 from collections import defaultdict
-
-import numpy as np
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 
@@ -44,8 +42,8 @@ class Comparisons(MultiKeyTable):
     
     def __init__(self, 
         keynames: list[str]=["username", "criterion", "entity_name", "other_name"], 
-        init_data: Optional[Union[Any]]=None,
-        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        init_data: Any | None = None,
+        parent_tuple: tuple["Comparisons", tuple, tuple] | None = None,
         *args, **kwargs
     ):
         if isinstance(init_data, DataFrame):
@@ -62,7 +60,7 @@ class Comparisons(MultiKeyTable):
     def series2value(self, previous_value: Any, row: Series) -> Comparison:
         return Comparison.from_series(row)
 
-    def _keys(self, *args, keynames: Optional[str]=None, **kwargs) -> tuple[tuple, tuple]:
+    def _keys(self, *args, keynames: str | None = None, **kwargs) -> tuple[tuple, tuple]:
         keynames = keynames or self.keynames
         kwargs = self.keys2kwargs(*args, **kwargs)
         keys1, keys2 = list(), list()
@@ -127,10 +125,10 @@ class Comparisons(MultiKeyTable):
             kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
             self.parent.delete(tolerate_key_error=True, **kwargs)
 
-    def to_df(self, max_values: Optional[int]=None) -> DataFrame:
+    def to_df(self, max_values: int | None = None) -> DataFrame:
         try:
-            entity_name_index = self.keynames.index("entity_name")
-            other_name_index = self.keynames.index("other_name")
+            _ = self.keynames.index("entity_name")
+            _ = self.keynames.index("other_name")
             data = list()
             for index, (keys, comparison) in enumerate(self.left_right_iter()):
                 data.append(Series(dict(zip(self.keynames, keys)) | dict(self.value2series(comparison))))

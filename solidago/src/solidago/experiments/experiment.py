@@ -161,8 +161,8 @@ class Experiment:
     @staticmethod
     def iter_ranges(ranges: list[int], skip: list[list[int]] | None) -> Iterable[list[int]]:
         skip = skip or list()
-        assert all([isinstance(s, list) for s in skip]), skip
-        assert all([len(s) == len(ranges) for s in skip]), (ranges, skip)
+        assert all(isinstance(s, list) for s in skip), skip
+        assert all(len(s) == len(ranges) for s in skip), (ranges, skip)
         if len(ranges) == 0:
             yield list()
             return None

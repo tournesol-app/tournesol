@@ -1,11 +1,12 @@
-from typing import Optional, Union, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Union
 from pathlib import Path
-from pandas import DataFrame
 from math import sqrt
 
 import pandas as pd
 import logging
 import yaml
+
+from solidago.primitives.datastructure.selector import AllSelector
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +21,8 @@ class Multipliers(MultiScore):
     
     def __init__(self, 
         keynames: list[str]=["criterion"], 
-        init_data: Optional[Union[Any]]=None,
-        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        init_data: Any | None = None,
+        parent_tuple: tuple["Comparisons", tuple, tuple] | None = None,
         *args, **kwargs
     ):
         """ We consider the possibility of multidimensional scoring.
@@ -40,8 +41,8 @@ class Translations(MultiScore):
     
     def __init__(self, 
         keynames: list[str]=["criterion"], 
-        init_data: Optional[Union[Any]]=None,
-        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        init_data: Any | None = None,
+        parent_tuple: tuple["Comparisons", tuple, tuple] | None =None,
         *args, **kwargs
     ):
         """ We consider the possibility of multidimensional scoring.
@@ -57,10 +58,10 @@ class Translations(MultiScore):
 
 class ScoringModel:
     def __init__(self, 
-        composition: Optional[list]=None,
-        directs: Optional[MultiScore]=None,
-        scales: Optional[MultiScore]=None,
-        note: Optional[str]=None,
+        composition: list | None = None,
+        directs: MultiScore | None = None,
+        scales: MultiScore | None = None,
+        note: str | None = None,
         *args, **kwargs
     ):
         """ The composition of the Tournesol pipeline global model is [
@@ -74,17 +75,19 @@ class ScoringModel:
         self.scales = MultiScore(["height", "kind", "criterion"], name="scales") if scales is None else scales
 
     def __call__(self, 
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-        n_sampled_entities: Optional[int]=None,
-    ) -> Union[Score, MultiScore]:
+        entities: Union[str, "Entity", "Entities", AllSelector] | None = None, # AllSelector() by default
+        criteria: str | set | type | AllSelector | None = None, # AllSelector() by default
+        n_sampled_entities: int | None = None,
+    ) -> Score | MultiScore:
+        entities = AllSelector() if entities is None else entities
+        criteria = AllSelector() if criteria is None else criteria
         return self.score(entities, criteria, n_sampled_entities)
     
     def score(self, 
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-        n_sampled_entities: Optional[int]=None,
-    ) -> Union[Score, MultiScore]:
+        entities: Union[str, "Entity", "Entities", AllSelector] | None = None, # AllSelector() by default
+        criteria: str | set | type | AllSelector | None = None, # AllSelector() by default
+        n_sampled_entities: int | None = None,
+    ) -> Score | MultiScore:
         """ Assigns a score to an entity, or to multiple entities.
         
         Parameters
@@ -99,9 +102,11 @@ class ScoringModel:
             If entities: Entities with unidimensional scoring, then out[entity_name] is a Score.
             If entities: Entities with multivariate scoring, then out[entity_name] is a MultiScore.
         """
+        entities = AllSelector() if entities is None else entities
+        criteria = AllSelector() if criteria is None else criteria
         from solidago.poll.entities import Entities
         if n_sampled_entities is not None:
-            if entities is all:
+            if isinstance(entities, AllSelector):
                 entities = Entities(list(self.evaluated_entity_names(criteria)))
             assert isinstance(entities, Entities)
             entities = entities.sample(n_sampled_entities)
@@ -111,9 +116,9 @@ class ScoringModel:
         return score
     
     def base_score(self, 
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-    ) -> Union[Score, MultiScore]:
+        entities: Union[str, "Entity", "Entities", AllSelector] = AllSelector(),
+        criteria: str | set | type | AllSelector = AllSelector(),
+    ) -> Score | MultiScore:
         from solidago.poll.entities import Entities
         entities = {e.name for e in entities} if isinstance(entities, Entities) else entities
         if self.composition[0][0] == "direct":
@@ -121,11 +126,11 @@ class ScoringModel:
         raise ValueError(f"Model composition {self.composition[0]} has invalid base")
     
     def score_process(self, 
-        scores: Union[Score, MultiScore], 
+        scores: Score | MultiScore, 
         height: int,
-        entities: Union[str, "Entity", "Entities", type]=all, 
-        criteria: Union[str, set, type]=all,
-    ) -> Union[Score, MultiScore]:
+        entities: Union[str, "Entity", "Entities", AllSelector] = AllSelector(), # AllSelector() by default
+        criteria: str | set | type | AllSelector = AllSelector(), # AllSelector() by default
+    ) -> Score | MultiScore:
         cls, kwargs = self.composition[height]
         if cls == "scale":
             return scores * self.multiplier(height, criteria) + self.translation(height, criteria)
@@ -140,14 +145,20 @@ class ScoringModel:
             return MultiScore(scores.keynames, { c: self.score_process(s, height) for c, s in scores })
         raise ValueError(f"Model composition {self.composition} has invalid height {height}")
 
-    def multiplier(self, height: int, criteria: Union[str, set, type]=all) -> Union[Score, Multipliers]:
+    def multiplier(self, 
+        height: int, 
+        criteria: str | set | type | AllSelector = AllSelector(),
+    ) -> Score | Multipliers:
         multiplier = self.scales[height, "multiplier", criteria]
         if isinstance(criteria, str):
             assert isinstance(multiplier, Score)
             return Score(1, 0, 0) if multiplier.isnan() else multiplier
         return Multipliers(multiplier.keynames, multiplier)
 
-    def translation(self, height: int, criteria: Union[str, set, type]=all) -> Union[Score, Translations]:
+    def translation(self, 
+        height: int, 
+        criteria: str | set | type | AllSelector = AllSelector(),
+    ) -> Score | Translations:
         translation = self.scales[height, "translation", criteria]
         if isinstance(criteria, str):
             assert isinstance(translation, Score)
@@ -159,14 +170,19 @@ class ScoringModel:
             return self.directs.keys("criterion")
         raise ValueError(f"Model composition {self.composition} has invalid base")
     
-    def evaluated_entity_names(self, criteria: Union[str, set, type]=all) -> set[str]:
+    def evaluated_entity_names(self, 
+        criteria: str | set | type | AllSelector = AllSelector(),
+    ) -> set[str]:
         if self.composition[0][0] == "direct":
-            if criteria is all:
+            if isinstance(criteria, AllSelector):
                 return self.directs.keys("entity_name")
             return self.directs.get(criterion=criteria).keys("entity_name")
         raise ValueError(f"Model composition {self.composition} has invalid base")
     
-    def evaluated_entities(self, entities: "Entities", criteria: Union[str, set, type]=all) -> "Entities":
+    def evaluated_entities(self, 
+        entities: "Entities", 
+        criteria: str | set | type | AllSelector = AllSelector(),
+    ) -> "Entities":
         return entities[self.evaluated_entities(criteria)]
     
     def to_direct(self, entities: "Entities") -> "ScoringModel":
@@ -209,7 +225,7 @@ class ScoringModel:
         )
 
     @classmethod
-    def load(cls, directory: Union[str, Path], **kwargs) -> "ScoringModel":
+    def load(cls, directory: str | Path, **kwargs) -> "ScoringModel":
         for name in ("directs", "scales"):
             if name not in kwargs:
                 continue
@@ -221,7 +237,7 @@ class ScoringModel:
             kwargs[name] = MultiScore(kwargs[name]["keynames"], init_data)
         return cls(**kwargs)
 
-    def save(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
+    def save(self, directory: str | None = None, yaml_dump: bool=False) -> tuple[str, dict]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the yaml description) """
@@ -231,7 +247,7 @@ class ScoringModel:
                 table.save(directory, f"{table_name}.csv")
         return self.save_instructions(directory, yaml_dump)
 
-    def save_instructions(self, directory: Optional[str]=None, yaml_dump: bool=False) -> tuple[str, dict]:
+    def save_instructions(self, directory: str | None = None, yaml_dump: bool=False) -> tuple[str, dict]:
         instructions = dict(composition=self.composition)
         for table_name in ("directs", "scales"):
             table = getattr(self, table_name)

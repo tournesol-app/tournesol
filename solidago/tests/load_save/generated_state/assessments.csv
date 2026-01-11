@@ -1,6 +1,11 @@
 username,criterion,entity_name,value,min,max
-user_0,default,entity_5,[-1.34722886],-inf,inf
-user_0,default,entity_4,[-3.27777453],-inf,inf
-user_1,default,entity_3,[-1.08346575],-inf,inf
-user_2,default,entity_0,[-0.05264696],-inf,inf
-user_3,default,entity_3,[-0.93189444],-inf,inf
+user_0,default,entity_5,[1.32242778],-inf,inf
+user_0,default,entity_0,[-0.90470322],-inf,inf
+user_2,default,entity_4,[-2.06271651],-inf,inf
+user_2,default,entity_2,[-0.26865218],-inf,inf
+user_2,default,entity_1,[2.057852],-inf,inf
+user_2,default,entity_5,[-1.85632083],-inf,inf
+user_2,default,entity_0,[-0.40623999],-inf,inf
+user_2,default,entity_3,[-0.01646033],-inf,inf
+user_3,default,entity_3,[2.78061638],-inf,inf
+user_3,default,entity_5,[2.30441485],-inf,inf

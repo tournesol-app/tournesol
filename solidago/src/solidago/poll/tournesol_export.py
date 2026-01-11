@@ -1,6 +1,6 @@
-from typing import BinaryIO, Optional, Union
+from typing import BinaryIO
 from urllib.request import urlretrieve
-from pandas import DataFrame, Series
+from pandas import DataFrame
 
 import zipfile
 import pandas as pd
@@ -11,7 +11,7 @@ from .base import *
 
 class TournesolExport(Poll):
     @staticmethod
-    def load_dfs(dataset_zip: Union[str, BinaryIO]) -> dict[str, DataFrame]:
+    def load_dfs(dataset_zip: str | BinaryIO) -> dict[str, DataFrame]:
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
         ):
@@ -79,7 +79,7 @@ class TournesolExport(Poll):
         return dict(users=users, vouches=vouches, entities=entities, comparisons= comparisons, 
             voting_rights=voting_rights, user_scores=user_scores, global_scores=global_scores)
     
-    def __init__(self, dataset_zip: Union[str, BinaryIO]):
+    def __init__(self, dataset_zip: str | BinaryIO):
         dfs = TournesolExport.load_dfs(dataset_zip)
         from solidago.poll import (
             Users, Vouches, Entities, AllPublic, Comparisons, 

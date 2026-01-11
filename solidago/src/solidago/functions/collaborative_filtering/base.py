@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from numpy.typing import NDArray
+
 import numpy as np
 import logging
 
@@ -39,10 +41,10 @@ class CollaborativeFiltering(PollFunction, ABC):
     
     @abstractmethod
     def fill(self, 
-        value_matrix: np.ndarray, 
-        left_matrix: np.ndarray, 
-        right_matrix: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        value_matrix: NDArray, 
+        left_matrix: NDArray, 
+        right_matrix: NDArray
+    ) -> tuple[NDArray, NDArray, NDArray]:
         raise NotImplemented
 
     def save_result(self, poll: Poll, directory: str | None=None) -> tuple[str, dict]:

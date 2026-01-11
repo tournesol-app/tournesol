@@ -1,6 +1,8 @@
 from abc import abstractmethod
-from typing import Type, Union
 from copy import deepcopy
+from typing import Type, Union
+from numpy.typing import NDArray
+
 import numpy as np
 
 from solidago import primitives
@@ -8,7 +10,7 @@ from solidago import primitives
 
 class Distribution:
     @abstractmethod
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         raise NotImplemented
     
     @classmethod
@@ -31,11 +33,11 @@ class Distribution:
         return type(self).__name__
 
 class Deterministic(Distribution):
-    def __init__(self, value: bool | int | float | np.ndarray):
-        assert isinstance(value, (bool, int, float, np.ndarray))
+    def __init__(self, value: bool | int | float | NDArray):
+        assert isinstance(value, (bool, int, float, NDArray))
         self.value = value
 
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         assert isinstance(n_samples, int), n_samples
         return np.array([deepcopy(self.value) for _ in range(n_samples)])
 
@@ -44,21 +46,21 @@ class Bernoulli(Distribution):
         assert p >= 0.0 and p <= 1.0
         self.p = p
     
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         return np.random.random(n_samples) < self.p
 
 class Normal(Distribution):
     def __init__(self, 
         dimension: int | None = None,
-        mean: float | np.ndarray = 0.0,
-        std: float | np.ndarray = 1.0,
+        mean: float | NDArray = 0.0,
+        std: float | NDArray = 1.0,
     ):
         self.dimension = dimension or np.array(mean).size
         assert isinstance(self.dimension, int)
         self.mean = (np.zeros(self.dimension) + mean) if isinstance(mean, float) else mean
         self.std = (np.zeros(self.dimension) + std) if isinstance(mean, float) else mean
 
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         if self.dimension == 1:
             return np.random.normal(self.mean, self.std, n_samples)
         if n_samples == 1:
@@ -70,7 +72,7 @@ class Zipf(Distribution):
         assert power_decay > 1.0
         self.power_decay = power_decay
     
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         return np.random.zipf(self.power_decay, n_samples)
 
 class Poisson(Distribution):
@@ -78,7 +80,7 @@ class Poisson(Distribution):
         assert mean >= 0.0
         self.mean = mean
     
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         return np.random.poisson(self.mean, n_samples)
 
 class Gamma(Distribution):
@@ -88,7 +90,7 @@ class Gamma(Distribution):
         self.shape = shape
         self.scale = scale
     
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         return np.random.gamma(self.shape, self.scale, n_samples)
     
 class Uniform(Distribution):
@@ -96,14 +98,14 @@ class Uniform(Distribution):
         assert min <= max
         self.min, self.max = min, max
     
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         return np.random.uniform(self.min, self.max, n_samples)
 
 class Add(Distribution):
     def __init__(self, subdistributions: list):
         self.subdistributions = [Distribution.load(d) for d in subdistributions]
     
-    def sample(self, n_samples: int = 1) -> np.ndarray:
+    def sample(self, n_samples: int = 1) -> NDArray:
         if not self.subdistributions:
             return np.zeros(n_samples)
         values = self.subdistributions[0].sample(n_samples)

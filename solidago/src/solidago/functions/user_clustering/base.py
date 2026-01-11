@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
 from typing import Iterable
+from numpy.typing import NDArray
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
@@ -11,7 +11,7 @@ from solidago.functions.base import PollFunction
 from solidago.poll.user_clusters.base import UserClusters
 
 
-class UserClustering(PollFunction, ABC):
+class UserClustering(PollFunction):
     def __init__(self, 
         pca_dimension: int | None=None, 
         n_clusters: int | Iterable=range(2, 5), 
@@ -46,7 +46,7 @@ class UserClustering(PollFunction, ABC):
         return users.assign(**{f"cluster_assignment_{criterion}": cluster_assignment}), clusters
     
     def matrix2clusters(self, 
-        matrix: np.ndarray, 
+        matrix: NDArray, 
         n_clusters: int | Iterable | None=None,
     ) -> tuple[set[int], list[int]]:
         n_clusters = n_clusters or self.n_clusters
@@ -60,9 +60,9 @@ class UserClustering(PollFunction, ABC):
         return clusters, cluster_assignment
 
     def cluster_optimize(self, 
-        points: np.ndarray, 
+        points: NDArray, 
         n_clusters_set: Iterable | None=None
-    ) -> tuple[list[set], np.ndarray]:
+    ) -> tuple[list[set], NDArray]:
         n_clusters_set = n_clusters_set or self.n_clusters
         top_score, top_clusters, top_cluster_assignment = -float("inf"), None, None
         for n_clusters in n_clusters_set:
@@ -75,7 +75,7 @@ class UserClustering(PollFunction, ABC):
         return clusters, cluster_assignment
 
     def clustering_score(self, 
-        matrix: np.ndarray, 
+        matrix: NDArray, 
         clusters: list[set], 
         cluster_assignment: list[int]
     ) -> float:
@@ -89,7 +89,7 @@ class UserClustering(PollFunction, ABC):
         cluster_mean_distances = self.compute_cluster_mean_distances(matrix, clusters)
         return silhouette * 0.4 + size_balance * 0.3 + cluster_mean_distances * 0.3
 
-    def compute_cluster_mean_distances(self, matrix: np.ndarray, clusters: list[set]) -> np.ndarray:
+    def compute_cluster_mean_distances(self, matrix: NDArray, clusters: list[set]) -> NDArray:
         cluster_means = [np.mean(matrix[list(cluster)], axis=0) for cluster in clusters]
         return np.mean([
             np.linalg.norm(cluster_means[i] - cluster_means[j])

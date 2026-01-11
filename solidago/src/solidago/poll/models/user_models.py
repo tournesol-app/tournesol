@@ -7,12 +7,13 @@ import numpy as np
 import yaml
 import logging
 
+from solidago.primitives.datastructure.selector import AllSelector
+
 logger = logging.getLogger(__name__)
 
 from solidago.poll.users import User, Users
 from .scoring_model import ScoringModel
 from .score import MultiScore
-from solidago.primitives.threading import threading
 
 if TYPE_CHECKING:
     from solidago.poll import Entity, Entities, Comparisons
@@ -89,44 +90,26 @@ class UserModels:
             self._cache_users[username] = model
 
     def __call__(self, 
-        entities: Union[str, "Entity", "Entities", type] = all,
-        criteria: Union[str, set, type] = all,
+        entities: Union[str, "Entity", "Entities", AllSelector] = AllSelector(),
+        criteria: str | set | AllSelector = AllSelector(),
         n_sampled_entities_per_user: int | None = None,
-        max_workers: int=1,
     ) -> MultiScore:
-        return self.score(entities, criteria, n_sampled_entities_per_user, max_workers)
+        return self.score(entities, criteria, n_sampled_entities_per_user)
     
     def score(self, 
-        entities: Union[str, "Entity", "Entities", type] = all,
-        criteria: Union[str, set, type] = all,
+        entities: Union[str, "Entity", "Entities", AllSelector] = AllSelector(),
+        criteria: str | set | AllSelector = AllSelector(),
         n_sampled_entities_per_user: int | None = None,
-        max_workers: int=1,
     ) -> MultiScore:
         keynames = ["username"]
         from solidago.poll.entities import Entities
-        keynames += ["entity_name"] if isinstance(entities, Entities) or entities is all else list()
-        keynames += ["criterion"] if isinstance(criteria, set) or criteria is all else list()
-
-        all_scores = threading(max_workers, UserModels._score, 
-            [model for _, model in self], 
-            [entities] * len(self), 
-            [criteria] * len(self), 
-            [n_sampled_entities_per_user] * len(self)
-        )
-        usernames = [username for username, _ in self]
+        keynames += ["entity_name"] if isinstance(entities, Entities) or isinstance(entities, AllSelector) else list()
+        keynames += ["criterion"] if isinstance(criteria, set) or isinstance(criteria, AllSelector) else list()
         results = MultiScore(keynames)
-        for username, scores in zip(usernames, all_scores):
-            for keys, score in scores:
+        for username, model in self:
+            for keys, score in model(entities, criteria, n_sampled_entities_per_user):
                 results[username, *keys] = score
         return results
-    
-    def _score(
-        model: ScoringModel, 
-        entities: Union[str, "Entity", "Entities", type] = all,
-        criteria: Union[str, set, type] = all,
-        n_sampled_entities: int | None = None,
-    ) -> MultiScore:
-        return model(entities, criteria, n_sampled_entities)
 
     def __len__(self) -> int:
         if self._cache_users is None:

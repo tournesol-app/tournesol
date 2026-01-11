@@ -1,11 +1,8 @@
-from abc import abstractmethod
-
 import numpy as np
+from numpy.typing import NDArray
 
 from solidago.poll import *
 from solidago.functions.parallelized import ParallelizedPollFunction
-from solidago.primitives.threading import threading
-from solidago.primitives.timer import time
 
 
 class EntityCriterionWise(ParallelizedPollFunction):
@@ -16,25 +13,32 @@ class EntityCriterionWise(ParallelizedPollFunction):
 
     def _variables(self, entities: Entities, user_models: UserModels) -> list[tuple[Entity, str]]:
         return [(entity, criterion) for entity in entities for criterion in user_models.criteria()]
-    
+
+    def _nonargs_list(self, 
+        variables: list, 
+        entities: Entities,
+        user_models: UserModels,
+    ) -> list[MultiScore]:
+        scores = user_models(entities).reorder("entity_name", "criterion", "username")
+        return [scores[entity, criterion] for entity, criterion in variables]
+
     def _args(self,
         variable: tuple[Entity, str], 
+        nonargs, # score: MultiScore, with keynames == ["username"]
         voting_rights: VotingRights,
-        user_models: UserModels,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        entity, criterion = variable
+    ) -> tuple[NDArray, NDArray, NDArray, NDArray]:
+        assert isinstance(nonargs, MultiScore) and nonargs.keynames == ("username",), nonargs
+        (entity, criterion), scores = variable, nonargs
         vrights, values, lefts, rights = list(), list(), list(), list()
-        for (username,), score in user_models(entity, criterion):
+        for (username,), score in scores:
             assert isinstance(score, Score)
             vrights.append(voting_rights.get(username=username, entity_name=entity, criterion=criterion))
             values.append(score.value)
             lefts.append(score.left_unc)
             rights.append(score.right_unc)
-        def f(array):
-            return np.array(array, dtype=np.float64)
-        return f(vrights), f(values), f(lefts), f(rights)
+        return tuple(np.array(x, dtype=np.float64) for x in (vrights, values, lefts, rights))
 
-    def _process_results(self, variables: list, nonargs_list: list, results: list, *args_lists) -> ScoringModel:
+    def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list) -> ScoringModel:
         global_model = ScoringModel(note=type(self).note)
         for (entity_name, criterion), (value, left, right) in zip(variables, results):
             global_model[entity_name, criterion] = Score(value, left, right)

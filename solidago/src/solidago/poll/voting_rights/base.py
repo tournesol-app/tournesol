@@ -1,4 +1,4 @@
-from typing import Optional, Callable, Union, Any
+from typing import Any
 from pandas import Series
 import numbers
 
@@ -11,8 +11,8 @@ class VotingRights(MultiKeyTable):
     
     def __init__(self, 
         keynames: list[str]=["username", "entity_name", "criterion"], 
-        init_data: Optional[Union[NestedDict, Any]]=None,
-        parent_tuple: Optional[tuple["VotingRights", tuple, tuple]]=None,
+        init_data: NestedDict | Any | None = None,
+        parent_tuple: tuple["VotingRights", tuple, tuple] | None = None,
         *args, **kwargs
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)

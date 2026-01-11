@@ -1,6 +1,5 @@
 """ To use Solidago in other systems, this class should be derived to specify result storage """
 
-from typing import Optional, Union
 from pathlib import Path
 
 import yaml
@@ -26,15 +25,15 @@ class Poll:
     global_direct_scores_filename = "global_direct_scores.csv"
     
     def __init__(self,
-        users: Optional[Users]=None,
-        entities: Optional[Entities]=None,
-        vouches: Optional[Vouches]=None,
-        made_public: Optional[MadePublic]=None,
-        assessments: Optional[Assessments]=None,
-        comparisons: Optional[Comparisons]=None,
-        voting_rights: Optional[VotingRights]=None,
-        user_models : Optional[UserModels]=None,
-        global_model: Optional[ScoringModel]=None,
+        users: Users | None = None,
+        entities: Entities | None = None,
+        vouches: Vouches | None = None,
+        made_public: MadePublic | None = None,
+        assessments: Assessments | None = None,
+        comparisons: Comparisons | None = None,
+        voting_rights: VotingRights | None = None,
+        user_models : UserModels | None = None,
+        global_model: ScoringModel | None = None,
     ):
         """ Poll contains all information being processed by the pipeline 
         save_directory == False means that no save operation will be performed
@@ -73,21 +72,21 @@ class Poll:
             for key, (cls, cls_kwargs) in kwargs.items()
         })
     
-    def save(self, directory: Optional[str]=None) -> tuple:
+    def save(self, directory: str | None = None) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
         if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)
         self.save_instructions(directory)
         return { key: value.save(directory) for key, value in self.__dict__.items() }
     
-    def save_instructions(self, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_instructions(self, directory: str | None = None) -> tuple[str, dict]:
         kwargs = { key: value.save_instructions() for key, value in self.__dict__.items() }
         if directory:
             with open(Path(directory) / "poll.yaml", "w") as f:
                 yaml.safe_dump(kwargs, f)
         return "Poll", kwargs
     
-    def save_objects(self, types: type, directory: str) -> Union[list, tuple]:
+    def save_objects(self, types: type, directory: str) -> list | tuple:
         if directory is not None:
             Path(directory).mkdir(parents=True, exist_ok=True)
         if types == Poll:

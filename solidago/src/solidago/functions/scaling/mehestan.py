@@ -1,18 +1,14 @@
-from typing import Callable, Optional
+from typing import Callable
 from collections import defaultdict
+from numpy.typing import NDArray
 
 import numpy as np
-import numpy.typing as npt
 import logging
-
-from solidago.primitives.threading import threading
 
 logger = logging.getLogger(__name__)
 
-from solidago.primitives.lipschitz import qr_median, qr_uncertainty, lipschitz_resilient_mean
-from solidago.primitives.datastructure.multi_key_table import MultiKeyTable
+from solidago.primitives.lipschitz import qr_median, qr_uncertainty
 from solidago.primitives.pairs import UnorderedPairs
-from solidago.primitives.timer import time
 from solidago.poll import *
 from solidago.functions.base import PollFunction
 
@@ -92,11 +88,9 @@ class Mehestan(PollFunction):
             Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
-        scores = user_models(entities)
+        scores = user_models(entities).reorder("criterion")
         criteria = list(user_models.criteria())
-        args_lists = [users] * len(criteria), [entities] * len(criteria), [made_public] * len(criteria)
-        scores_list = [scores.get(criterion=c).detach() for c in criteria]
-        results = threading(self.max_workers, self.scale_criterion, *args_lists, scores_list)
+        results = [self.scale_criterion(users, entities, made_public, scores[c]) for c in criteria]
         scales, kwargs = MultiScore(keynames=["username", "kind", "criterion"]), dict()
         for criterion, (subscales, activities, is_scaler) in zip(criteria, results):
             scales |= subscales.prepend(criterion=criterion)
@@ -104,7 +98,7 @@ class Mehestan(PollFunction):
             kwargs[f"is_scaler_{criterion}"] = is_scaler
         return users.assign(**kwargs), user_models.scale(scales, note="mehestan")
 
-    def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
+    def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:
         if directory is not None:
             poll.users.save(directory)
             poll.user_models.save_user_scales(directory)
@@ -115,7 +109,7 @@ class Mehestan(PollFunction):
         entities: Entities,
         made_public: MadePublic, # keynames == ["username", "entity_name"]
         scores: MultiScore,
-    ) -> tuple[MultiScore, npt.NDArray, npt.NDArray]: # scales, activies, is_scaler
+    ) -> tuple[MultiScore, NDArray, NDArray]: # scales, activies, is_scaler
         activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
         if not any(is_scaler):
             logger.warning("  No user qualifies as a scaler. No scaling performed.")
@@ -144,7 +138,7 @@ class Mehestan(PollFunction):
         users: Users,
         made_public: MadePublic, # keynames == ["username", "entity_name"]
         scores: MultiScore, # keynames == ["username", "entity_name"]
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[NDArray, NDArray]:
         """ Determines which users will be scalers.
         The set of scalers is restricted for two reasons.
         First, too inactive users are removed, because their lack of comparability
@@ -154,10 +148,10 @@ class Mehestan(PollFunction):
             
         Returns
         -------
-        is_scaler: np.ndarray
+        is_scaler: NDArray
             is_scaler[i] says whether username at iloc i in users is a scaler
         """
-        activities = self.compute_activities(users, made_public, scores) # np.ndarray
+        activities = self.compute_activities(users, made_public, scores) # NDArray
         argsort = np.argsort(activities)
         is_scaler = np.array([False] * len(activities))
         for user_index in range(min(self.n_scalers_max, len(activities))):
@@ -203,7 +197,7 @@ class Mehestan(PollFunction):
         users: Users, 
         made_public: MadePublic, # keynames == ["username", "entity_name"]
         scores: MultiScore, # keynames == ["username", "entity_name"]
-    ) -> np.ndarray:
+    ) -> NDArray:
         """ Returns a dictionary, which maps users to their trustworthy activeness.
         
         Parameters
@@ -216,7 +210,7 @@ class Mehestan(PollFunction):
     
         Returns
         -------
-        activities: np.ndarray
+        activities: NDArray
             activities[i] is a measure of user i's trustworthy activeness,
             where i is the iloc of the user in users
         """

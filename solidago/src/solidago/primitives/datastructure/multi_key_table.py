@@ -1,4 +1,4 @@
-from typing import Union, Optional, Any, Iterable
+from typing import Any, Iterable, Union
 from pathlib import Path
 from pandas import DataFrame, Series
 from collections import defaultdict
@@ -7,6 +7,7 @@ import pandas as pd
 import csv
 
 from solidago.primitives.datastructure.nested_dict import NestedDict
+from solidago.primitives.datastructure.selector import AllSelector
 
 Value = Any
 
@@ -16,9 +17,9 @@ class MultiKeyTable:
     value_cls: type=object
     
     def __init__(self, 
-        keynames: Union[str, list[str]], 
-        init_data: Optional[Union[NestedDict, Any]]=None,
-        parent_tuple: Optional[tuple["MultiKeyTable", tuple, tuple]]=None,
+        keynames: str | list[str], 
+        init_data: NestedDict | Any | None = None,
+        parent_tuple: tuple["MultiKeyTable", tuple, tuple] | None = None,
         *args, **kwargs
     ):
         """ This class aims to facilitate the use of multi-key tables, like pandas DataFrame.
@@ -47,7 +48,7 @@ class MultiKeyTable:
             def valid(keys, value):
                 return len(keys) == self.depth and isinstance(value, NestedDict) and \
                     value.depth == self.depth and value.value_factory() == type(self).value_factory()
-            if all({ valid(keys, value) for keys, value in init_data.items() }):
+            if all(valid(keys, value) for keys, value in init_data.items()):
                 self._cache = init_data
                 self.init_data = None
                 if self.keynames not in self._cache:
@@ -206,22 +207,25 @@ class MultiKeyTable:
     def values(self) -> list:
         return [ value for _, value in self ]
 
-    def convert_key(key) -> Union[int, str, set]:
+    def convert_key(key) -> int | str | set:
         from solidago.primitives.datastructure.objects import Objects
         if isinstance(key, Objects):
             return {o.name for o in key}
-        return key if isinstance(key, (str, int, set)) else key.name
+        return key if isinstance(key, (str, int, set, AllSelector)) else key.name
 
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
         assert len(args) + len(kwargs) <= self.depth
-        assert all({keyname in self.keynames for keyname in kwargs})
+        assert all(keyname in self.keynames for keyname in kwargs)
         f = MultiKeyTable.convert_key
-        kwargs = { kn: f(key) for kn, key in kwargs.items() if key is not all }
+        kwargs = { kn: f(key) for kn, key in kwargs.items() if not isinstance(key, AllSelector) }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
-        return kwargs | { kn: f(key) for kn, key in zip(other_keynames, args) if key is not all }
+        return kwargs | { 
+            kn: f(key) for kn, key in zip(other_keynames, args) 
+            if not isinstance(key, AllSelector) 
+        }
     
-    def keys2tuple(self, *args, keynames: Optional[tuple]=None, **kwargs) -> tuple:
+    def keys2tuple(self, *args, keynames: tuple | None = None, **kwargs) -> tuple:
         keynames = keynames or self.keynames
         kwargs = self.keys2kwargs(*args, **kwargs)
         return tuple(kwargs[kn] for kn in keynames)
@@ -253,7 +257,7 @@ class MultiKeyTable:
             for keynames in keynames_set
         }, (self, parent_keynames, parent_keys))
     
-    def __getitem__(self, keys: Union[str, tuple, list, set]) -> Union["MultiKeyTable", "Value"]:
+    def __getitem__(self, keys: str | tuple | list | set) -> Union["MultiKeyTable", "Value"]:
         keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         return self.get(*keys)
             
@@ -305,7 +309,7 @@ class MultiKeyTable:
             args, value = args[:-1], args[-1]
         assert isinstance(value, type(self).value_cls), (value, type(value), type(self).value_cls)
         kwargs = self.keys2kwargs(*args, **kwargs)
-        assert all({isinstance(v, (str, int)) for v in kwargs.values()})
+        assert all(isinstance(v, (str, int)) for v in kwargs.values())
         self._main_cache()
         for keynames in self._cache:
             keys = tuple(kwargs[kn] for kn in keynames)
@@ -314,7 +318,7 @@ class MultiKeyTable:
             kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
             self.parent.set(value, **kwargs)
     
-    def __setitem__(self, keys: Union[str, tuple, list], value: "Value") -> None:
+    def __setitem__(self, keys: str | tuple | list, value: "Value") -> None:
         keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         self.set(*keys, value)
 
@@ -344,7 +348,7 @@ class MultiKeyTable:
             kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
             self.parent.delete(tolerate_key_error=True, **kwargs)
     
-    def __delitem__(self, keys: Union[str, tuple, list]) -> None:
+    def __delitem__(self, keys: str | tuple | list) -> None:
         keys = keys if isinstance(keys, (tuple, list)) else (keys,)
         self.delete(*keys)
 
@@ -372,7 +376,7 @@ class MultiKeyTable:
         return type(self)(self.keynames, self._cache)
     
     @classmethod
-    def load(cls, directory: str, source: Optional[str]=None, **kwargs) -> "MultiKeyTable":
+    def load(cls, directory: str, source: str | None = None, **kwargs) -> "MultiKeyTable":
         if source is None:
             return cls(**kwargs)
         filename = f"{directory}/{source}"
@@ -381,7 +385,7 @@ class MultiKeyTable:
         except (pd.errors.EmptyDataError, ValueError):
             return cls(**kwargs)
     
-    def to_df(self, max_values: Union[int, float]=float("inf")) -> DataFrame:
+    def to_df(self, max_values: int | float = float("inf")) -> DataFrame:
         df_list = list()
         for index, (keys, value) in enumerate(self):
             if index >= max_values:
@@ -389,7 +393,7 @@ class MultiKeyTable:
             df_list.append(Series(dict(zip(self.keynames, keys)) | dict(self.value2series(value))))
         return DataFrame(df_list)
 
-    def df_save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
+    def df_save(self, directory: str | Path, name: str | None = None) -> tuple[str, dict]:
         name = name or f"{self.name}.csv"
         if not directory:
             return self.save_instructions(name)
@@ -397,7 +401,7 @@ class MultiKeyTable:
         self.to_df().to_csv(filename, index=False)
         return self.save_instructions(name)
     
-    def save(self, directory: Union[str, Path], name: Optional[str]=None) -> tuple[str, dict]:
+    def save(self, directory: str | Path, name: str | None = None) -> tuple[str, dict]:
         name = name or f"{self.name}.csv"
         if not directory:
             return self.save_instructions(name)
@@ -409,7 +413,7 @@ class MultiKeyTable:
                 w.writerow(list(keys) + list(self.value2tuple(value)))
         return self.save_instructions(name)
     
-    def save_instructions(self, source: Optional[str]=None, save_keynames: bool=True) -> tuple[str, dict]:
+    def save_instructions(self, source: str | None = None, save_keynames: bool=True) -> tuple[str, dict]:
         source = source or f"{self.name}.csv"
         kwargs = dict(source=source)
         if save_keynames:

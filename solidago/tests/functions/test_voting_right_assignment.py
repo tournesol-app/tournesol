@@ -22,51 +22,51 @@ ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1
 
 def test_empty_input():
     np.testing.assert_array_equal(
-        AffineOvertrust.computing_voting_rights_and_statistics(
+        ao.thread_function(
             np.array([]), 
             np.array([]),
-            0.1,
-            2.0,
+            ao.overtrust_ratio,
+            ao.min_overtrust,
         )[0], []
     )
 
 def test_everyone_trusted():
     np.testing.assert_array_equal(
-        AffineOvertrust.computing_voting_rights_and_statistics(
+        ao.thread_function(
             np.array([1, 1, 1, 1]), 
             np.ones(shape=4),
-            0.1,
-            2.0,
+            ao.overtrust_ratio,
+            ao.min_overtrust,
         )[0], [1, 1, 1, 1]
     )
 
 def test_everyone_trusted_some_penalized():
     np.testing.assert_array_equal(
-        AffineOvertrust.computing_voting_rights_and_statistics(
+        ao.thread_function(
             np.array([1, 1, 1, 1]), 
             np.array([0.5, 0.5, 1, 1]),
-            0.1,
-            2.0,
+            ao.overtrust_ratio,
+            ao.min_overtrust,
         )[0], [0.5, 0.5, 1, 1]
     )
 
 def test_untrusted_less_than_bias_get_full_voting_right():
     np.testing.assert_array_equal(
-        AffineOvertrust.computing_voting_rights_and_statistics(
+        ao.thread_function(
             np.array([0, 0.5, 0.5, 1, 1]), 
             np.ones(shape=5),
-            0.1,
-            2.0,
+            ao.overtrust_ratio,
+            ao.min_overtrust,
         )[0], [1, 1, 1, 1, 1]
     )
 
 def test_untrusted_and_penalized_less_than_bias_get_penalized_voting_right():
     np.testing.assert_array_equal(
-        AffineOvertrust.computing_voting_rights_and_statistics(
+        ao.thread_function(
             np.array([0, 0.5, 0.5, 1, 1]), 
             np.array([0.7, 0.7, 0.7, 1, 1]),
-            0.1,
-            2.0,
+            ao.overtrust_ratio,
+            ao.min_overtrust,
         )[0], [0.7, 0.7, 0.7, 1, 1]
     )
     
@@ -89,11 +89,11 @@ def test_untrusted_get_partial_voting_right(n_trusted, n_non_trusted):
         (ao.min_overtrust + n_trusted * ao.overtrust_ratio) / n_non_trusted, 1
     )
     np.testing.assert_array_almost_equal(
-        AffineOvertrust.computing_voting_rights_and_statistics(
+        ao.thread_function(
             np.array([0] * n_non_trusted + [1] * n_trusted),
             np.ones(shape=n_non_trusted + n_trusted),
-            0.1,
-            2.0,
+            ao.overtrust_ratio,
+            ao.min_overtrust,
         )[0],
         [expected_partial_right] * n_non_trusted + [1] * n_trusted,
     )
@@ -112,11 +112,11 @@ def test_untrusted_get_partial_voting_right(n_trusted, n_non_trusted):
 )
 def test_random_input_voting_right_more_than_trust_score(n_random_users):
     trust_scores = np.random.random(size=(n_random_users,))
-    voting_rights = AffineOvertrust.computing_voting_rights_and_statistics(
+    voting_rights = ao.thread_function(
         trust_scores, 
         np.ones(shape=n_random_users),
-        0.1,
-        2.0,
+        ao.overtrust_ratio,
+        ao.min_overtrust,
     )[0]
     assert all(v >= t for v, t in zip(voting_rights, trust_scores))
 
@@ -134,11 +134,11 @@ def test_random_input_voting_right_more_than_trust_score(n_random_users):
 )
 def test_total_over_trust_less_than_expected(n_random_users):
     trust_scores = np.random.random(size=(n_random_users,))
-    voting_rights = AffineOvertrust.computing_voting_rights_and_statistics(
+    voting_rights = ao.thread_function(
         trust_scores, 
         np.ones(shape=n_random_users),
-        0.1,
-        2.0,
+        ao.overtrust_ratio,
+        ao.min_overtrust,
     )[0]
     total_over_trust = (voting_rights - trust_scores).sum()
     expected_over_trust = ao.min_overtrust + trust_scores.sum() * ao.overtrust_ratio
@@ -161,11 +161,11 @@ def test_total_over_trust_less_than_expected(n_random_users):
 def test_total_over_trust_less_than_expected_with_random_penalizations(n_random_users):
     trust_scores = np.random.random(size=(n_random_users,))
     privacy_penalties = np.random.random(size=(n_random_users,))
-    voting_rights = AffineOvertrust.computing_voting_rights_and_statistics(
+    voting_rights = ao.thread_function(
         trust_scores, 
         privacy_penalties,
-        0.1,
-        2.0,
+        ao.overtrust_ratio,
+        ao.min_overtrust,
     )[0]
     total_over_trust = (voting_rights - trust_scores * privacy_penalties).sum()
     expected_over_trust = ao.min_overtrust + trust_scores.sum() * ao.overtrust_ratio
@@ -187,11 +187,11 @@ def test_total_over_trust_less_than_expected_with_random_penalizations(n_random_
 )
 def test_min_voting_right_more_than_min_trust(n_random_users):
     trust_scores = np.random.random(size=(n_random_users,))
-    min_voting_right = AffineOvertrust.computing_voting_rights_and_statistics(
+    min_voting_right = ao.thread_function(
         trust_scores, 
         np.ones(shape=n_random_users),
         ao.overtrust_ratio,
-        ao.min_overtrust
+        ao.min_overtrust,
     )[0].min()
     min_trust_score = trust_scores.min()
     assert min_voting_right > min_trust_score

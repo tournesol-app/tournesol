@@ -1,7 +1,7 @@
 import math
 import numbers
 
-from typing import Optional, Union, Any, Callable, Iterable, TYPE_CHECKING
+from typing import Any, Callable, Iterable, TYPE_CHECKING, Union
 from pandas import Series
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 class Score:
     def __init__(self, 
         value: Union[float, list, tuple, dict, Series, "Score"], 
-        left_unc: Optional[float]=None, 
-        right_unc: Optional[float]=None
+        left_unc: float | None = None, 
+        right_unc: float | None = None, 
     ):
         """ In collaborative scaling, it is important to account for varying degrees of reliability,
         not only between different users' judgments, but even more so between the preference models
@@ -173,8 +173,8 @@ class MultiScore(MultiKeyTable):
     
     def __init__(self, 
         keynames: list[str]=["criterion"], 
-        init_data: Optional[Union[NestedDict, Any]]=None,
-        parent_tuple: Optional[tuple["Comparisons", tuple, tuple]]=None,
+        init_data: NestedDict | Any | None = None,
+        parent_tuple: tuple["Comparisons", tuple, tuple] | None = None,
         name: str="scores",
         *args, **kwargs
     ):

@@ -1,4 +1,4 @@
-from typing import Optional, Union, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Union
 from pandas import Series
 
 from solidago.primitives.datastructure import NestedDict, MultiKeyTable
@@ -41,8 +41,8 @@ class Assessments(MultiKeyTable):
     
     def __init__(self, 
         keynames: list[str]=["username", "criterion", "entity_name"], 
-        init_data: Optional[Union[NestedDict, Any]]=None,
-        parent_tuple: Optional[tuple["Assessments", tuple, tuple]]=None,
+        init_data: NestedDict | Any | None = None,
+        parent_tuple: tuple["Assessments", tuple, tuple] | None = None,
         *args, **kwargs
     ):
         super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)

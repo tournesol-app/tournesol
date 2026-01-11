@@ -141,7 +141,7 @@ class XYZPlot:
     def controled_indices_iter(self, control_var_indices: list[int], control_indices: list[int]) -> Iterator[list[int]]:
         ranges = [len(values) for values in self.source_operation.varname_values]
         for indices in IteratedOperation.iter_ranges(ranges):
-            if all([indices[i] == control_indices[n] for n, i in enumerate(control_var_indices)]):
+            if all(indices[i] == control_indices[n] for n, i in enumerate(control_var_indices)):
                 yield indices
 
     def collect_data(

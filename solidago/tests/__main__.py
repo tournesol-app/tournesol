@@ -1,7 +1,6 @@
 from functools import reduce
 from solidago import *
 from solidago.primitives.timer import time
-from solidago.primitives.threading import threading
 
 import logging.config
 import math
@@ -59,14 +58,6 @@ def is_prime(n):
             return (n, False)
     return (n, True)
 
-def prime_threading():
-    numbers = list(range(124315111353113, 124315111353113 + 10000, 2))
-    for max_workers in (1, 2, 4, 8, 15):
-        with time(logging, f"Primality test with n_workers={max_workers}"):
-            result = threading(max_workers, is_prime, numbers)
-        primes = [p for p, prime in result if prime]
-        print(f"Found {len(primes)} primes")
-
 def gbt():
     # poll = TournesolExport("tests/tournesol_dataset.zip")
     # poll = TournesolExport("tests/tiny_tournesol.zip")
@@ -81,7 +72,7 @@ def gbt():
     ], seed=0)
     poll = generator()
     for max_workers in (1, 2, 6, 15):
-        with time(logging, f"Preference learning with n_workers={max_workers}"):
+        with time(logging, f"Preference learning with max_workers={max_workers}"):
             preference_learning = functions.NumbaUniformGBT(max_workers=max_workers)
             preference_learning.poll2objects_function(poll)
 
@@ -91,23 +82,29 @@ def scoring():
     poll = Poll.load("experiments/tournesol_processed")
     # poll.comparisons = poll.comparisons.get(criterion={"largely_recommended"}).reorder("username")
     for max_workers in (1, 2, 6, 15):
-        with time(logging, f"User model scores with n_workers={max_workers}"):
+        with time(logging, f"User model scores with max_workers={max_workers}"):
             _ = poll.user_models(max_workers=max_workers)
 
-def pipeline(tiny = True):
+def pipeline(step = None, tiny = True):
     poll = TournesolExport(f"tests/{'tiny_tournesol' if tiny else 'tournesol_dataset'}.zip")
-    # poll = TournesolExport("tests/tiny_tournesol.zip")
     for max_workers in (1, 2, 4, 6, 15):
         with time(logging, f"Pipeline with n_workers={max_workers}"):
             pipeline = load("src/solidago/functions/tournesol_full.yaml", max_workers=max_workers)
             assert isinstance(pipeline, Sequential)
-            # pipeline(poll, "tests/tournesol_processed")
-            pipeline.modules[6].poll2poll_function(poll)
+            if isinstance(step, int):
+                pipeline.modules[step].poll2poll_function(poll)
+            elif isinstance(step, list):
+                skip_steps = [i for i in range(len(pipeline.modules)) if i not in step]
+                pipeline(poll, skip_steps=skip_steps)
+            else:
+                pipeline(poll, "tests/tournesol_processed")
 
 if __name__ == "__main__":
+    from datetime import datetime
+    print(f"{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Running tests")
     # source, experiment, poll, poll2, generator, poll_functions = simple()
     # poll, f, poll2 = gbt_poll()
     # results = basic_multithread(2)
     # prime_threading()
     # gbt()
-    pipeline(tiny=False)
+    pipeline(step=[1, 4, 5, 6], tiny=True)

@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Optional
 
-import pandas as pd
 import numpy as np
 
 from solidago.poll import *

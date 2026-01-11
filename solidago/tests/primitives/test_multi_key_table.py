@@ -1,7 +1,7 @@
-import pytest
 from pandas import DataFrame
 
 from solidago.primitives.datastructure.multi_key_table import MultiKeyTable
+from solidago.primitives.datastructure.selector import AllSelector
 
 
 def test_multi_key_table():
@@ -39,5 +39,5 @@ def test_multi_key_table():
     t["user_9", "entity_0"] = 1
     t["user_5", "entity_2"] = 2
     t["user_3", "entity_0"] = 1
-    del t[all, {"entity_2"}]
+    del t[AllSelector(), {"entity_2"}]
     assert t.keys("entity_name") == {"entity_0"}

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Union, Optional, Any
+from typing import Any
 from pathlib import Path
-from pandas import Series
 
 import yaml
 import os
@@ -12,7 +11,7 @@ from solidago.poll import *
 class PollFunction(ABC):
     poll_cls: type=Poll
     
-    def __init__(self, max_workers: Optional[int]=None):
+    def __init__(self, max_workers: int | None = None):
         max_workers = (os.cpu_count() - 1) if max_workers is None else max_workers
         self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
         assert "return" in self.annotations(), f"{type(self).__name__} must have a return type"
@@ -53,12 +52,12 @@ class PollFunction(ABC):
                 for key, key_type in result.__init__.__annotations__.items():
                     if isinstance(v, key_type):
                         setattr(result, key, v)
-        elif isinstance(value, (dict, Series)):
+        elif isinstance(value, dict):
             for key, v in dict(value).items():
                 assert isinstance(value, result.__init__.__annotations__[key])
                 setattr(result, key, v)
 
-    def poll2poll_function(self, poll: Poll, save_directory: Optional[str]=None) -> Any:
+    def poll2poll_function(self, poll: Poll, save_directory: str | None = None) -> Any:
         """ Must not modify the poll """
         if self.annotations()["return"] == Poll:
             result = self.poll2objects_function(poll)
@@ -88,21 +87,21 @@ class PollFunction(ABC):
                     f"of `{type(self).__name__}`, " \
                     f"whose annotation is currently `{annotations}`"
     
-    def save(self, filename: Optional[Union[str, Path]]=None) -> tuple[str, Optional[Union[dict, list]]]:
+    def save(self, filename: str | Path | None = None) -> tuple[str, dict | list | None]:
         y = type(self).__name__, self.args_save()
         if filename is not None:
             with open(filename, "w") as f:
                 yaml.dump(y, f)
         return y
     
-    def args_save(self) -> Optional[Union[dict, list]]:
+    def args_save(self) -> dict | list | None:
         return { 
             key: value.save() 
             for key, value in self.__dict__.items()
             if isinstance(value, PollFunction) 
         }
     
-    def save_result(self, poll: Poll, directory: Optional[str]=None) -> None:
+    def save_result(self, poll: Poll, directory: str | None = None) -> None:
         """ result should be the result of the main function """
         if directory is None:
             return None

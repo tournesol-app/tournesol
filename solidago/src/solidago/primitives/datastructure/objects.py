@@ -1,4 +1,4 @@
-from typing import Union, Optional, Iterable, Any
+from typing import Iterable, Any, Union
 from pathlib import Path
 
 import numpy as np
@@ -7,7 +7,7 @@ import random
 
 
 class Object:
-    def __init__(self, name: Union[str, int], vector: list | None = None, **kwargs):
+    def __init__(self, name: str | int, vector: list | None = None, **kwargs):
         assert isinstance(name, (str, int))
         self.name = name
         self.vector = np.array(list() if vector is None else vector, dtype=np.float64)
@@ -61,7 +61,7 @@ class Objects:
     index_name: str="name"
     object_cls: type=Object
     
-    def __init__(self, init_data: Optional[Union[pd.DataFrame, dict, Iterable]]=None):
+    def __init__(self, init_data: pd.DataFrame | dict | Iterable | None = None):
         self.init_data = init_data
         self._dict, self._name2index, self._index2name = dict(), None, None
     
@@ -107,12 +107,12 @@ class Objects:
         self._cache()
         return np.array([obj.vector for obj in self])
     
-    def name2index(self, name: Union[int, str, Object]) -> int:
+    def name2index(self, name: int | str | Object) -> int:
         self._cache_name2index()
         name = name.name if isinstance(name, Object) else name
         return self._name2index[name]
         
-    def index2name(self, index: int) -> Union[int, str]:
+    def index2name(self, index: int) -> int | str:
         self._cache_name2index()
         assert isinstance(index, (int, np.int64, np.int32)), index
         assert index < len(self), index
@@ -121,7 +121,7 @@ class Objects:
     def get_by_index(self, index: int) -> Object:
         return self[self.index2name(index)]
     
-    def __getitem__(self, name: Union[int, str, Object, Iterable]) -> Object:
+    def __getitem__(self, name: int | str | Object | Iterable) -> Object:
         if isinstance(name, type(self).object_cls):
             assert name in self
             return name
@@ -130,12 +130,12 @@ class Objects:
             return self._dict[name]
         return type(self)([obj for obj in name])
     
-    def sample(self, n_items: Optional[int]=None) -> "Objects":
+    def sample(self, n_items: int | None = None) -> "Objects":
         if n_items is None or len(self) < n_items:
             return self.deepcopy()
         return self[random.sample(self.keys(), n_items)]
     
-    def __delitem__(self, obj: Union[int, str, Object, Iterable]) -> Object:
+    def __delitem__(self, obj: int | str | Object | Iterable) -> Object:
         self._cache()
         if isinstance(obj, type(self).object_cls):
             del self._dict[obj.name]
@@ -193,7 +193,7 @@ class Objects:
                 pair = (objects[i], objects[j]) if s else (objects[j], objects[i])
                 yield pair
 
-    def to_df(self, n_max: Optional[int]=None) -> pd.DataFrame:
+    def to_df(self, n_max: int | None = None) -> pd.DataFrame:
         self._cache()
         data = dict()
         for index, obj in enumerate(self):
@@ -204,7 +204,7 @@ class Objects:
         return pd.DataFrame(data).T.rename(columns={"name": index_name}).set_index(index_name)
 
     @classmethod
-    def load(cls, directory: str, source: Optional[str]=None):
+    def load(cls, directory: str, source: str | None = None):
         source = source or cls.name
         try:
             df = pd.read_csv(f"{directory}/{source}.csv", keep_default_na=False)
@@ -212,13 +212,13 @@ class Objects:
         except:
             return cls()
 
-    def save(self, directory: Optional[str]=None, source: Optional[str]=None) -> tuple[str, dict]:
+    def save(self, directory: str | None = None, source: str | None = None) -> tuple[str, dict]:
         source = source or type(self).name
         if directory is not None:
             self.to_df().to_csv(Path(directory) / f"{source}.csv")
         return self.save_instructions(source)
 
-    def save_instructions(self, source: Optional[str]=None) -> tuple[str, dict]:
+    def save_instructions(self, source: str | None = None) -> tuple[str, dict]:
         kwargs = dict()
         if source is not None and source != self.name:
             kwargs["source"] = source
@@ -229,7 +229,7 @@ class Objects:
             return len(self.init_data)
         return len(self._dict)
 
-    def __contains__(self, obj: Union[str, int, Object]) -> bool:
+    def __contains__(self, obj: str | int | Object) -> bool:
         self._cache()
         name = obj.name if isinstance(obj, type(self).object_cls) else obj
         return name in self._dict

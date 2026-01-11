@@ -7,7 +7,8 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 
-from typing import Callable, Tuple, Literal, Optional, Any
+from typing import Callable
+from numpy.typing import NDArray
 
 import numpy as np
 from numba import njit
@@ -22,7 +23,7 @@ _rtol = 4 * np.finfo(float).eps
 
 
 @njit
-def _bisect_interval(a, b, fa, fb) -> Tuple[float, int]:
+def _bisect_interval(a, b, fa, fb) -> tuple[float, int]:
     """Conditional checks for intervals in methods involving bisection"""
     if fa * fb > 0:
         raise ValueError("f(a) and f(b) must have different signs")
@@ -175,10 +176,10 @@ def njit_brentq(
 
 
 def coordinate_updates(
-    update_coordinate_function: Callable[[int, np.ndarray, Tuple], float],
-    get_update_coordinate_function_args: Callable[[int, np.ndarray], Tuple],
-    initialization: np.ndarray,
-    updated_coordinates: Optional[list[int]]=None,
+    update_coordinate_function: Callable[[int, NDArray, tuple], float],
+    get_update_coordinate_function_args: Callable[[int, NDArray], tuple],
+    initialization: NDArray,
+    updated_coordinates: list[int] | None = None,
     error: float=1e-5,
     max_iter: int=1000,
 ):
@@ -188,11 +189,11 @@ def coordinate_updates(
     Parameters
     ----------
     update_coordinate_function: callable
-        (int: coordinate, variable: np.ndarray, args: tuple) -> float
+        (int: coordinate, variable: NDArray, args: tuple) -> float
         Returns the updated value on 'coordinate', given a current 'variable', 
         with additional arguments args.
     get_update_coordinate_function_args: callable
-        (coordinate: int, variable: np.ndarray) -> (coordinate_update_args: tuple)
+        (coordinate: int, variable: NDArray) -> (coordinate_update_args: tuple)
         Return the 'args' of update_coordinate_function
     initialization: np.array
         Initialization point of the coordinate descent
@@ -236,11 +237,11 @@ def coordinate_updates(
 
 
 def coordinate_descent(
-    partial_derivative_function: Callable[[float, Tuple], float],
-    initialization: np.ndarray,
-    get_partial_derivative_args: Optional[Callable[[int, np.ndarray, Tuple], Tuple]]=None,
-    get_update_coordinate_function_args: Optional[Callable[[int, np.ndarray], Tuple]]=None,
-    updated_coordinates: Optional[list[int]]=None,
+    partial_derivative_function: Callable[[float, tuple], float],
+    initialization: NDArray,
+    get_partial_derivative_args: Callable[[int, NDArray, tuple], tuple] | None =None,
+    get_update_coordinate_function_args: Callable[[int, NDArray], tuple] | None =None,
+    updated_coordinates: list[int] | None =None,
     error: float=1e-5,
     coordinate_optimization_xtol: float=1e-5
 ):
@@ -254,12 +255,12 @@ def coordinate_descent(
         Returns the partial derivative of the loss to optimize
     get_partial_derivative_args: callable(
             coordinate: int, 
-            variable: np.ndarray,
+            variable: NDArray,
             coordinate_update_args: Tuple
         ) -> (partial_derivative_args: Tuple)
         retrieves the arguments needed to optimize `variable` along `coordinate`
     get_update_coordinate_function_args: callable
-        (coordinate: int, variable: np.ndarray) -> (coordinate_update_args: tuple)
+        (coordinate: int, variable: NDArray) -> (coordinate_update_args: tuple)
         Return the 'args' of update_coordinate_function
     initialization: np.array
         Initialization point of the coordinate descent
@@ -286,7 +287,7 @@ def coordinate_descent(
         
     def update_coordinate_function(
         coordinate: int, 
-        variable: np.ndarray, 
+        variable: NDArray, 
         *coordinate_update_args
     ) -> float:
         return njit_brentq(

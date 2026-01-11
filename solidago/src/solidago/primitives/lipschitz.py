@@ -1,7 +1,5 @@
-from typing import Union, Optional
-
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import NDArray
 from numba import njit
 
 from solidago.primitives.optimize import njit_brentq as brentq
@@ -11,12 +9,12 @@ from solidago.primitives.optimize import njit_brentq as brentq
 def qr_quantile(
     lipschitz: float,
     quantile: float,
-    values: npt.NDArray,
-    voting_rights: Union[npt.NDArray, float]=1.0,
-    left_uncertainties: Optional[npt.NDArray]=None,
-    right_uncertainties: Optional[npt.NDArray]=None,
-    default_value: float=0.0,
-    error: float=1e-5,
+    values: NDArray,
+    voting_rights: NDArray | float = 1.0,
+    left_uncertainties: NDArray | None = None,
+    right_uncertainties: NDArray | None = None,
+    default_value: float = 0.0,
+    error: float = 1e-5,
 ) -> float:
     """ Computes the quadratically regularized quantile, an estimate of 
     the quantile of values,weighted by voting_rights, given left and right 
@@ -75,10 +73,10 @@ def _qr_quantile_loss_derivative(
     variable: float,
     lipschitz: float,
     quantile: float,
-    values: npt.NDArray,
-    voting_rights: Union[npt.NDArray, float],
-    left_uncertainties_2: npt.NDArray,
-    right_uncertainties_2: npt.NDArray,
+    values: NDArray,
+    voting_rights: NDArray | float,
+    left_uncertainties_2: NDArray,
+    right_uncertainties_2: NDArray,
     default_value: float = 0.0,
     spacing: float = 1e-18,
 ):
@@ -107,10 +105,10 @@ def _qr_quantile_loss_derivative(
 @njit
 def qr_median(
     lipschitz: float,
-    values: npt.NDArray,
-    voting_rights: Union[npt.NDArray, float] = 1.0,
-    left_uncertainties: Optional[npt.NDArray] = None,
-    right_uncertainties: Optional[npt.NDArray] = None,
+    values: NDArray,
+    voting_rights: NDArray | float = 1.0,
+    left_uncertainties: NDArray | None = None,
+    right_uncertainties: NDArray | None = None,
     default_value: float = 0.0,
     error: float = 1e-5,
 ):
@@ -149,14 +147,14 @@ def qr_median(
 @njit
 def qr_standard_deviation(
     lipschitz: float,
-    values: npt.NDArray,
+    values: NDArray,
     quantile_dev: float = 0.5,
-    voting_rights: Union[npt.NDArray, float] = 1.0,
-    left_uncertainties: Optional[npt.NDArray] = None,
-    right_uncertainties: Optional[npt.NDArray] = None,
+    voting_rights: NDArray | float = 1.0,
+    left_uncertainties: NDArray | None = None,
+    right_uncertainties: NDArray | None = None,
     default_dev: float = 1.0,
     error: float = 1e-5,
-    median: Optional[float] = None,
+    median: float | None = None,
 ):
     """ Lipschitz-resilient estimator of the standard deviation.
     Can be understood as a measure of polarization.
@@ -224,13 +222,13 @@ def qr_standard_deviation(
 @njit
 def qr_uncertainty(
     lipschitz: float,
-    values: npt.NDArray,
-    voting_rights: Union[npt.NDArray, float] = 1.0,
-    left_uncertainties: Optional[npt.NDArray] = None,
-    right_uncertainties: Optional[npt.NDArray] = None,
+    values: NDArray,
+    voting_rights: NDArray | float = 1.0,
+    left_uncertainties: NDArray | None = None,
+    right_uncertainties: NDArray | None = None,
     default_dev: float = 1.0,
     error: float = 1e-5,
-    median: Optional[float] = None,
+    median: float | None = None,
 ):
     """
     Quadratically regularized uncertainty
@@ -260,10 +258,10 @@ def clip_mean(
 @njit
 def lipschitz_resilient_mean(
     lipschitz: float,
-    values: npt.NDArray,
-    voting_rights: Union[npt.NDArray[np.float64], float] = 1.0,
-    left_uncertainties: Optional[npt.NDArray] = None,
-    right_uncertainties: Optional[npt.NDArray] = None,
+    values: NDArray,
+    voting_rights: NDArray[np.float64] | float = 1.0,
+    left_uncertainties: NDArray | None = None,
+    right_uncertainties: NDArray | None = None,
     default_value: float = 0.0,
     error: float = 1e-5,
 ):

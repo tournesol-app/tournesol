@@ -1,10 +1,10 @@
-from typing import Union, Iterable, Any
+from typing import Iterable, Any
 
 import numpy as np
 
 
 class UnorderedPairs:
-    def __init__(self, elements: Union[list, set, tuple, int]):
+    def __init__(self, elements: list | set | tuple | int):
         if isinstance(elements, int):
             self.elements = np.arange(elements)
         else:
@@ -23,7 +23,7 @@ class UnorderedPairs:
             for f in self.elements[:index]:
                 yield e, f
 
-    def index_to_pair(self, index: int, p_shuffle: Union[int, float] = 0) -> tuple[Any, Any]:
+    def index_to_pair(self, index: int, p_shuffle: int | float = 0) -> tuple[Any, Any]:
         assert index >= 0 and index < self.n_pairs
         a = int((1 + np.sqrt(8 * index + 1)) / 2)
         b = index - int(a * (a - 1) / 2)
@@ -43,7 +43,7 @@ class UnorderedPairs:
         return [self.index_to_pair(index, p_shuffle) for index in indices[:n_samples]]
 
 
-def swap(a, b, p_shuffle: Union[float, int] = 1):
+def swap(a, b, p_shuffle: float | int = 1):
     if p_shuffle == 0:
         return a, b
     if p_shuffle == 1 or np.random.random() <= p_shuffle:

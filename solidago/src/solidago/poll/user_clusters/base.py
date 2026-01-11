@@ -1,4 +1,13 @@
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
+from numpy.typing import NDArray
+from pandas import DataFrame
+
+import numpy as np
+
+from solidago.primitives.datastructure import MultiKeyTable
+
+if TYPE_CHECKING:
+    from solidago.poll import Users, Entities, UserModels, MultiScore
 
 class UserClusters:
     def __init__(self, clusters: list["Users"]):
@@ -21,29 +30,33 @@ class UserClusters:
         """
         scores = MultiScore(["cluster", "entity_name", "criterion"])
         scores_lists = self.scores_lists(entities, user_models)
+        for cluster in range(len(self.clusters)):
             for keys, score_list in scores_lists:
                 scores[cluster, *keys] = aggregator(*score_list)
         return scores
 
     def average(self, entities: "Entities", user_models: "UserModels") -> MultiScore:
+        from solidago import Score
         return self(entities, user_models, Score.average)
 
     def std(self, entities: "Entities", user_models: "UserModels") -> MultiScore:
+        from solidago import Score
         return self(entities, user_models, Score.std)
 
     def median(self, entities: "Entities", user_models: "UserModels") -> MultiScore:
+        from solidago import Score
         return self(entities, user_models, Score.median)
     
     def characterizing_entities(self, entities: "Entities", user_models: "UserModels") -> "Entities":
         scores = self.average(entities, user_models) # keynames == ["username", "entity_name", "criterion"]
 
-def compute_comment_means(clusters: list[set], vote_matrix: np.ndarray) -> np.ndarray:
+def compute_comment_means(clusters: list[set], vote_matrix: NDArray) -> NDArray:
     return np.array([
         np.mean(vote_matrix[list(cluster)], axis=0)
         for cluster in clusters
     ])
 
-def compute_comment_identifying_scores(comment_means: np.ndarray) -> np.ndarray:
+def compute_comment_identifying_scores(comment_means: NDArray) -> NDArray:
     scores = np.zeros(comment_means.shape)
     for comment_id in range(scores.shape[1]):
         means_of_comment = comment_means[:, comment_id]
@@ -54,7 +67,7 @@ def compute_comment_identifying_scores(comment_means: np.ndarray) -> np.ndarray:
         scores[cluster_yes, comment_id] = means_of_comment[cluster_yes] - mean_of_means
     return scores
 
-def compute_top_comments(identifying_scores: np.ndarray, comment_means, comments: pd.DataFrame) -> list[list[tuple[str, float]]]:
+def compute_top_comments(identifying_scores: NDArray, comment_means, comments: DataFrame) -> list[list[tuple[str, float]]]:
     top_comments = list()
     for cluster_id in range(identifying_scores.shape[0]):
         top_comments.append(list())
