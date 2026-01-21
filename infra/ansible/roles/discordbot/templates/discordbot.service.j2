@@ -1,0 +1,12 @@
+[Unit]
+Description=Discord bot service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash -c "source /srv/tournesol-discordbot/venv/bin/activate && /usr/local/bin/discord_bot.py"
+Environment="DISCORD_BOT_TOKEN={{discord_bot_token}}"
+Environment="TOURNESOL_API_URL={{api_scheme}}://{{api_domain_name}}"
+
+[Install]
+WantedBy=multi-user.target
