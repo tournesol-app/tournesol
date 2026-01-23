@@ -65,7 +65,6 @@ const createContextMenu = function createContextMenu() {
         '*://*.youtu.be/*',
         '*://tournesol.app/*',
       ],
-      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab, false),
     });
 
     chrome.contextMenus.create({
@@ -77,7 +76,15 @@ const createContextMenu = function createContextMenu() {
         '*://*.youtu.be/*',
         '*://tournesol.app/*',
       ],
-      onclick: (infos, tab) => addToRateLaterContextAction(infos, tab, true),
+    });
+
+    chrome.contextMenus.onClicked.addListener((infos, tab) => {
+      if (infos.menuItemId === 'tournesol_add_rate_later') {
+        addToRateLaterContextAction(infos, tab, false)
+      }
+      else if (infos.menuItemId === 'tournesol_add_rate_later_and_watched') {
+        addToRateLaterContextAction(infos, tab, true)
+      }
     });
   });
 };
