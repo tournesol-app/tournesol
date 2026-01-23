@@ -80,10 +80,9 @@ const createContextMenu = function createContextMenu() {
 
     chrome.contextMenus.onClicked.addListener((infos, tab) => {
       if (infos.menuItemId === 'tournesol_add_rate_later') {
-        addToRateLaterContextAction(infos, tab, false)
-      }
-      else if (infos.menuItemId === 'tournesol_add_rate_later_and_watched') {
-        addToRateLaterContextAction(infos, tab, true)
+        addToRateLaterContextAction(infos, tab, false);
+      } else if (infos.menuItemId === 'tournesol_add_rate_later_and_watched') {
+        addToRateLaterContextAction(infos, tab, true);
       }
     });
   });
