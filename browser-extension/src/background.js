@@ -26,25 +26,12 @@ const BUNDLE_OVERFETCH_FACTOR = 3;
  *       executed here. Investigate if it's possible.
  */
 const createContextMenu = function createContextMenu() {
-  chrome.contextMenus.removeAll(function () {
-    chrome.contextMenus.create({
-      id: 'tournesol_add_rate_later',
-      title: chrome.i18n.getMessage('contextMenuRateLater'),
-      contexts: ['link'],
-      targetUrlPatterns: [
-        '*://*.youtube.com/*',
-        '*://*.youtu.be/*',
-        '*://tournesol.app/*',
-      ],
-    });
-  });
-
-  chrome.contextMenus.onClicked.addListener(function (e, tab) {
-    const videoId = extractVideoId(e.linkUrl);
+  const addToRateLaterContextAction = (infos, tab, entitySeen = false) => {
+    const videoId = extractVideoId(infos.linkUrl);
     if (!videoId) {
       alertUseOnLinkToYoutube(tab);
     } else {
-      addRateLater(videoId).then((response) => {
+      addRateLater(videoId, entitySeen).then((response) => {
         if (!response.success) {
           chrome.tabs.query(
             { active: true, currentWindow: true },
@@ -66,8 +53,41 @@ const createContextMenu = function createContextMenu() {
         }
       });
     }
+  };
+
+  chrome.contextMenus.removeAll(function () {
+    chrome.contextMenus.create({
+      id: 'tournesol_add_rate_later',
+      title: chrome.i18n.getMessage('contextMenuRateLater'),
+      contexts: ['link'],
+      targetUrlPatterns: [
+        '*://*.youtube.com/*',
+        '*://*.youtu.be/*',
+        '*://tournesol.app/*',
+      ],
+    });
+
+    chrome.contextMenus.create({
+      id: 'tournesol_add_rate_later_and_watched',
+      title: chrome.i18n.getMessage('contextMenuRateLaterAndWatched'),
+      contexts: ['link'],
+      targetUrlPatterns: [
+        '*://*.youtube.com/*',
+        '*://*.youtu.be/*',
+        '*://tournesol.app/*',
+      ],
+    });
+
+    chrome.contextMenus.onClicked.addListener((infos, tab) => {
+      if (infos.menuItemId === 'tournesol_add_rate_later') {
+        addToRateLaterContextAction(infos, tab, false);
+      } else if (infos.menuItemId === 'tournesol_add_rate_later_and_watched') {
+        addToRateLaterContextAction(infos, tab, true);
+      }
+    });
   });
 };
+
 createContextMenu();
 
 function getDateThreeWeeksAgo() {

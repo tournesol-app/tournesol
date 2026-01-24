@@ -66,9 +66,9 @@ export const fetchTournesolApi = async (path, options = {}) => {
   return fetch(`${apiUrl}/${path}`, fetchOptions).catch(console.error);
 };
 
-export const addRateLater = async (video_id) => {
+export const addRateLater = async (video_id, entitySeen = false) => {
   const ratingStatusReponse = await fetchTournesolApi(
-    'users/me/rate_later/videos/',
+    `users/me/rate_later/videos/?entity_seen=${entitySeen}`,
     { method: 'POST', data: { entity: { uid: 'yt:' + video_id } } }
   );
   if (ratingStatusReponse && ratingStatusReponse.ok) {

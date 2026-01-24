@@ -18,8 +18,12 @@
     "message": "Import YouTube watch history"
   },
   "contextMenuRateLater": {
-    "message": "Rate later on Tournesol",
-    "description": "Label of the rate-later menu item (after right-click on a link)."
+    "message": "Rate later",
+    "description": "Label of the context menu item rate-later (after right-click on a link)."
+  },
+  "contextMenuRateLaterAndWatched": {
+    "message": "Rate later and mark as watched",
+    "description": "Label of the context menu item rate-later and mark as watched (after right-click on a link)."
   },
   "recommendedByTournesol": {
     "message": "Recommended by Tournesol",
