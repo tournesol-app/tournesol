@@ -7,10 +7,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from solidago.poll.scoring.user_models import UserMultipliers, UserTranslations
 from solidago.primitives.lipschitz import qr_median, qr_uncertainty
 from solidago.primitives.pairs import UnorderedPairs
 from solidago.poll import *
-from solidago.functions.base import PollFunction
+from solidago.functions.poll_function import PollFunction
 
 
 class Mehestan(PollFunction):
@@ -88,20 +89,23 @@ class Mehestan(PollFunction):
             Scaled user models
         """
         logger.info("Starting Mehestan's collaborative scaling")
-        scores = user_models(entities).reorder("criterion")
+        scores = user_models(entities, keynames=["criterion", "username", "entity_name"])
         criteria = list(user_models.criteria())
         results = [self.scale_criterion(users, entities, made_public, scores[c]) for c in criteria]
-        scales, kwargs = MultiScore(keynames=["username", "kind", "criterion"]), dict()
-        for criterion, (subscales, activities, is_scaler) in zip(criteria, results):
-            scales |= subscales.prepend(criterion=criterion)
+        keynames = ["username", "criterion"]
+        multipliers, translations, kwargs = UserMultipliers(keynames), UserTranslations(keynames), dict()
+        for criterion, (submultipliers, subtranslations, activities, is_scaler) in zip(criteria, results):
+            multipliers |= submultipliers.prepend(criterion=criterion)
+            translations |= subtranslations.prepend(criterion=criterion)
             kwargs[f"activities_{criterion}"] = activities
             kwargs[f"is_scaler_{criterion}"] = is_scaler
-        return users.assign(**kwargs), user_models.scale(scales, note="mehestan")
+        return users.assign(**kwargs), user_models.user_scale(multipliers, translations, note="mehestan")
 
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:
         if directory is not None:
             poll.users.save(directory)
-            poll.user_models.save_user_scales(directory)
+            poll.user_models.save_table(directory, "user_multipliers")
+            poll.user_models.save_table(directory, "user_translations")
         return poll.save_instructions(directory)
     
     def scale_criterion(self, 
@@ -109,23 +113,26 @@ class Mehestan(PollFunction):
         entities: Entities,
         made_public: MadePublic, # keynames == ["username", "entity_name"]
         scores: MultiScore,
-    ) -> tuple[MultiScore, NDArray, NDArray]: # scales, activies, is_scaler
+    ) -> tuple[UserMultipliers, UserTranslations, NDArray, NDArray]: # scales, activies, is_scaler
         activities, is_scaler = self.compute_activities_and_scalers(users, made_public, scores)
         if not any(is_scaler):
             logger.warning("  No user qualifies as a scaler. No scaling performed.")
-            return MultiScore(keynames=["username", "kind"]), activities, is_scaler
+            return UserMultipliers(["username"]), UserTranslations(["username"]), activities, is_scaler
         scalers, nonscalers = set(), set()
         for index, user in enumerate(users):
             (scalers if is_scaler[index] else nonscalers).add(user.name)
         
         scaler_scores, nonscaler_scores = scores[scalers], scores[nonscalers]
         scale_scalers_to_scalers_args = (users, made_public, scaler_scores, scaler_scores, True)
-        scaler_scales, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
+        scaler_multipliers, scaler_translations, scaler_scores = self.scale_to_scalers(*scale_scalers_to_scalers_args)
 
         scale_nonscalers_to_scalers_args = (users, made_public, scaler_scores, nonscaler_scores)
-        nonscaler_scales, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
+        nonscaler_multipliers, nonscaler_translations, _ = self.scale_to_scalers(*scale_nonscalers_to_scalers_args)
         
-        return (scaler_scales | nonscaler_scales), activities, is_scaler
+        multipliers = scaler_multipliers | nonscaler_multipliers
+        translations = scaler_translations | nonscaler_translations
+
+        return multipliers, translations, activities, is_scaler
 
     ############################################
     ##  The three main steps are              ##
@@ -166,7 +173,7 @@ class Mehestan(PollFunction):
         scaler_scores: MultiScore, # keynames == ["username", "entity_name"]
         scalee_scores: MultiScore, # keynames == ["username", "entity_name"]
         scalees_are_scalers: bool=False
-    ) -> tuple[MultiScore, MultiScore]: # scalee_scales, scalee_scores
+    ) -> tuple[UserMultipliers, UserTranslations, MultiScore]: # scalee_scales, scalee_scores
         scalee_model_norms = self.compute_model_norms(made_public, scalee_scores)
     
         ratio_weight_lists, ratio_lists = self.ratios(made_public, scaler_scores, scalee_scores)
@@ -185,9 +192,7 @@ class Mehestan(PollFunction):
         for (scalee_name, entity_name), score in scalee_scores:
             scalee_scores[scalee_name, entity_name] = score + translations[scalee_name]
     
-        multipliers = multipliers.prepend(kind="multiplier")
-        translations = translations.prepend(kind="translation")
-        return (multipliers | translations), scalee_scores
+        return multipliers, translations, scalee_scores
 
     ############################################
     ##    Methods to estimate the scalers     ##
@@ -499,12 +504,12 @@ class Mehestan(PollFunction):
         voting_rights: VotingRights, # keynames == ["scalee_name", "scaler_name"]
         ratios: MultiScore, # keynames == ["scalee_name", "scaler_name"]
         model_norms: dict[str, float]
-    ) -> MultiScore: # keynames = ["username"]
+    ) -> UserMultipliers: # keynames = ["username"]
         """ Computes the multipliers of users with given user_ratios """
         kwargs = dict(default_value=1.0, default_dev=self.default_multiplier_dev)
         l = lambda scalee_name: self.lipschitz / (8 * (1e-9 + model_norms[scalee_name]))
         r = lambda scalee_name: ratios.get(scalee_name=scalee_name)
-        return MultiScore(["username"], {
+        return UserMultipliers(["username"], {
             (name,): self.aggregate_scalers(weights, r(name), l(name), **kwargs)
             for (name,), weights in voting_rights.iter("scalee_name")
         })
@@ -562,7 +567,7 @@ class Mehestan(PollFunction):
     def compute_translations(self, 
         voting_rights: VotingRights, # keynames == ["scalee_name", "scaler_name"]
         diffs: MultiScore, # keynames == ["scalee_name", "scaler_name"]
-    ) -> MultiScore: # keynames = ["scalee_name"]
+    ) -> UserTranslations: # keynames = ["scalee_name"]
         """ Computes the multipliers of users with given user_ratios
         
         Parameters
@@ -583,7 +588,7 @@ class Mehestan(PollFunction):
             default_value=0.0, 
             default_dev=self.default_translation_dev
         )
-        return MultiScore(["username"], {
+        return UserTranslations(["username"], {
             name: self.aggregate_scalers(weights, diffs.get(name), **kwargs)
             for (name,), weights in voting_rights.iter("scalee_name")
         })

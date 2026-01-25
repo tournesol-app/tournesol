@@ -203,3 +203,13 @@ class Experiment:
         generator = Generator(**kwargs["generator"], max_workers=self.max_workers)
         functions = Sequential(modules=kwargs["functions"], max_workers=self.max_workers)
         return poll, generator, functions
+
+    def __repr__(self) -> str:
+        s = yaml.dump(dict(
+            varnames=self.varnames, varname_values=self.varname_values, poll=self.poll, 
+            workingpath=str(self.workingpath), savepath=str(self.savepath),
+        ), default_flow_style=False) 
+        s += "\ngenerator:\n" + yaml.dump(self.generator, default_flow_style=False)
+        s += "\nfunctions:\n" + yaml.dump(self.functions, default_flow_style=False)
+        return s
+            

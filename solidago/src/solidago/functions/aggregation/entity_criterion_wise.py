@@ -41,6 +41,6 @@ class EntityCriterionWise(ParallelizedPollFunction):
     def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list) -> ScoringModel:
         global_model = ScoringModel(note=type(self).note)
         for (entity_name, criterion), (value, left, right) in zip(variables, results):
-            global_model[entity_name, criterion] = Score(value, left, right)
+            global_model.directs[entity_name, criterion] = Score(value, left, right)
         return global_model
     

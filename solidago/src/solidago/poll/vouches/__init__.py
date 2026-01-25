@@ -1,1 +1,1 @@
-from .base import Vouches
+from .vouches import Vouches

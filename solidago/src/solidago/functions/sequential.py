@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives.timer import time
 from solidago.poll import *
-from .base import PollFunction
+from .poll_function import PollFunction
 
 
 class Sequential(PollFunction):

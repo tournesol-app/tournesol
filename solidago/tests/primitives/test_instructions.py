@@ -26,7 +26,7 @@ def test_load():
     assert instructions.has("modules")
     assert not instructions.has("module")
     assert instructions["modules.1"][0] == "entities.Entities"
-    assert instructions["modules.1.n_entities"] == 6
+    assert instructions["modules.1.n_entities"] == 8
     assert isinstance(instructions["modules.1"], list)
     assert len(instructions["modules.1"]) == 2
     instructions_clone = instructions.clone()

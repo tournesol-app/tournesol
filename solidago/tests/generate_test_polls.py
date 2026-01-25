@@ -6,10 +6,10 @@ logging.config.fileConfig('experiments/info.conf')
 from solidago import *
 N_SEEDS = 3
 
-generator = load("tests/generators/test_generator.yaml")
+generator = load("tests/generators/test_generator.yaml", max_workers=1)
 assert isinstance(generator, Generator)
 
-pipeline = load("tests/functions/test_pipeline.yaml")
+pipeline = load("tests/functions/test_pipeline.yaml", max_workers=1)
 assert isinstance(pipeline, Sequential)
 
 
@@ -22,6 +22,7 @@ def save_all_generated_data():
         save_generated_data(seed)
 
 def save_pipeline_results(seed: int, skip_steps={}):
+    pipeline.seed = seed
     directory = f"tests/saved/{seed}"
     poll = Poll.load(directory)
     pipeline(poll, directory, skip_steps)

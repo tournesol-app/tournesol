@@ -1,5 +1,5 @@
 from solidago.poll import *
-from .base import PollFunction
+from .poll_function import PollFunction
 
 
 class Identity(PollFunction):

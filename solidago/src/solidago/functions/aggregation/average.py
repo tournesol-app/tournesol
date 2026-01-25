@@ -7,6 +7,7 @@ from solidago.functions.aggregation.entity_criterion_wise import EntityCriterion
 
 class Average(EntityCriterionWise):
     note: str="average"
+    block_parallelization: bool = False
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

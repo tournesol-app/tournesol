@@ -1,12 +1,13 @@
 from abc import abstractmethod
 from typing import Optional
+from numpy.typing import NDArray
 
-import numpy as np, numpy.typing as npt
+import numpy as np
 
 import solidago.primitives.dichotomy as dichotomy
 
 from solidago.poll import *
-from .base import PreferenceLearning
+from .preference_learning import PreferenceLearning
 
 
 class GeneralizedBradleyTerry(PreferenceLearning):
@@ -47,7 +48,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         self.max_uncertainty = float(max_uncertainty)
 
     @abstractmethod
-    def cumulant_generating_function_derivative(self, value_diffs: npt.NDArray) -> npt.NDArray:
+    def cumulant_generating_function_derivative(self, value_diffs: NDArray) -> NDArray:
         """ The beauty of the generalized Bradley-Terry model is that it suffices
         to specify its cumulant generating function derivative to fully define it,
         and to allow a fast computation of its corresponding maximum a posterior.
@@ -59,18 +60,18 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         
         Parameters
         ----------
-        value_diffs: npt.NDArray
+        value_diffs: NDArray
             Score differences
             
         Returns
         -------
-        cgf_derivative: npt.NDArray
+        cgf_derivative: NDArray
             cgf_derivative[i] is the derivative of the cumulant-generating function 
             at value_diffs[i]
         """
 
     @abstractmethod
-    def cumulant_generating_function(self, value_diffs: npt.NDArray) -> float:
+    def cumulant_generating_function(self, value_diffs: NDArray) -> float:
         """ The cumulant-generating function is useful to compute the uncertainty,
         especially if we use uncertainties by increase of the negative log-likelihood.
         It is also sufficient if the optimizer can compute the derivatives itself,
@@ -92,14 +93,14 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         entities: Entities,
         comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
         init : MultiScore, # keynames == "entity_name"
-    ) -> npt.NDArray:
+    ) -> NDArray:
         """ Computes the values given comparisons, typically by minimizing the
         user's negative log-posterior. This method is abstract, because 
         different optimizers may be used.
         
         Returns
         -------
-        values: npt.NDArray
+        values: NDArray
         """
         raise NotImplementedError
 
@@ -122,7 +123,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             scores = self.user_learn_criterion(criterion_entities, comparisons[criterion], init)
             for (entity_name,), score in scores:
                 if not score.isnan():
-                    model[entity_name, criterion] = score
+                    model.directs[entity_name, criterion] = score
         return model
     
     def user_learn_criterion(self, 
@@ -142,10 +143,10 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         return MultiScore("entity_name", {
             entity.name: Score(values[i], lefts[i], rights[i])
             for i, entity in enumerate(entities)
-            if not (lefts[i] == self.max_uncertainty and lefts[i] == self.max_uncertainty)
+            if not (lefts[i] == self.max_uncertainty and rights[i] == self.max_uncertainty)
         })
 
-    def init_values(self, entities: Entities, init: MultiScore) -> npt.NDArray:
+    def init_values(self, entities: Entities, init: MultiScore) -> NDArray:
         values = np.zeros(len(entities), dtype=np.float64)
         for index, entity in enumerate(entities):
             if not np.isnan(init[entity].value):
@@ -155,17 +156,17 @@ class GeneralizedBradleyTerry(PreferenceLearning):
     def compute_uncertainties(self,
         entities: Entities,
         comparisons: Comparisons, # keynames == ["left_name, right_name"]
-        values: npt.NDArray,
-    ) -> tuple[npt.NDArray, npt.NDArray]:
+        values: NDArray,
+    ) -> tuple[NDArray, NDArray]:
         """ Given learned maximum-a-posteriori values, this method determines uncertainties
         by evaluating the necessary deviations to decrease the log likelihood
         by the amount `self.uncertainty_nll_increase`.
         
         Returns
         -------
-        lefts: npt.NDArray
+        lefts: NDArray
             lefts[i] is the left uncertainty on values[i]
-        rights: npt.NDArray
+        rights: NDArray
             rights[i] is the right uncertainty on values[i]
         """
         if not comparisons:
@@ -192,7 +193,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
                 
         return lefts, rights
 
-    def negative_log_likelihood(self, value_diffs: npt.NDArray, normalized_comparisons: npt.NDArray) -> float:
+    def negative_log_likelihood(self, value_diffs: NDArray, normalized_comparisons: NDArray) -> float:
         """ Computes the negative log-likelihood of the observed 
         comparisons (`normalized_comparisons`) given the value differences
         between the entities that are compared.
@@ -204,9 +205,9 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         
         Parameters
         ----------
-        value_diffs: npt.NDArray
+        value_diffs: NDArray
             Score differences
-        normalized_comparisons: npt.NDArray
+        normalized_comparisons: NDArray
             Normalized comparison values
         
         Returns
@@ -219,8 +220,8 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         
     def translated_negative_log_likelihood(self,
         delta: float,
-        value_diffs: npt.NDArray,
-        normalized_comparisons: npt.NDArray,
+        value_diffs: NDArray,
+        normalized_comparisons: NDArray,
     ) -> float:
         """This function is a convex negative log likelihood, translated such
         that its minimum has a constant negative value at `delta=0`. The
@@ -277,7 +278,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             max_workers=max_workers,
         )
     
-    def cumulant_generating_function(self, value_diffs: npt.NDArray) -> npt.NDArray:
+    def cumulant_generating_function(self, value_diffs: NDArray) -> NDArray:
         """ The cgf of UniformGBT is simply log( sinh(value_diff) / value_diff ).
         However, numerical accuracy requires care in the cases 
         where abs(value_diff) is small (because of division by zero)
@@ -295,7 +296,7 @@ class UniformGBT(GeneralizedBradleyTerry):
                 value_diffs_abs ** 2 / 6 - value_diffs_abs ** 4 / 180,
             )
 
-    def cumulant_generating_function_derivative(self, value_diffs: npt.NDArray) -> npt.NDArray:
+    def cumulant_generating_function_derivative(self, value_diffs: NDArray) -> NDArray:
         """ The cgf derivative of UniformGBT is simply 
         1 / tanh(value_diff) - 1 / value_diff.
         However, numerical accuracy requires care in the cases 

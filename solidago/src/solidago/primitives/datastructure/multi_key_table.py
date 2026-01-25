@@ -7,7 +7,6 @@ import pandas as pd
 import csv
 
 from solidago.primitives.datastructure.nested_dict import NestedDict
-from solidago.primitives.datastructure.selector import AllSelector
 
 Value = Any
 
@@ -15,21 +14,25 @@ Value = Any
 class MultiKeyTable:
     name: str="multi_key_table"
     value_cls: type=object
+    default_keynames: tuple=("criterion",)
     
     def __init__(self, 
-        keynames: str | list[str], 
+        keynames: str | list[str] | None = None, 
         init_data: NestedDict | Any | None = None,
         parent_tuple: tuple["MultiKeyTable", tuple, tuple] | None = None,
         *args, **kwargs
     ):
-        """ This class aims to facilitate the use of multi-key tables, like pandas DataFrame.
+        """ This class aims to facilitate the use of multi-key tables.
         In particular, it heavily leverages caching to accelerate access,
         while enabling a decomposition into child tables filtered by one key.
         In particular, modifications to child tables update the parent tables.
         From a mathematical point of view, the class implements a sparse tensor.
         """
         # self.keynames defines the default caching
+        assert isinstance(self.default_keynames, tuple), (type(self), self.default_keynames)
+        keynames = self.default_keynames if keynames is None else keynames
         self.keynames = (keynames,) if isinstance(keynames, str) else tuple(keynames)
+        assert isinstance(self.keynames, tuple) and all(isinstance(kn, str) for kn in self.keynames), self.keynames
         self._cache = dict() # No cache at initialization for fast instantation
         # self._cache[keynames] is a NestedDict object, where keynames is tuple of str
         self.init_data = init_data
@@ -189,7 +192,7 @@ class MultiKeyTable:
         keynames = (keynames,) if isinstance(keynames, str) else keynames
         keynames = keynames if keynames else self.keynames
         other_keynames = [kn for kn in self.keynames if kn not in keynames]
-        assert len(keynames) + len(other_keynames) == self.depth, (keynames, self.keynames)
+        assert len(keynames) + len(other_keynames) == self.depth, (keynames, self.keynames, self.depth)
         for keys, value in self.nested_dict(*keynames).iter(len(keynames)):
             if len(keynames) == self.depth:
                 yield keys, value
@@ -211,18 +214,18 @@ class MultiKeyTable:
         from solidago.primitives.datastructure.objects import Objects
         if isinstance(key, Objects):
             return {o.name for o in key}
-        return key if isinstance(key, (str, int, set, AllSelector)) else key.name
+        return key if isinstance(key, (str, int, set, slice)) else key.name
 
     def keys2kwargs(self, *args, **kwargs) -> dict:
         """ args is assumed to list keys, though some may be specified through kwargs """
         assert len(args) + len(kwargs) <= self.depth
         assert all(keyname in self.keynames for keyname in kwargs)
         f = MultiKeyTable.convert_key
-        kwargs = { kn: f(key) for kn, key in kwargs.items() if not isinstance(key, AllSelector) }
+        kwargs = { kn: f(key) for kn, key in kwargs.items() if not isinstance(key, slice) }
         other_keynames = [ k for k in self.keynames if k not in kwargs ]
         return kwargs | { 
             kn: f(key) for kn, key in zip(other_keynames, args) 
-            if not isinstance(key, AllSelector) 
+            if not isinstance(key, slice) 
         }
     
     def keys2tuple(self, *args, keynames: tuple | None = None, **kwargs) -> tuple:
@@ -282,7 +285,7 @@ class MultiKeyTable:
         return bool(self._main_cache())
 
     def __or__(self, other: "MultiKeyTable") -> "MultiKeyTable":
-        assert type(self) == type(other) and set(self.keynames) == set(other.keynames)
+        assert set(self.keynames) == set(other.keynames), (self.keynames, other.keynames)
         init_data = { kns: nd.deepcopy() for kns, nd in self._cache.items() }
         result = type(self)(self.keynames, init_data, self.parent_tuple)
         for keys, value in other:
@@ -291,7 +294,7 @@ class MultiKeyTable:
         return result
         
     def __ior__(self, other: "MultiKeyTable") -> "MultiKeyTable":
-        assert set(self.keynames) == set(other.keynames)
+        assert set(self.keynames) == set(other.keynames), (self.keynames, other.keynames)
         for keys, value in other:
             kwargs = dict(zip(other.keynames, keys))
             new_keys = tuple(kwargs[kn] for kn in self.keynames)
@@ -365,6 +368,11 @@ class MultiKeyTable:
         subdict[prekeys[-1]] = self.nested_dict()._dict
         return result
 
+    def clone_append(self, subtable: Union["MultiKeyTable", None], **kwargs) -> "MultiKeyTable":
+        """ This method must be used with care. It is used to append a subtable to a table,
+        without modifying self. """
+        return self if not subtable else self | subtable.prepend(**kwargs)
+
     def reorder(self, *keynames) -> "MultiKeyTable":
         self._main_cache()
         keynames = list(keynames) + [kn for kn in self.keynames if kn not in keynames]
@@ -377,12 +385,12 @@ class MultiKeyTable:
     
     @classmethod
     def load(cls, directory: str, source: str | None = None, **kwargs) -> "MultiKeyTable":
-        if source is None:
-            return cls(**kwargs)
+        source = source or cls.name
+        source = source if source.endswith(".csv") else f"{source}.csv"
         filename = f"{directory}/{source}"
         try:
             return cls(init_data=pd.read_csv(filename, keep_default_na=False), **kwargs)
-        except (pd.errors.EmptyDataError, ValueError):
+        except (pd.errors.EmptyDataError, ValueError, FileNotFoundError):
             return cls(**kwargs)
     
     def to_df(self, max_values: int | float = float("inf")) -> DataFrame:
@@ -401,7 +409,7 @@ class MultiKeyTable:
         self.to_df().to_csv(filename, index=False)
         return self.save_instructions(name)
     
-    def save(self, directory: str | Path, name: str | None = None) -> tuple[str, dict]:
+    def save(self, directory: str | Path, name: str | None = None, save_instructions: bool = False) -> tuple[str, dict]:
         name = name or f"{self.name}.csv"
         if not directory:
             return self.save_instructions(name)

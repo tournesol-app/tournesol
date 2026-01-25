@@ -1,6 +1,7 @@
 import pytest
 from solidago import *
 from solidago.functions import Average, EntitywiseQrQuantile
+from solidago.poll.scoring.user_models import UserDirectScores
 
 N_SEEDS = 3
 
@@ -15,7 +16,7 @@ voting_rights["user_1", "entity_0", "default"] = 1
 voting_rights["user_1", "entity_2", "default"] = 1
 voting_rights["user_1", "entity_3", "default"] = 1
 user_models = UserModels(
-    MultiScore(["username", "entity_name", "criterion"], {
+    user_directs=UserDirectScores(["username", "entity_name", "criterion"], {
         ("user_0", "entity_0", "default"): Score(2, 1, .5),
         ("user_0", "entity_1", "default"): Score(1, .2, .1),
         ("user_0", "entity_3", "default"): Score(.2, .4, .3),

@@ -1,8 +1,6 @@
 from typing import Union, Callable, Any, Iterable
 from copy import deepcopy
 
-from .selector import AllSelector
-
 Value = Any
 
 
@@ -18,15 +16,15 @@ class NestedDict:
         copy._dict = deepcopy(self._dict)
         return copy
         
-    def __getitem__(self, keys: tuple | str | int | set | AllSelector) -> Union["NestedDict", "Value"]:
+    def __getitem__(self, keys: tuple | str | int | set | slice) -> Union["NestedDict", "Value"]:
         keys = (keys,) if isinstance(keys, (str, int)) else keys
-        is_set_or_all = lambda key: isinstance(key, set) or isinstance(key, AllSelector)
+        is_set_or_all = lambda key: isinstance(key, set) or isinstance(key, slice)
         if is_set_or_all(keys) or (len(keys) == 1 and is_set_or_all(keys[0])):
             key_set = keys if is_set_or_all(keys) else keys[0]
             filtered = NestedDict(self.value_factory, self.depth)
             filtered._dict = {
                 key: subdict for key, subdict in self._dict.items() 
-                if isinstance(key_set, AllSelector) or key in key_set
+                if isinstance(key_set, slice) or key in key_set
             }
             return filtered
         assert len(keys) <= self.depth
@@ -39,7 +37,7 @@ class NestedDict:
             nonset_keys = [key for key in keys if not is_set_or_all(key)]
             nested_dict = NestedDict(self.value_factory, self.depth - len(nonset_keys))
             for key, subdict_dict in self._dict.items():
-                if isinstance(keys[0], AllSelector) or key in keys[0]:
+                if isinstance(keys[0], slice) or key in keys[0]:
                     subdict = NestedDict(self.value_factory, self.depth - 1)
                     subdict._dict = subdict_dict
                     v = subdict[keys[1:]]

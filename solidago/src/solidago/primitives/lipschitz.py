@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 from numba import njit
 
-from solidago.primitives.optimize import njit_brentq as brentq
+from solidago.primitives.minimizer.brentq import njit_brentq as brentq
 
 
 @njit
@@ -28,7 +28,7 @@ def qr_quantile(
         Resilience parameters. Larger values are more resilient, but less accurate. 
     quantile: float
         Between 0 and 1.
-    values: npt.ArrayLike
+    values: NDArray
         Values whose quantile is estimated
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength
@@ -122,7 +122,7 @@ def qr_median(
     ----------
     lipschitz: float
         Resilience parameters. Larger values are more resilient, but less accurate. 
-    values: npt.ArrayLike
+    values: NDArray
         Values whose quantile is estimated
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength
@@ -167,7 +167,7 @@ def qr_standard_deviation(
     ----------
     lipschitz: float
         Resilience parameters. Larger values are more resilient, but less accurate. 
-    values: npt.ArrayLike
+    values: NDArray
         Values whose quantile is estimated
     quantile_dev: float
         Must be between 0 and 1. Defines the quantile of deviations from qr_med that is reported.
@@ -275,7 +275,7 @@ def lipschitz_resilient_mean(
     ----------
     lipschitz: float
         Resilience parameters. Larger values are more resilient, but less accurate. 
-    values: npt.ArrayLike
+    values: NDArray
         Values whose quantile is estimated
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength

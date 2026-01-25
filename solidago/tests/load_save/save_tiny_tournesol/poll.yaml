@@ -1,31 +1,8 @@
-assessments:
-- Assessments
-- keynames:
-  - username
-  - criterion
-  - entity_name
-  source: assessments.csv
-comparisons:
-- Comparisons
-- keynames:
-  - username
-  - criterion
-  - entity_name
-  - other_name
-  source: comparisons.csv
-entities:
-- Entities
-- {}
 global_model:
 - ScoringModel
 - composition:
-  - - direct
+  - - Direct
     - {}
-  directs:
-    keynames:
-    - entity_name
-    - criterion
-    name: directs.csv
 made_public:
 - AllPublic
 - keynames:
@@ -34,30 +11,10 @@ made_public:
   source: made_public.csv
 user_models:
 - UserModels
-- common_scales: common_scales.csv
-  default_composition:
-  - - direct
+- default_composition:
+  - - Direct
     - {}
-  - - scale
-    - note: scale
-  - - scale
-    - note: scale
-  user_directs: user_directs.csv
-  user_scales: user_scales.csv
-users:
-- Users
-- {}
-voting_rights:
-- VotingRights
-- keynames:
-  - username
-  - entity_name
-  - criterion
-  source: voting_rights.csv
-vouches:
-- Vouches
-- keynames:
-  - by
-  - to
-  - kind
-  source: vouches.csv
+  - - Scale
+    - note: user_scale_test_export
+  - - Scale
+    - note: common_scale_test_export

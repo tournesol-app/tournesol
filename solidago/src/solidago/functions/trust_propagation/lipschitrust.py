@@ -8,7 +8,7 @@ from collections import defaultdict
 import numpy as np
 
 from solidago.poll import *
-from solidago.functions.base import PollFunction
+from solidago.functions.poll_function import PollFunction
 
 
 class LipschiTrust(PollFunction):

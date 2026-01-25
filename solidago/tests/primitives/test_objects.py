@@ -1,4 +1,3 @@
-import pytest
 from pandas import DataFrame
 
 from solidago.primitives.datastructure.objects import Object, Objects
@@ -29,4 +28,5 @@ def test_objects():
     assert embedded_objects2["object2"].n_houses == 5
     assert "object3" in embedded_objects
     assert embedded_objects
-    
+    sub_embedded_objects = embedded_objects[{"object1", "object2"}]
+    assert all(sub_embedded_objects["object1"].vector == embedded_objects["object1"].vector)

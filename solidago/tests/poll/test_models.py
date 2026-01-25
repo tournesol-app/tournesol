@@ -1,5 +1,5 @@
-import pytest
 from solidago import *
+from solidago.poll.scoring.model import Multipliers, Translations
 
 def test_score():
     assert Score(1, 0, 0) + Score(1, 0, 0) == Score(2, 0, 0)
@@ -26,16 +26,20 @@ def test_multiscore():
 def test_direct():
     direct = ScoringModel()
     entities = Entities(["entity_1", "entity_2"])
-    direct["entity_1", "default"] = Score(1, 5, 2)
-    direct["entity_2", "default"] = Score(2, 3, 1)
-    direct["entity_2", "importance"] = Score(2, 0, 1)
-    scaled = direct.scale(MultiScore(["kind", "criterion"], {
-        ("multiplier", "default"): Score(1, 0, 0),
-        ("translation", "default"): Score(1, 0, 0),
-        ("multiplier", "importance"): Score(2, 1, 1),
-        ("translation", "importance"): Score(3, 2, 0),
-    }))
-    squashed = scaled.squash(100)
+    direct.directs["entity_1", "default"] = Score(1, 5, 2)
+    direct.directs["entity_2", "default"] = Score(2, 3, 1)
+    direct.directs["entity_2", "importance"] = Score(2, 0, 1)
+    scaled = direct.scale(
+        Multipliers(["criterion"], {
+            ("default",): Score(1, 0, 0),
+            ("importance",): Score(2, 1, 1),
+        }),
+        Translations(["criterion"], {
+            ("default",): Score(1, 0, 0),
+            ("importance",): Score(3, 2, 0),
+        }),
+    )
+    squashed = scaled.post_process("Squash", max=100)
     assert squashed("entity_1")["importance"].isnan()
     assert squashed("entity_2")["importance"].value > 98
     assert squashed("entity_2")["importance"] < 100

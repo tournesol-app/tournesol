@@ -1,7 +1,7 @@
 import numpy as np
 
 from solidago.poll import *
-from .base import PreferenceLearning
+from .preference_learning import PreferenceLearning
 
 
 class IsAssessment(PreferenceLearning):

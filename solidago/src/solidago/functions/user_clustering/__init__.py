@@ -1,1 +1,1 @@
-from .base import UserClustering
+from .user_clustering import UserClustering

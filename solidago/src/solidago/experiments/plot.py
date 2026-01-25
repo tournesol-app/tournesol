@@ -7,7 +7,7 @@ import numpy as np
 import logging
 
 from solidago.experiments.experiment import Experiment
-from solidago.poll.base import Poll
+from solidago.poll.poll import Poll
 
 logger = logging.getLogger(__name__)
 

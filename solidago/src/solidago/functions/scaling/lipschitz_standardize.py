@@ -1,16 +1,20 @@
 from typing import Callable
+from numpy.typing import NDArray
 
 import numpy as np
 import logging
 
 logger = logging.getLogger(__name__)
 
+from solidago.poll.scoring.user_models import CommonMultipliers
 from solidago.primitives import qr_standard_deviation
 from solidago.poll import *
 from solidago.functions.parallelized import ParallelizedPollFunction
 
 
 class LipschitzStandardize(ParallelizedPollFunction):
+    block_parallelization: bool = False
+    
     def __init__(self, 
         dev_quantile: float=0.9, 
         lipschitz: float=0.1, 
@@ -35,12 +39,24 @@ class LipschitzStandardize(ParallelizedPollFunction):
     def _variables(self, user_models: UserModels) -> list[str]:
         return [criterion for criterion in user_models.criteria()]
     
-    def _args(self, variable: str, nonargs, entities: Entities, user_models: UserModels):
+    def _nonargs_list(self, 
+        variables: list, 
+        entities: Entities,
+        user_models: UserModels,
+    ) -> list[MultiScore]:
+        scores = user_models(
+            entities,
+            n_sampled_entities_per_user=self.n_sampled_entities_per_user,
+            keynames=["criterion", "username", "entity_name"],
+        )
+        return [scores[criterion] for criterion in variables]
+    
+    def _args(self, 
+        variable: str, # Not used
+        nonargs, # MultiScore
+    ) -> tuple[float, float, NDArray, NDArray, NDArray, NDArray, float]:
         """ variable is criterion """
-        assert isinstance(variable, str), variable
-        assert isinstance(entities, Entities), entities
-        assert isinstance(user_models, UserModels), user_models
-        scores = user_models(entities, variable, self.n_sampled_entities_per_user)
+        scores = nonargs
         n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
         values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
         lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
@@ -54,13 +70,14 @@ class LipschitzStandardize(ParallelizedPollFunction):
         return qr_standard_deviation
     
     def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, user_models: UserModels) -> UserModels:
-        scales = MultiScore(["kind", "criterion"])
+        multipliers = CommonMultipliers(["criterion"])
         for criterion, std_dev in zip(variables, results):
-            scales["multiplier", criterion] = Score(1./std_dev, 0, 0)
-        return user_models.scale(scales, note="lipschitz_standardardize")
+            multipliers[criterion] = Score(1./std_dev, 0, 0)
+        return user_models.common_scale(multipliers=multipliers, note="lipschitz_standardardize")
     
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving common scales")
-            poll.user_models.save_common_scales(directory)
+            poll.user_models.save_table(directory, "common_multipliers")
+            poll.user_models.save_table(directory, "common_translations")
         return poll.save_instructions(directory)

@@ -8,6 +8,7 @@ from solidago.functions.aggregation.entity_criterion_wise import EntityCriterion
 
 class EntitywiseQrQuantile(EntityCriterionWise):
     note: str="entitywise_qr_quantile"
+    block_parallelization: bool = False
     
     def __init__(self, quantile: float=0.2, lipschitz: float=0.1, error: float=1e-5, *args, **kwargs):
         """ Aggregates scores using the quadratically regularized quantile for each entity and each criterion """

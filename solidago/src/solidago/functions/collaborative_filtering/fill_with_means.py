@@ -2,7 +2,7 @@ from numpy.typing import NDArray
 import numpy as np
 
 from solidago.poll import *
-from .base import CollaborativeFiltering
+from .collaborative_filtering import CollaborativeFiltering
 
 
 class FillWithMeans(CollaborativeFiltering):

@@ -1,4 +1,4 @@
-from .base import PollFunction
+from .poll_function import PollFunction
 from .parallelized import ParallelizedPollFunction
 from .sequential import Sequential
 from .identity import Identity
@@ -9,4 +9,4 @@ from .voting_rights import *
 from .scaling import *
 from .aggregation import *
 from .post_process import *
-
+from .filtering import *

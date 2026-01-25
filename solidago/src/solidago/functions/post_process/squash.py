@@ -1,5 +1,5 @@
 from solidago.poll import *
-from solidago.functions.base import PollFunction
+from solidago.functions.poll_function import PollFunction
 
 
 class Squash(PollFunction):
@@ -15,7 +15,9 @@ class Squash(PollFunction):
         """ Post-processes user models and global models,
         typically to yield human-readible scores, 
         by squashing scores into [-self.score_max, self.score_max] """
-        return user_models.squash(self.score_max, "squash"), global_model.squash(self.score_max, "squash")
+        user_models = user_models.post_process("Squash", max=self.score_max)
+        global_model = global_model.post_process("Squash", max=self.score_max)
+        return user_models, global_model
 
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:
         return poll.save_instructions(directory)

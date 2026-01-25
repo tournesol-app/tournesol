@@ -12,7 +12,7 @@ def test_generative_model():
     
     assert "user_1" in s2.users
     assert "entity_3" in s2.entities
-    assert len(s2.entities) == 6
+    assert len(s2.entities) == 8
 
     f = lambda s: s.users["user_3"].n_evaluated_entities
     assert f(s1) == f(s2)

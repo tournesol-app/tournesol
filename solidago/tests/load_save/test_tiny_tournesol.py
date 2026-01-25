@@ -1,5 +1,6 @@
 import pytest
 from solidago import *
+from solidago.poll.scoring.user_models import CommonMultipliers, UserMultipliers, UserTranslations
 
 def test_import():
     t = TournesolExport("tests/tiny_tournesol.zip")
@@ -25,19 +26,22 @@ def test_import():
 
 def test_export():
     t = TournesolExport("tests/tiny_tournesol.zip")
-    t.user_models = t.user_models.scale(
-        MultiScore(["username", "kind", "criterion"], {
-            (username, "multiplier", "largely_recommended"): Score(2, 0, 0)
-            for username, model in t.user_models
-        } | {
-            (username, "translation", "importance"): Score(3, 0, 0)
-            for username, model in t.user_models
-        }, note="user_scale_test_export")
+    t.user_models = t.user_models.user_scale(
+        UserMultipliers(("username", "criterion"), {
+            (username, "largely_recommended"): Score(2, 0, 0)
+            for username, _ in t.user_models
+        }),
+        UserTranslations(("username", "criterion"), {
+            (username, "importance"): Score(3, 0, 0)
+            for username, _ in t.user_models
+        }), 
+        note="user_scale_test_export"
     )
-    t.user_models = t.user_models.scale(
-        MultiScore(["kind", "criterion"], {
-            ("translation", "importance"): Score(2, 0, 0)
-        }, note="common_scale_test_export")
+    t.user_models = t.user_models.common_scale(
+        CommonMultipliers("criterion", {
+            ("importance"): Score(2, 0, 0)
+        }), 
+        note="common_scale_test_export"
     )
     t.save("tests/load_save/save_tiny_tournesol")
 

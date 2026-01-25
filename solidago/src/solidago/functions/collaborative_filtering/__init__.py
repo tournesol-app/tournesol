@@ -1,2 +1,2 @@
-from .base import CollaborativeFiltering
+from .collaborative_filtering import CollaborativeFiltering
 from .fill_with_means import FillWithMeans

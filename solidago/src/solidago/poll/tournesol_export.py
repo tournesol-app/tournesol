@@ -6,7 +6,10 @@ import zipfile
 import pandas as pd
 import numpy as np
 
-from .base import *
+from solidago.poll.scoring.model import DirectScores
+from solidago.poll.scoring.user_models import UserDirectScores
+
+from .poll import *
 
 
 class TournesolExport(Poll):
@@ -85,8 +88,8 @@ class TournesolExport(Poll):
             Users, Vouches, Entities, AllPublic, Comparisons, 
             VotingRights, UserModels, ScoringModel, MultiScore
         )
-        user_directs = MultiScore(UserModels.table_keynames["user_directs"], dfs["user_scores"])
-        directs = MultiScore(["entity_name", "criterion"], dfs["global_scores"])
+        user_directs = UserDirectScores(init_data=dfs["user_scores"])
+        directs = DirectScores(init_data=dfs["global_scores"])
         super().__init__(
             users=Users(dfs["users"]),
             vouches=Vouches(init_data=dfs["vouches"]),

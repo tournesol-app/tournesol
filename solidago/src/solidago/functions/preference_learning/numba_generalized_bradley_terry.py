@@ -1,13 +1,13 @@
 from abc import abstractmethod
 from functools import cached_property
 from typing import Callable
+from numpy.typing import NDArray
 
 import numpy as np
-import numpy.typing as npt
 from numba import njit
 
 from solidago.poll import *
-from solidago.primitives.optimize import coordinate_descent
+from solidago.primitives.minimizer.coordinate_descent import CoordinateDescent
 from .generalized_bradley_terry import GeneralizedBradleyTerry, UniformGBT
 
 
@@ -17,6 +17,7 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         uncertainty_nll_increase: float=1.0,
         max_uncertainty: float=1e3,
         convergence_error: float=1e-5,
+        max_iter: int=1000,
         max_workers: int=1,
     ):
         """ Generalized Bradley Terry is a class of porbability models of comparisons,
@@ -48,10 +49,11 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
             max_workers=max_workers,
         )
         self.convergence_error = convergence_error
+        self.max_iter = max_iter
 
     @property
     @abstractmethod
-    def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
+    def cumulant_generating_function_derivative(self) -> Callable[[NDArray], NDArray]:
         """ To use numba, instead of defining directly the cgf derivative,
         it is useful to instead define this method as a property,
         which outputs a jitted callable function.
@@ -59,12 +61,12 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         
         Parameters
         ----------
-        value_diffs: npt.NDArray
+        value_diffs: NDArray
             Score differences
             
         Returns
         -------
-        cgf_derivative: npt.NDArray
+        cgf_derivative: NDArray
             cgf_derivative[i] is the derivative of the cumulant-generating function 
             at value_diffs[i]
         """
@@ -74,14 +76,13 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         entities: Entities,
         comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
         init : MultiScore, # keynames == "entity_name"
-    ) -> npt.NDArray:
+    ) -> NDArray:
         """ Computes the values of the entities given comparisons """
         get_args = self.get_partial_derivative_args(entities, comparisons)
-        return coordinate_descent(
+        return CoordinateDescent(self.convergence_error, self.max_iter).coordinate_descent(
             self.partial_derivative,
             self.init_values(entities, init),
             get_args,
-            error=self.convergence_error,
         )
     
     def get_partial_derivative_args(self, 
@@ -114,9 +115,9 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         @njit
         def njit_partial_derivative(
             entity_value: float,
-            compared_values: npt.NDArray, 
-            normalized_comparisons: npt.NDArray, 
-        ) -> npt.NDArray:
+            compared_values: NDArray, 
+            normalized_comparisons: NDArray, 
+        ) -> NDArray:
             value_diffs = entity_value - compared_values
             nll_derivative = np.sum(cgf_deriv(value_diffs) + normalized_comparisons)
             prior_derivative = entity_value / prior_var
@@ -173,7 +174,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         )
 
     @cached_property
-    def cumulant_generating_function_derivative(self) -> Callable[[npt.NDArray], npt.NDArray]:
+    def cumulant_generating_function_derivative(self) -> Callable[[NDArray], NDArray]:
         """ The cgf derivative of UniformGBT is simply 1 / tanh(value_diff) - 1 / value_diff.
         However, numerical accuracy requires care in the cases 
         where abs(value_diff) is small (because of division by zero).
@@ -182,7 +183,7 @@ class NumbaUniformGBT(NumbaCoordinateDescentGBT, UniformGBT):
         we write it as a cached property njit function.
         """
         @njit
-        def njit_cumulant_generating_function_derivative(value_diffs: npt.NDArray):
+        def njit_cumulant_generating_function_derivative(value_diffs: NDArray):
             return np.where(
                 np.abs(value_diffs) < 1e-2,
                 value_diffs / 3,

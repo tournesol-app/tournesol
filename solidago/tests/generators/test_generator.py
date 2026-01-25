@@ -47,6 +47,7 @@ def test_evaluation_generator():
     )(users, entities, made_public, comparisons)
     assert len(assessments) > 0
     assert len(comparisons) > 0
+    assert all(isinstance(a.value, float) for _, a in assessments), assessments
             
 def test_generative_model():
     for seed in range(N_SEEDS):

@@ -1,7 +1,7 @@
 from abc import abstractmethod
+from numpy.typing import NDArray
 
 import numpy as np
-import numpy.typing as npt
 import logging
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         entities: Entities,
         comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
         init : MultiScore, # keynames == "entity_name"
-    ) -> npt.NDArray:
+    ) -> NDArray:
         """ Computes the scores given comparisons """
         values = self.init_values(entities, init)
         left_indices, right_indices = comparisons.left_right_indices(entities)

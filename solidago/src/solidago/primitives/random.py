@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Type, Union
+from typing import Iterable, Type, Union
 from numpy.typing import NDArray
 
 import numpy as np
@@ -100,6 +100,21 @@ class Uniform(Distribution):
     
     def sample(self, n_samples: int = 1) -> NDArray:
         return np.random.uniform(self.min, self.max, n_samples)
+
+class Multinomial(Distribution):
+    def __init__(self, probabilities: Iterable, values: list[str] | None):
+        self.probabilities = np.array(list(probabilities))
+        self.values = values or [str(i) for i in range(len(self.probabilities))]
+        assert all(self.probabilities >= 0)
+        assert self.probabilities.sum() == 1
+        assert len(self.values) == len(self.probabilities)
+    
+    def sample(self, n_samples = 1) -> list[str]:
+        dim = len(self.probabilities)
+        return [
+            self.values[(np.random.multinomial(1, self.probabilities) * np.arange(dim)).sum()]
+            for i in range(n_samples)
+        ]
 
 class Add(Distribution):
     def __init__(self, subdistributions: list):

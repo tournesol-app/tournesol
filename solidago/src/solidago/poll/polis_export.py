@@ -3,7 +3,7 @@ from io import StringIO
 import requests
 import pandas as pd
 
-from .base import *
+from .poll import *
 
 
 class PolisExport(Poll):

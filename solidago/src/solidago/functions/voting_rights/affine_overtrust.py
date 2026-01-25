@@ -8,6 +8,8 @@ from solidago.functions.parallelized import ParallelizedPollFunction
 
 
 class AffineOvertrust(ParallelizedPollFunction):
+    block_parallelization: bool = False
+    
     def __init__(self, 
         privacy_penalty: float = 0.5, 
         min_overtrust: float = 2.0,
@@ -29,24 +31,12 @@ class AffineOvertrust(ParallelizedPollFunction):
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
 
-    def __call__(self, 
-        users: Users, 
-        entities: Entities, 
-        made_public: MadePublic,
-        assessments: Assessments, 
-        comparisons: Comparisons,
-    ) -> tuple[Entities, VotingRights]:
-        """ Updates voting_rights and entities by assigning voting rights
-        that exceed trust by a limited overtrust amount.
-        This overtrust on a given entity on a given criterion is set to be at most 
-        an affine function of the total trusts of users who evaluated the entity on the criterion.
-        """
-        if len(users) == 0 or len(entities) == 0:
-            return entities.deepcopy(), VotingRights()
-        assessments = assessments.reorder("entity_name", "criterion", "username")
-        comparisons = comparisons.reorder("entity_name", "criterion", "username", "other_name")
-        return super().__call__(users, entities, made_public, assessments, comparisons)
-
+    def _process_kwargs(self, assessments: Assessments, comparisons: Comparisons) -> dict:
+        return dict(
+            assessments=assessments.reorder("entity_name", "criterion", "username"),
+            comparisons=comparisons.reorder("entity_name", "criterion", "username", "other_name"),
+        )
+    
     def _variables(self,
         entities: Entities, 
         assessments: Assessments, # keynames == ["entity_name", "criterion", "username"]
@@ -71,7 +61,7 @@ class AffineOvertrust(ParallelizedPollFunction):
     def _args(self,
         variable: tuple[Entity, str],
         nonargs, # evaluators: Users
-        made_public: MadePublic, # set(keynames) == {"username", "entity_name", "criterion"}
+        made_public: MadePublic, # set(keynames) == {"username", "entity_name"}
     ) -> tuple[NDArray, NDArray, float, float]:
         (entity, _), evaluators = variable, nonargs
         trusts = np.array([user.trust if hasattr(user, "trust") else 0.0 for user in evaluators])

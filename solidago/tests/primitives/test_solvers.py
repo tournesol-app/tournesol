@@ -4,8 +4,8 @@ import numpy as np
 from numba import njit
 
 from solidago.primitives.dichotomy import solve as dichotomy_solve
-from solidago.primitives.optimize import njit_brentq as brentq
-from solidago.primitives.optimize import coordinate_updates, coordinate_descent
+from solidago.primitives.minimizer.brentq import njit_brentq as brentq
+from solidago.primitives.minimizer.coordinate_descent import CoordinateDescent
 
 
 def test_dichotomy():
@@ -51,7 +51,7 @@ def test_update_coordinates():
     def get_update_coordinate_function_args(coordinate: int, variable: np.ndarray) -> tuple:
         return tuple()
 
-    result = coordinate_updates(
+    result = CoordinateDescent().updates(
         update_coordinate_function,
         get_update_coordinate_function_args,
         initialization=np.array([1, 4, 3, 2, 1])
@@ -109,13 +109,13 @@ def test_coordinate_descent():
     def get_update_coordinate_function_args(coordinate: int, variable: np.ndarray) -> tuple:
         return (0, 8, 4)
     
-    result = coordinate_descent(
+    result = CoordinateDescent().coordinate_descent(
         partial_derivative,
         np.arange(10),
         get_partial_derivative_args,
         get_update_coordinate_function_args,
     )
-    result2 = coordinate_descent(
+    result2 = CoordinateDescent().coordinate_descent(
         partial_derivative,
         np.arange(10),
         get_partial_derivative_args,

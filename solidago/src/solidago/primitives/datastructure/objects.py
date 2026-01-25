@@ -50,10 +50,13 @@ class Object:
         return self.name
     
     def __repr__(self) -> str:
-        return f"{type(self).__name__} {self.name}\n" + "\n".join([
+        s = f"{type(self).__name__} {self.name}\n" + "\n".join([
             f"{key} = {value}" for key, value in self.__dict__.items()
             if key not in {"name", "vector"}
         ])
+        if len(self.vector) > 0:
+            s += f"\nvector.shape == {self.vector.shape}"
+        return s
         
 
 class Objects:
@@ -88,7 +91,7 @@ class Objects:
                 self._dict[kwargs["name"]] = type(self).object_cls(vector=vector, **kwargs)
         elif isinstance(self.init_data, Iterable):
             self._name2index, self._index2name = None, None
-            for index, data in enumerate(self.init_data):
+            for data in self.init_data:
                 obj = type(self).object_cls.load(data)
                 self._dict[obj.name] = obj
         self.init_data = None
@@ -128,7 +131,7 @@ class Objects:
         self._cache()
         if isinstance(name, (str, int)):
             return self._dict[name]
-        return type(self)([obj for obj in name])
+        return type(self)([self[obj] for obj in name])
     
     def sample(self, n_items: int | None = None) -> "Objects":
         if n_items is None or len(self) < n_items:
@@ -212,7 +215,13 @@ class Objects:
         except:
             return cls()
 
-    def save(self, directory: str | None = None, source: str | None = None) -> tuple[str, dict]:
+    def save(self, 
+        directory: str | None = None, 
+        source: str | None = None, 
+        save_instructions: bool = False, # not used
+    ) -> tuple[str, dict]:
+        if not self:
+            return self.save_instructions(source)
         source = source or type(self).name
         if directory is not None:
             self.to_df().to_csv(Path(directory) / f"{source}.csv")

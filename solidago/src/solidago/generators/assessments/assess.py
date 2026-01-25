@@ -37,6 +37,7 @@ class Deterministic(Assess):
             value *= user.multiplier
         if hasattr(user, "translation"):
             value += user.translation
+        assert isinstance(value, float)
         return Assessment(value)
 
 
@@ -46,6 +47,7 @@ class Negate(Assess):
 
     def __call__(self, assessment: Assessment, user: User, entity: Entity, public: bool, criterion: str) -> Assessment:
         value = self.honest(assessment, user, entity, public, criterion).value
+        assert isinstance(- value, float)
         return Assessment(- value)
 
 
@@ -55,4 +57,5 @@ class Noisy(Assess):
 
     def __call__(self, assessment: Assessment, user: User, entity: Entity, public: bool, criterion: str) -> Assessment:
         value = Deterministic()(assessment, user, entity, public, criterion).value
-        return Assessment(value + self.distribution.sample())
+        assert isinstance(value, float)
+        return Assessment(value + self.distribution.sample()[0])

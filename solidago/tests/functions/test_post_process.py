@@ -6,7 +6,7 @@ from solidago.functions.post_process import Squash
 
 
 user_models = UserModels(
-    MultiScore(["username", "entity_name", "criterion"], {
+    user_directs=MultiScore(["username", "entity_name", "criterion"], {
         ("user_0", "entity_0", "default"): Score(2, 1, .5),
         ("user_0", "entity_1", "default"): Score(1, .2, .1),
         ("user_0", "entity_3", "default"): Score(.2, .4, .3),

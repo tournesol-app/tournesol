@@ -7,9 +7,9 @@ from .made_public import *
 from .assessments import *
 from .comparisons import *
 from .voting_rights import *
-from .models import *
+from .scoring import *
 
-from .base import Poll
+from .poll import Poll
 from .tournesol_export import TournesolExport
 
 __all__ = [

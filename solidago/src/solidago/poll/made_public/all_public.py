@@ -1,4 +1,4 @@
-from .base import MadePublic
+from .made_public import MadePublic
 
 
 class AllPublic(MadePublic):

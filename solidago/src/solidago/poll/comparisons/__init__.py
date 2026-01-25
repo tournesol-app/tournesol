@@ -1,1 +1,1 @@
-from .base import Comparison, Comparisons
+from .comparisons import Comparison, Comparisons
