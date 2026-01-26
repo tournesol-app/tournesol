@@ -9,6 +9,13 @@ made_public:
   - username
   - entity_name
   source: made_public.csv
+ratings:
+- Ratings
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  source: ratings.csv
 user_models:
 - UserModels
 - default_composition:

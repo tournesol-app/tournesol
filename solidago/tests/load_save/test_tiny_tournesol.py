@@ -11,7 +11,7 @@ def test_import():
     assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
     assert "aBdymwisfb4" in t.entities
     assert isinstance(t.made_public, AllPublic)
-    assert len(t.assessments) == 0
+    assert len(t.ratings) == 0
     assert len(t.comparisons) == 2268
     assert len(t.comparisons["amatissart"]) == 19
     assert t.comparisons.get(entity_name="Tt5AwEU_BiM").keys("username") == {'amatissart', 'biscuissec', 'white'}
@@ -54,7 +54,7 @@ def test_reimport():
     assert t.vouches["aidjango", "biscuissec", "Personhood"] == (1, 0)
     assert "aBdymwisfb4" in t.entities
     assert isinstance(t.made_public, AllPublic)
-    assert len(t.assessments) == 0
+    assert len(t.ratings) == 0
     assert len(t.comparisons) == 2268
     assert len(t.comparisons["amatissart"]) == 19
     assert t.comparisons.get(entity_name="Tt5AwEU_BiM").keys("username") == {'amatissart', 'biscuissec', 'white'}

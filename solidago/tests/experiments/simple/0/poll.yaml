@@ -5,6 +5,13 @@ global_model:
     - note: average
   - - Squash
     - max: 100
+ratings:
+- Ratings
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  source: ratings.csv
 user_models:
 - UserModels
 - default_composition:

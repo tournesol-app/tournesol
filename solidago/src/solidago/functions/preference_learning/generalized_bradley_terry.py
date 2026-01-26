@@ -107,7 +107,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
     def user_learn(self, 
         user: User, # Not used (kept because other methods might leverage user metadata)
         entities: Entities,
-        assessments: Assessments, # Not used
+        ratings: Ratings, # Not used
         comparisons: Comparisons, # keynames == ["criterion", "entity_name", "other_name"]
         init_model: Optional[ScoringModel]=None,
     ) -> ScoringModel:

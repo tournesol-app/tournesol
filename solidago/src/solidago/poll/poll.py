@@ -11,7 +11,7 @@ from .users import Users
 from .vouches import Vouches
 from .entities import Entities
 from .made_public import MadePublic
-from .assessments import Assessments
+from .ratings import Ratings
 from .comparisons import Comparisons
 from .voting_rights import VotingRights
 from .scoring import ScoringModel, UserModels
@@ -29,7 +29,7 @@ class Poll:
         entities: Entities | None = None,
         vouches: Vouches | None = None,
         made_public: MadePublic | None = None,
-        assessments: Assessments | None = None,
+        ratings: Ratings | None = None,
         comparisons: Comparisons | None = None,
         voting_rights: VotingRights | None = None,
         user_models : UserModels | None = None,
@@ -42,7 +42,7 @@ class Poll:
         self.entities = Entities() if entities is None else entities
         self.vouches = Vouches() if vouches is None else vouches
         self.made_public = MadePublic() if made_public is None else made_public
-        self.assessments = Assessments() if assessments is None else assessments
+        self.ratings = Ratings() if ratings is None else ratings
         self.comparisons = Comparisons() if comparisons is None else comparisons
         self.voting_rights = VotingRights() if voting_rights is None else voting_rights
         self.user_models = UserModels() if user_models is None else user_models
@@ -50,7 +50,7 @@ class Poll:
     
     def key_by_type(value) -> str:
         types = dict(users=Users, entities=Entities, vouches=Vouches, made_public=MadePublic)
-        types |= dict(assessments=Assessments, comparisons=Comparisons, voting_rights=VotingRights)
+        types |= dict(ratings=Ratings, comparisons=Comparisons, voting_rights=VotingRights)
         types |= dict(user_models=UserModels, global_model=ScoringModel)
         for name, type in types.items():
             if isinstance(value, type):
@@ -58,7 +58,7 @@ class Poll:
         raise ValueError(f"{value} does not have the type of a poll attribute")
     
     def criteria(self) -> set[str]:
-        criteria = self.assessments.keys("criterion") 
+        criteria = self.ratings.keys("criterion") 
         criteria |= self.comparisons.keys("criterion") 
         criteria |= self.voting_rights.keys("criterion") 
         criteria |= self.user_models.criteria() 
@@ -76,7 +76,7 @@ class Poll:
             entities=(Entities, dict()), 
             vouches=(Vouches, dict()), 
             made_public=(MadePublic, dict()),
-            assessments=(Assessments, dict()), 
+            ratings=(Ratings, dict()), 
             comparisons=(Comparisons, dict()),
             voting_rights=(VotingRights, dict()),
             user_models=(UserModels, dict()),
@@ -106,7 +106,7 @@ class Poll:
         self.entities.save(directory)
         self.vouches.save(directory)
         self.made_public.save(directory)
-        self.assessments.save(directory)
+        self.ratings.save(directory)
         self.comparisons.save(directory)
         self.voting_rights.save(directory)
         self.user_models.save(directory, False)

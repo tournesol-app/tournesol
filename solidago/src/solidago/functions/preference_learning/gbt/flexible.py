@@ -20,40 +20,40 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         prior_stds: dict[str, float] | None = None, # Must specify priors for directs/thresholds/categories/parameters
         minimizer: tuple[str, dict] | None = None,
         uncertainty: tuple[str, dict] | None = None,
-        assessment_root_law: tuple[str, dict | None] | None = ("Uniform", None),
+        rating_root_law: tuple[str, dict | None] | None = ("Uniform", None),
         comparison_root_law: tuple[str, dict | None] | None = ("Uniform", None),
-        discard_assessments: bool = False,
+        discard_ratings: bool = False,
     ):
         """ Flexible Generalized Bradley Terry is a preference learning model 
-        for various forms of assessments and comparisons"""
+        for various forms of ratings and comparisons"""
         super().__init__(max_workers, direct, categories, n_parameters, minimizer, uncertainty)
         self.prior_stds = prior_stds or dict()
         for key in ("directs", "thresholds", "categories", "parameters"):
             if not key in self.prior_stds:
                 self.prior_stds[key] = 7.0
-        self.assessment_root_law = None if assessment_root_law is None else RootLaw.load(assessment_root_law)
+        self.rating_root_law = None if rating_root_law is None else RootLaw.load(rating_root_law)
         self.comparison_root_law = None if comparison_root_law is None else RootLaw.load(comparison_root_law)
-        self.discard_assessments = discard_assessments
+        self.discard_ratings = discard_ratings
 
     #######################
     ##  Data management  ##
     #######################
     
     def _process_kwargs(self):
-        return dict(assessments=Assessments()) if self.discard_assessments else dict()
+        return dict(ratings=Ratings()) if self.discard_ratings else dict()
     
-    def _assessment_arg(self, 
-        assessments: Assessments, 
+    def _rating_arg(self, 
+        ratings: Ratings, 
         entities: Entities, 
-        assessment_contexts: list[str]
+        rating_contexts: list[str]
     ) -> tuple[NDArray, NDArray, list[RootLaw], NDArray]:
-        """ Assessments are ignored """
-        assert not (self.discard_assessments and assessments), (self.discard_assessments, assessments)
-        entity_indices = np.array([entities.name2index(entity_name) for (entity_name,), _ in assessments], dtype=np.int64)
-        root_laws = [RootLaw.load(a.root_law, self.assessment_root_law) for _, a in assessments]
-        normalized_assessments = np.array([r.normalize_assessment(a) for (_, a), r in zip(assessments, root_laws)]) - 1
-        context_indices = np.array([len(entities) + assessment_contexts.index(a.context) for _, a in assessments], dtype=np.int64)
-        return entity_indices, context_indices, normalized_assessments, root_laws
+        """ Ratings are ignored """
+        assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
+        entity_indices = np.array([entities.name2index(entity_name) for (entity_name,), _ in ratings], dtype=np.int64)
+        root_laws = [RootLaw.load(a.root_law, self.rating_root_law) for _, a in ratings]
+        normalized_ratings = np.array([r.normalize_rating(a) for (_, a), r in zip(ratings, root_laws)]) - 1
+        context_indices = np.array([len(entities) + rating_contexts.index(a.context) for _, a in ratings], dtype=np.int64)
+        return entity_indices, context_indices, normalized_ratings, root_laws
     
     def _comparison_arg(self, comparisons: Comparisons, entities: Entities) -> tuple[NDArray, NDArray, NDArray, list[RootLaw]]: 
         lefts = np.array([entities.name2index(l) for (l, _), _ in comparisons.left_right_iter()], dtype=np.int64)
@@ -68,13 +68,13 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     def _args(self, 
         variable: tuple[User, str], 
         nonargs, # tuple[Entities, list[tuple[str, list[str]]], list[str]], 
-        assessments: Assessments,
+        ratings: Ratings,
         comparisons: Comparisons,
         user_models: UserModels,
     ) -> list[NDArray, tuple[NDArray, NDArray, NDArray, list[RootLaw]], NDArray, NDArray, bool, int, NDArray]:
-        """ Reduces assessments to comparisons. Also, drops the last unused argument `n_parameters`. """
-        assert not (self.discard_assessments and assessments), (self.discard_assessments, assessments)
-        args = super()._args(variable, nonargs, assessments, comparisons, user_models)
+        """ Reduces ratings to comparisons. Also, drops the last unused argument `n_parameters`. """
+        assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
+        args = super()._args(variable, nonargs, ratings, comparisons, user_models)
         init_value, a, c, embedding_matrix, category_indices, direct, n_entities, n_thresholds, category_group_lengths, n_parameters = args
         extended_comparisons = np.concatenate([a[0], c[0]]), np.concatenate([a[1], c[1]]), np.concatenate([a[2], c[2]]), a[3] + c[3]
         

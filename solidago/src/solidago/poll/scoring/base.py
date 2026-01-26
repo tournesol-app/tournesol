@@ -57,16 +57,18 @@ class Direct(BaseScoring):
 
 class IterateEntitiesCriterion(BaseScoring):
     def __call__(self, entities: Entity | Entities, criteria: str | set, keynames: list[str]) -> Score | MultiScore:
-        assert isinstance(entities, (Entity, Entities))
-        assert isinstance(criteria, (str, set))
+        assert isinstance(entities, (Entity, Entities)), entities
+        assert isinstance(criteria, (str, set)), criteria
         if isinstance(entities, Entity) and isinstance(criteria, str):
             return self.score_single(entities, criteria)
         scores = MultiScore(keynames)
-        entities = Entities([entities]) if isinstance(entities, Entities) else entities
+        entities = Entities([entities]) if isinstance(entities, Entity) else entities
         criteria = {criteria} if isinstance(criteria, str) else criteria
-        to_keys = self.to_keys(keynames)
-        for entity, criterion in itertools.product(entities, criteria):
-            scores[*to_keys(entity, criterion)] = self.score_single(entity, criterion)
+        to_keys = type(self).to_keys(keynames)
+        assert isinstance(entities, Entities), entities
+        for entity in entities:
+            for criterion in criteria:
+                scores[*to_keys(entity, criterion)] = self.score_single(entity, criterion)
         return scores
     
     def to_keys(keynames: list[str]) -> Callable[[Entity, str], tuple]:
@@ -84,7 +86,7 @@ class IterateEntitiesCriterion(BaseScoring):
 class DirectAndMeta(IterateEntitiesCriterion):
     def score_single(self, entity: Entity, criterion: str) -> Score:
         score = self.directs[entity, criterion]
-        for category in self.categories.list:
+        for category in self.categories.keys("category"):
             assert hasattr(entity, category), f"Entity must have a category {category}"
             score += self.categories[category, getattr(entity, category), criterion]
         return score
@@ -93,19 +95,19 @@ class DirectAndMeta(IterateEntitiesCriterion):
         return isinstance(other, DirectAndMeta)
 
 
-class Linear(BaseScoring):
+class Linear(IterateEntitiesCriterion):
     def score_single(self, entity: Entity, criterion: str) -> Score:
-        assert self.parameters.n_coordinates == entity.vector.shape
         score = self.directs[entity, criterion]
-        for category in self.categories.list:
+        for category in self.categories.keys("category"):
             assert hasattr(entity, category), f"Entity must have a category {category}"
             score += self.categories[category, getattr(entity, category), criterion]
-        linear_value = self.parameters.values(criterion) @ entity.vector
+        entity_vector = entity.vector[:self.parameters.n_coordinates(criterion)]
+        linear_value = self.parameters.values(criterion) @ entity_vector
         mins, maxs = self.parameters.minima(criterion), self.parameters.maxima(criterion)
-        minimizer = np.where(entity.vector > 0, maxs, mins)
-        min_linear_value = minimizer @ entity.vector
-        maximizer = np.where(entity.vector < 0, maxs, mins)
-        max_linear_value = maximizer @ entity.vector
+        minimizer = np.where(entity_vector > 0, maxs, mins)
+        min_linear_value = minimizer @ entity_vector
+        maximizer = np.where(entity_vector < 0, maxs, mins)
+        max_linear_value = maximizer @ entity_vector
         assert min_linear_value <= linear_value and linear_value <= max_linear_value
         return score + Score(linear_value, linear_value - min_linear_value, max_linear_value - linear_value)
 

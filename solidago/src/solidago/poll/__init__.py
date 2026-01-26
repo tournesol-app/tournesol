@@ -4,7 +4,7 @@ from .users import *
 from .vouches import *
 from .entities import *
 from .made_public import *
-from .assessments import *
+from .ratings import *
 from .comparisons import *
 from .voting_rights import *
 from .scoring import *
@@ -17,7 +17,7 @@ __all__ = [
     "Vouches",
     "Entity", "Entities",
     "MadePublic", "AllPublic",
-    "Assessment", "Assessments",
+    "Rating", "Ratings",
     "Comparison", "Comparisons",
     "VotingRights",
     "Score", "MultiScore", "ScoringModel", "UserModels",

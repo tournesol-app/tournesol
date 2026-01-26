@@ -34,23 +34,23 @@ def test_evaluation_generator():
     users = generators.users.AddColumn("n_evaluated_entities", Add([Zipf(1.5), Poisson(3.0)]))(users)
     users = generators.users.AddColumn("engagement_bias", Normal())(users)
     users = generators.users.AddColumn("p_public", Uniform())(users)
-    users = generators.users.AddColumn("p_assess", Uniform())(users)
+    users = generators.users.AddColumn("p_rate", Uniform())(users)
     users = generators.users.AddColumn("n_comparisons_per_entity", Uniform(1.0, 5.0))(users)
 
     engagement_generator = generators.engagements.Independent(BiasedByScore(Normal()))
-    made_public, assessments, comparisons = engagement_generator(users, entities)
-    assessments = generators.assessments.Independent(
-        generators.assessments.Noisy(Normal())
-    )(users, entities, made_public, assessments)
+    made_public, ratings, comparisons = engagement_generator(users, entities)
+    ratings = generators.ratings.Independent(
+        generators.ratings.Noisy(Normal())
+    )(users, entities, made_public, ratings)
     comparisons = generators.comparisons.Independent(
         generators.comparisons.KnaryGBT(21, 10)
     )(users, entities, made_public, comparisons)
-    assert len(assessments) > 0
+    assert len(ratings) > 0
     assert len(comparisons) > 0
-    assert all(isinstance(a.value, float) for _, a in assessments), assessments
+    assert all(isinstance(a.value, float) for _, a in ratings), ratings
             
 def test_generative_model():
     for seed in range(N_SEEDS):
         state = Poll.load(f"tests/saved/{seed}")
-        for key in ("users", "entities", "vouches", "made_public", "assessments", "comparisons"):
+        for key in ("users", "entities", "vouches", "made_public", "ratings", "comparisons"):
             assert len(getattr(state, key)) > 0

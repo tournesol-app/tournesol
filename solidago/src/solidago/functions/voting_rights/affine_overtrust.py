@@ -31,30 +31,30 @@ class AffineOvertrust(ParallelizedPollFunction):
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
 
-    def _process_kwargs(self, assessments: Assessments, comparisons: Comparisons) -> dict:
+    def _process_kwargs(self, ratings: Ratings, comparisons: Comparisons) -> dict:
         return dict(
-            assessments=assessments.reorder("entity_name", "criterion", "username"),
+            ratings=ratings.reorder("entity_name", "criterion", "username"),
             comparisons=comparisons.reorder("entity_name", "criterion", "username", "other_name"),
         )
     
     def _variables(self,
         entities: Entities, 
-        assessments: Assessments, # keynames == ["entity_name", "criterion", "username"]
+        ratings: Ratings, # keynames == ["entity_name", "criterion", "username"]
         comparisons: Comparisons, # keynames == ["entity_name", "criterion", "username", "other_name"]
     ) -> list[tuple[Entity, str]]:
         def get_criteria(e):
-            return assessments[e].keys("criterion") | comparisons[e].keys("criterion")
+            return ratings[e].keys("criterion") | comparisons[e].keys("criterion")
         return [(entity, criterion) for entity in entities for criterion in get_criteria(entity)]
     
     def _nonargs_list(self,
         variables: list[tuple[Entity, str]],
         users: Users, 
-        assessments: Assessments, # keynames == ["entity_name", "criterion", "username"]
+        ratings: Ratings, # keynames == ["entity_name", "criterion", "username"]
         comparisons: Comparisons, # keynames == ["entity_name", "criterion", "username", "other_name"]
     ) -> list[Users]:
         """ Returns a list of evaluators, for each variable """
         return [
-            users[assessments[e, c].keys("username") | comparisons[e, c].keys("username")]
+            users[ratings[e, c].keys("username") | comparisons[e, c].keys("username")]
             for e, c in variables
         ]
     

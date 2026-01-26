@@ -6,11 +6,16 @@
       decay: 0.8
       sink_vouch: 5.0
       error: 1.0e-8
-  - - NumbaUniformGBT
-    - prior_std: 7
-      uncertainty_nll_increase: 1.0
-      max_uncertainty: 1.0e+3
-      convergence_error: 1.0e-1
+  - - FlexibleGeneralizedBradleyTerry
+    - direct: true
+      categories: ["author", "journalism"]
+      n_parameters: 4
+      prior_stds: {directs: 7.0, thresholds: 7.0, categories: 7.0, parameters: 7.0}
+      minimizer: [SciPyMinimizer, {method: L-BFGS-B, convergence_error: 1.0e-5}]
+      uncertainty: [NLLIncrease, {nll_increase: 1.0, error: 1.0e-1, max: 1.0e+3}]
+      rating_root_law: [Gaussian, std: 1.0]
+      comparison_root_law: [Uniform, {}]
+      discard_ratings: false
   - - AffineOvertrust
     - privacy_penalty: 0.5
       min_overtrust: 2.0

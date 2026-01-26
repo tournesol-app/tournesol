@@ -46,7 +46,7 @@ class Filtering:
             self._get_entities(poll.entities),
             self._get_vouches(poll.vouches),
             self._get_made_public(poll.made_public),
-            self._get_assessments(poll.assessments),
+            self._get_ratings(poll.ratings),
             self._get_comparisons(poll.comparisons),
             self._get_voting_rights(poll.voting_rights),
             self._get_user_models(poll.user_models),
@@ -77,14 +77,14 @@ class Filtering:
                 filtered_made_public[username, entity_name] = value
         return filtered_made_public
     
-    def _get_assessments(self, assessments: Assessments) -> Assessments:
+    def _get_ratings(self, ratings: Ratings) -> Ratings:
         if self.all_users and self.all_entities and self.all_criteria:
-            return deepcopy(assessments)
-        filtered_assessments = Assessments()
-        for (username, criterion, entity_name), value in assessments:
+            return deepcopy(ratings)
+        filtered_ratings = Ratings()
+        for (username, criterion, entity_name), value in ratings:
             if self.has_user(username) and self.has_criterion(criterion) and self.has_entity(entity_name):
-                filtered_assessments[username, criterion, entity_name] = value
-        return filtered_assessments
+                filtered_ratings[username, criterion, entity_name] = value
+        return filtered_ratings
     
     def _get_comparisons(self, comparisons: Comparisons) -> Comparisons:
         if self.all_users and self.all_entities and self.all_criteria:

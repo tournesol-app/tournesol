@@ -17,15 +17,15 @@
       distribution: [Add, subdistributions: [[Zipf, power_decay: 2.0], [Poisson, mean: 5.0]]]
   - [users.AddColumn, {column: engagement_bias, distribution: [Normal, {}]}]
   - [users.AddColumn, {column: p_public, distribution: [Uniform, {}]}]
-  - [users.AddColumn, {column: p_assess, distribution: [Uniform, {min: 0.2, max: 1.0}]}]
+  - [users.AddColumn, {column: p_rate, distribution: [Uniform, {min: 0.2, max: 1.0}]}]
   - [users.AddColumn, {column: n_comparisons_per_entity, distribution: [Uniform, {min: 1.0, max: 5.0}]}]
-  - - engagements.Independent # requires users.{n_evaluated_entities, p_public, p_assess, {p_compare | n_comparisons_per_entity}}
+  - - engagements.Independent # requires users.{n_evaluated_entities, p_public, p_rate, {p_compare | n_comparisons_per_entity}}
     - select_entities: [BiasedByScore, noise: [Normal, {}]] # requires users.{vector, n_evaluated_entities, engagement_bias} and entities.vector
   # User expression generation
   - [users.AddColumn, {column: translation, distribution: [Normal, std: 1.0]}]
   - [users.AddColumn, {column: multiplier, distribution: [Gamma, {shape: 1.0, scale: 1.0}]}]
-  # User assessments
-  - - assessments.Independent # requires users.vector and entities.vector
+  # User ratings
+  - - ratings.Independent # requires users.vector and entities.vector
     - honest: [Noisy, distribution: [Normal, std: 1.0]]
       malicious: [Negate, honest: [Deterministic, {}]]
   # User comparisons

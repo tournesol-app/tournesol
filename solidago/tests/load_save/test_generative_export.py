@@ -23,7 +23,7 @@ def test_generative_model():
     f = lambda s: s.made_public["user_1"].keys("entity_name")
     assert f(s1) == f(s2)
 
-    f = lambda s: s.assessments["user_2", "default"].keys("entity_name")
+    f = lambda s: s.ratings["user_2", "default"].keys("entity_name")
     assert f(s1) == f(s2)
 
     f = lambda s: s.comparisons["user_0", "default", "entity_5"].keys("other_name")

@@ -5,11 +5,18 @@ global_model:
     - note: entitywise_qr_quantile
   - - Squash
     - max: 100
+ratings:
+- Ratings
+- keynames:
+  - username
+  - criterion
+  - entity_name
+  source: ratings.csv
 user_models:
 - UserModels
 - default_composition:
-  - - Direct
-    - {}
+  - - Linear
+    - note: FlexibleGeneralizedBradleyTerry
   - - Scale
     - note: mehestan
   - - Scale
@@ -18,3 +25,7 @@ user_models:
     - note: lipschitz_quantile_shift
   - - Squash
     - max: 100
+  user_categories:
+    categories_list:
+    - journalism
+    - author

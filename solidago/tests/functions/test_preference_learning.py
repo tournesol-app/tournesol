@@ -46,7 +46,7 @@ def test_gbt_score_monotonicity(GBT):
 @pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
 def test_uniform_gbt(GBT):
     poll = Poll.load(f"tests/saved/0")
-    _, _, fgbt_user_models = FlexibleGeneralizedBradleyTerry(discard_assessments=True).poll2objects_function(poll)
+    _, _, fgbt_user_models = FlexibleGeneralizedBradleyTerry(discard_ratings=True).poll2objects_function(poll)
     _, _, gbt_user_models = GBT().poll2objects_function(poll)
     for user in poll.users:
         for entity in poll.entities:
@@ -99,16 +99,16 @@ def test_flexible():
     fgbt = functions.FlexibleGeneralizedBradleyTerry(
         n_parameters=n_parameters,
         categories=categories,
-        assessment_root_law=("Gaussian", dict(std=1.0)),
+        rating_root_law=("Gaussian", dict(std=1.0)),
     )
     poll = Poll.load(f"tests/saved/0")
     user, criterion = poll.users["user_0"], "default"
     variable = user, criterion
     entities, user_models = poll.entities, poll.user_models
-    assessments, comparisons = poll.assessments, poll.comparisons
-    nonargs = fgbt._nonargs(variable, entities, assessments, comparisons)
-    evaluated_entities, category_groups, assessment_contexts = nonargs
-    args = fgbt._args(variable, nonargs, assessments, comparisons, user_models)
+    ratings, comparisons = poll.ratings, poll.comparisons
+    nonargs = fgbt._nonargs(variable, entities, ratings, comparisons)
+    evaluated_entities, category_groups, rating_contexts = nonargs
+    args = fgbt._args(variable, nonargs, ratings, comparisons, user_models)
     (values, extended_comparisons, prior_inv_vars, embedding_matrix, category_indices, 
         direct, n_entities, n_thresholds, category_group_lengths,
         categories_offsets, parameters_offset) = args
@@ -116,7 +116,7 @@ def test_flexible():
     
     assert isinstance(evaluated_entities, Entities), evaluated_entities
     assert category_groups, category_groups
-    assert assessment_contexts == ["undefined"], assessment_contexts
+    assert rating_contexts == ["undefined"], rating_contexts
     assert len(values) == len(evaluated_entities) + n_parameters + n_thresholds + sum(l for l in category_group_lengths)
     assert all(i in range(len(values)) for i in left_indices), left_indices
     assert all(i in range(len(values)) for i in right_indices), right_indices
@@ -158,22 +158,22 @@ def test_flexible():
 
     fgbt_users, fgbt_entities, fgbt_user_models = fgbt.poll2objects_function(poll)
     assert len(fgbt_users) == len(poll.users)
-    assert "assessment_threshold_undefined_value" in fgbt_users["user_0"]
+    assert "rating_threshold_undefined_value" in fgbt_users["user_0"]
     assert len(fgbt_entities) == len(poll.entities)
-    assert "n_assessers" in fgbt_entities["entity_1"]
+    assert "n_raters" in fgbt_entities["entity_1"]
     assert "user_2" in fgbt_user_models.user_directs.keys("username")
     assert not user_models.user_categories["user_1", "author", "Science4All", "default"].isnan()
 
 def test_uncertainty_comparison_only():
-    fgbt = functions.FlexibleGeneralizedBradleyTerry(discard_assessments=True)
+    fgbt = functions.FlexibleGeneralizedBradleyTerry(discard_ratings=True)
     poll = Poll.load(f"tests/saved/0")
     user, criterion = poll.users["user_0"], "default"
     variable = user, criterion
     entities, user_models = poll.entities, poll.user_models
-    assessments, comparisons = Assessments(), poll.comparisons
-    nonargs = fgbt._nonargs(variable, entities, assessments, comparisons)
-    evaluated_entities, category_groups, assessment_contexts = nonargs
-    args = fgbt._args(variable, nonargs, assessments, comparisons, user_models)
+    ratings, comparisons = Ratings(), poll.comparisons
+    nonargs = fgbt._nonargs(variable, entities, ratings, comparisons)
+    evaluated_entities, category_groups, rating_contexts = nonargs
+    args = fgbt._args(variable, nonargs, ratings, comparisons, user_models)
     (init_values, extended_comparisons, prior_inv_vars, embedding_matrix, category_indices, 
         direct, n_entities, n_thresholds, category_group_lengths,
         categories_offsets, parameters_offset) = args
@@ -191,16 +191,16 @@ def test_uncertainty():
     fgbt = functions.FlexibleGeneralizedBradleyTerry(
         n_parameters=n_parameters,
         categories=categories,
-        assessment_root_law=("Gaussian", dict(std=1.0)),
+        rating_root_law=("Gaussian", dict(std=1.0)),
     )
     poll = Poll.load(f"tests/saved/0")
     user, criterion = poll.users["user_0"], "default"
     variable = user, criterion
     entities, user_models = poll.entities, poll.user_models
-    assessments, comparisons = poll.assessments, poll.comparisons
-    nonargs = fgbt._nonargs(variable, entities, assessments, comparisons)
-    evaluated_entities, category_groups, assessment_contexts = nonargs
-    args = fgbt._args(variable, nonargs, assessments, comparisons, user_models)
+    ratings, comparisons = poll.ratings, poll.comparisons
+    nonargs = fgbt._nonargs(variable, entities, ratings, comparisons)
+    evaluated_entities, category_groups, rating_contexts = nonargs
+    args = fgbt._args(variable, nonargs, ratings, comparisons, user_models)
     (init_values, extended_comparisons, prior_inv_vars, embedding_matrix, category_indices, 
         direct, n_entities, n_thresholds, category_group_lengths,
         categories_offsets, parameters_offset) = args

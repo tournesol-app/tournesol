@@ -11,7 +11,7 @@ generator:
     # Engagement generation
     - [users.AddColumn, {column: n_evaluated_entities, distribution: [Poisson, mean: 5.0]}]
     - [users.AddColumn, {column: n_comparisons_per_entity, distribution: [Uniform, {min: 1.0, max: 5.0}]}]
-    - - engagements.Independent # may use users.{p_public, p_assess, {p_compare | n_comparisons_per_entity}}
+    - - engagements.Independent # may use users.{p_public, p_rate, {p_compare | n_comparisons_per_entity}}
       - select_entities: [Uniform, {}] # Requires user.n_evaluated_entities
     # User comparison
     - - comparisons.Independent

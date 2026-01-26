@@ -1,0 +1,16 @@
+username,criterion,entity_name,value,min,max
+user_0,default,entity_6,2.30710513927595,-inf,inf
+user_0,default,entity_0,0.6414674616511207,-inf,inf
+user_0,default,entity_4,0.9485166647129577,-inf,inf
+user_0,default,entity_5,0.6821178479318638,-inf,inf
+user_0,default,entity_3,0.5275064793864328,-inf,inf
+user_0,default,entity_7,-0.9121696399942232,-inf,inf
+user_1,default,entity_1,1.530682767156727,-inf,inf
+user_1,default,entity_0,2.2559419822517865,-inf,inf
+user_1,default,entity_2,2.4932731657348244,-inf,inf
+user_3,default,entity_7,-1.4303074996553942,-inf,inf
+user_3,default,entity_4,-0.019009864029565948,-inf,inf
+user_3,default,entity_5,-0.8343894873024505,-inf,inf
+user_4,default,entity_2,1.666158344719813,-inf,inf
+user_4,default,entity_0,1.9141808527660578,-inf,inf
+user_4,default,entity_1,2.4263522440508596,-inf,inf

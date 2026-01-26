@@ -9,8 +9,8 @@ from solidago.poll import *
 
 
 class RootLaw:
-    def normalize_assessment(self, assessment: Assessment) -> float:
-        return float(assessment.value)
+    def normalize_rating(self, rating: Rating) -> float:
+        return float(rating.value)
     
     def normalize_comparison(self, comparison: Comparison) -> float:
         return float(comparison.value)
@@ -59,10 +59,10 @@ class RootLaw:
 
 
 class BradleyTerry(RootLaw):
-    def normalize_assessment(self, assessment: Assessment) -> float:
-        mean = (assessment.min + assessment.max) / 2
+    def normalize_rating(self, rating: Rating) -> float:
+        mean = (rating.min + rating.max) / 2
         mean = 0 if np.isfinite(mean) else mean
-        return np.sign(assessment.value - mean)
+        return np.sign(rating.value - mean)
     
     def normalize_comparison(self, comparison: Comparison) -> float:
         return np.sign(comparison.value)
@@ -90,9 +90,9 @@ class BradleyTerry(RootLaw):
 
 
 class Uniform(RootLaw):
-    def normalize_assessment(self, assessment: Assessment) -> float:
-        middle = (assessment.max + assessment.min) / 2
-        return float(2 * (assessment.value - middle) / (assessment.max - assessment.min))
+    def normalize_rating(self, rating: Rating) -> float:
+        middle = (rating.max + rating.min) / 2
+        return float(2 * (rating.value - middle) / (rating.max - rating.min))
     
     def normalize_comparison(self, comparison: Comparison) -> float:
         return float(comparison.value / comparison.max)
@@ -162,9 +162,9 @@ class Discrete(RootLaw):
         assert isinstance(n_values, int) and n_values >= 2, n_values
         self.n_values = n_values
 
-    def normalize_assessment(self, assessment: Assessment) -> float:
-        middle = (assessment.max + assessment.min) / 2
-        return float(2 * (assessment.value - middle) / (assessment.max - assessment.min))
+    def normalize_rating(self, rating: Rating) -> float:
+        middle = (rating.max + rating.min) / 2
+        return float(2 * (rating.value - middle) / (rating.max - rating.min))
     
     def normalize_comparison(self, comparison: Comparison) -> float:
         return float(comparison.value / comparison.max)

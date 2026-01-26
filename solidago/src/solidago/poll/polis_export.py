@@ -26,22 +26,22 @@ class PolisExport(Poll):
         entities = entities.join(PolisExport.load(poll_identifier, "comment-groups"))
         entities.index.name = "entity_name"
         
-        assessments = PolisExport.load(poll_identifier, "votes").rename(columns={
+        ratings = PolisExport.load(poll_identifier, "votes").rename(columns={
             "voter-id": "username",
             "comment-id": "entity_name",
             "vote": "value"
         })
-        assessments[["criterion", "min", "max"]] = ["default", -1, 1]
+        ratings[["criterion", "min", "max"]] = ["default", -1, 1]
         
-        return summary, users, entities, assessments
+        return summary, users, entities, ratings
     
     def __init__(self, poll_identifier: str):
-        summary, users, entities, assessments = PolisExport.load_dfs(poll_identifier)
-        from solidago.poll import Users, Entities, AllPublic, Assessments
+        summary, users, entities, ratings = PolisExport.load_dfs(poll_identifier)
+        from solidago.poll import Users, Entities, AllPublic, Ratings
         super().__init__(
             users=Users(users),
             entities=Entities(entities),
             made_public=AllPublic(),
-            assessments=Assessments(init_data=assessments),
+            ratings=Ratings(init_data=ratings),
         )
         self.summary = summary

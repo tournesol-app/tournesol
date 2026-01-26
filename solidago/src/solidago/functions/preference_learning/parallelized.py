@@ -44,8 +44,8 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
     #############################################
 
     @abstractmethod
-    def _assessment_arg(self, assessments: Assessments, entities: Entities) -> tuple[NDArray, NDArray]:
-        """ Returns entity_indices and normalized_assessments. May return more. """
+    def _rating_arg(self, ratings: Ratings, entities: Entities) -> tuple[NDArray, NDArray]:
+        """ Returns entity_indices and normalized_ratings. May return more. """
     
     @abstractmethod
     def _comparison_arg(self, comparisons: Comparisons, entities: Entities) -> tuple[NDArray, NDArray, NDArray]: 
@@ -79,29 +79,29 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
     def _nonargs(self, 
         variable: tuple[User, str], 
         entities: Entities, 
-        assessments: Assessments,
+        ratings: Ratings,
         comparisons: Comparisons,
     ) -> tuple[Entities, list[tuple[str, list[str]]], list[str]]:
         """ Helps determine the evaluated entities and the category groups """
         user, criterion = variable
-        evaluated_entity_names = assessments[user, criterion].keys("entity_name")
+        evaluated_entity_names = ratings[user, criterion].keys("entity_name")
         evaluated_entity_names |= comparisons[user, criterion].keys("entity_name")
         evaluated_entities = entities[evaluated_entity_names]
         category_groups = [(c, list({getattr(e, c) for e in evaluated_entities})) for c in self.categories]
-        assessment_contexts = list({a.context for _, a in assessments[user, criterion]})
-        return evaluated_entities, category_groups, assessment_contexts
+        rating_contexts = list({a.context for _, a in ratings[user, criterion]})
+        return evaluated_entities, category_groups, rating_contexts
 
-    def _variables(self, users: Users, assessments: Assessments, comparisons: Comparisons) -> list[tuple[User, str]]:
+    def _variables(self, users: Users, ratings: Ratings, comparisons: Comparisons) -> list[tuple[User, str]]:
         return [
             (user, criterion)
             for user in users
-            for criterion in assessments[user].keys("criterion") | comparisons[user].keys("criterion")
+            for criterion in ratings[user].keys("criterion") | comparisons[user].keys("criterion")
         ]
 
     def _args(self, 
         variable: tuple[User, str], 
         nonargs: tuple[Entities, list[tuple[str, list[str]]], list[str]], 
-        assessments: Assessments,
+        ratings: Ratings,
         comparisons: Comparisons,
         user_models: UserModels,
     ) -> list[NDArray, tuple[NDArray, NDArray], tuple[NDArray, NDArray, NDArray], NDArray, NDArray, bool, int, NDArray, int]:
@@ -109,15 +109,15 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         Returns
         ------ 
         init_value,
-        assessments, comparisons, embedding_matrix, category_indices, 
+        ratings, comparisons, embedding_matrix, category_indices, 
         direct, n_entities, n_thresholds, category_group_lengths, n_parameters """
         user, criterion = variable
-        entities, category_groups, assessment_contexts = nonargs 
-        n_entities, n_thresholds = len(entities), len(assessment_contexts)
+        entities, category_groups, rating_contexts = nonargs 
+        n_entities, n_thresholds = len(entities), len(rating_contexts)
         category_indices = self._category_indices(entities, category_groups, len(entities), n_thresholds)
         return (
-            self._init_model_arg(user_models[user], criterion, entities, user, assessment_contexts, category_groups),
-            self._assessment_arg(assessments[user, criterion], entities, assessment_contexts),
+            self._init_model_arg(user_models[user], criterion, entities, user, rating_contexts, category_groups),
+            self._rating_arg(ratings[user, criterion], entities, rating_contexts),
             self._comparison_arg(comparisons[user, criterion], entities),
             entities.vectors[:, :self.n_parameters],
             category_indices,
@@ -133,14 +133,14 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         criterion: str, 
         entities: Entities, 
         user: User,
-        assessment_contexts: list[str],
+        rating_contexts: list[str],
         category_groups: list[tuple[str, list[str]]],
     ) -> NDArray:
-        """ Assumes that each assessment context requires an additional variable, called `threshold`.
+        """ Assumes that each rating context requires an additional variable, called `threshold`.
         This is the case for FlexibleGeneralizedBradleyTerry, but could require modifications for other
         preference learning algorithms """
         directs = [model.directs[entity, criterion].value for entity in entities]
-        thresholds = [user[context] if context in user else 0.0 for context in assessment_contexts]
+        thresholds = [user[context] if context in user else 0.0 for context in rating_contexts]
         categories = [
             model.categories[category, group, criterion].value
             for category, groups in category_groups
@@ -173,11 +173,11 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         args_lists: list[NDArray, tuple[NDArray, NDArray], tuple[NDArray, NDArray, NDArray], NDArray, NDArray], 
         users: Users,
         entities: Entities,
-        assessments: Assessments,
+        ratings: Ratings,
         comparisons: Comparisons,
         user_models: UserModels,
     ) -> tuple[Users, Entities, UserModels]:
-        """ Assumes that each assessment context requires an additional variable, called `threshold`.
+        """ Assumes that each rating context requires an additional variable, called `threshold`.
         This is the case for FlexibleGeneralizedBradleyTerry, but could require modifications for other
         preference learning algorithms """
         composition, user_compositions = self._returned_model_composition(), dict()
@@ -195,15 +195,15 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         user_parameters = UserParameters()
 
         for (user, criterion), nonargs, (values, lefts, rights) in zip(variables, nonargs_list, results):
-            entities, category_groups, assessment_contexts = nonargs
+            entities, category_groups, rating_contexts = nonargs
             i = 0
             for entity in entities:
                 user_directs[user, entity, criterion] = Score(values[i], lefts[i], rights[i])
                 i += 1
-            for context in assessment_contexts:
-                user[f"assessment_threshold_{context}_value"] = values[i]
-                user[f"assessment_threshold_{context}_left_uncertainty"] = lefts[i]
-                user[f"assessment_threshold_{context}_right_uncertainty"] = rights[i]
+            for context in rating_contexts:
+                user[f"rating_threshold_{context}_value"] = values[i]
+                user[f"rating_threshold_{context}_left_uncertainty"] = lefts[i]
+                user[f"rating_threshold_{context}_right_uncertainty"] = rights[i]
                 i += 1
             for category, groups in category_groups:
                 for group in groups:
@@ -212,8 +212,8 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
             for j in range(i, len(entities)):
                 user_parameters[user, criterion, str(j)] = Score(values[i+j], lefts[i+j], rights[i+j])
         
-        users = self.add_user_stats(users, assessments, comparisons)
-        entities = self.add_entity_stats(entities, assessments, comparisons)
+        users = self.add_user_stats(users, ratings, comparisons)
+        entities = self.add_entity_stats(entities, ratings, comparisons)
 
         args = () if not self.keep_user_model_score_processing else (
             user_models.user_multipliers, user_models.user_translations,
@@ -227,22 +227,22 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         
         return users, entities, user_models
 
-    def add_user_stats(self, users: Users, assessments: Assessments, comparisons: Comparisons) -> Users:
-        evaluated_entities = lambda u: assessments[u].keys("entity_name") | comparisons[u].keys("entity_name")
+    def add_user_stats(self, users: Users, ratings: Ratings, comparisons: Comparisons) -> Users:
+        evaluated_entities = lambda u: ratings[u].keys("entity_name") | comparisons[u].keys("entity_name")
         return users.assign(
-            n_assessments=[len(assessments[u]) for u in users], 
+            n_ratings=[len(ratings[u]) for u in users], 
             n_comparisons=[len(comparisons[u]) for u in users], 
             n_evaluated_entities=[len(evaluated_entities(u)) for u in users]
         )
     
-    def add_entity_stats(self, entities: Entities, assessments: Assessments, comparisons: Comparisons) -> Entities:
-        assessments = assessments.reorder("entity_name", "username", "criterion")
+    def add_entity_stats(self, entities: Entities, ratings: Ratings, comparisons: Comparisons) -> Entities:
+        ratings = ratings.reorder("entity_name", "username", "criterion")
         comparisons = comparisons.reorder("entity_name", "username", "criterion")
-        evaluators = lambda e: assessments[e].keys("username") | comparisons[e].keys("username")
+        evaluators = lambda e: ratings[e].keys("username") | comparisons[e].keys("username")
         return entities.assign(
-            n_assessments=[len(assessments[e]) for e in entities], 
+            n_ratings=[len(ratings[e]) for e in entities], 
             n_comparisons=[len(comparisons[e]) for e in entities], 
-            n_assessers=[len(assessments[e].keys("username")) for e in entities], 
+            n_raters=[len(ratings[e].keys("username")) for e in entities], 
             n_comparers=[len(comparisons[e].keys("username")) for e in entities], 
             n_evaluators=[len(evaluators(e)) for e in entities]
         )
@@ -250,7 +250,9 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:
         if directory is not None:
             logger.info("Saving user base model")
-            poll.user_models.save_base_models(directory)
+            poll.user_models.save_table(directory, "user_directs")
+            poll.user_models.save_table(directory, "user_categories")
+            poll.user_models.save_table(directory, "user_parameters")
         logger.info("Saving poll.yaml")
         return poll.save_instructions(directory)
  

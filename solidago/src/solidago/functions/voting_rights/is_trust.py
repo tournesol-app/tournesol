@@ -19,7 +19,7 @@ class Trust2VotingRights(PollFunction):
         users: Users, 
         entities: Entities, 
         made_public: MadePublic,
-        assessments: Assessments, 
+        ratings: Ratings, 
         comparisons: Comparisons
     ) -> VotingRights:
         """ Compute voting rights as trust_scores """
@@ -27,7 +27,7 @@ class Trust2VotingRights(PollFunction):
         
         for user in users:
             for entity in entities:
-                for criterion in assessments.keys("criterion") | comparisons.keys("criterion"):
+                for criterion in ratings.keys("criterion") | comparisons.keys("criterion"):
                     penalty = made_public.penalty(self.privacy_penalty, user, entity)
                     voting_rights[user, entity, criterion] = penalty * user.trust
         

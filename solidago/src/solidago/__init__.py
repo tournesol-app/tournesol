@@ -25,7 +25,7 @@ __all__ = [
     "User", "Users", "Entity", "Entities",
     "Vouches",
     "MadePublic", "AllPublic",
-    "Assessment", "Assessments",
+    "Rating", "Ratings",
     "Comparison", "Comparisons",
     "VotingRights",
     "Score", "MultiScore", "ScoringModel", "UserModels",

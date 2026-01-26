@@ -325,7 +325,7 @@ class UserModels:
         if len(self.user_compositions) > 0:
             kwargs["user_compositions"] = self.user_compositions
         if self.user_categories:
-            kwargs["user_categories"] = dict(categories_list=self.user_categories.list)
+            kwargs["user_categories"] = dict(categories_list=list(self.user_categories.keys("category")))
         if self.user_parameters:
             kwargs["user_parameters"] = dict(n_coordinates=self.user_parameters.n_coordinates)
         instructions = type(self).__name__, kwargs

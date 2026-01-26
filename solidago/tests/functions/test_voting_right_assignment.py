@@ -215,11 +215,11 @@ def test_affine_overtrust():
     made_public["2", "1"] = True
     made_public["4", "3"] = True
     
-    assessments = Assessments()
-    assessments["0", "default", "0"] = Assessment(2)
-    assessments["3", "default", "0"] = Assessment(-1)
-    assessments["3", "default", "1"] = Assessment(0)
-    assessments["4", "default", "3"] = Assessment(5)
+    ratings = Ratings()
+    ratings["0", "default", "0"] = Rating(2)
+    ratings["3", "default", "0"] = Rating(-1)
+    ratings["3", "default", "1"] = Rating(0)
+    ratings["4", "default", "3"] = Rating(5)
     
     comparisons = Comparisons()
     comparisons["0", "default", "3", "5"] = Comparison(-1)
@@ -227,7 +227,7 @@ def test_affine_overtrust():
     comparisons["2", "default", "0", "1"] = Comparison(5)
     
     ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=2)
-    entities, voting_rights = ao(users, entities, made_public, assessments, comparisons)
+    entities, voting_rights = ao(users, entities, made_public, ratings, comparisons)
 
     assert len(entities) == 6  # 6 entities
     assert list(entities.to_df().columns) == [

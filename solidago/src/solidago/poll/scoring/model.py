@@ -37,12 +37,19 @@ class Parameters(MultiScore):
     def value_factory(cls):
         return Score(0, 0, 0)
     
+    def n_coordinates(self, *keys) -> int:
+        multiscores = self[*keys]
+        assert multiscores.keynames == ("coordinate",)
+        coordinates = [int(i) for i in multiscores.keys("coordinate")]
+        return max(coordinates) + 1 if coordinates else 0
+
     def scores_list(self, *keys) -> list[Score]:
         multiscores, coordinate, values = self[*keys], 0, list()
         if not multiscores:
             return list()
         assert multiscores.keynames == ("coordinate",)
-        n_coordinates = max(multiscores.keys("coordinate")) + 1
+        coordinates = [int(i) for i in multiscores.keys("coordinate")]
+        n_coordinates = max(coordinates) + 1 if coordinates else 0
         for coordinate in range(n_coordinates):
             values.append(multiscores[str(coordinate)])
         return values
@@ -121,7 +128,7 @@ class ScoringModel:
         keynames: list[str] | None = None,
     ) -> Score | MultiScore:
         """ Assigns a score to an entity, or to multiple entities. Handles keynames recovery. """
-        entities, criteria, keynames = type(self)._adjust_keynames(entities, criteria, keynames)
+        entities, criteria, keynames = self._adjust_keynames(entities, criteria, keynames)
         return self.base_scoring()(entities, criteria, keynames)
 
     def base_scoring(self) -> "BaseScoring":
@@ -158,7 +165,7 @@ class ScoringModel:
         assert isinstance(entities, Entities)
         return entities.sample(n_sampled_entities)
     
-    def _adjust_keynames(
+    def _adjust_keynames(self,
         entities: str | Entity | Entities | slice = slice(None),
         criteria: str | set | slice = slice(None),
         keynames: list[str] | None = None,
@@ -172,11 +179,13 @@ class ScoringModel:
                 keynames.append("criterion")
         assert "entity_name" in keynames or isinstance(entities, (str, Entity))
         assert "criterion" in keynames or isinstance(criteria, str)
-        entities = {e.name for e in entities} if isinstance(entities, Entities) else entities
+        entities = entities[{e.name for e in entities}] if isinstance(entities, Entities) else entities
         if "entity_name" in keynames and isinstance(entities, (str, Entity)):
-            entities = {entities} if isinstance(str) else {entities.name}
+            entities = {entities} if isinstance(str) else Entities([entities])
         if "criterion" in keynames and isinstance(criteria, str):
             criteria = {criteria}
+        if isinstance(criteria, slice):
+            criteria = self.criteria()
         return entities, criteria, keynames
 
     def scale(self, 
@@ -219,11 +228,9 @@ class ScoringModel:
     
     @classmethod
     def load_tables(cls, directory: str | Path, filename: str = "scoring_model", **kwargs) -> "ScoringModel":
-        def get_kwargs(key):
-            return dict(source=f"{key}.csv") | kwargs[key] if key in kwargs else dict()
         assert "composition" in kwargs
         def get_kwargs(key):
-            return dict(source=f"{filename}_{key}.csv") | kwargs[key] if key in kwargs else dict()
+            return dict(source=f"{filename}_{key}.csv") | (kwargs[key] if key in kwargs else dict())
         return cls(
             composition=kwargs["composition"] if "composition" in kwargs else None,
             directs=DirectScores.load(directory, **get_kwargs("directs")),

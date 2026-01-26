@@ -6,7 +6,7 @@ from solidago.primitives.datastructure import NestedDict, MultiKeyTable
 if TYPE_CHECKING:
     from solidago.poll.entities import Entity
 
-class Assessment:
+class Rating:
     def __init__(self, 
         value: float | None = None,
         min: float | None = None,
@@ -25,7 +25,7 @@ class Assessment:
         self.context = context
     
     @classmethod
-    def from_series(cls, row: Series) -> "Assessment":
+    def from_series(cls, row: Series) -> "Rating":
         return cls(**dict(row))
 
     @property
@@ -42,23 +42,23 @@ class Assessment:
         return f"{self.value} (min={self.min}, max={self.max})"
 
 
-class Assessments(MultiKeyTable):
-    name: str="assessments"
-    value_cls: type=Assessment
+class Ratings(MultiKeyTable):
+    name: str="ratings"
+    value_cls: type=Rating
     default_keynames: tuple=("username", "criterion", "entity_name")
 
     @property
     def valuenames(self) -> tuple:
         return self.value_cls().keynames
 
-    def value2tuple(self, assessment: Assessment) -> tuple:
-        return assessment.to_tuple()
+    def value2tuple(self, rating: Rating) -> tuple:
+        return rating.to_tuple()
     
-    def series2value(self, previous_stored_value: Any, row: Series) -> Assessment:
-        return Assessment.from_series(row)
+    def series2value(self, previous_stored_value: Any, row: Series) -> Rating:
+        return Rating.from_series(row)
 
     def get_evaluators(self, entity: Union[str, "Entity"]) -> set[str]:
         return { username for username in self.get(entity_name=entity).keys("username") }
 
     def has_default_type(self) -> bool:
-        return type(self) == Assessments and self.keynames == self.default_keynames
+        return type(self) == Rating and self.keynames == self.default_keynames
