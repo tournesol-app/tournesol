@@ -1,3 +1,10 @@
+# Temporary:
+# To remove after yarn repo (defined in role "frontend") has been deployed on all environments.
+- name: Remove old entry for Yarn Repository
+  apt_repository:
+    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+    state: absent
+
 - name: Update all packages to their latest version
   apt:
     name: "*"
