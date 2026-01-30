@@ -1163,7 +1163,7 @@
       "hasReceivedVouchers": "Vous avez au moins un garant.",
       "hasNotReceivedVouchers": "Vous n'avez pas encore de garant."
     },
-    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateur·rices, vous leur permettez d'augmenter leur score de confiance, y compris si leur adresse e-mail n'est pas considérée comme fiable. La liste des personnes pour lesquelles vous vous portez garant ou qui se portent garant pour vous est une information publique."
+    "aboutVouchingMechanism": "En vous portant garant pour d'autres utilisateurs et utilisatrices, vous leur permettez d'augmenter leur score de confiance, y compris si leur adresse e-mail n'est pas considérée comme fiable. La liste des personnes pour lesquelles vous vous portez garant ou qui se portent garant pour vous est une information publique."
   },
   "myRateLaterListPage": {
     "title": "À comparer plus tard"
