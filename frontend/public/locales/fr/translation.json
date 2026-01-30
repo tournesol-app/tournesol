@@ -1143,10 +1143,10 @@
     "usernameLabel": "Nom d'utilisateur",
     "submitButton": "Je me porte garant de cette personne",
     "givenVoucherDeleted": "Vous ne vous portez plus garant pour «\u00a0{{username}}\u00a0».",
-    "noVoucherGiven": "Aucun.",
-    "givenVouchersTitle": "Utilisateur·rices pour lesquels vous vous portez garant",
-    "noVoucherReceived": "Aucun.",
-    "receivedVouchersTitle": "Utilisateur·rices qui se portent garant pour vous",
+    "noVoucherGiven": "Aucune.",
+    "givenVouchersTitle": "Personnes pour lesquelles vous vous portez garant",
+    "noVoucherReceived": "Aucune.",
+    "receivedVouchersTitle": "Personnes qui se portent garant pour vous",
     "trustScore": {
       "title": "Score de confiance",
       "description": {
