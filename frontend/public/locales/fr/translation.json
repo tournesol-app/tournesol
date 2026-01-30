@@ -299,7 +299,7 @@
       "shortVersion": "Si une infraction au présent Accord est détectée, nous pouvons suspendre temporairement ou résilier définitivement votre Compte.",
       "p": {
         "theTournesolAssociationWill": "L'association Tournesol prendra des mesures en cas de violation de cet Accord",
-        "dependingOnTheSeverityWe": "En fonction de la gravité de la violation et de l'impact sur les Utilisateur.rices ou le Service, nous pouvons prendre les mesures suivantes\u00a0:",
+        "dependingOnTheSeverityWe": "En fonction de la gravité de la violation et de l'impact sur les Utilisateur·rices ou le Service, nous pouvons prendre les mesures suivantes\u00a0:",
         "accountSuspension": "suspension de Compte\u00a0;",
         "accountTermination": "résiliation de Compte\u00a0;",
         "removalOfAddedContents": "suppression du Contenu ajouté."
@@ -701,8 +701,8 @@
     "donateByDirectTransferEUR": "Par virement direct en Euros (EUR)",
     "donateByDirectTransferCHF": "Par virement direct en Francs Suisses (CHF)",
     "publicDatabase": "Base de données publique",
-    "publicDatabaseDetailAndLicense": "Les contributeurs de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
-    "publicDatabaseThanksToContributors": "Enfin, nous souhaitons vivement remercier tous les contributeurs qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateur·rices qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
+    "publicDatabaseDetailAndLicense": "Les contributeur·rices de Tournesol peuvent décider de rendre leurs données publiques. Nous espérons que ces données importantes se révéleront utiles pour les chercheurs et chercheuses travaillant sur l'éthique des algorithmes, et les systèmes de recommandation à grande échelle. Notre base de données publique, disponible sous licence <2>Open Data Commons Attribution License (ODC-By)</2>, peut être téléchargée en cliquant sur le bouton ci-dessous.",
+    "publicDatabaseThanksToContributors": "Nous souhaitons vivement remercier toutes les personnes qui comparent des vidéos sur Tournesol. Nous comptons actuellement environ {{userCount}} utilisateur·rices qui ont comparé {{comparisonCount}} fois plus de {{comparedEntityCount}} vidéos. ❤️",
     "trustedEmailDomains": "Noms de domaine considérés comme fiables",
     "trustedDomainsToProtectTournesol": "Dans le but de protéger Tournesol des faux comptes, la plateforme assigne par défaut un score de confiance limité aux nouveaux comptes créés.",
     "trustedDomainsGainMoreVotingRights": "Vous pouvez augmenter significativement votre score de confiance en validant <2>une adresse e-mail provenant d'un domaine considéré comme fiable</2>, ou lorsque d'autres personnes se portent garant·es pour vous.",
