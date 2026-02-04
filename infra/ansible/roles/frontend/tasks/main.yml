@@ -11,15 +11,14 @@
     owner: react
     group: react
 
-- name: Add Yarn Repository Key
-  apt_key:
-    url: https://dl.yarnpkg.com/debian/pubkey.gpg
-    state: present
-
-- name: Add Yarn Repository
-  apt_repository:
-    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
-    state: present
+- name: Add Yarn repository
+  deb822_repository:
+    name: yarn
+    types: deb
+    uris: https://dl.yarnpkg.com/debian/
+    suites: stable
+    components: main
+    signed_by: https://dl.yarnpkg.com/debian/pubkey.gpg
 
 - name: Install Yarn
   apt:
