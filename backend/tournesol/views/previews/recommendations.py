@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from PIL import Image, ImageDraw
+from pilmoji import Pilmoji
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.exceptions import NotFound
 
@@ -114,15 +115,15 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
     def draw_header(self, image: Image.Image, upscale_ratio: int):
         headline = get_headline(upscale_ratio)
-
-        tournesol_frame_draw = ImageDraw.Draw(headline)
         full_title = "Find videos on Tournesol"
-        tournesol_frame_draw.text(
-            tuple(numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio)),
-            full_title,
-            font=self.fnt_config["recommendations_headline"],
-            fill="#4a473e",
-        )
+
+        with Pilmoji(headline) as pilmoji:
+            pilmoji.text(
+                tuple(numpy.multiply(TOURNESOL_RECOMMENDATIONS_HEADLINE_XY, upscale_ratio)),
+                full_title,
+                font=self.fnt_config["recommendations_headline"],
+                fill="#4a473e",
+            )
 
         image.paste(headline)
 
@@ -189,36 +190,37 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
         publication_date_x_gap = views_number_width + gap
 
         # Draw video title
-        draw.text(
-            (0, 0),
-            video.metadata.get("name", ""),
-            font=self.fnt_config["recommendations_title"],
-            fill=COLOR_BROWN_FONT,
-        )
+        with Pilmoji(video_metadata_box) as pilmoji:
+            pilmoji.text(
+                (0, 0),
+                video.metadata.get("name", ""),
+                font=self.fnt_config["recommendations_title"],
+                fill=COLOR_BROWN_FONT,
+            )
 
-        # Draw metadata on 2nd line
-        second_line_y = 14
-        draw.text(
-            (0, second_line_y * upscale_ratio),
-            views_number,
-            font=self.fnt_config["recommendations_metadata"],
-            fill=COLOR_GREY_FONT,
-        )
-        draw.text(
-            (publication_date_x_gap, second_line_y * upscale_ratio),
-            publication_date,
-            font=self.fnt_config["recommendations_metadata"],
-            fill=COLOR_GREY_FONT,
-        )
-        draw.text(
-            (
-                publication_date_x_gap + publication_date_width + gap,
-                second_line_y * upscale_ratio,
-            ),
-            video.metadata.get("uploader", ""),
-            font=self.fnt_config["recommendations_metadata"],
-            fill=COLOR_GREY_FONT,
-        )
+            # Draw metadata on 2nd line
+            second_line_y = 14
+            pilmoji.text(
+                (0, second_line_y * upscale_ratio),
+                views_number,
+                font=self.fnt_config["recommendations_metadata"],
+                fill=COLOR_GREY_FONT,
+            )
+            pilmoji.text(
+                (publication_date_x_gap, second_line_y * upscale_ratio),
+                publication_date,
+                font=self.fnt_config["recommendations_metadata"],
+                fill=COLOR_GREY_FONT,
+            )
+            pilmoji.text(
+                (
+                    int(publication_date_x_gap + publication_date_width + gap),
+                    second_line_y * upscale_ratio,
+                ),
+                video.metadata.get("uploader", ""),
+                font=self.fnt_config["recommendations_metadata"],
+                fill=COLOR_GREY_FONT,
+            )
 
         image.paste(video_metadata_box, (110 * upscale_ratio, 3 * upscale_ratio))
 
