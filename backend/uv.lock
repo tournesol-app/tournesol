@@ -385,6 +385,15 @@ wheels = [
 ]
 
 [[package]]
+name = "emoji"
+version = "2.15.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/78/0d2db9382c92a163d7095fc08efff7800880f830a152cfced40161e7638d/emoji-2.15.0.tar.gz", hash = "sha256:eae4ab7d86456a70a00a985125a03263a5eac54cd55e51d7e184b1ed3b6757e4", size = 615483, upload-time = "2025-09-21T12:13:02.755Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/5e/4b5aaaabddfacfe36ba7768817bd1f71a7a810a43705e531f3ae4c690767/emoji-2.15.0-py3-none-any.whl", hash = "sha256:205296793d66a89d88af4688fa57fd6496732eb48917a87175a023c8138995eb", size = 608433, upload-time = "2025-09-21T12:13:01.197Z" },
+]
+
+[[package]]
 name = "factory-boy"
 version = "3.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -972,6 +981,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pilmoji"
+version = "2.0.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "emoji" },
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/05/75/e5430da7a99ea66c9b93cdbd66372a010022398887eb3f8fcccb866010ee/pilmoji-2.0.5.tar.gz", hash = "sha256:e038532c97b79b3d55c29f5a6c2b6b627105b8cd1db0c1d2271402b3e4e9be18", size = 11889, upload-time = "2026-01-06T01:33:20.637Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/24/09/2dcc3fa1e0627f95143b61cc2c8a13042f5dcd7e11d1e12b0ba5e205aeca/pilmoji-2.0.5-py3-none-any.whl", hash = "sha256:856ddf827d42d8c8d2a1f879fdc1ae318ffb72435c4adc934be6d3e48376173d", size = 11740, upload-time = "2026-01-29T17:25:35.378Z" },
+]
+
+[[package]]
 name = "platformdirs"
 version = "4.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1517,6 +1539,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "pillow" },
+    { name = "pilmoji" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
@@ -1566,6 +1589,7 @@ requires-dist = [
     { name = "numpy", specifier = "==2.3.*" },
     { name = "pandas", specifier = "==2.2.*" },
     { name = "pillow", specifier = "==12.*" },
+    { name = "pilmoji", specifier = "~=2.0.5" },
     { name = "psycopg2-binary", specifier = "==2.9.*" },
     { name = "python-dotenv", specifier = "==1.*" },
     { name = "pyyaml", specifier = "==6.*" },
