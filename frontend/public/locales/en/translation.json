@@ -944,10 +944,10 @@
       "seeResults": "See the results"
     },
     "contributeTitle": "Contribute!",
-    "contributeDetail": "Tournesol identifies high quality content from comparisons provided by the community. To contribute, you must compare videos that you have watched. First copy paste two links to videos, then tell us which video you think should be largely recommended. If you want to you can also compare the videos in more details based on the multiple comparison criteria.",
+    "contributeDetail": "Tournesol identifies high quality content through comparisons provided by the community. To contribute, simply compare videos you have watched. Paste two video links and select which one deserves a broader audience. You can also provide a more in-depth comparison based on our detailed criteria.",
     "compareButton": "Compare now",
     "installTheMobileAppTitle": "Use our app!",
-    "installTheMobileAppDescription": "The mobile application is the best way to find and watch the high quality videos identified by the Tournesol contributors directly on your mobile.",
+    "installTheMobileAppDescription": "The mobile application is the best way to discover and watch quality videos identified by the Tournesol contributors, right on your phone.",
     "collaborativeContentRecommendations": "Collaborative Content Recommendations",
     "tournesolIsAParticipatoryResearchProject": "Tournesol is a transparent participatory research project about the ethics of algorithms and recommendation systems.",
     "readOurManifesto": "Read our manifesto",
@@ -973,7 +973,7 @@
     "compareTheVideos": "Compare the videos"
   },
   "recommendationsSection": {
-    "eachComparisonHelps": "Thanks to all contributors who compare videos, Tournesol can give high quality recommendations to thousands of users.",
+    "eachComparisonHelps": "Thanks to the contributors who compare videos, Tournesol can provide quality recommendations to thousands of users.",
     "seeMore": "See more videos"
   },
   "publicDataPublicCodeBox": {
