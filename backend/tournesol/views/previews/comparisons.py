@@ -245,7 +245,6 @@ class ComparisonPreviewGenerator:
         target.alpha_composite(logo, dest=dest)
 
     def draw_entity_description(self, entity, target, position, available_width):
-        draw = ImageDraw.Draw(target)
         position = numpy.multiply(position, self.upscale_ratio)
         available_width *= self.upscale_ratio
 
@@ -253,7 +252,7 @@ class ComparisonPreviewGenerator:
             full_uploader = entity.metadata.get("uploader", "")
             uploader_font = self.font(FOOTER_FONT_LOCATION, 11)
             truncated_uploader = truncate_text(
-                draw,
+                pilmoji.draw,
                 full_uploader,
                 font=uploader_font,
                 available_width=available_width,
@@ -269,7 +268,7 @@ class ComparisonPreviewGenerator:
             full_title = entity.metadata.get("name", "")
             title_font = self.font(FOOTER_FONT_LOCATION, 14)
             truncated_title = truncate_text(
-                draw,
+                pilmoji.draw,
                 full_title,
                 font=title_font,
                 available_width=available_width,
