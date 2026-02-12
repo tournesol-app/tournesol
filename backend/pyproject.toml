@@ -4,7 +4,7 @@ version = "0.1.0"
 readme = "README.md"
 requires-python = "==3.13.*"
 dependencies = [
-    "atproto==0.0.64",
+    "atproto==0.0.65",
     "django==4.2.*",
     "django-computed-property==0.3.*",
     "django-cors-headers==4.3.*",
