@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from PIL import Image, ImageDraw, ImageFont
+from pilmoji import Pilmoji
 from rest_framework.views import APIView
 
 from settings.settings import BASE_DIR
@@ -230,12 +231,12 @@ class ComparisonPreviewGenerator:
         )
 
     def draw_text(self, target, text, position, **text_args):
-        draw = ImageDraw.Draw(target)
-        draw.text(
-            numpy.multiply(position, self.upscale_ratio),
-            text,
-            **text_args,
-        )
+        with Pilmoji(target) as pilmoji:
+            pilmoji.text(
+                numpy.multiply(position, self.upscale_ratio),
+                text,
+                **text_args,
+            )
 
     def draw_logo(self, target, size, position):
         logo_size = (size * self.upscale_ratio, size * self.upscale_ratio)
@@ -244,41 +245,41 @@ class ComparisonPreviewGenerator:
         target.alpha_composite(logo, dest=dest)
 
     def draw_entity_description(self, entity, target, position, available_width):
-        draw = ImageDraw.Draw(target)
         position = numpy.multiply(position, self.upscale_ratio)
         available_width *= self.upscale_ratio
 
-        full_uploader = entity.metadata.get("uploader", "")
-        uploader_font = self.font(FOOTER_FONT_LOCATION, 11)
-        truncated_uploader = truncate_text(
-            draw,
-            full_uploader,
-            font=uploader_font,
-            available_width=available_width,
-        )
-        draw.text(
-            position,
-            truncated_uploader,
-            font=uploader_font,
-            fill=COLOR_BROWN_FONT,
-        )
-        uploader_height = font_height(uploader_font)
+        with Pilmoji(target) as pilmoji:
+            full_uploader = entity.metadata.get("uploader", "")
+            uploader_font = self.font(FOOTER_FONT_LOCATION, 11)
+            truncated_uploader = truncate_text(
+                pilmoji.draw,
+                full_uploader,
+                font=uploader_font,
+                available_width=available_width,
+            )
+            pilmoji.text(
+                position,
+                truncated_uploader,
+                font=uploader_font,
+                fill=COLOR_BROWN_FONT,
+            )
+            uploader_height = font_height(uploader_font)
 
-        full_title = entity.metadata.get("name", "")
-        title_font = self.font(FOOTER_FONT_LOCATION, 14)
-        truncated_title = truncate_text(
-            draw,
-            full_title,
-            font=title_font,
-            available_width=available_width,
-        )
-        draw.text(
-            (position[0], position[1] + uploader_height),
-            truncated_title,
-            font=title_font,
-            fill=COLOR_BROWN_FONT,
-        )
-        title_height = font_height(title_font)
+            full_title = entity.metadata.get("name", "")
+            title_font = self.font(FOOTER_FONT_LOCATION, 14)
+            truncated_title = truncate_text(
+                pilmoji.draw,
+                full_title,
+                font=title_font,
+                available_width=available_width,
+            )
+            pilmoji.text(
+                (position[0], position[1] + uploader_height),
+                truncated_title,
+                font=title_font,
+                fill=COLOR_BROWN_FONT,
+            )
+            title_height = font_height(title_font)
 
         total_height = (uploader_height + title_height) // self.upscale_ratio
         return total_height
