@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import Iterator, Optional
 
 import numpy as np
 
@@ -16,14 +16,14 @@ class Thurston(Compare):
         assert comparison_max > 0
         self.comparison_max = comparison_max
     
-    def __call__(self, 
+    def sample_value(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
         left_public: bool, right_public: bool,
         criterion: str,
-    ) -> Comparison:
+    ) -> tuple[float, float]:
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        return Comparison(self.sample_comparison(score_diff), self.comparison_max)
+        return self.sample_comparison(score_diff), self.comparison_max
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:
@@ -62,7 +62,7 @@ class DiscreteGBT(Thurston):
         return 0
         
     @abstractmethod
-    def comparison_generator(self) -> float:
+    def comparison_generator(self) -> Iterator[float]:
         """ Must be a generator """
         raise NotImplementedError
     
@@ -96,7 +96,7 @@ class KnaryGBT(DiscreteGBT):
     def root_law(self, comparison: float) -> float:
         return 1
 
-    def comparison_generator(self):
+    def comparison_generator(self) -> Iterator[float]:
         delta = 2 * self.comparison_max / (self.n_options - 1)
         for k in range(self.n_options):
             yield k * delta - self.comparison_max

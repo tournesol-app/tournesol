@@ -6,7 +6,9 @@ def parse_brackets(text: str, brackets: str = "{}") -> tuple[list[str], list[str
     The first list contains out of brackets. It initiates the sequence, potentially with "".
     The second list contains interleaved in-bracket texts. """
     assert len(brackets) == 2, brackets # must have an open and a close symbol, which could be the same
-    out_brackets, in_brackets, index = list(), list(), 0
+    out_brackets: list[str] = list()
+    in_brackets: list[str] = list()
+    index = 0
     while brackets[0] in text[index:]:
         open_bracket_index = index + text[index:].index(brackets[0])
         if brackets[1] not in text[open_bracket_index:]:
@@ -25,7 +27,7 @@ def interleave_texts(texts1: list[str], texts2: list[str]) -> str:
         interleaved.append(texts1[-1])
     return "".join(interleaved)
 
-def map_brackets(text: str, function: Callable, brackets: str = "{}") -> str:
+def map_brackets(text: str, function: Callable[[str], str], brackets: str = "{}") -> str:
     out_brackets, in_brackets = parse_brackets(text, brackets)
     filled_in_brackets = [function(text) for text in in_brackets]
     return interleave_texts(out_brackets, filled_in_brackets)

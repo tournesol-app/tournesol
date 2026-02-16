@@ -17,18 +17,19 @@ def test_parse_range():
     assert Instructions._parse_range("range(2,5,2)") == [2, 4]
 
 def test_parse_keys():
-    assert Instructions.parse_keys("eqew.313.sdav.2t") == ["eqew", "313", "sdav", "2t"]
-    assert Instructions.parse_keys("eqew") == ["eqew"]
-    assert Instructions.parse_keys(313) == [313]
+    assert Instructions.parse_keys("eqew.313.sdav.2t") == ("eqew", "313", "sdav", "2t")
+    assert Instructions.parse_keys("eqew") == ("eqew",)
+    assert Instructions.parse_keys(313) == (313,)
     
 def test_load():
     instructions = Instructions.load("tests/generators/test_generator.yaml")
     assert instructions.has("modules")
     assert not instructions.has("module")
-    assert instructions["modules.1"][0] == "entities.Entities"
+    module_1 = instructions["modules.1"]
+    assert isinstance(module_1, list)
+    assert module_1[0] == "entities.Entities"
+    assert len(module_1) == 2
     assert instructions["modules.1.n_entities"] == 8
-    assert isinstance(instructions["modules.1"], list)
-    assert len(instructions["modules.1"]) == 2
     instructions_clone = instructions.clone()
     instructions["items"] = dict(test=5)
     assert instructions["items.test"] == 5

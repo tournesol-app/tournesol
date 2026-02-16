@@ -7,17 +7,21 @@ import numpy as np
 from solidago.primitives.minimizer.brentq import njit_brentq
 
 
+def empty_function(_coordinate: int, _variable: NDArray[np.float64], *args: Any) -> tuple[Any, ...]:
+    return ()
+
+
 class CoordinateDescent(Minimizer):
     def __init__(self, convergence_error: float=1e-5, max_iter: int=1000):
         self.convergence_error = convergence_error
         self.max_iter = max_iter
 
     def updates(self,
-        update_coordinate_function: Callable[[int, NDArray, tuple], float],
-        get_update_coordinate_function_args: Callable[[int, NDArray], tuple] | None,
-        initialization: NDArray,
+        update_coordinate_function: Callable[[int, NDArray[np.float64], tuple[Any, ...]], float],
+        initialization: NDArray[np.float64],
+        get_update_coordinate_function_args: Callable[[int, NDArray[np.float64]], tuple[Any, ...]] | None = None,
         updated_coordinates: list[int] | None = None,
-    ) -> NDArray:
+    ) -> NDArray[np.float64]:
         """Minimize a loss function with coordinate descent,
         by leveraging the partial derivatives of the loss
 
@@ -45,8 +49,8 @@ class CoordinateDescent(Minimizer):
         if get_update_coordinate_function_args is None:
             get_update_coordinate_function_args = lambda coordinate, variable: ()
 
-        unchanged = set()
-        to_pick = list() if updated_coordinates is None else updated_coordinates
+        unchanged: set[int] = set()
+        to_pick: list[int] = list() if updated_coordinates is None else updated_coordinates
         variable = initialization
         variable_len = len(variable)
         iteration_number = 0
@@ -75,12 +79,12 @@ class CoordinateDescent(Minimizer):
         return variable
 
     def coordinate_descent(self,
-        partial_derivative_function: Callable[[float, tuple], float],
-        initialization: NDArray,
-        get_partial_derivative_args: Callable[[int, NDArray, tuple], tuple] | None =None,
-        get_update_coordinate_function_args: Callable[[int, NDArray], tuple] | None =None,
+        partial_derivative_function: Callable[[float, *tuple[Any, ...]], float],
+        initialization: NDArray[np.float64],
+        get_partial_derivative_args: Callable[[int, NDArray[np.float64], *tuple[Any, ...]], tuple[Any, ...]] | None = None,
+        get_update_coordinate_function_args: Callable[[int, NDArray[np.float64]], tuple[Any, ...]] | None =None,
         updated_coordinates: list[int] | None =None,
-    ) -> NDArray:
+    ) -> NDArray[np.float64]:
         """Minimize a loss function with coordinate descent,
         by leveraging the partial derivatives of the loss
 
@@ -113,7 +117,6 @@ class CoordinateDescent(Minimizer):
         # First define the update_coordinate_function associated to coordinatewise descent
         # by leveraging njit and brentq
         
-        empty_function = lambda coordinate, variable: tuple()
         
         if get_partial_derivative_args is None:
             get_partial_derivative_args = empty_function
@@ -123,8 +126,8 @@ class CoordinateDescent(Minimizer):
             
         def update_coordinate_function(
             coordinate: int, 
-            variable: NDArray, 
-            *coordinate_update_args
+            variable: NDArray[np.float64], 
+            *coordinate_update_args: Any
         ) -> float:
             return njit_brentq(
                 f=partial_derivative_function,
@@ -142,14 +145,16 @@ class CoordinateDescent(Minimizer):
         )
 
     def __call__(self, 
-        init: NDArray, 
-        args: tuple, 
-        loss: Callable[[NDArray, Any], float], # not used
-        gradient_function: Callable[[NDArray, Any], NDArray], # not used
-        partial_derivative: Callable[[int, NDArray, Any], Callable[[float], float]],
-    ) -> NDArray:
+        init: NDArray[np.float64], 
+        args: tuple[Any, ...] = (), 
+        loss: Callable[[NDArray[np.float64], *tuple[Any, ...]], float] | None = None,
+        gradient_function: Callable[[NDArray[np.float64], *tuple[Any, ...]], NDArray[np.float64]] | None = None,
+        partial_derivative: Callable[[int, NDArray[np.float64], *tuple[Any, ...]], Callable[[float, *tuple[Any, ...]], float]] | None = None,
+    ) -> NDArray[np.float64]:
+        
+        assert partial_derivative is not None
 
-        def update_coordinate_function(coordinate: int, variable: NDArray) -> float:
+        def update_coordinate_function(coordinate: int, variable: NDArray[np.float64], *args: Any) -> float:
             return njit_brentq(
                 f=partial_derivative(coordinate, variable, *args),
                 xtol=self.convergence_error,
@@ -157,5 +162,5 @@ class CoordinateDescent(Minimizer):
                 b=variable[coordinate] + 1.0
             )
             
-        return self.updates(update_coordinate_function, initialization=init)
+        return self.updates(update_coordinate_function, init)
     

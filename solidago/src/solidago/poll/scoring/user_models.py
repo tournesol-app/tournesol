@@ -1,41 +1,39 @@
-from typing import Iterable, TYPE_CHECKING
+from typing import Iterable, Iterator
 from numpy.typing import NDArray
 from pathlib import Path
 from copy import deepcopy
 
-import pandas as pd
 import numpy as np
 import yaml
 import logging
 
-from solidago.poll.entities.entities import Entities, Entity
+from solidago.poll.poll_tables import *
 
 logger = logging.getLogger(__name__)
 
-from solidago.poll.users import User, Users
 from .model import CategoryScores, DirectScores, Multipliers, Parameters, ScoringModel, Translations
-from .score import MultiScore, Score
+from .score import Scores
 
 
 class UserDirectScores(DirectScores):
     name: str="user_directs"
-    default_keynames: tuple = ("username", "entity_name", "criterion")
+    default_keynames: set[str] = {"username", "entity_name", "criterion"}
 
 class UserCategoryScores(CategoryScores):
     name: str="user_categories"
-    default_keynames: tuple = ("username", "category", "group", "criterion")
+    default_keynames: set[str] = {"username", "category", "group", "criterion"}
 
 class UserParameters(Parameters):
     name: str="user_parameters"
-    default_keynames: tuple = ("username", "criterion", "coordinate")
+    default_keynames: set[str] = {"username", "criterion", "coordinate"}
 
 class UserMultipliers(Multipliers):
     name: str="user_multipliers"
-    default_keynames: tuple = ("username", "height", "criterion")
+    default_keynames: set[str] = {"username", "height", "criterion"}
 
 class UserTranslations(Translations):
     name: str="user_translations"
-    default_keynames: tuple = ("username", "height", "criterion")
+    default_keynames: set[str] = {"username", "height", "criterion"}
 
 class CommonMultipliers(Multipliers):
     name: str="common_multipliers"
@@ -51,8 +49,8 @@ class UserModels:
     ]
 
     def __init__(self, 
-        default_composition: list[tuple[str, dict]] | None = None,
-        user_compositions: dict[str, tuple] | None = None,
+        default_composition: list[tuple[str, dict[str, Any]]] | None = None,
+        user_compositions: dict[str, list[tuple[str, dict[str, Any]]]] | None = None,
         user_directs: UserDirectScores | None = None,
         user_categories: UserCategoryScores | None = None,
         user_parameters: UserParameters | None = None,
@@ -62,7 +60,7 @@ class UserModels:
         common_translations: CommonTranslations | None = None,
         user_models_dict: dict[str, ScoringModel] | None = None,
     ):
-        self.default_composition = default_composition or [("Direct", dict())]
+        self.default_composition = default_composition or [("Linear", dict())]
         self.user_compositions = user_compositions or dict()
         self.user_directs = user_directs or UserDirectScores()
         self.user_categories = user_categories or UserCategoryScores()
@@ -76,13 +74,13 @@ class UserModels:
     def criteria(self) -> set[str]:
         return set.union(*[getattr(self, name).keys("criterion") for name in self.table_names])
     
-    def get_composition(self, user: str | User) -> tuple[str, dict]:
+    def get_composition(self, user: str | User) -> list[tuple[str, dict[str, Any]]]:
         username = user.name if isinstance(user, User) else user
         if username in self.user_compositions:
             return self.user_compositions[username]
         return deepcopy(self.default_composition)
     
-    def to_dict(self) -> dict[str, ScoringModel]:
+    def cache_models(self):
         if self._cache_users is None:
             self._cache_users = dict()
             usernames = set(self.user_compositions.keys())
@@ -92,13 +90,21 @@ class UserModels:
             for username in usernames:
                 self._cache_users[username] = ScoringModel(
                     self.get_composition(username),
-                    self.user_directs[username],
-                    self.user_categories[username],
-                    self.user_parameters[username],
-                    self.user_multipliers[username] | self.common_multipliers,
-                    self.user_translations[username] | self.common_translations,
+                    self.user_directs.filters(username=username),
+                    self.user_categories.filters(username=username),
+                    self.user_parameters.filters(username=username),
+                    self.user_multipliers.filters(username=username) | self.common_multipliers.add_columns(username=username),
+                    self.user_translations.filters(username=username) | self.common_translations.add_columns(username=username),
                 )
+
+    def to_dict(self) -> dict[str, ScoringModel]:
+        if self._cache_users is None:
+            self.cache_models()
+        assert self._cache_users is not None
         return self._cache_users
+
+    def usernames(self) -> set[str]:
+        return set(self.to_dict())
 
     def __getitem__(self, user: str | User) -> ScoringModel:
         username = user.name if isinstance(user, User) else user
@@ -128,56 +134,38 @@ class UserModels:
                 if keys not in getattr(self, f"common_{scaling}"):
                     getattr(self, f"user_{scaling}")[username, *keys] = value
         if not model.matches_composition(ScoringModel(self.default_composition)):
-            self.user_compositions[username] = model.save()
+            _, kwargs = model.save()
+            self.user_compositions[username] = kwargs["composition"]
         if self._cache_users is not None:
             self._cache_users[username] = model
 
     def __call__(self, 
-        entities: str | Entity | Entities | slice = slice(None),
-        criteria: str | set | slice = slice(None),
+        entities: Entity | Entities,
+        criteria: str | Iterable[str] | None = None,
         n_sampled_entities_per_user: int | None = None,
-        keynames: list[str] | None = None,
-    ) -> MultiScore:
-        return self.score(entities, criteria, n_sampled_entities_per_user, keynames)
+    ) -> Scores:
+        return self.score(entities, criteria, n_sampled_entities_per_user)
     
     def score(self, 
-        entities: str | Entity | Entities | slice = slice(None),
-        criteria: str | set | slice = slice(None),
+        entities: Entity | Entities,
+        criteria: str | Iterable[str] | None = None,
         n_sampled_entities_per_user: int | None = None,
-        keynames: list[str] | None = None,
-    ) -> MultiScore:
-        if keynames is None:
-            keynames = ["username"]
-            from solidago.poll.entities import Entities
-            keynames += ["entity_name"] if isinstance(entities, (Entities, slice)) else list()
-            keynames += ["criterion"] if isinstance(criteria, (set, slice)) else list()
-        assert "username" in keynames, keynames
-        assert "entity_name" in keynames or not isinstance(entities, (Entities, slice)), (keynames, entities)
-        assert "criterion" in keynames or not isinstance(criteria, (set, slice)), (keynames, criteria)
-        results = MultiScore(keynames)
-        username_index = keynames.index("username")
-        non_username_keynames = [kn for kn in keynames if kn != "username"]
+    ) -> Scores:
+        results = Scores(keynames=["username", "entity_name", "criterion"])
         for username, model in self:
             assert isinstance(model, ScoringModel)
-            for subkeys, score in model(entities, criteria, n_sampled_entities_per_user, non_username_keynames):
-                keys = list(subkeys[:username_index]) + [username] + list(subkeys[username_index:])
-                results[*keys] = score
+            for score in model(entities, criteria, n_sampled_entities_per_user):
+                results.set(score, username=username)
         return results
 
     def __len__(self) -> int:
-        if self._cache_users is None:
-            try:
-                """ Desperate attempt for a fast response """
-                return len(set(self.user_directs.init_data["username"]))
-            except TypeError:
-                return len(self.to_dict())
         return len(self.to_dict())
     
     def __contains__(self, user: str | User) -> bool:
         username = user.name if isinstance(user, User) else user
         return username in self.to_dict()
     
-    def __iter__(self) -> Iterable[tuple[str, ScoringModel]]:
+    def __iter__(self) -> Iterator[tuple[str, ScoringModel]]:
         for username, model in self.to_dict().items():
             assert isinstance(username, str) and isinstance(model, ScoringModel)
             yield username, model
@@ -194,9 +182,8 @@ class UserModels:
         right_matrix = np.full((len(users), len(entities)), np.nan)
         for username, model in self:
             user_index = users.name2index(username)
-            for entity_name, score in model(entities, criterion):
-                assert isinstance(score, Score)
-                entity_index = entities.name2index(entity_name)
+            for score in model(entities, criterion):
+                entity_index = entities.name2index(score["entity_name"])
                 value_matrix[user_index, entity_index] = score.value
                 left_matrix[user_index, entity_index] = score.left_unc
                 right_matrix[user_index, entity_index] = score.right_unc
@@ -215,13 +202,17 @@ class UserModels:
         user_multipliers, user_translations = self.user_multipliers, self.user_translations
         for (user_scales, scales) in zip((user_multipliers, user_translations), (multipliers, translations)):
             if self.user_compositions and scales:
-                user_scales = user_scales.deepcopy()
+                user_scales = deepcopy(user_scales)
                 for username in self.user_compositions:
-                    user_scales |= scales.prepend(username=username, height=self.height(username))
+                    user_scales = user_scales | scales.add_columns(username=username, height=self.height(username))
 
         cache_users = None if self._cache_users is None else {
-            user: model.scale(multipliers, translations, note=note) 
-            for user, model in self._cache_users.items()
+            username: model.scale(
+                multipliers.add_columns(username=username) if multipliers else None, 
+                translations.add_columns(username=username) if translations else None, 
+                note=note
+            ) 
+            for username, model in self._cache_users.items()
         }
 
         return UserModels(
@@ -242,25 +233,21 @@ class UserModels:
         user_multipliers, user_translations = self.user_multipliers, self.user_translations
 
         if multipliers:
-            multipliers = multipliers.reorder("username", "criterion")
-            assert set(multipliers.keynames) == {"username", "criterion"}, multipliers.keynames
-            user_multipliers = self.user_multipliers.deepcopy()
-            for (username, criterion), value in multipliers:
-                user_multipliers[username, self.height(username), criterion] = value
+            user_multipliers = deepcopy(self.user_multipliers)
+            for score in multipliers:
+                user_multipliers.set(score, height=self.height(score["username"]))
 
         if translations:
-            translations = translations.reorder("username", "criterion")
-            assert set(translations.keynames) == {"username", "criterion"}, translations.keynames
-            user_translations = self.user_translations.deepcopy()
-            for (username, criterion), value in translations:
-                user_translations[username, self.height(username), criterion] = value
+            user_translations = deepcopy(self.user_translations)
+            for score in translations:
+                user_translations.set(score, height=self.height(score["username"]))
 
         cache_users = None if self._cache_users is None else {
-            user: model.scale(
-                multipliers[user] if multipliers else None, 
-                translations[user] if translations else None, 
+            username: model.scale(
+                multipliers.filters(username=username) if multipliers else None, 
+                translations.filters(username=username) if translations else None, 
                 note=note
-            ) for user, model in self._cache_users.items()
+            ) for username, model in self._cache_users.items()
         }
 
         return UserModels(
@@ -321,7 +308,7 @@ class UserModels:
         return self.save_instructions(directory, save_instructions)
     
     def save_instructions(self, directory: Path | str | None = None, save_instructions: bool = True) -> tuple[str, dict]:
-        kwargs = dict(default_composition=self.default_composition)
+        kwargs: dict[str, Any] = dict(default_composition=self.default_composition)
         if len(self.user_compositions) > 0:
             kwargs["user_compositions"] = self.user_compositions
         if self.user_categories:
@@ -338,7 +325,7 @@ class UserModels:
         assert table_name in self.table_names, table_name
         table = getattr(self, table_name)
         if directory and table:
-            assert isinstance(table, MultiScore)
+            assert isinstance(table, Scores)
             table.save(directory, f"{table_name}.csv")
             return f"{table_name}.csv"
         return None

@@ -14,8 +14,8 @@ def test_qrmedian_resilience():
         lipschitz=1.0,
         voting_rights=1.0,
         values=np.array([-10.0, 5.0, 10.0]),
-        left_uncertainties=np.array([1e-3, 1e-7, 1e-3]),
-        right_uncertainties=np.array([1e-5, 1e-3, 1e-4]),
+        left_unc=np.array([1e-3, 1e-7, 1e-3]),
+        right_unc=np.array([1e-5, 1e-3, 1e-4]),
     )
     assert median == pytest.approx(1.0, abs=1e-3)
 
@@ -26,7 +26,7 @@ def test_qrmed_with_high_uncertainty():
         lipschitz=1.0,
         voting_rights=1.0,
         values=np.array([-10.0, 1.0, 10.0]),
-        left_uncertainties=np.array([1e6]*3),
+        left_unc=np.array([1e6]*3),
     )
     assert median == pytest.approx(0.0, abs=1e-5)
 
@@ -37,8 +37,8 @@ def test_qr_quantile_zero_uncertainty_correct_prior():
         quantile=0.25,
         voting_rights=1.0,
         values=np.array([0.0, 1.0, 2.0, 5.0]),
-        left_uncertainties=np.array([1e-6] * 4),
-        right_uncertainties=np.array([1e-4] * 4),
+        left_unc=np.array([1e-6] * 4),
+        right_unc=np.array([1e-4] * 4),
         default_value=1.0,
         error=1e-5,
     )
@@ -51,8 +51,8 @@ def test_qr_quantile_zero_uncertainty_incorrect_prior():
         quantile=0.21,
         voting_rights=np.ones(10, dtype=np.float64),
         values=np.array([0.0, 1.0, 2.0, 6.0, 9.0, 5.0, 3.0, 5.0, 4.0, 7.0]),
-        left_uncertainties=np.array([1e-6] * 10),
-        right_uncertainties=np.array([1e-4] * 10),
+        left_unc=np.array([1e-6] * 10),
+        right_unc=np.array([1e-4] * 10),
         default_value=0.0,
         error=1e-5,
     )
@@ -65,8 +65,8 @@ def test_qr_quantile_high_uncertainty():
         quantile=0.5,
         voting_rights=1.0,
         values=np.array([1.0, 2.0, 6.0, 9.0]),
-        left_uncertainties=np.array([1e8] * 4),
-        right_uncertainties=np.array([1e9] * 4),
+        left_unc=np.array([1e8] * 4),
+        right_unc=np.array([1e9] * 4),
         default_value=0.0,
         error=1e-5,
     )
@@ -91,7 +91,7 @@ def test_qr_quantile_returns_expected_results(lipshitz,w,x,delta,quantile,expect
             lipschitz=lipshitz,
             voting_rights=w,
             values=x,
-            left_uncertainties=delta,
+            left_unc=delta,
             quantile=quantile,
         )
         == pytest.approx(expected_result, abs=1e-4)
@@ -114,7 +114,7 @@ def test_qr_standard_dev_default():
         default_dev=default_deviation,
         voting_rights=1.0,
         values=np.array([]),
-        left_uncertainties=np.array([]),
+        left_unc=np.array([]),
     )
     assert dev == pytest.approx(default_deviation, abs=1e-5)
 
@@ -136,8 +136,8 @@ def test_lipschitz_resilient_mean():
         lipschitz=1e3,
         voting_rights=1.0,
         values=values,
-        left_uncertainties=np.array([1e-6] * 20),
-        right_uncertainties=np.array([1e-4] * 20),
+        left_unc=np.array([1e-6] * 20),
+        right_unc=np.array([1e-4] * 20),
         default_value=0.0,
         error=1e-5,
     )

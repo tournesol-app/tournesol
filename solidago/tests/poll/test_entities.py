@@ -1,30 +1,19 @@
-import pytest
 import numpy as np
+from solidago.poll.poll_tables import Entity, Entities
 
-from pandas import DataFrame
-from solidago import *
+
+def test_entity():
+    entity = Entity("video_a", vector=[1., 2.], n_views=315)
+    assert all(entity.vector == np.array([1., 2.]))
+    assert entity["n_views"] == 315
 
 
 def test_entities():
-    entities = Entities(DataFrame([
-        ["entity_0", "Hello World", 39252],
-        ["entity_1", "Brilliant", 541325],
-        ["entity_2", "Tournesol tutorial", 158],
-    ], columns=["entity_name", "title", "n_views"]))
-    assert len(entities) == 3
-    assert entities["entity_0"].title == "Hello World"
-    assert len(entities[{"entity_0", "entity_2"}]) == 2
-
-def test_entities2():
-    entities = Entities(["entity_1", "entity_2"])
-    assert set(entities.keys()) == {"entity_1", "entity_2"}
-
-def test_vector_entities():
     entities = Entities([
-        Entity("entity_0", [0, 1, 2], title="Hello World", n_views=39252),
-        Entity("entity_1", [3, 4, 5], title="Brilliant", n_views=541325),
-        Entity("entity_2", [1, 5, 2], title="Tournesol tutorial", n_views=158),
-    ])
-    assert len(entities) == 3
-    assert entities["entity_0"].title == "Hello World"
-    assert len(entities[{"entity_0", "entity_2"}]) == 2
+        ["video_a", 155, 0, 1, 2],
+        ["video_b", 83, 3., 4, 5],
+    ], columns=["name", "n_views", "v0", "v1", "v2"])
+    assert len(entities) == 2
+    assert entities["video_a"]["n_views"] == 155
+    assert len(entities[["video_a"]]) == 1 # type: ignore
+    assert all(entities["video_b"].vector == entities.vectors[1]) # type: ignore

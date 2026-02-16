@@ -1,0 +1,84 @@
+{
+  "data_included_until": "2026-01-05T00:00:00+00:00",
+  "generated_by": "https://api.tournesol.app/",
+  "tournesol_version": "fd844ef99aac754aa72f0dee4b48870ba1859b3b",
+  "license": "ODC-By-1.0",
+  "solidago": {
+    "version": "0.4.1",
+    "pipeline": {
+      "trust_propagation": [
+        "LipschiTrust",
+        {
+          "pretrust_value": 0.8,
+          "decay": 0.8,
+          "sink_vouch": 5.0,
+          "error": 1e-08
+        }
+      ],
+      "voting_rights": [
+        "AffineOvertrust",
+        {
+          "privacy_penalty": 0.5,
+          "min_overtrust": 2.0,
+          "overtrust_ratio": 0.1
+        }
+      ],
+      "preference_learning": [
+        "UniformGBT",
+        {
+          "prior_std_dev": 7.0,
+          "convergence_error": 1e-05,
+          "cumulant_generating_function_error": 1e-05,
+          "high_likelihood_range_threshold": 0.25
+        }
+      ],
+      "scaling": [
+        "ScalingCompose",
+        [
+          [
+            "Mehestan",
+            {
+              "lipschitz": 0.1,
+              "min_activity": 10.0,
+              "n_scalers_max": 100,
+              "privacy_penalty": 0.5,
+              "p_norm_for_multiplicative_resilience": 4.0,
+              "error": 1e-05
+            }
+          ],
+          [
+            "Standardize",
+            {
+              "dev_quantile": 0.9,
+              "lipschitz": 0.1,
+              "error": 1e-05
+            }
+          ],
+          [
+            "QuantileShift",
+            {
+              "quantile": 0.1,
+              "target_score": 0.2,
+              "lipschitz": 0.1,
+              "error": 1e-05
+            }
+          ]
+        ]
+      ],
+      "aggregation": [
+        "EntitywiseQrQuantile",
+        {
+          "quantile": 0.5,
+          "lipschitz": 0.1,
+          "error": 1e-05
+        }
+      ],
+      "post_process": [
+        "Squash",
+        {
+          "score_max": 100.0
+        }
+      ]
+    }
+  }
+}

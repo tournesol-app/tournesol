@@ -27,5 +27,5 @@ user_models:
     - max: 100
   user_categories:
     categories_list:
-    - journalism
     - author
+    - journalism

@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Union
+from typing import Any, Union
 
 import numpy as np
 
@@ -7,8 +7,11 @@ from solidago.poll import *
 from solidago.primitives.random import Distribution
 
 class Rate:
+    def __call__(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str):
+        rating["value"] = self.sample_value(rating, user, entity, public, criterion)
+
     @abstractmethod
-    def __call__(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> Rating:
+    def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         raise NotImplemented
 
     @classmethod
@@ -31,31 +34,28 @@ class Rate:
 
 
 class Deterministic(Rate):
-    def __call__(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> Rating:
+    def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         value = user.vector @ entity.vector / np.sqrt(user.vector.size)
-        if hasattr(user, "multiplier"):
-            value *= user.multiplier
-        if hasattr(user, "translation"):
-            value += user.translation
+        if "multiplier" in user:
+            value *= user["multiplier"]
+        if "translation" in user:
+            value += user["translation"]
         assert isinstance(value, float)
-        return Rating(value)
+        return value
 
 
 class Negate(Rate):
-    def __init__(self, honest: Union["Rate", list, tuple] | None = None):
+    def __init__(self, honest: Union["Rate", list, tuple]):
         self.honest = Rate.load(honest)
 
-    def __call__(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> Rating:
-        value = self.honest(rating, user, entity, public, criterion).value
-        assert isinstance(- value, float)
-        return Rating(- value)
+    def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
+        return - self.honest.sample_value(rating, user, entity, public, criterion)
 
 
 class Noisy(Rate):
-    def __init__(self, distribution: Distribution | list | tuple):
+    def __init__(self, distribution: Distribution | tuple[str, dict[str, Any]]):
         self.distribution = Distribution.load(distribution)
 
-    def __call__(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> Rating:
-        value = Deterministic()(rating, user, entity, public, criterion).value
-        assert isinstance(value, float)
-        return Rating(value + self.distribution.sample()[0])
+    def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
+        value = Deterministic().sample_value(rating, user, entity, public, criterion)
+        return value + self.distribution.sample()[0]

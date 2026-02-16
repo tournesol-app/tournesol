@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives.instructions import Instructions
 from solidago.poll import Poll
-from solidago.functions import PollFunction, Sequential
+from solidago.poll_functions import PollFunction, Sequential
 from solidago.generators import Generator
 
 
@@ -45,10 +45,10 @@ class Experiment:
     def _instructions(self) -> Instructions:
         return Instructions(dict(poll=self.poll, generator=self.generator, functions=self.functions))
     @classmethod
-    def load(cls, source: str, ignore_ongoing_run: bool | None = None, **kwargs):
+    def load(cls, source: str | Path, ignore_ongoing_run: bool | None = None, **kwargs):
         with open(source) as f:
             kwargs = yaml.safe_load(f) | kwargs
-        return cls(source=source, ignore_ongoing_run=ignore_ongoing_run, **kwargs)        
+        return cls(source=str(source), ignore_ongoing_run=ignore_ongoing_run, **kwargs)        
 
     def overwrite_dialog(self, source: str, ignore_ongoing_run: bool | None):
         # Handles overwrite issues
@@ -65,18 +65,19 @@ class Experiment:
             return
         if ignore_ongoing_run == False:
             from solidago import load
-            load(self.workingpath / "source.yaml", source=source)()
+            Experiment.load(self.workingpath / "source.yaml")()
             return
         assert ignore_ongoing_run is None
         answer = input("The source file does not match the ongoing run. Ignore new source and finish previous run? [y/N] ")
         if answer == "y":
             from solidago import load
-            load(self.workingpath / "source.yaml", source=source)()
+            Experiment.load(self.workingpath / "source.yaml")()
         else:
             answer = input("Overwrite previous run? [Y/n] ")
             if answer == "n":
                 raise KeyboardInterrupt("Experiments interrupted by the user")
             Experiment.safe_directory_deletion(self.workingpath)
+    @staticmethod
     def load_terminated(workingpath: Path) -> list[list[int]] | str:
         path = workingpath / "terminated_iterations.yaml"
         if not path.is_file():
@@ -97,6 +98,7 @@ class Experiment:
                     assert line_len == len(iteration)
                 else:
                     line_len = len(iteration)
+    @staticmethod
     def safe_directory_deletion(path: Path):
         if not path.is_dir():
             return
@@ -111,6 +113,7 @@ class Experiment:
             else:
                 Experiment.safe_directory_deletion(sub)
         path.rmdir()        
+    @staticmethod
     def derive_savepath(source_dirpath: str, overwrite: bool) -> Path:
         if overwrite:
             return Path(source_dirpath)
@@ -130,8 +133,8 @@ class Experiment:
     def _run_indices(self, indices: list[int]):
         poll, generator, functions = self.extract_poll_generator_functions(indices)
         working_savepath = self.get_working_subpath(indices)
-        poll = generator(poll, working_savepath)
-        poll = functions.poll2poll_function(poll, working_savepath)
+        poll = generator(poll, str(working_savepath))
+        poll = functions.poll2poll_function(poll, str(working_savepath))
         self.terminate_iteration(indices)
 
     def clear_status(self):
@@ -199,9 +202,9 @@ class Experiment:
         
     def extract_poll_generator_functions(self, indices: list[int]) -> tuple[Poll, Generator, PollFunction]:
         kwargs = self._instructions().extract_indices(self.varnames, self.varname_values, indices)
-        poll = Poll.load(kwargs["poll"])
-        generator = Generator(**kwargs["generator"], max_workers=self.max_workers)
-        functions = Sequential(modules=kwargs["functions"], max_workers=self.max_workers)
+        poll = Poll.load(kwargs["poll"]) # type: ignore
+        generator = Generator(**kwargs["generator"], max_workers=self.max_workers) # type: ignore
+        functions = Sequential(kwargs["functions"], max_workers=self.max_workers) # type: ignore
         return poll, generator, functions
 
     def __repr__(self) -> str:

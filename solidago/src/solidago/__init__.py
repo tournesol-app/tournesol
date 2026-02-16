@@ -1,70 +1,67 @@
 """Solidago library, robust and secure algorithms for the Tournesol platform"""
 
 from pathlib import Path
+from types import ModuleType
 from typing import Any, Type
-import yaml
 from inspect import getfullargspec
+
+import yaml
 
 from .__version__ import __version__
 
-from solidago import primitives, functions, generators
-from solidago.primitives import NestedDict, MultiKeyTable, Objects
+from solidago import primitives, poll_functions, generators
 
-from solidago.generators import Generator
-from solidago.functions import *
+from solidago.primitives.datastructure import FilteredTable, NamedObjects
 from solidago.poll import *
+from solidago.generators import Generator
+from solidago.poll_functions import *
 from solidago.experiments import *
 
 
 __all__ = [
     "load",
-    "primitives", "functions", "generators", 
+    "primitives", "poll_functions", "generators", 
     "PollFunction", "Sequential", "Identity", 
     "Generator", 
-    "NestedDict", "MultiKeyTable",
     "User", "Users", "Entity", "Entities",
     "Vouches",
-    "MadePublic", "AllPublic",
+    "PublicSettings",
     "Rating", "Ratings",
     "Comparison", "Comparisons",
     "VotingRights",
-    "Score", "MultiScore", "ScoringModel", "UserModels",
+    "Score", "Scores", "ScoringModel", "UserModels",
     "Poll", "TournesolExport",
     "Experiment"
 ]
 
+LoadedTypes = FilteredTable | NamedObjects | Poll | PollFunction
+LoadableType = LoadedTypes | type | Path | str | tuple[str | type, dict[str, Any]] | list[str | type | dict[str, Any]] | dict[str, Any]
 
-LoadableType = MultiKeyTable | Objects | Poll | PollFunction | Type | Path | str | tuple | list | dict
-
-def load(classname: LoadableType, *args, **kwargs) -> Any:
+def load(classname: LoadableType, base_module: ModuleType | None = None, *args: Any, **kwargs: Any) -> LoadedTypes:
     """ name can either be a filename or the name of an object """
-    if isinstance(classname, (MultiKeyTable, Objects, Poll, PollFunction)):
+    if isinstance(classname, (FilteredTable, NamedObjects, Poll, PollFunction)):
         return classname
-    elif isinstance(classname, Type) and issubclass(classname, (MultiKeyTable, Objects, Poll, PollFunction)):
+    elif isinstance(classname, Type) and issubclass(classname, (FilteredTable, NamedObjects, Poll, PollFunction)):
         cls = classname
-        return cls.load(*args, **kwargs) if hasattr(cls, "load") else cls(*args, **kwargs)
-    elif isinstance(classname, (list, tuple)) and len(classname) == 2:
+        return cls.load(*args, **kwargs) if hasattr(cls, "load") else cls(*args, **kwargs) # type: ignore
+    elif isinstance(classname, (list, tuple)):
+        assert len(classname) == 2
         classname, kwargs2 = classname
-        assert isinstance(classname, (str, Type)) and isinstance(kwargs, dict)
-        return load(classname, *args, **(kwargs2 | kwargs))
+        assert isinstance(classname, (str, type)) and isinstance(kwargs, dict)
+        return load(classname, *args, **(kwargs2 | kwargs)) # type: ignore
     elif isinstance(classname, dict):
         return load(*args, **classname, **kwargs)
     elif isinstance(classname, Path):
         return load(str(classname), *args, **kwargs)
     
+    assert isinstance(classname, str)
     if classname.endswith(".yaml"):
         path = "/".join(classname.split("/")[:-1])
         with open(classname) as f:
-            yaml_content = yaml.safe_load(f)
-        if isinstance(yaml_content, dict):
-            return load(*args, **(yaml_content | kwargs), path=path)
-        assert isinstance(yaml_content, list), yaml_content
-        assert len(yaml_content) == 2, yaml_content
-        cls, kwargs2 = yaml_content
-        return load(cls, **(kwargs2 | kwargs), path=path)
+            return load(yaml.safe_load(f), *args, **kwargs, path=path)
     
     import solidago
-    classnames, type_recovery, cls = classname.split("."), True, solidago
+    classnames, type_recovery, cls = classname.split("."), True, (base_module or solidago)
     for name in classnames:
         type_recovery = hasattr(cls, name)
         if not type_recovery:
@@ -75,8 +72,9 @@ def load(classname: LoadableType, *args, **kwargs) -> Any:
         f = cls.load if hasattr(cls, "load") else cls
         if "path" in kwargs and "path" not in getfullargspec(f).args:
             del kwargs["path"]
-        return f(*args, **kwargs)
+        return f(*args, **kwargs) # type: ignore
+
     try:
-        return Poll.load(classname)
+        return Poll.load(classname, *args, **kwargs)
     except FileNotFoundError:
         raise ValueError(f"Cannot load {classname}: Object not known")

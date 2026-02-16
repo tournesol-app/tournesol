@@ -7,9 +7,7 @@ Copyright © 2013-2021 Thomas J. Sargent and John Stachurski: BSD-3
 All rights reserved.
 """
 
-from typing import Callable
-from numpy.typing import NDArray
-
+from typing import Any, Callable
 import numpy as np
 from numba import njit
 
@@ -17,13 +15,13 @@ from numba import njit
 _ECONVERGED = 0
 _ECONVERR = -1
 
-_iter = 100
+_iter = np.uint64(100)
 _xtol = 2e-12
-_rtol = 4 * np.finfo(float).eps
+_rtol = float(4 * np.finfo(float).eps)
 
 
 @njit
-def _bisect_interval(a, b, fa, fb) -> tuple[float, int]:
+def _bisect_interval(a: float, b: float, fa: float, fb: float) -> tuple[float, int]:
     """Conditional checks for intervals in methods involving bisection"""
     if fa * fb > 0:
         raise ValueError("f(a) and f(b) must have different signs")
@@ -43,11 +41,11 @@ def _bisect_interval(a, b, fa, fb) -> tuple[float, int]:
 
 @njit
 def njit_brentq(
-    f,
-    args=(),
-    xtol=_xtol,
-    rtol=_rtol,
-    maxiter=_iter,
+    f: Callable[[float, *tuple[Any, ...]], float],
+    args: tuple[Any, ...]=(),
+    xtol: float=_xtol,
+    rtol: float=_rtol,
+    maxiter: np.uint64=_iter,
     a: float=-1.0,
     b: float=1.0,
     extend_bounds: bool=True,
@@ -111,13 +109,19 @@ def njit_brentq(
     if status == _ECONVERGED:
         itr = 0
     else:
+
+        xblk = xpre
+        fblk = fpre
+        spre = scur = xcur - xpre
+
         # Perform Brent's method
         for itr in range(maxiter):
 
-            if fpre * fcur < 0:
+            if itr > 0 and fpre * fcur < 0:
                 xblk = xpre
                 fblk = fpre
                 spre = scur = xcur - xpre
+
             if abs(fblk) < abs(fcur):
                 xpre = xcur
                 xcur = xblk
@@ -172,4 +176,4 @@ def njit_brentq(
     if status == _ECONVERR:
         raise RuntimeError("Failed to converge")
 
-    return root  # type: ignore
+    return root

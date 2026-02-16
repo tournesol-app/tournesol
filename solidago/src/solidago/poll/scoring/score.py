@@ -1,20 +1,20 @@
-import math
-import numbers
+from copy import deepcopy
 
-from typing import Any, Callable, Iterable, TYPE_CHECKING, Union
+import itertools
+from typing import Any, Callable, Hashable, Iterable, Iterator, Self, Union
 from pandas import Series
 
-from solidago.primitives.datastructure import NestedDict, MultiKeyTable
-
-if TYPE_CHECKING:
-    from solidago.poll.comparisons import Comparisons
+from solidago.primitives.datastructure import Row, FilteredTable
+from solidago.poll.poll_tables import *
 
 
-class Score:
+class Score(Row):
+    default: dict[str, Any] = dict(value=np.nan, left_unc=0., right_unc=0.)
+
     def __init__(self, 
-        value: Union[float, list, tuple, dict, Series, "Score"], 
-        left_unc: float | None = None, 
-        right_unc: float | None = None, 
+        arg: Union[float, list, tuple, dict, Series, "Score"] | None = None, 
+        series: pd.Series | None = None, 
+        *args: Any, **kwargs: Any
     ):
         """ In collaborative scaling, it is important to account for varying degrees of reliability,
         not only between different users' judgments, but even more so between the preference models
@@ -26,31 +26,34 @@ class Score:
         
         The class Score not only describes the asymmetric left and right uncertainties,
         but also some basic algebra between such scores with asymmetric uncertainties. """
-        if isinstance(value, Score):
-            assert left_unc is None and right_unc is None
-            values = value.value, value.left_unc, value.right_unc
-        elif isinstance(value, (dict, Series)):
-            assert left_unc is None and right_unc is None
-            values = value["value"], value["left_unc"], value["right_unc"]
-        elif isinstance(value, (list, tuple)):
-            assert left_unc is None and right_unc is None
-            values = value
+        if arg is None:
+            super().__init__(series, *args, **kwargs)
+        elif isinstance(arg, Score):
+            super().__init__(series, *args, value=arg.value, left_unc=arg.left_unc, right_unc=arg.right_unc, **kwargs)
+        elif isinstance(arg, (dict, Series)):
+            super().__init__(series, *args, **dict(arg), **kwargs)
+        elif isinstance(arg, (list, tuple)):
+            assert len(arg) == 3, arg
+            value, left_unc, right_unc = arg
+            super().__init__(series, *args, value=value, left_unc=left_unc, right_unc=right_unc, **kwargs)
         else:
-            assert isinstance(left_unc, numbers.Number) and isinstance(right_unc, numbers.Number)
-            values = value, left_unc, right_unc
-        if math.isnan(values[0]):
-            self.value, self.left_unc, self.right_unc = float("nan"), float("inf"), float("inf")
-        else:
-            assert values[1] >= 0 and values[2] >= 0, values
-            self.value, self.left_unc, self.right_unc = values
+            super().__init__(series, *args, value=float(arg), **kwargs)
     
     @classmethod
-    def nan(cls):
-        return cls(float("nan"), float("inf"), float("inf"))
+    def nan(cls) -> Self:
+        return cls((np.nan, np.inf, np.inf))
     
     @property
-    def score(self) -> float:
-        return self.value
+    def value(self) -> float:
+        return self.series["value"] # type: ignore
+    
+    @property
+    def left_unc(self) -> float:
+        return self.series["left_unc"] # type: ignore
+    
+    @property
+    def right_unc(self) -> float:
+        return self.series["right_unc"] # type: ignore
 
     @property
     def min(self) -> float:
@@ -69,9 +72,12 @@ class Score:
     def average_uncertainty(self) -> float:
         return (self.left_unc + self.right_unc) / 2
 
-    def __eq__(self, score: Union[int, float, "Score"]) -> bool:
+    def __eq__(self, score: object) -> bool:
         if not isinstance(score, Score):
-            score = Score(score, 0, 0)
+            try:
+                score = Score(float(score)) # type: ignore - error caught
+            except:
+                raise ValueError(f"Cannot make {score} (type {type(score).__name__}) a float")
         if self.isnan():
             return score.isnan()
         return self.to_triplet() == score.to_triplet()
@@ -80,200 +86,276 @@ class Score:
         return not (self == score)
     
     def __lt__(self, score: Union[int, float, "Score"]) -> bool:
+        """ Holds if any value of self is less than any value of score """
         if not isinstance(score, Score):
-            score = Score(score, 0, 0)
+            score = Score(score)
         return self.max < score.min
     
     def __gt__(self, score: Union[int, float, "Score"]) -> bool:
+        """ Holds if any value of self is more than any value of score """
         if not isinstance(score, Score):
-            score = Score(score, 0, 0)
+            score = Score(score)
         return self.min > score.max
     
     def __le__(self, score: Union[int, float, "Score"]) -> bool:
-        # TODO Verify consistency
+        """ Holds if some value of self is less than some value of score """
         if not isinstance(score, Score):
-            score = Score(score, 0, 0)
+            score = Score(score)
         return self.min <= score.max
     
     def __ge__(self, score: Union[int, float, "Score"]) -> bool:
+        """ Holds if some value of self is more than some value of score """
         if not isinstance(score, Score):
-            score = Score(score, 0, 0)
+            score = Score(score)
         return self.max >= score.min
     
+    def set_score(self, value: float | None = None, left_unc: float | None = None, right_unc: float | None = None):
+        if value is not None:
+            self["value"] = value
+        if left_unc is not None:
+            self["left_unc"] = left_unc
+        if right_unc is not None:
+            self["right_unc"] = right_unc
+
     def __neg__(self) -> "Score":
-        return Score(- self.value, self.right_unc, self.left_unc)
+        result = deepcopy(self)
+        result.set_score(-self.value, self.right_unc, self.left_unc)
+        return result
     
-    def __add__(self, score: Union[int, float, "Score", "MultiScore"]) -> Union["Score", "MultiScore"]:
-        if isinstance(score, MultiScore):
-            return score * self
-        if not isinstance(score, Score):
-            score = Score(score, 0, 0)
-        return Score(
-            self.value + score.value,
-            self.left_unc + score.left_unc,
-            self.right_unc + score.right_unc
-        )
+    def __add__(self, score: Union[int, float, "Score", "Scores"]) -> Union["Score", "Scores"]:
+        if isinstance(score, Scores):
+            return score + self
+        score = score if isinstance(score, Score) else Score(score)
+        result = deepcopy(self)
+        result.set_score(self.value + score.value, self.left_unc + score.left_unc, self.right_unc + score.right_unc)
+        return result
     
-    def __sub__(self, score: Union[int, float, "Score", "MultiScore"]) -> Union["Score", "MultiScore"]:
-        if isinstance(score, MultiScore):
+    def __sub__(self, score: Union[int, float, "Score", "Scores"]) -> Union["Score", "Scores"]:
+        if isinstance(score, Scores):
             return score * self
-        if not isinstance(score, Score):
-            score = Score(score, 0, 0)
-        return Score(
-            self.value - score.value,
-            self.left_unc + score.right_unc,
-            self.right_unc + score.left_unc
-        )
+        score = score if isinstance(score, Score) else Score(score)
+        result = deepcopy(self)
+        result.set_score(self.value - score.value, self.left_unc + score.right_unc, self.right_unc + score.left_unc)
+        return result
         
-    def __mul__(self, s: Union[int, float, "Score", "MultiScore"]) -> Union["Score", "MultiScore"]:
-        if isinstance(s, MultiScore):
+    def __mul__(self, s: Union[int, float, "Score", "Scores"]) -> Union["Score", "Scores"]:
+        if isinstance(s, Scores):
             return s * self
-        if not isinstance(s, Score):
-            s = Score(s, 0, 0)
+        s = s if isinstance(s, Score) else Score(s)
         value = self.value * s.value
         extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
-        return Score(value, value - min(extremes), max(extremes) - value)
+        result = deepcopy(self)
+        result.set_score(value, value - min(extremes), max(extremes) - value)
+        return result
 
-    def __truediv__(self, s: "Score") -> "Score":
-        if not isinstance(s, Score):
-            s = Score(s, 0, 0)
-        if 0 in s:
-            return Score.nan()
+    def __truediv__(self, s: Union[int, float, "Score"]) -> "Score":
+        s = s if isinstance(s, Score) else Score(s)
+        result = deepcopy(self)
+        if s.contains(0):
+            result.set_score(np.nan)
+            return result
         value = self.value / s.value
         extremes = [ self.min / s.min, self.min / s.max, self.max / s.min, self.max / s.max ]
-        return Score(value, value - min(extremes), max(extremes) - value)
+        result.set_score(value, value - min(extremes), max(extremes) - value)
+        return result
 
     def abs(self) -> "Score":
-        if 0 in self:
-            return Score(abs(self.value), 0, max(abs(self.min), self.max) - abs(self.value))
-        if self.value > 0:
-            return Score(self.value, self.left_unc, self.right_unc)
-        return Score(abs(self.value), self.right_unc, self.left_unc)
+        result = deepcopy(self)
+        if self.contains(0):
+            result.set_score(abs(self.value), abs(self.value), max(abs(self.min), self.max) - abs(self.value))
+        elif self.value > 0:
+            result.set_score(self.value, self.left_unc, self.right_unc)
+        else:
+            result.set_score(abs(self.value), self.right_unc, self.left_unc)
+        return result
 
     def isnan(self) -> bool:
-        return self.value == float("nan") or (
+        return np.isnan(self.value) or (
             self.left_unc == float("inf") and self.right_unc == float("inf")
         )
     
     def __repr__(self) -> str:
         return f"{self.value} ± [- {self.left_unc}, {self.right_unc}]"
 
-    def __contains__(self, value: float) -> bool:
+    def contains(self, value: float) -> bool:
         return self.min <= value and value <= self.max
     
-    # The three following methods allow to treat Score like a MultiScore object to simplify code
-    @property
-    def keynames(self) -> tuple:
-        return tuple()
-
-    def __iter__(self) -> Iterable:
-        yield tuple(), self
+    # The following methods allow to treat Score like a MultiScore object to simplify code
+    def __iter__(self) -> Iterator["Score"]:
+        yield self
     
-    def get(self, *args, **kwargs) -> "Score":
-        assert not args and not kwargs
+    def get(self, *keys: Hashable) -> "Score":
+        assert not keys
         return self
 
 
-class MultiScore(MultiKeyTable):
-    value_cls: type=Score
-    
+class Scores(FilteredTable[Score]):
+    TableRowType: type = Score
+    name: str = "scores"
+    default_column_names: list[str] = ["value", "left_unc", "right_unc"]
+    default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, left_unc=np.int64, right_unc=np.int64)
+    default_default_score: tuple[float, float, float] = np.nan, np.inf, np.inf
+
     def __init__(self, 
-        keynames: list[str] | None = None, 
-        init_data: NestedDict | Any | None = None,
-        parent_tuple: tuple["Comparisons", tuple, tuple] | None = None,
-        name: str="scores",
-        *args, **kwargs
+        *args, 
+        default_score: tuple[float, float, float] | None = None, 
+        default_score_factory: Callable[..., Score] | None = None,
+        **kwargs
     ):
-        """ We consider the possibility of multidimensional scoring.
-        In the context of Tournesol, for instance, the dimensions are the criteria.
-        For scientific peer reviewing, it could be the criteria may be
-        {'clarity', 'correctness', 'originality', 'rating'}. """
-        super().__init__(keynames, init_data, parent_tuple, *args, **kwargs)
-        self.name = name
+        super().__init__(*args, **kwargs)
+        self.default_score = default_score or self.default_default_score
+        self._default_score_factory = default_score_factory
+    
+    def filters_kwargs(self) -> dict[str, Any]:
+        return dict(default_score=self.default_score, default_score_factory=self._default_score_factory)
 
-    @classmethod
-    def value_factory(cls):
-        return Score.nan()
-
+    def row_factory(self, **keys: Hashable) -> Score:
+        if self._default_score_factory is not None:
+            return self._default_score_factory(**keys)
+        return self.TableRowType(None, **(keys | dict(zip(["value", "left_unc", "right_unc"], self.default_score))))
+    
     @property
-    def valuenames(self) -> tuple:
-        return ("value", "left_unc", "right_unc")
+    def value(self) -> NDArray[np.float64]:
+        return self.get_column("value", np.float64) # type: ignore
     
-    def value2tuple(self, score: Score) -> tuple:
-        return score.to_triplet()
+    @property
+    def left_unc(self) -> NDArray[np.float64]:
+        return self.get_column("left_unc", np.float64) # type: ignore
     
-    def series2value(self, previous_value: Any, row: Series) -> Score:
-        return Score(row)
+    @property
+    def right_unc(self) -> NDArray[np.float64]:
+        return self.get_column("right_unc", np.float64) # type: ignore
     
-    @classmethod
-    def nan(cls) -> "MultiScore":
-        return MultiScore()
+    @property
+    def min(self) -> NDArray[np.float64]:
+        return self.value - self.left_unc
+    
+    @property
+    def max(self) -> NDArray[np.float64]:
+        return self.value + self.right_unc
 
-    def set(self, *args, **kwargs) -> None:
-        """ args is assumed to list keys and then value, 
-        though some may be specified through kwargs """
-        assert len(args) + len(kwargs) == self.depth + 1
-        if "value" in kwargs:
-            value = kwargs["value"]
-            del kwargs["value"]
-        else:
-            args, value = args[:-1], args[-1]
-        assert isinstance(value, type(self).value_cls)
-        if value.isnan():
-            return None
-        kwargs = self.keys2kwargs(*args, **kwargs)
-        self._main_cache()
-        for keynames in self._cache:
-            keys = tuple(kwargs[kn] for kn in keynames)
-            self._cache[keynames][keys] = value
-        if self.parent: # Required because child may have created a cache absent from parent
-            kwargs = kwargs | dict(zip(self.parent_keynames, self.parent_keys))
-            self.parent.set(value, **kwargs)
-    
-    def __eq__(self, other: "MultiScore") -> bool:
-        for keys in set(self.keys()) | set(other.keys()):
-            if self[keys] != other[keys]:
-                return False
+    def __eq__(self, other: object) -> bool:
+        assert isinstance(other, Scores), (other, type(other))
+        assert self.keynames == other.keynames, (self.keynames, other.keynames)
+        for row in self:
+            keys = {keyname: row[keyname] for keyname in self.keynames}
+            assert row == other.get("unique", **keys)
+        for row in other:
+            keys = {keyname: row[keyname] for keyname in self.keynames}
+            assert row == self.get("unique", **keys)
         return True
         
-    def __neq__(self, other: "MultiScore") -> bool:
+    def __neq__(self, other: "Scores") -> bool:
         return not (self == other)
 
-    def __neg__(self) -> "MultiScore":
-        result = MultiScore(self.keynames)
-        for keys, score in self:
-            result[keys] = - score
+    def __neg__(self) -> "Scores":
+        result = deepcopy(self)
+        result.set_columns(value=self.value, left_unc=self.left_unc, right_unc=self.right_unc)
         return result
     
-    def coordinate_wise_operation(self, other: Union[Score, "MultiScore"], score_operation: Callable) -> "MultiScore":
-        """ Returned multiscore with keynames equal to the union of self & other keynames minus the intersection.
-        For isntance, if self has keynames (a, b, c, d) and other has keynames (e, d, b), then
-        result[a, c, e] = score_operation( self[a, b, c, d, e], other[e, d, b] )
-        """
-        common_keynames = [kn for kn in self.keynames if kn in other.keynames]
-        result_keynames = list(self.keynames) + [kn for kn in other.keynames if kn not in common_keynames]
-        result = MultiScore(result_keynames)
-        default_value = self.value_factory()
-        for self_full_keys, self_score in self:
-            self_full_kwargs = dict(zip(self.keynames, self_full_keys))
-            common_kwargs = {kn: self_full_kwargs[kn] for kn in common_keynames}
-            self_keys = [key for kn, key in self_full_kwargs.items() if kn in result_keynames]
-            for other_keys, other_score in other.get(**common_kwargs):
-                score = score_operation(self_score, other_score)
-                if not result_keynames:
-                    return score
-                if score != default_value:
-                    result[tuple(self_keys + list(other_keys))] = score
+    def cw_operation(self, other: Union[Score, "Scores"], op: Callable[[Score, Score], Union[Score, "Scores"]]) -> Union[Score, "Scores"]:
+        
+        def default_score_factory(**keys) -> Score:
+            score = self.get(**{name: key for name, key in keys.items() if name in self.keynames})
+            if isinstance(other, Score):
+                score = op(score, other)
+            else:
+                assert isinstance(other, Scores)
+                score = op(score, other.get(**{name: key for name, key in keys.items() if name in other.keynames}))
+            assert isinstance(score, Score)
+            return score
+            
+        if isinstance(other, Score):
+            others = Scores(keynames=[])
+            others.set(other)
+            return self.cw_operation(others, op)
+        
+        common_keynames = list(self.keynames & other.keynames)
+        result_keynames = self.keynames | other.keynames
+        result = Scores(keynames=result_keynames, default_score_factory=default_score_factory)
+        keys_tuples = {tuple(s[name] for name in common_keynames) for s in itertools.chain(self, other)}
+        for keys_tuple in keys_tuples:
+            common_keys = dict(zip(common_keynames, keys_tuple))
+            filtered_self, filtered_other = self.filters(**common_keys), other.filters(**common_keys)
+            for self_score, other_score in itertools.product(filtered_self, filtered_other):
+                keys = common_keys | {n: self_score[n]for n in self.keynames - set(common_keynames)} | \
+                    {n: other_score[n]for n in other.keynames - set(common_keynames)}
+                score = op(self_score, other_score)
+                if isinstance(score, Score):
+                    result.set(score, **keys)
+            if other.keynames.issubset(common_keynames) and not filtered_other:
+                for self_score in filtered_self:
+                    score = op(self_score, other.get(**common_keys))
+                    if isinstance(score, Score):
+                        result.set(score, **common_keys)
+            if self.keynames.issubset(common_keynames) and not filtered_self:
+                for other_score in filtered_other:
+                    score = op(other_score, self.get(**common_keys))
+                    if isinstance(score, Score):
+                        result.set(score, **common_keys)
+        
         return result
     
-    def __add__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        return self.coordinate_wise_operation(other, Score.__add__)
+    def __add__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+        if isinstance(other, Score):
+            result = deepcopy(self)
+            result.set_columns(
+                value=self.value + other.value,
+                left_unc=self.left_unc + other.left_unc,
+                right_unc=self.right_unc + other.right_unc
+            )
+            def default_score_factory(**keys) -> Score:
+                score = self.get(**{name: key for name, key in keys.items() if name in self.keynames}) + other
+                assert isinstance(score, Score)
+                return score
+            result._default_score_factory = default_score_factory
+            return result
+        return self.cw_operation(other, Score.__add__)
         
-    def __sub__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        return self.coordinate_wise_operation(other, Score.__sub__)
+    def __sub__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+        return self + (- other)
     
-    def __mul__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        return self.coordinate_wise_operation(other, Score.__mul__)
+    def __mul__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+        if isinstance(other, Score):
+            result = deepcopy(self)
+            extremes = np.stack([self.min * other.min, self.min * other.max, self.max * other.min, self.max * other.max])
+            value = result.value * other.value
+            left_unc = value - np.min(extremes, axis=1)
+            right_unc = np.max(extremes, axis=1) - value
+            result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
+            def default_score_factory(**keys) -> Score:
+                score = self.get(**{name: key for name, key in keys.items() if name in self.keynames}) * other
+                assert isinstance(score, Score)
+                return score
+            result._default_score_factory = default_score_factory
+            return result
+        return self.cw_operation(other, Score.__mul__)
         
-    def __truediv__(self, other: Union[Score, "MultiScore"]) -> "MultiScore":
-        return self.coordinate_wise_operation(other, Score.__truediv__)
+    def __truediv__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+        if isinstance(other, Score):
+            result = deepcopy(self)
+            extremes = np.stack([self.min * other.min, self.min * other.max, self.max * other.min, self.max * other.max])
+            value = result.value * other.value
+            left_unc = value - np.min(extremes, axis=1)
+            right_unc = np.max(extremes, axis=1) - value
+            result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
+            def default_score_factory(**keys) -> Score:
+                score = self.get(**{name: key for name, key in keys.items() if name in self.keynames}) / other
+                assert isinstance(score, Score)
+                return score
+            result._default_score_factory = default_score_factory
+            return result
+        return self.cw_operation(other, Score.__truediv__)
+
+    def abs(self) -> "Scores":
+        value, min, max = self.value, self.min, self.max
+        abs_value = np.abs(value)
+        left_unc = np.where(min * max < 0, abs_value, np.where(value > 0, self.left_unc, self.right_unc))
+        right_unc = np.where(
+            min * max < 0, 
+            np.max([np.abs(min), max]) - abs_value, 
+            np.where(value > 0, self.right_unc, self.left_unc)
+        )
+        result = deepcopy(self)
+        result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
+        return result

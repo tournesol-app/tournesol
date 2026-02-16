@@ -9,8 +9,8 @@ from solidago.primitives.minimizer.coordinate_descent import CoordinateDescent
 
 
 def test_dichotomy():
-    assert dichotomy_solve(lambda t: t, 1, 0, 3) == pytest.approx(1, abs=1e-4)
-    assert dichotomy_solve(lambda t: 2 - t**2, 1, 0, 3) == pytest.approx(1, abs=1e-4)
+    assert dichotomy_solve(lambda t: t, 1, 0, 3) == pytest.approx(1, abs=1e-4) # type: ignore
+    assert dichotomy_solve(lambda t: 2 - t**2, 1, 0, 3) == pytest.approx(1, abs=1e-4) # type: ignore
 
 
 def test_brentq_fails_to_converge_for_non_zero_method():
@@ -19,7 +19,7 @@ def test_brentq_fails_to_converge_for_non_zero_method():
         return 1 + x * x
 
     with pytest.raises(ValueError):
-        brentq(one_plus_x_square, extend_bounds=False)
+        brentq(one_plus_x_square, extend_bounds=False) # type: ignore
 
 
 def test_brentq_finds_zeros_of_simple_increasing_linear():
@@ -27,7 +27,7 @@ def test_brentq_finds_zeros_of_simple_increasing_linear():
     def x_plus_five(x):
         return x + 5
 
-    assert brentq(x_plus_five) == -5.0
+    assert brentq(x_plus_five) == -5.0 # type: ignore
 
 
 def test_brentq_finds_zeros_of_simple_decreasing_linear():
@@ -35,7 +35,7 @@ def test_brentq_finds_zeros_of_simple_decreasing_linear():
     def minus_x_plus_twelve(x):
         return -x + 12
 
-    assert brentq(minus_x_plus_twelve) == 12.0
+    assert brentq(minus_x_plus_twelve) == 12.0 # type: ignore
 
 
 def test_update_coordinates():
@@ -53,8 +53,8 @@ def test_update_coordinates():
 
     result = CoordinateDescent().updates(
         update_coordinate_function,
+        np.array([1, 4, 3, 2, 1]),
         get_update_coordinate_function_args,
-        initialization=np.array([1, 4, 3, 2, 1])
     )
     assert all({ result[i] == 0 for i in range(5) })
 
@@ -111,13 +111,13 @@ def test_coordinate_descent():
     
     result = CoordinateDescent().coordinate_descent(
         partial_derivative,
-        np.arange(10),
+        np.arange(10, dtype=np.float64),
         get_partial_derivative_args,
         get_update_coordinate_function_args,
     )
     result2 = CoordinateDescent().coordinate_descent(
         partial_derivative,
-        np.arange(10),
+        np.arange(10, dtype=np.float64),
         get_partial_derivative_args,
     ) 
     assert list(result) == list(result2)

@@ -1,71 +1,89 @@
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
+
 from numpy.typing import NDArray
 from typing import Any, Callable
+from numba import njit
 
 from solidago.primitives import dichotomy
-from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator
+from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator, CwLossGetter
 
 
 class UncertaintyByLossIncrease(UncertaintyEvaluator):
-    def __init__(self, nll_increase: float=1.0, error: float=1e-1, max: float=1e3):
-        self.nll_increase = float(nll_increase)
+    def __init__(self, loss_increase: float=1.0, error: float=1e-1, max: float=1e3):
+        self.loss_increase = float(loss_increase)
         self.error = float(error)
         self.max = float(max)
 
     def __call__(self, 
-        values: NDArray, 
-        args: tuple,
-        translated_loss: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None,
-        translated_prior: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None, # not used
-        hess_diagonal: Callable[[NDArray, Any], NDArray] | None = None, # not used
-    ) -> tuple[NDArray, NDArray]:
-        return self.compute_uncertainties(values, args, self.loss(translated_loss, translated_prior))
-
-    def loss(self,
-        translated_loss: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None,
-        translated_prior: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None,
-    ) -> Callable[[int, NDArray, Any], Callable[[float], float]]:
-        def f(value_index: int, values: NDArray, *args) -> float:
-            def g(delta: float) -> float:
-                loss = translated_loss(value_index, values, *args)(delta)
-                prior = translated_prior(value_index, values, *args)(delta)
-                return loss + prior
-            return g
-        return f
-
-    def compute_uncertainties(self,
-        values: NDArray, 
-        args: tuple,
-        loss: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None,        
-    ) -> tuple[NDArray, NDArray]:
-        lefts, rights = np.empty_like(values), np.empty_like(values)
-        for i in range(len(values)):
-            f = loss(i, values, *args)
-            target_value = f(0.0) + self.nll_increase
-            lefts[i] = self.solve(f, target_value, -self.max, 0.0)
-            rights[i] = self.solve(f, target_value, 0.0, self.max)
-        return lefts, rights
-    
-    def solve(self, 
-        f: Callable[[float], float], 
-        target_value: float, 
-        xmin: float, 
-        xmax: float,
-    ) -> float:
+        values: NDArray[np.float64], 
+        args: tuple[Any, ...],
+        cw_prior_loss_getter: CwLossGetter | None = None,
+        cw_nll_loss_getter: CwLossGetter | None = None,
+        hess_diagonal: Callable[[NDArray[np.float64], *tuple[Any, ...]], NDArray[np.float64]] | None = None, # not used
+    ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+        cw_loss, cw_loss_args = self.get_cw_loss_and_args(cw_prior_loss_getter, cw_nll_loss_getter, values, args)
+        n_coordinates = len(values)
+        self_args = n_coordinates, self.loss_increase, self.error, self.max
+        compute_uncertainties = type(self).compute_uncertainties
         try:
-            return np.abs(dichotomy.solve(f, target_value, xmin, xmax, self.error))
-        except ValueError:
-            return self.max
+            njit_compute = njit(compute_uncertainties)
+            njit_dichotomy = njit(dichotomy.solve)
+            njit_cw_loss = njit(cw_loss)
+            return njit_compute(njit_dichotomy, njit_cw_loss, *self_args, *cw_loss_args) # type: ignore
+        except:
+            logger.info("Failed to jit uncertainty computation.")
+            return compute_uncertainties(dichotomy.solve, cw_loss, *self_args, *cw_loss_args)
+
+    def get_cw_loss_and_args(self,
+        cw_prior_loss_getter: CwLossGetter | None,
+        cw_nll_loss_getter: CwLossGetter | None,
+        values: NDArray[np.float64],
+        args: tuple[Any, ...],
+    ) -> tuple[Callable[[float, np.int64, *tuple[Any, ...]], float], tuple[Any, ...]]:
+        assert cw_prior_loss_getter is not None
+        assert cw_nll_loss_getter is not None
+        cw_prior_loss, cw_prior_loss_args = cw_prior_loss_getter(values, *args)
+        cw_nll_loss, cw_nll_loss_args = cw_nll_loss_getter(values, *args)
+        def cw_loss(delta: float, value_index: np.int64, *cw_loss_args: tuple[Any, ...]) -> float:
+            return cw_prior_loss(delta, value_index, *cw_loss_args[0]) + cw_nll_loss(delta, value_index, *cw_loss_args[1])
+        return cw_loss, (cw_prior_loss_args, cw_nll_loss_args)
+
+    @staticmethod
+    def compute_uncertainties(
+        solve: Callable[[
+            Callable[[float, *tuple[Any, ...]], float], 
+            float, float, float, float, float | None, tuple[Any, ...]
+        ], float],
+        losses: Callable[[float, np.int64, *tuple[Any, ...]], float],
+        n_coordinates: int, 
+        nll_increase: float,
+        error: float,
+        max_uncertainty: float,
+        *args: Any,
+    ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+        if n_coordinates == 0:
+            return np.zeros(n_coordinates), np.zeros(n_coordinates)
+        lefts, rights = np.empty(n_coordinates), np.empty(n_coordinates)
+        target = losses(0., np.int64(0), *args) + nll_increase
+        for i in range(n_coordinates):
+            lefts[i] = np.abs(solve(losses, target, -max_uncertainty, 0., error, max_uncertainty, (i, *args))) # type: ignore
+            rights[i] = np.abs(solve(losses, target, 0., max_uncertainty, error, max_uncertainty, (i, *args))) # type: ignore
+        return lefts, rights
 
 
 class NLLIncrease(UncertaintyByLossIncrease):
     def __init__(self, nll_increase: float=1.0, error: float=1e-1, max: float=1e3):
-        self.nll_increase = float(nll_increase)
-        self.error = float(error)
-        self.max = float(max)
+        super().__init__(nll_increase, error, max)
 
-    def loss(self,
-        translated_loss: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None,
-        translated_prior: Callable[[int, NDArray, Any], Callable[[float], float]] | None = None, # Not used
-    ) -> Callable[[int, NDArray, Any], Callable[[float], float]]:
-        return translated_loss
+    def get_cw_loss_and_args(self,
+        cw_prior_loss_getter: CwLossGetter | None, # not used
+        cw_nll_loss_getter: CwLossGetter | None,
+        values: NDArray[np.float64],
+        args: tuple[Any, ...],
+    ) -> tuple[Callable[[float, np.int64, *tuple[Any, ...]], float], tuple[Any, ...]]:
+        assert cw_nll_loss_getter is not None
+        return cw_nll_loss_getter(values, *args)
+    

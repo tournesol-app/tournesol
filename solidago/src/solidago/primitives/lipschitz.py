@@ -9,10 +9,10 @@ from solidago.primitives.minimizer.brentq import njit_brentq as brentq
 def qr_quantile(
     lipschitz: float,
     quantile: float,
-    values: NDArray,
-    voting_rights: NDArray | float = 1.0,
-    left_uncertainties: NDArray | None = None,
-    right_uncertainties: NDArray | None = None,
+    values: NDArray[np.float64],
+    voting_rights: NDArray[np.float64] | float = 1.0,
+    left_unc: NDArray[np.float64] | None = None,
+    right_unc: NDArray[np.float64] | None = None,
     default_value: float = 0.0,
     error: float = 1e-5,
 ) -> float:
@@ -32,10 +32,10 @@ def qr_quantile(
         Values whose quantile is estimated
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength
-    left_uncertainties: array or None
+    left_unc: array or None
         Left uncertainty on each value. Set to zero if None.
-    right_uncertainties: array or None
-        Right uncertainty. Set to left_uncertainties if None (symmetric uncertainty).
+    right_unc: array or None
+        Right uncertainty. Set to left_unc if None (symmetric uncertainty).
     default_value: float
         Default value in the absence of data
     error: float
@@ -51,20 +51,20 @@ def qr_quantile(
     if len(values) == 0:
         return default_value
 
-    if left_uncertainties is None:
-        left_uncertainties_2 = np.zeros(len(values))
+    if left_unc is None:
+        left_unc2 = np.zeros(len(values))
     else:
-        left_uncertainties_2 = left_uncertainties ** 2
+        left_unc2 = left_unc ** 2
 
-    if right_uncertainties is None:
-        right_uncertainties_2 = left_uncertainties_2
+    if right_unc is None:
+        right_unc2 = left_unc2
     else:
-        right_uncertainties_2 = right_uncertainties ** 2
+        right_unc2 = right_unc ** 2
 
     # Brent’s method is used as a faster alternative to usual bisection
-    return brentq(_qr_quantile_loss_derivative, xtol=error, args=(
+    return brentq(_qr_quantile_loss_derivative, xtol=error, args=( # type: ignore
         lipschitz, quantile, values, voting_rights, 
-        left_uncertainties_2, right_uncertainties_2, default_value
+        left_unc2, right_unc2, default_value
     ))
 
 
@@ -73,18 +73,18 @@ def _qr_quantile_loss_derivative(
     variable: float,
     lipschitz: float,
     quantile: float,
-    values: NDArray,
-    voting_rights: NDArray | float,
-    left_uncertainties_2: NDArray,
-    right_uncertainties_2: NDArray,
+    values: NDArray[np.float64],
+    voting_rights: NDArray[np.float64] | float,
+    left_unc2: NDArray[np.float64],
+    right_unc2: NDArray[np.float64],
     default_value: float = 0.0,
     spacing: float = 1e-18,
-):
+) -> float:
     """Computes the derivative of the loss associated to qr_quantile"""
     regularization = (variable - default_value) / lipschitz
 
     deltas = variable - values
-    uncertainties_2 = left_uncertainties_2 * (deltas < 0) + right_uncertainties_2 * (deltas > 0) + spacing
+    uncertainties_2 = left_unc2 * (deltas < 0) + right_unc2 * (deltas > 0) + spacing
     forces = voting_rights * deltas / np.sqrt(uncertainties_2 + deltas**2)
     
     if quantile == 0.5:
@@ -105,13 +105,13 @@ def _qr_quantile_loss_derivative(
 @njit
 def qr_median(
     lipschitz: float,
-    values: NDArray,
-    voting_rights: NDArray | float = 1.0,
-    left_uncertainties: NDArray | None = None,
-    right_uncertainties: NDArray | None = None,
+    values: NDArray[np.float64],
+    voting_rights: NDArray[np.float64] | float = 1.0,
+    left_unc: NDArray[np.float64] | None = None,
+    right_unc: NDArray[np.float64] | None = None,
     default_value: float = 0.0,
     error: float = 1e-5,
-):
+) -> float:
     """ The quadratically regularized median is a Lipschitz-resilient median estimator. 
     It equals to the qr_quantile, for quantile = 0.5.
     
@@ -126,10 +126,10 @@ def qr_median(
         Values whose quantile is estimated
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength
-    left_uncertainties: array or None
+    left_unc: array or None
         Left uncertainty on each value. Set to zero if None.
-    right_uncertainties: array or None
-        Right uncertainty. Set to left_uncertainties if None (symmetric uncertainty).
+    right_unc: array or None
+        Right uncertainty. Set to left_unc if None (symmetric uncertainty).
     default_value: float
         Default value in the absence of data
     error: float
@@ -140,22 +140,21 @@ def qr_median(
     out: float
         Lipschitz-resilient estimator of the median
     """
-    return qr_quantile(lipschitz, 0.5, values, voting_rights, 
-        left_uncertainties, right_uncertainties, default_value, error)
+    return qr_quantile(lipschitz, 0.5, values, voting_rights, left_unc, right_unc, default_value, error)
 
 
 @njit
 def qr_standard_deviation(
     lipschitz: float,
-    values: NDArray,
+    values: NDArray[np.float64],
     quantile_dev: float = 0.5,
-    voting_rights: NDArray | float = 1.0,
-    left_uncertainties: NDArray | None = None,
-    right_uncertainties: NDArray | None = None,
+    voting_rights: NDArray[np.float64] | float = 1.0,
+    left_unc: NDArray[np.float64] | None = None,
+    right_unc: NDArray[np.float64] | None = None,
     default_dev: float = 1.0,
     error: float = 1e-5,
     median: float | None = None,
-):
+) -> float:
     """ Lipschitz-resilient estimator of the standard deviation.
     Can be understood as a measure of polarization.
     It roughly measures a median deviation from the median.
@@ -173,10 +172,10 @@ def qr_standard_deviation(
         Must be between 0 and 1. Defines the quantile of deviations from qr_med that is reported.
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength
-    left_uncertainties: array or None
+    left_unc: array or None
         Left uncertainty on each value. Set to zero if None.
-    right_uncertainties: array or None
-        Right uncertainty. Set to left_uncertainties if None (symmetric uncertainty).
+    right_unc: array or None
+        Right uncertainty. Set to left_unc if None (symmetric uncertainty).
     default_dev: float
         Default value in the absence of data
     error: float
@@ -189,20 +188,20 @@ def qr_standard_deviation(
     """
     assert quantile_dev > 0 and quantile_dev < 1
 
-    if left_uncertainties is None:
-        left_uncertainties = np.zeros(len(values))
-    if right_uncertainties is None:
-        right_uncertainties = left_uncertainties
+    if left_unc is None:
+        left_unc = np.zeros(len(values))
+    if right_unc is None:
+        right_unc = left_unc
 
     if median is None:
         median = qr_median(lipschitz, values, voting_rights, 
-            left_uncertainties, right_uncertainties, error)
+            left_unc, right_unc, error)
 
     deltas = values - median
     deviations = np.abs(deltas)
-    left_uncertainties = left_uncertainties * (deltas > 0) + right_uncertainties * (deltas < 0)
-    left_uncertainties = np.minimum(left_uncertainties, deviations)
-    right_uncertainties = left_uncertainties * (deltas < 0) + right_uncertainties * (deltas > 0)
+    left_unc = left_unc * (deltas > 0) + right_unc * (deltas < 0)
+    left_unc = np.minimum(left_unc, deviations)
+    right_unc = left_unc * (deltas < 0) + right_unc * (deltas > 0)
 
     return max(
         qr_quantile(
@@ -210,8 +209,8 @@ def qr_standard_deviation(
             quantile_dev,
             deviations,
             voting_rights,
-            left_uncertainties,
-            right_uncertainties,
+            left_unc,
+            right_unc,
             default_dev,
             error,
         ),
@@ -222,49 +221,49 @@ def qr_standard_deviation(
 @njit
 def qr_uncertainty(
     lipschitz: float,
-    values: NDArray,
-    voting_rights: NDArray | float = 1.0,
-    left_uncertainties: NDArray | None = None,
-    right_uncertainties: NDArray | None = None,
+    values: NDArray[np.float64],
+    voting_rights: NDArray[np.float64] | float = 1.0,
+    left_unc: NDArray[np.float64] | None = None,
+    right_unc: NDArray[np.float64] | None = None,
     default_dev: float = 1.0,
     error: float = 1e-5,
     median: float | None = None,
-):
+) -> float:
     """
     Quadratically regularized uncertainty
     TODO : search for a better formula for qr_uncertainty if possible
     """    
-    return qr_standard_deviation(lipschitz, values, 0.5, voting_rights, left_uncertainties,
-        right_uncertainties, default_dev, error, median)
+    return qr_standard_deviation(lipschitz, values, 0.5, voting_rights, left_unc,
+        right_unc, default_dev, error, median)
 
 
 @njit
-def clip(values: np.ndarray, center: float, radius: float):
+def clip(values: NDArray[np.float64], center: float, radius: float) -> NDArray[np.float64]:
     return values.clip(center - radius, center + radius)
 
 
 @njit
 def clip_mean(
-    voting_rights: np.ndarray, 
-    values: np.ndarray, 
+    voting_rights: NDArray[np.float64], 
+    values: NDArray[np.float64], 
     center: float=0., 
     radius: float=1.,
-):
+) -> np.float64:
     if len(values) == 0:
-        return center
+        return np.float64(center)
     return np.sum(voting_rights * clip(values, center, radius)) / np.sum(voting_rights)
 
 
 @njit
 def lipschitz_resilient_mean(
     lipschitz: float,
-    values: NDArray,
+    values: NDArray[np.float64],
     voting_rights: NDArray[np.float64] | float = 1.0,
-    left_uncertainties: NDArray | None = None,
-    right_uncertainties: NDArray | None = None,
+    left_unc: NDArray[np.float64] | None = None,
+    right_unc: NDArray[np.float64] | None = None,
     default_value: float = 0.0,
     error: float = 1e-5,
-):
+) -> np.float64:
     """ Lipschitz-robustified mean. Lipschitz-resilient mean estimator.
     It provably returns the mean, given sufficient participation and bounded values
     
@@ -279,10 +278,10 @@ def lipschitz_resilient_mean(
         Values whose quantile is estimated
     voting_rights: array or float
         Larger voting rights can pull the output towards them with more strength
-    left_uncertainties: array or None
+    left_unc: array or None
         Left uncertainty on each value. Set to zero if None.
-    right_uncertainties: array or None
-        Right uncertainty. Set to left_uncertainties if None (symmetric uncertainty).
+    right_unc: array or None
+        Right uncertainty. Set to left_unc if None (symmetric uncertainty).
     default_value: float
         Default value in the absence of data
     error: float
@@ -294,14 +293,14 @@ def lipschitz_resilient_mean(
         Lipschitz-resilient estimator of the mean
     """
     if len(values) == 0:
-        return default_value
+        return np.float64(default_value)
 
     if isinstance(voting_rights, (float, int)):
         voting_rights = np.full(values.shape, voting_rights)
 
     total_voting_rights = np.sum(voting_rights)
     if total_voting_rights == 0.0:
-        return default_value
+        return np.float64(default_value)
 
     return clip_mean(
         voting_rights, 
@@ -310,10 +309,10 @@ def lipschitz_resilient_mean(
             lipschitz=lipschitz/4, 
             values=values, 
             voting_rights=voting_rights, 
-            left_uncertainties=left_uncertainties,
-            right_uncertainties=right_uncertainties,
+            left_unc=left_unc,
+            right_unc=right_unc,
             default_value=default_value,
             error=error
         ), 
-        radius=total_voting_rights * lipschitz / 4
+        radius=total_voting_rights * lipschitz / 4 # type: ignore
     )

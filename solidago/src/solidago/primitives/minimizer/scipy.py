@@ -2,6 +2,8 @@ from typing import Any, Callable
 from numpy.typing import NDArray
 from scipy.optimize import minimize
 
+import numpy as np
+
 from solidago.primitives.minimizer.minimizer import Minimizer
 
 
@@ -13,11 +15,13 @@ class SciPyMinimizer(Minimizer):
         self.convergence_error = convergence_error
 
     def __call__(self, 
-        init: NDArray, 
-        args: tuple, 
-        loss: Callable[[NDArray, Any], float],
-        gradient_function: Callable[[NDArray, Any], NDArray],
-        partial_derivative: Callable[[int, NDArray, Any], Callable[[float], float]], # not used
-    ) -> NDArray:
+        init: NDArray[np.float64], 
+        args: tuple[Any, ...] = (), 
+        loss: Callable[[NDArray[np.float64], *tuple[Any, ...]], float] | None = None,
+        gradient_function: Callable[[NDArray[np.float64], *tuple[Any, ...]], NDArray[np.float64]] | None = None,
+        partial_derivative: Callable[[int, NDArray[np.float64], *tuple[Any, ...]], Callable[[float, *tuple[Any, ...]], float]] | None = None, # not used
+    ) -> NDArray[np.float64]:
+        assert loss is not None and gradient_function is not None
         result = minimize(loss, init, args, self.method, gradient_function)
         return result.x
+    

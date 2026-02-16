@@ -85,8 +85,8 @@ class TournesolExport(Poll):
     def __init__(self, dataset_zip: str | BinaryIO):
         dfs = TournesolExport.load_dfs(dataset_zip)
         from solidago.poll import (
-            Users, Vouches, Entities, AllPublic, Comparisons, 
-            VotingRights, UserModels, ScoringModel, MultiScore
+            Users, Vouches, Entities, PublicSettings, Comparisons, 
+            VotingRights, UserModels, ScoringModel
         )
         user_directs = UserDirectScores(init_data=dfs["user_scores"])
         directs = DirectScores(init_data=dfs["global_scores"])
@@ -94,7 +94,7 @@ class TournesolExport(Poll):
             users=Users(dfs["users"]),
             vouches=Vouches(init_data=dfs["vouches"]),
             entities=Entities(dfs["entities"]),
-            made_public=AllPublic(),
+            public_settings=PublicSettings(),
             comparisons=Comparisons(init_data=dfs["comparisons"]),
             voting_rights=VotingRights(init_data=dfs["voting_rights"]),
             user_models=UserModels(user_directs=user_directs),

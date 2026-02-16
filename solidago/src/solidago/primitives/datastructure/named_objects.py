@@ -1,0 +1,250 @@
+""" Rewrite Objects using pandas for speedup """
+
+from abc import abstractmethod
+from copy import deepcopy
+from typing import Any, Generic, Hashable, Iterable, Iterator, Self, TypeVar
+from pathlib import Path
+from numpy.typing import NDArray
+
+import numpy as np
+import pandas as pd
+import yaml
+
+Object = TypeVar("Object")
+
+
+class NamedObject:
+    default: dict[str, Any] = dict(trust=0.0)
+
+    def __init__(self, name: str, row: pd.Series | None = None, vector: Iterable[float] | None = None, **kwargs):
+        if row is None:
+            self.row = pd.Series(kwargs, name=name)
+        else:
+            self.row = row
+            self.row.name = name
+            for key, value in kwargs.items():
+                self.row[key] = value
+        for coordinate, value in enumerate(vector or list()):
+            self.row[f"v{coordinate}"] = value # type: ignore
+        self._get_vector_coordinates()
+
+    def _get_vector_coordinates(self):
+        self._vector_coordinates, coordinate = list(), 0
+        while f"v{coordinate}" in self.row:
+            self._vector_coordinates.append(f"v{coordinate}")
+            coordinate += 1
+    
+    @property
+    def name(self) -> str:
+        return str(self.row.name)
+
+    @property
+    def vector(self) -> NDArray[np.float64]:
+        return self.row[self._vector_coordinates].astype(np.float64).to_numpy()
+    
+    def __contains__(self, key: str) -> bool:
+        return (key in self.row) | (key in self.default)
+
+    def __getitem__(self, key: str) -> Any:
+        if key in self.row:
+            return self.row[key]
+        if key in self.default:
+            return self.default[key]
+        raise KeyError(key)
+
+    def __setitem__(self, key: str, value: Any):
+        self.row[key] = value
+    
+    def __repr__(self) -> str:
+        return repr(self.row)
+
+
+class NamedObjects(Generic[Object]):
+    name: str = "objects"
+    
+    def __init__(self, 
+        *args: Any, 
+        _name2index: pd.Series | None = None, 
+        _index2name: list[str] | None = None, 
+        **kwargs: Any
+    ):
+        self.df = args[0] if args and isinstance(args[0], pd.DataFrame) else pd.DataFrame(*args, **kwargs)
+        if not self.df.index.name == "name":
+            assert "name" in self.df.columns
+            self.df = self.df.set_index("name")
+        assert self.df.index.dtype == 'O'
+        self._name2index, self._index2name = _name2index, _index2name
+        self._get_vector_coordinates()
+
+    @abstractmethod
+    def row2object(self, row: pd.Series) -> Object:
+        """ Transforms row series into a usable value for applications """
+
+    def _get_vector_coordinates(self):
+        self._vector_coordinates, coordinate = list(), 0
+        while f"v{coordinate}" in self.df.columns:
+            self._vector_coordinates.append(f"v{coordinate}")
+            coordinate += 1
+
+    def __len__(self) -> int:
+        return len(self.df)
+
+    def __bool__(self) -> bool:
+        return len(self) > 0
+    
+    def __contains__(self, name: str | Object) -> bool:
+        name = name if isinstance(name, str) else str(name.name) # type: ignore
+        return name in self.names()
+
+    def _cache_name2index(self):
+        if self._name2index is not None and self._index2name is not None:
+            return
+        name2index, index2name = dict(), list()
+        for index, (name, _) in enumerate(self.df.iterrows()):
+            name2index[name] = np.int64(index)
+            index2name.append(name)
+        self._name2index = pd.Series(name2index, dtype=np.int64)
+        self._index2name = index2name
+
+    @property
+    def vectors(self) -> NDArray[np.float64]:
+        return self.df[self._vector_coordinates].astype(np.float64).to_numpy()
+    
+    def name2index(self, name: str | pd.Series | Object) -> np.int64:
+        if not isinstance(name, str):
+            assert hasattr(name, "name")
+            name = str(name.name) # type: ignore - previous line guaranteed hasattr name
+        self._cache_name2index()
+        return self._name2index[name] # type: ignore - previous line guaranteed self._name2index is not None
+        
+    def index2name(self, index: int | np.int64) -> str:
+        assert isinstance(index, (int, np.integer)), index
+        assert index < len(self), index
+        self._cache_name2index()
+        return self._index2name[index] # type: ignore - previous line guaranteed self._index2name is not None
+    
+    def names(self) -> pd.Index:
+        return self.df.index
+    
+    def __getitem__(self, 
+        name: Hashable | Object | list[str] | list[Hashable] | NDArray[np.int64] | "NamedObjects" | pd.Index
+    ) -> Object | Self:
+        if isinstance(name, (int, np.integer)):
+            return self.row2object(self.df.iloc[name])
+        if isinstance(name, np.ndarray) and np.issubdtype(name.dtype, np.integer):
+            return type(self)(self.df.iloc[name])
+        if isinstance(name, NamedObjects):
+            name = name.names()
+        elif not isinstance(name, (str, list)):
+            assert hasattr(name, "name")
+            name = str(name.name) # type: ignore - previous line guaranteed hasattr name
+        rows = self.df.loc[name]
+        if isinstance(rows, pd.Series):
+            return self.row2object(rows)
+        return type(self)(rows)
+    
+    def sample(self, n_items: int | None = None) -> Self:
+        if n_items is None or len(self) < n_items:
+            return deepcopy(self)
+        indices = np.random.choice(len(self), n_items, False)
+        return type(self)(self.df.iloc[indices])
+    
+    def append(self, object: Object | pd.Series):
+        row = object if isinstance(object, pd.Series) else object.to_row() # type: ignore
+        assert hasattr(object, "name"), object
+        self.append_row(str(object.name), row) # type: ignore
+    
+    def append_row(self, name: str, row: pd.Series):
+        self.df.loc[name] = row
+        if self._name2index is not None:
+            assert self._index2name is not None
+            self._name2index[name] = len(self) - 1
+            self._index2name.append(name)
+    
+    def set_column(self, name: str, column: pd.Series | list | NDArray):
+        self.df[name] = column
+        if name.startswith("v") and name[1:].isdigit():
+            self._get_vector_coordinates()
+
+    def assign(self, **kwargs: Any) -> Self:
+        df = self.df.assign(**kwargs)
+        return type(self)(df, _name2index=deepcopy(self._name2index), _index2name=deepcopy(self._index2name))
+
+    def __iter__(self) -> Iterator[Object]:
+        for _, row in self.df.iterrows():
+            yield self.row2object(row)
+    
+    def iter_pairs(self, shuffle: bool = False) -> Iterator[tuple[Object, Object]]:
+        for i in range(len(self)):
+            for j in range(i):
+                s = shuffle and np.random.random() < 0.5
+                pair = (self[i], self[j]) if s else (self[j], self[i])
+                yield pair # type: ignore - Cannot be Self given i, j are int
+
+    def get_column(self, name: str) -> pd.Series:
+        return self.df[name]
+    
+    def get_columns(self, names: Iterable[str]) -> pd.DataFrame:
+        return self.df[list(names)]
+
+    @classmethod
+    def load(cls, directory: str | Path, source: str | None = None, **kwargs: Any) -> Self:
+        directory = Path(directory)
+        if directory.is_file():
+            path = Path(directory)
+            source = path.name
+        else:
+            source = source or cls.name
+            if (directory / source).is_file():
+                pass
+            elif (directory / f"{source}.parquet").is_file():
+                source = f"{source}.parquet"
+            elif (directory / f"{source}.csv").is_file():
+                source = f"{source}.csv"
+            path = Path(directory) / source
+        source = source or cls.name
+        if not path.is_file():
+            return cls(**kwargs)
+        if source.endswith(".parquet"):
+            df = pd.read_parquet(path, engine="pyarrow")
+        else:
+            assert source.endswith(".csv")
+            df = pd.read_csv(path, engine="pyarrow")
+        return cls(df, **kwargs)
+
+    def save(self, 
+        directory: str | Path | None = None, 
+        source: str | None = None, 
+        save_instructions: bool = False, # not used
+    ) -> tuple[str, dict]:
+        source = source or f"{self.name}.parquet"
+        if not directory:
+            return self.save_instructions(source, directory, save_instructions)
+        path = f"{directory}/{source}"
+        if source.endswith(".parquet"):
+            self.df.to_parquet(path, engine="pyarrow")
+        elif source.endswith(".csv"):
+            self.df.to_csv(path)
+        return self.save_instructions(source, directory, save_instructions)
+
+    def save_instructions(self, 
+        source: str | None = None, 
+        directory: str | Path | None = None, 
+        save_instructions: bool=True,
+    ) -> tuple[str, dict[str, Any]]:
+        source = source or f"{self.name}.parquet"
+        kwargs = dict(source=source)
+        instructions = type(self).__name__, kwargs
+        if directory and save_instructions:
+            filename = (".".join(source.split(".")[:-1]) + ".yaml") if "." in source else f"{source}.yaml"
+            with open(Path(directory) / filename, "w") as f:
+                yaml.safe_dump(instructions, f)
+        return instructions
+
+    def __repr__(self) -> str:
+        return repr(self.df)
+    
+
+class SeriesNamedObjects(NamedObjects[pd.Series]):
+    def row2object(self, row: pd.Series) -> pd.Series:
+        return row

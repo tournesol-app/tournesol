@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING, Union
-from numpy.typing import NDArray
+from typing import TYPE_CHECKING, Hashable, Iterable, Union
+from numpy.typing import NDArray, DTypeLike
 from pathlib import Path
 
 import numpy as np
@@ -7,51 +7,46 @@ import yaml
 import logging
 logger = logging.getLogger(__name__)
 
-from solidago.poll import Entity, Entities
+from solidago.poll.poll_tables import *
 
 
-from .score import Score, MultiScore
+from .score import Score, Scores
 
 if TYPE_CHECKING:
     from solidago.poll.scoring.base import BaseScoring
     from solidago.poll.scoring.processing import ScoreProcessing
 
 
-class DirectScores(MultiScore):
+class DirectScores(Scores):
     name: str="directs"
-    default_keynames: tuple = ("entity_name", "criterion")
+    default_keynames: set[str] = {"entity_name", "criterion"}
 
-class CategoryScores(MultiScore):
+class CategoryScores(Scores):
     name: str="categories"
-    default_keynames: tuple = ("category", "group", "criterion")
+    default_keynames: set[str] = {"category", "group", "criterion"}
+    default_score: tuple[float, float, float] = 0., 0., 0.
 
-    @classmethod
-    def value_factory(cls):
-        return Score(0, 0, 0)
-
-class Parameters(MultiScore):
+class Parameters(Scores):
     name: str="parameters"
-    default_keynames: tuple = ("criterion", "coordinate")
+    default_keynames: set[str] = {"criterion", "coordinate"}
+    default_score: tuple[float, float, float] = 0., 0., 0.
 
-    @classmethod
-    def value_factory(cls):
-        return Score(0, 0, 0)
-    
-    def n_coordinates(self, *keys) -> int:
-        multiscores = self[*keys]
-        assert multiscores.keynames == ("coordinate",)
-        coordinates = [int(i) for i in multiscores.keys("coordinate")]
+    def n_coordinates(self, **keys: Hashable) -> int:
+        multiscores = self.filters(**keys)
+        coordinates = [int(i) for i in multiscores.keys("coordinate")] # type: ignore
         return max(coordinates) + 1 if coordinates else 0
+    
+    def coordinates(self, **keys: Hashable) -> list[int]:
+        return list(range(self.n_coordinates(**keys)))
 
-    def scores_list(self, *keys) -> list[Score]:
-        multiscores, coordinate, values = self[*keys], 0, list()
+    def scores_list(self, **keys: Hashable) -> list[Score]:
+        multiscores, coordinate, values = self.filters(*keys), 0, list()
         if not multiscores:
             return list()
-        assert multiscores.keynames == ("coordinate",)
-        coordinates = [int(i) for i in multiscores.keys("coordinate")]
+        coordinates = [int(i) for i in multiscores.keys("coordinate")] # type: ignore
         n_coordinates = max(coordinates) + 1 if coordinates else 0
         for coordinate in range(n_coordinates):
-            values.append(multiscores[str(coordinate)])
+            values.append(multiscores.get("unique", coordinate=coordinate))
         return values
 
     def values(self, *keys) -> NDArray:
@@ -69,21 +64,15 @@ class Parameters(MultiScore):
     def minima(self, *keys) -> NDArray:
         return np.array([score.min for score in self.scores_list(*keys)])
 
-class Multipliers(MultiScore):
+class Multipliers(Scores):
     name: str="multipliers"
-    default_keynames: tuple = ("height", "criterion")
+    default_keynames: set[str] = {"height", "criterion"}
+    default_score: tuple[float, float, float] = (1., 0., 0.)
 
-    @classmethod
-    def value_factory(cls):
-        return Score(1, 0, 0)
-
-class Translations(MultiScore):
+class Translations(Scores):
     name: str="translations"
-    default_keynames: tuple = ("height", "criterion")
-    
-    @classmethod
-    def value_factory(cls):
-        return Score(0, 0, 0)
+    default_keynames: set[str] = {"height", "criterion"}
+    default_score: tuple[float, float, float] = (0., 0., 0.)
 
 
 class ScoringModel:
@@ -97,10 +86,10 @@ class ScoringModel:
         note: str | None = None,
     ):
         """ The composition of the Tournesol pipeline global model is [
-            ("Direct", dict(note="entitywise_qr_quantile")),
+            ("Linear", dict(note="entitywise_qr_quantile")),
             ("Squash", dict(note="squash", score_max=100})),
         ] """
-        self.composition = composition or [("Direct", dict() if note is None else dict(note=note))]
+        self.composition = composition or [("Linear", dict() if note is None else dict(note=note))]
         self.directs = directs or DirectScores()
         self.categories = categories or CategoryScores()
         self.parameters = parameters or Parameters()
@@ -108,28 +97,26 @@ class ScoringModel:
         self.translations = translations or Translations()
 
     def __call__(self, 
-        entities: str | Entity | Entities | slice = slice(None),
-        criteria: str | set | slice = slice(None),
+        entities: Entity | Entities,
+        criteria: str | Iterable[str] | None = None,
         n_sampled_entities: int | None = None,
-        keynames: list[str] | None = None,
-    ) -> Score | MultiScore:
+    ) -> Score | Scores:
         """ Assigns a score to an entity, or to multiple entities. Handles sampling. """
-        assert entities is not None
-        entities = self.sample_entities(entities, criteria, n_sampled_entities)
-        assert entities is not None
-        score = self.base_score(entities, criteria, keynames)
+        evaluated_entity_names = list(self.evaluated_entity_names(criteria))
+        entities = entities if isinstance(entities, Entity) else entities[evaluated_entity_names]
+        entities = self.sample_entities(entities, n_sampled_entities)
+        criteria = self.criteria() if criteria is None else criteria
+        score = self.base_score(entities, criteria)
         for height in range(1, len(self.composition)):
             score = self.score_processing(height)(criteria, score)
         return score
 
-    def base_score(self, 
-        entities: str | Entity | Entities | slice = slice(None),
-        criteria: str | set | slice = slice(None),
-        keynames: list[str] | None = None,
-    ) -> Score | MultiScore:
+    def base_score(self, entities: Entity | Entities | None = None, criteria: str | Iterable[str] | None = None) -> Score | Scores:
         """ Assigns a score to an entity, or to multiple entities. Handles keynames recovery. """
-        entities, criteria, keynames = self._adjust_keynames(entities, criteria, keynames)
-        return self.base_scoring()(entities, criteria, keynames)
+        criteria = self.criteria() if criteria is None else criteria
+        assert self.composition[0] != "Linear" or entities is not None
+        entities = Entities(dict(name=list(self.directs.keys("entity_name")))) if entities is None else entities
+        return self.base_scoring()(entities, criteria)
 
     def base_scoring(self) -> "BaseScoring":
         import solidago.poll.scoring.base as base
@@ -142,60 +129,31 @@ class ScoringModel:
         import solidago.poll.scoring.processing as processing
         clsname, kwargs = self.composition[height]
         assert hasattr(processing, clsname), f"Invalid base model composition {clsname}"
-        return getattr(processing, clsname)(self.multipliers[height], self.translations[height], **kwargs)
+        multipliers = self.multipliers.filters(height=height)
+        translations = self.translations.filters(height=height)
+        return getattr(processing, clsname)(multipliers, translations, **kwargs)
 
     def criteria(self) -> set[str]:
-        return self.directs.keys("criterion") | self.categories.keys("criterion") | set(self.parameters.keys())
+        criteria = self.directs.keys("criterion") | self.categories.keys("criterion") | self.parameters.keys("criterion")
+        return {str(c) for c in criteria}
     
-    def evaluated_entity_names(self, criteria: str | set | slice = slice(None)) -> set[str]:
-        if isinstance(criteria, slice):
+    def evaluated_entity_names(self, criteria: str | Iterable[str] | None = None) -> set[Hashable]:
+        if criteria is None:
             return self.directs.keys("entity_name")
-        return self.directs.get(criterion=criteria).keys("entity_name")
+        c: str | list[Hashable] = criteria if isinstance(criteria, str) else list(criteria)
+        return self.directs.filters(criterion=c).keys("entity_name")
     
-    def sample_entities(self, 
-        entities: str | Entity | Entities | slice = slice(None),
-        criteria: str | set | slice = slice(None),
-        n_sampled_entities: int | None = None,
-    ) -> "Entities":
-        from solidago.poll.entities import Entities
-        if n_sampled_entities is None:
-            return entities
-        if isinstance(entities, slice):
-            entities = Entities(list(self.evaluated_entity_names(criteria)))
-        assert isinstance(entities, Entities)
-        return entities.sample(n_sampled_entities)
-    
-    def _adjust_keynames(self,
-        entities: str | Entity | Entities | slice = slice(None),
-        criteria: str | set | slice = slice(None),
-        keynames: list[str] | None = None,
-    ) -> tuple[Union["Entity", "Entities", slice], str | set | slice, list[str]]:
-        from solidago.poll.entities import Entity, Entities
-        if keynames is None:
-            keynames = list()
-            if isinstance(entities, (set, Entities, slice)):
-                keynames.append("entity_name")
-            if isinstance(criteria, (set, slice)):
-                keynames.append("criterion")
-        assert "entity_name" in keynames or isinstance(entities, (str, Entity))
-        assert "criterion" in keynames or isinstance(criteria, str)
-        entities = entities[{e.name for e in entities}] if isinstance(entities, Entities) else entities
-        if "entity_name" in keynames and isinstance(entities, (str, Entity)):
-            entities = {entities} if isinstance(str) else Entities([entities])
-        if "criterion" in keynames and isinstance(criteria, str):
-            criteria = {criteria}
-        if isinstance(criteria, slice):
-            criteria = self.criteria()
-        return entities, criteria, keynames
+    def sample_entities(self, entities: Entity | Entities, n_sampled_entities: int | None = None) -> Entity | Entities:
+        return entities if isinstance(entities, Entity) else entities.sample(n_sampled_entities)
 
     def scale(self, 
         multipliers: Multipliers | None = None, 
         translations: Translations | None = None, 
         note: str = "scale",
     ) -> "ScoringModel":
-        kwargs = dict(height=len(self.composition))
-        multipliers = (self.multipliers | multipliers.detach().prepend(**kwargs)) if multipliers else self.multipliers
-        translations = (self.translations | translations.detach().prepend(**kwargs)) if translations else self.translations
+        height = len(self.composition)
+        multipliers = (self.multipliers | multipliers.add_keys(height=height)) if multipliers else self.multipliers
+        translations = (self.translations | translations.add_keys(height=height)) if translations else self.translations
         return ScoringModel(
             self.composition + [("Scale", dict(note=note))],
             self.directs, self.categories, self.parameters,
@@ -233,36 +191,34 @@ class ScoringModel:
             return dict(source=f"{filename}_{key}.csv") | (kwargs[key] if key in kwargs else dict())
         return cls(
             composition=kwargs["composition"] if "composition" in kwargs else None,
-            directs=DirectScores.load(directory, **get_kwargs("directs")),
-            categories=CategoryScores.load(directory, **get_kwargs("categories")),
-            parameters=Parameters.load(directory, **get_kwargs("parameters")),
-            multipliers=Multipliers.load(directory, **get_kwargs("multipliers")),
-            translations=Translations.load(directory, **get_kwargs("translations")),
+            directs=DirectScores.load(directory, **get_kwargs("directs")), # type: ignore
+            categories=CategoryScores.load(directory, **get_kwargs("categories")), # type: ignore
+            parameters=Parameters.load(directory, **get_kwargs("parameters")), # type: ignore
+            multipliers=Multipliers.load(directory, **get_kwargs("multipliers")), # type: ignore
+            translations=Translations.load(directory, **get_kwargs("translations")), # type: ignore
         )
 
     def save(self, 
-        directory: str | None = None, 
+        directory: str | Path | None = None, 
         filename: str = "scoring_model", 
         save_instructions: bool = True,
-    ) -> tuple[str, dict]:
+    ) -> tuple[str, dict[str, Any]]:
         """ save must be given a filename_root (typically without extension),
         as multiple csv files may be saved, with a name derived from the filename_root
         (in addition to the yaml description) """
         for table_name in ("directs", "categories", "parameters", "multipliers", "translations"):
             table = getattr(self, table_name)
             if table:
-                assert isinstance(table, MultiScore)
+                assert isinstance(table, Scores)
                 table.save(directory, f"{filename}_{table_name}.csv")
         return self.save_instructions(directory, filename, save_instructions)
 
     def save_instructions(self, 
-        directory: str | None = None, 
+        directory: str | Path | None = None, 
         filename: str = "scoring_model", 
         save_instructions: bool = True,
-    ) -> tuple[str, dict]:
-        kwargs = dict(composition=self.composition)
-        if self.categories:
-            kwargs["categories"] = dict(categories_list=self.categories.list)
+    ) -> tuple[str, dict[str, Any]]:
+        kwargs: dict[str, Any] = dict(composition=self.composition)
         if self.parameters:
             kwargs["parameters"] = dict(n_coordinates=self.parameters.n_coordinates)
         instructions = type(self).__name__, kwargs

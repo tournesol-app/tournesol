@@ -20,8 +20,8 @@ def test_erdos_renyi_vouch_generator():
     users = generators.users.BernoulliPretrust(0.2)(users)
     users = generators.users.AddColumn("expected_n_vouches", Zipf(1.5))(users)
     vouches = generators.vouches.ErdosRenyi()(users)
-    for (voucher_name, vouchee_name, kind), (weight, priority) in vouches:
-        assert users[voucher_name].is_trustworthy == users[vouchee_name].is_trustworthy
+    for vouch in vouches:
+        assert users[vouch["by"]]["is_trustworthy"] == users[vouch["to"]]["is_trustworthy"]
     
 def test_svd_entity_generator():
     entities = generators.entities.Entities(100, Normal(5))()
@@ -47,7 +47,7 @@ def test_evaluation_generator():
     )(users, entities, made_public, comparisons)
     assert len(ratings) > 0
     assert len(comparisons) > 0
-    assert all(isinstance(a.value, float) for _, a in ratings), ratings
+    assert all(isinstance(r["value"], float) for r in ratings), ratings
             
 def test_generative_model():
     for seed in range(N_SEEDS):

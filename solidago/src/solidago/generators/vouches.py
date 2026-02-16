@@ -1,10 +1,10 @@
 import numpy as np
 
-from .generator import GeneratorStep
-from solidago.poll import Users, Vouches
+from solidago.poll import User, Users, Vouches
+from solidago.poll_functions.poll_function import PollFunction
 
 
-class ErdosRenyi(GeneratorStep):
+class ErdosRenyi(PollFunction):
     def __call__(self, users: Users) -> Vouches:
         """ Each vouch is sampled independently, with a probability dependent on users' metadata.
         Each user must have the two keys `is_trustworthy: bool` and `n_expected_vouches: float`.
@@ -20,14 +20,17 @@ class ErdosRenyi(GeneratorStep):
             assert hasattr(user, "expected_n_vouches")
         
         for trustworthy in (True, False):
-            usernames_subset = {user.name for user in users if user.is_trustworthy == trustworthy}
+            usernames_subset = {user.name for user in users if user["is_trustworthy"] == trustworthy}
             if len(usernames_subset) <= 1: continue
             
-            for voucher_name in usernames_subset:
-                p_vouch = users[voucher_name].expected_n_vouches / (len(usernames_subset) - 1)
-                for vouchee_name in usernames_subset:
-                    if (voucher_name != vouchee_name) and (np.random.random() < p_vouch):
-                        vouches[voucher_name, vouchee_name, "Personhood"] = (1 - np.random.random()**2, 0)
+            for by in usernames_subset:
+                user = users[by]
+                assert isinstance(user, User)
+                p_vouch = user["expected_n_vouches"] / (len(usernames_subset) - 1)
+                for to in usernames_subset:
+                    if (by != to) and (np.random.random() < p_vouch):
+                        value = (1 - np.random.random()**2, 0)
+                        vouches.set(by=by, to=to, kind="Personhood", value=value)
         
         return vouches
         

@@ -1,0 +1,214 @@
+from abc import abstractmethod
+from numpy.typing import NDArray
+
+import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
+
+try:
+    import torch
+except ImportError as exc:
+    raise RuntimeError(
+        "Using LBFGS requires 'torch' to be installed. "
+        "Install 'solidago[torch]' to get the optional dependencies."
+    ) from exc
+
+from solidago.poll import *
+from .generalized_bradley_terry import GeneralizedBradleyTerry, UniformGBT
+
+
+default_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
+    def __init__(self,
+        prior_std: float=7,
+        uncertainty_nll_increase: float=1.0,
+        max_uncertainty: float=1e3,
+        convergence_error: float=1e-5,
+        max_iter: int=100,
+        device: torch.device=default_device,
+        max_workers: int=1,
+    ):
+        """ Generalized Bradley Terry is a class of porbability models of comparisons,
+        introduced in the paper "Generalized Bradley-Terry Models for Score Estimation 
+        from Paired Comparisons" by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang
+        and Oscar Villemaud, and published at AAAI'24.
+        
+        This implementation leverages the pytorch implementation of the Limited-memory 
+        Broyden-Fletcher-Goldfarb-Shanno (LBFGS) algorithm, a second-order quasi-Newton 
+        method with limited demands of computer memory.
+
+        Parameters
+        ----------
+        prior_std: float=7.0
+            Typical scale of scores. 
+            Technical, it should be the standard deviation of the gaussian prior.
+        convergence_error: float=1e-5
+            Admissible error in score computations (obtained through optimization).
+        high_likelihood_range_threshold: float=1.0
+            To determine the uncertainty, we compute left_unc (respectively, right_unc)
+            such that score - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than score.
+        max_uncertainty: float=1e3
+            Replaces infinite uncertainties with max_uncertainty
+        max_iter: int=100
+            Maximal number of iterations used
+        """
+        super().__init__(
+            prior_std=prior_std,
+            uncertainty_nll_increase=uncertainty_nll_increase,
+            max_uncertainty=max_uncertainty,
+            max_workers=max_workers,
+        )
+        self.convergence_error = convergence_error
+        self.max_iter = max_iter
+        self.device = device
+
+    @abstractmethod
+    def torch_cumulant_generating_function(self, score_diffs: torch.Tensor) -> torch.Tensor:
+        """ To use the cumulant generating function in the context of pytorch,
+        it is sufficent to write the cumulant generating function.
+        This function must however be written as a torch function,
+        i.e. with torch inputs and outputs.
+        
+        Parameters
+        ----------
+        score_diffs: torch.Tensor
+            Score differences
+            
+        Returns
+        -------
+        cgf: torch.Tensor
+            cgf[i] is the cumulant-generating function at score_diffs[i]
+        """
+
+    def init_values(self, entities: Entities, init: Scores) -> torch.Tensor: # type: ignore
+        """ To avoid nan errors in autograd, we initialize at nonzero values """
+        values = 1e-3 * torch.normal(0, 1, (len(entities),))
+        for index, entity in enumerate(entities):
+            score = init.get(entity_name=entity.name)
+            if not np.isnan(score.value):
+                values[index] = score.value * (1 + values[index])
+        values.requires_grad = True
+        values = values.to(self.device)
+        return values
+    
+    def compute_values(self, 
+        entities: Entities,
+        comparisons: Comparisons, # keynames == ["entity_name", "other_name"]
+        init : Scores, # keynames == "entity_name"
+    ) -> NDArray:
+        """ Computes the scores given comparisons """
+        values = self.init_values(entities, init)
+        entity_names = list(entities.names())
+        comparisons = comparisons.filters(left_name=entity_names, right_names=entity_names)
+        left_indices = [entities.name2index(name) for name in comparisons.get_column("left_name")]
+        right_indices = [entities.name2index(name) for name in comparisons.get_column("right_name")]
+        normalized_comparisons = torch.tensor(comparisons.get_column("value", np.float64) / comparisons.get_column("max", np.float64))
+            
+        lbfgs = torch.optim.LBFGS(
+            (values,),
+            max_iter=self.max_iter,
+            tolerance_change=self.convergence_error,
+            line_search_fn="strong_wolfe",
+        )
+        
+        def closure():
+            lbfgs.zero_grad()
+            loss = self.negative_log_posterior(values, left_indices, right_indices, normalized_comparisons)
+            loss.backward()
+            return loss
+
+        lbfgs.step(closure)  # type: ignore
+
+        n_iter = lbfgs.state_dict()["state"][0]["n_iter"]
+        if n_iter >= self.max_iter:
+            logger.warning(f"LBFGS failed to converge in {n_iter} iterations")
+
+        values = values.detach()
+        if values.isnan().any():
+            raise RuntimeError(f"Nan in solution, state: {lbfgs.state_dict()}")
+        return np.array(values)
+            
+    def negative_log_posterior(self, 
+        values: torch.Tensor,
+        left_indices: list[np.int64],
+        right_indices: list[np.int64],
+        normalized_comparisons: torch.Tensor,
+    ) -> torch.Tensor:
+        """ Negative log posterior """
+        value_diffs = values[torch.tensor(left_indices)] - values[torch.tensor(right_indices)]
+        loss = self.torch_cumulant_generating_function(value_diffs).sum()
+        loss += (value_diffs * normalized_comparisons).sum()
+        return loss + (values**2).sum() / (2 * self.prior_std**2)
+
+
+class LBFGSUniformGBT(LBFGSGeneralizedBradleyTerry, UniformGBT): # type: ignore
+    def __init__(self,
+        prior_std: float=7,
+        uncertainty_nll_increase: float=1.0,
+        max_uncertainty: float=1e3,
+        convergence_error: float=1e-5,
+        max_iter: int=100,
+        device: torch.device=default_device,
+        cgf_epsilon: float=1e-8,
+        max_workers: int=1,
+    ):
+        """ Generalized Bradley Terry with a uniform root law is a straightforward
+        instance of the models introduced in the paper "Generalized Bradley-Terry 
+        Models for Score Estimation from Paired Comparisons" by Julien Fageot, 
+        Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud, and published at AAAI'24.
+        
+        This implementation leverages Limited-memory Broyden-Fletcher-Goldfarb-Shanno 
+        (LBFGS) algorithm, a second-order quasi-Newton method with limited demands 
+        of computer memory. In particular we use its pytorch implementation.
+        
+        Parameters
+        ----------
+        prior_std: float=7.0
+            Typical scale of values. 
+            Technical, it should be the standard deviation of the gaussian prior.
+        convergence_error: float=1e-5
+            Admissible error in value computations (obtained through optimization).
+        high_likelihood_range_threshold: float=1.0
+            To determine the uncertainty, we compute left_unc (respectively, right_unc)
+            such that value - left_unc (respectively, + right_unc) has a likelihood
+            which is exp(high_likelihood_range_threshold) times lower than value.
+        max_uncertainty: float=1e3
+            Replaces infinite uncertainties with max_uncertainty
+        """
+        super().__init__(
+            prior_std=prior_std,
+            uncertainty_nll_increase=uncertainty_nll_increase,
+            max_uncertainty=max_uncertainty,
+            convergence_error=convergence_error,
+            max_iter=max_iter,
+            device=device,
+            max_workers=max_workers,
+        )
+        self.cgf_epsilon = cgf_epsilon
+
+    def torch_cumulant_generating_function(self, value_diffs: torch.Tensor) -> torch.Tensor: # type: ignore
+        """ Vectorized cumulant generating function adapted for pytorch
+
+        Parameters
+        ----------
+        value_diffs: torch.Tensor
+            Score difference
+
+        Returns
+        -------
+        cgf: torch.Tensor
+            cfg[i] is the cgf of value_diff[i]
+        """
+        value_diffs_abs = (value_diffs**2 + self.cgf_epsilon).sqrt()
+        return torch.where(
+            value_diffs_abs > 1e-1,
+            torch.where(
+                value_diffs_abs < 20.0,
+                (torch.sinh(value_diffs_abs.clip(max=20.)) / (self.cgf_epsilon + value_diffs_abs)).log(),
+                value_diffs_abs - np.log(2) - value_diffs_abs.log(),
+            ),
+            value_diffs_abs ** 2 / 6 - value_diffs_abs ** 4 / 180,
+        )

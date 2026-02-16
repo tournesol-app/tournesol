@@ -7,14 +7,25 @@ from solidago.poll import *
 
 
 class Compare:
+
     @abstractmethod
+    def sample_value(self, 
+        comparison: Comparison, 
+        user: User, left: Entity, right: Entity, 
+        left_public: bool, right_public: bool, 
+        criterion: str
+    ) -> tuple[float, float]:
+        raise NotImplemented
+    
     def __call__(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
-        left_public: bool, right_public, 
+        left_public: bool, right_public: bool, 
         criterion: str
-    ) -> Comparison:
-        raise NotImplemented
+    ):
+        value, max = self.sample_value(comparison, user, left, right, left_public, right_public, criterion)
+        comparison["value"] = value
+        comparison["max"] = max
 
     @classmethod
     def load(cls, compare: Union["Compare", list, tuple], honest: Union["Compare", list, tuple] | None = None):
@@ -34,28 +45,30 @@ class Compare:
         kwargs = ", ".join([f"{k}={v}" for k, v in self.__dict__.items()])
         return f"{t}({kwargs})"
 
+
 class Deterministic(Compare):
-    def __call__(self, 
+    def sample_value(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
-        left_public: bool, right_public, 
+        left_public: bool, right_public: bool, 
         criterion: str
-    ) -> Comparison:
+    ) -> tuple[float, float]:
         value = user.vector @ (right.vector - left.vector) / np.sqrt(user.vector.size)
-        if hasattr(user, "multiplier"):
-            value *= user.multiplier
-        return Comparison(value)
-
+        if "multiplier" in user:
+            value *= user["multiplier"]
+        return value, float("inf")
+    
 
 class Negate(Compare):
-    def __init__(self, honest: Union["Compare", list, tuple] | None = None):
+    def __init__(self, honest: Union["Compare", list, tuple]):
         self.honest = Compare.load(honest)
 
-    def __call__(self, 
+    def sample_value(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
-        left_public: bool, right_public, 
+        left_public: bool, right_public: bool, 
         criterion: str
-    ) -> Comparison:
-        return - self.honest(comparison, user, left, right, left_public, right_public, criterion)
+    ) -> tuple[float, float]:
+        value, max = self.honest.sample_value(comparison, user, left, right, left_public, right_public, criterion)
+        return - value, max
         

@@ -6,6 +6,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 import logging
 
+import yaml
+
 from solidago.experiments.experiment import Experiment
 from solidago.poll.poll import Poll
 
@@ -32,14 +34,12 @@ class XYZPlot:
         linestyles=["-", "--", "-.", ":", "-", "--", ":"],
         *args, **kwargs
     ):
-        super().__init__(source, read_only=True)
         self.filename = filename
         self.run_id = XYZPlot.get_run_id(data_source, run_number)
         self.data_source = data_source if self.run_id is None else f"{data_source}_{self.run_id}"
         with open(source) as f:
             kwargs = yaml.safe_load(f)
         source_operation = Experiment.load(f"{path}/{self.data_source}/source.yaml")
-        assert isinstance(source_operation, IteratedOperation)
         self.source_operation = source_operation
         self.savepath = self.savepath.parent
         self.xvarname, self.yvarname, self.zvarname = xvarname, yvarname, zvarname
@@ -134,13 +134,13 @@ class XYZPlot:
 
     def iter_control_values(self, control_var_indices: list[int]) -> Iterator[tuple[list[int], list]]:
         ranges = [len(self.source_operation.varname_values[var_index]) for var_index in control_var_indices]
-        for indices in IteratedOperation.iter_ranges(ranges):
+        for indices in self.iter_ranges(ranges):
             values = [self.source_operation.varname_values[var_index][i] for var_index, i in zip(control_var_indices, indices)]
             yield indices, values
     
     def controled_indices_iter(self, control_var_indices: list[int], control_indices: list[int]) -> Iterator[list[int]]:
         ranges = [len(values) for values in self.source_operation.varname_values]
-        for indices in IteratedOperation.iter_ranges(ranges):
+        for indices in self.iter_ranges(ranges):
             if all(indices[i] == control_indices[n] for n, i in enumerate(control_var_indices)):
                 yield indices
 
