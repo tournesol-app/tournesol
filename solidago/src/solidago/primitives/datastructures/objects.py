@@ -28,34 +28,28 @@ class Objects(MultiKeyArray):
     def vectors(self):
         return self.dataset["vector"].to_numpy()
 
-    def values(self, key: str):
-        if key not in self.VALUE_NAMES:
-            raise ValueError(f"Unknown field {key!r}")
-        return self.dataset[key].broadcast_like(self.dataset["id"]).to_numpy()
+    def values(self, field: str) -> pd.Series:
+        if field not in self.VALUE_NAMES:
+            raise ValueError(f"Unknown field {field!r}")
+        return self.dataset[field].to_series()
 
     def keys(self) -> np.ndarray:
         return self.dataset["id"].values
 
     def sample(self, n_items: int, replace=False) -> Self:
         sample_ids = np.random.choice(self.dataset["id"], size=n_items, replace=replace)
-        return self.where(lambda x: x["id"].isin(sample_ids))
+        return self.filter(id=sample_ids)
 
     def assign(self, **kwargs):
         dataset = self.dataset.copy()
-        for (key, values) in kwargs.items():
+        for key, values in kwargs.items():
             if key not in self.VALUE_NAMES:
                 raise ValueError(f"Unknown field {key!r}")
             if isinstance(values, (list, np.ndarray)):
-                dataset[key] = (
-                    self.KEY_NAMES,
-                    values
-                )
+                dataset[key] = (self.KEY_NAMES, values)
             else:
                 dataset[key] = values
         return type(self)(dataset=dataset)
-
-    def id_to_idx(self) -> dict:
-        return {id: idx for (idx, id) in enumerate(self.dataset["id"].values)}
 
     def __len__(self):
         return len(self.dataset["id"])
