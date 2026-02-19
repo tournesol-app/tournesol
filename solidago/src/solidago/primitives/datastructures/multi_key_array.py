@@ -19,6 +19,10 @@ class MultiKeyArray:
             # If keys are columns, set them as index
             df = df.set_index(cls.KEY_NAMES)
 
+        if len(df) == 0:
+            # avoid type coercion issues when filtering empty sparse arrays
+            sparse = False
+
         dataset = xr.Dataset.from_dataframe(df, sparse=sparse)
         return cls(dataset)
 
