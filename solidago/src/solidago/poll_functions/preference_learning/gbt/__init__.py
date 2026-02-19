@@ -12,3 +12,6 @@ Julien Fageot, Matthias Grossglauser, Lê-Nguyên Hoang, Matteo Tacchi and Oscar
 """
 
 from .flexible import FlexibleGeneralizedBradleyTerry
+import solidago.poll_functions.preference_learning.gbt.root_law as root_law
+
+__all__ = ["FlexibleGeneralizedBradleyTerry", "root_law"]

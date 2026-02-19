@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator
+from typing import Hashable, Iterable, Iterator
 from numpy.typing import NDArray
 from pathlib import Path
 from copy import deepcopy
@@ -8,6 +8,7 @@ import yaml
 import logging
 
 from solidago.poll.poll_tables import *
+from solidago.primitives.criteria import to_criteria
 
 logger = logging.getLogger(__name__)
 
@@ -140,24 +141,30 @@ class UserModels:
             self._cache_users[username] = model
 
     def __call__(self, 
-        entities: Entity | Entities,
-        criteria: str | Iterable[str] | None = None,
+        entity: Entity | Entities | None = None,
+        criterion: str | Iterable[str] | None = None,
         n_sampled_entities_per_user: int | None = None,
     ) -> Scores:
-        return self.score(entities, criteria, n_sampled_entities_per_user)
+        return self.score(entity, criterion, n_sampled_entities_per_user)
     
     def score(self, 
-        entities: Entity | Entities,
-        criteria: str | Iterable[str] | None = None,
+        entity: Entity | Entities | None = None,
+        criterion: str | Iterable[str] | None = None,
         n_sampled_entities_per_user: int | None = None,
     ) -> Scores:
-        results = Scores(keynames=["username", "entity_name", "criterion"])
+        scores = Scores(keynames=["username", "entity_name", "criterion"])
+        criteria = to_criteria(self.criteria() if criterion is None else criterion)
         for username, model in self:
+            entities = model.sample_entities(entity, criteria, n_sampled_entities_per_user)
             assert isinstance(model, ScoringModel)
             for score in model(entities, criteria, n_sampled_entities_per_user):
-                results.set(score, username=username)
-        return results
-
+                scores.set(score, username=username)
+        if isinstance(criterion, str):
+            scores = scores.filters(criterion=criterion)
+        if isinstance(entity, Entity):
+            scores = scores.filters(entity_name=entity.name)        
+        return scores
+    
     def __len__(self) -> int:
         return len(self.to_dict())
     
@@ -216,8 +223,8 @@ class UserModels:
         }
 
         return UserModels(
-            self.default_composition + [("Scale", dict(note=note))],
-            {u: c + [("Scale", dict(note=note))] for u, c in self.user_compositions.items()},
+            self.default_composition + [("ScaleProcessing", dict(note=note))],
+            {u: c + [("ScaleProcessing", dict(note=note))] for u, c in self.user_compositions.items()},
             self.user_directs, self.user_categories, self.user_parameters,
             user_multipliers, user_translations,
             common_multipliers, common_translations,
@@ -251,15 +258,15 @@ class UserModels:
         }
 
         return UserModels(
-            self.default_composition + [("Scale", dict(note=note))],
-            {u: c + [("Scale", dict(note=note))] for u, c in self.user_compositions.items()},
+            self.default_composition + [("ScaleProcessing", dict(note=note))],
+            {u: c + [("ScaleProcessing", dict(note=note))] for u, c in self.user_compositions.items()},
             self.user_directs, self.user_categories, self.user_parameters,
             user_multipliers, user_translations,
             self.common_multipliers, self.common_translations,
             cache_users
         )
     
-    def post_process(self, operation: str = "Squash", **operation_kwargs) -> "UserModels":
+    def post_process(self, operation: str = "SquashProcessing", **operation_kwargs) -> "UserModels":
         import solidago.poll.scoring.processing as processing
         assert hasattr(processing, operation)
 

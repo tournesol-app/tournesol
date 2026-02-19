@@ -1,10 +1,12 @@
-from typing import TYPE_CHECKING, Hashable, Iterable, Union
+from typing import TYPE_CHECKING, Hashable, Iterable
 from numpy.typing import NDArray, DTypeLike
 from pathlib import Path
 
 import numpy as np
 import yaml
 import logging
+
+from solidago.primitives.criteria import to_criteria
 logger = logging.getLogger(__name__)
 
 from solidago.poll.poll_tables import *
@@ -87,7 +89,7 @@ class ScoringModel:
     ):
         """ The composition of the Tournesol pipeline global model is [
             ("Linear", dict(note="entitywise_qr_quantile")),
-            ("Squash", dict(note="squash", score_max=100})),
+            ("SquashProcessing", dict(note="squash", score_max=100})),
         ] """
         self.composition = composition or [("Linear", dict() if note is None else dict(note=note))]
         self.directs = directs or DirectScores()
@@ -97,27 +99,31 @@ class ScoringModel:
         self.translations = translations or Translations()
 
     def __call__(self, 
-        entities: Entity | Entities,
-        criteria: str | Iterable[str] | None = None,
+        entity: Entity | Entities | None = None,
+        criterion: str | Iterable[str] | None = None,
         n_sampled_entities: int | None = None,
     ) -> Score | Scores:
         """ Assigns a score to an entity, or to multiple entities. Handles sampling. """
-        evaluated_entity_names = list(self.evaluated_entity_names(criteria))
-        entities = entities if isinstance(entities, Entity) else entities[evaluated_entity_names]
-        entities = self.sample_entities(entities, n_sampled_entities)
-        criteria = self.criteria() if criteria is None else criteria
-        score = self.base_score(entities, criteria)
+        criteria = to_criteria(self.criteria() if criterion is None else criterion)
+        entities = self.sample_entities(entity, criteria, n_sampled_entities)
+        scores = self.base_score(entities, criteria)
         for height in range(1, len(self.composition)):
-            score = self.score_processing(height)(criteria, score)
-        return score
+            scores = self.score_processing(height)(criteria, scores)
+        if isinstance(criterion, str) and isinstance(entity, Entity):
+            return scores.get(entity_name=entity.name, criterion=criterion)
+        if isinstance(criterion, str):
+            return scores.filters(criterion=criterion)
+        if isinstance(entity, Entity):
+            return scores.filters(entity_name=entity.name)
+        return scores
 
-    def base_score(self, entities: Entity | Entities | None = None, criteria: str | Iterable[str] | None = None) -> Score | Scores:
+    def base_score(self, entities: Entities, criteria: set[str]) -> Scores:
         """ Assigns a score to an entity, or to multiple entities. Handles keynames recovery. """
-        criteria = self.criteria() if criteria is None else criteria
-        assert self.composition[0] != "Linear" or entities is not None
-        entities = Entities(dict(name=list(self.directs.keys("entity_name")))) if entities is None else entities
-        return self.base_scoring()(entities, criteria)
+        scores = self.base_scoring(entities, criteria)
+        assert isinstance(scores, Scores)
+        return scores
 
+    @property
     def base_scoring(self) -> "BaseScoring":
         import solidago.poll.scoring.base as base
         clsname, kwargs = self.composition[0]
@@ -143,8 +149,19 @@ class ScoringModel:
         c: str | list[Hashable] = criteria if isinstance(criteria, str) else list(criteria)
         return self.directs.filters(criterion=c).keys("entity_name")
     
-    def sample_entities(self, entities: Entity | Entities, n_sampled_entities: int | None = None) -> Entity | Entities:
-        return entities if isinstance(entities, Entity) else entities.sample(n_sampled_entities)
+    def sample_entities(self, 
+        entity: Entity | Entities | None, 
+        criteria: set[str], 
+        n_sampled_entities: int | None = None
+    ) -> Entities:
+        if isinstance(entity, Entity):
+            return Entities([entity.series])
+        evaluated_entity_names = list(self.evaluated_entity_names(criteria))
+        if entity is None:
+            return Entities(dict(name=evaluated_entity_names))
+        entities = entity[evaluated_entity_names]
+        assert isinstance(entities, Entities)
+        return entities.sample(n_sampled_entities)
 
     def scale(self, 
         multipliers: Multipliers | None = None, 
@@ -155,14 +172,14 @@ class ScoringModel:
         multipliers = (self.multipliers | multipliers.add_keys(height=height)) if multipliers else self.multipliers
         translations = (self.translations | translations.add_keys(height=height)) if translations else self.translations
         return ScoringModel(
-            self.composition + [("Scale", dict(note=note))],
+            self.composition + [("ScaleProcessing", dict(note=note))],
             self.directs, self.categories, self.parameters,
             multipliers, translations
         )
     
-    def post_process(self, operation: str = "Squash", **kwargs) -> "ScoringModel":
+    def post_process(self, operation: str = "SquashProcesing", **kwargs) -> "ScoringModel":
         import solidago.poll.scoring.processing as processing
-        assert hasattr(processing, operation)
+        assert hasattr(processing, operation), operation
 
         return ScoringModel(
             self.composition + [(operation, kwargs)],
@@ -230,7 +247,7 @@ class ScoringModel:
     def matches_composition(self, other: "ScoringModel") -> bool:
         if len(self.composition) != len(other.composition):
             return False
-        if not self.base_scoring().matches_composition(other.base_scoring()):
+        if not self.base_scoring.matches_composition(other.base_scoring):
             return False
         for height in range(1, len(self.composition)):
             if not self.score_processing(height).matches_composition(other.score_processing(height)):

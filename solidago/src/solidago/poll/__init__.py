@@ -15,5 +15,9 @@ __all__ = [
     "Comparison", "Comparisons",
     "VotingRights",
     "Score", "Scores", "ScoringModel", "UserModels",
+    "DirectScores", "CategoryScores", "Parameters", "Multipliers", "Translations",
+    "UserModels", "UserDirectScores", "UserCategoryScores", "UserParameters", 
+    "UserMultipliers", "UserTranslations", "CommonMultipliers", "CommonTranslations",
+    "Linear",
     "Poll", "TournesolExport",
 ]

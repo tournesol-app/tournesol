@@ -27,20 +27,6 @@ class RootLaw:
     def inf(self, *args: Any) -> float:
         return - self.sup(*args)
 
-    @classmethod
-    def load(cls, arg: Union["RootLaw", tuple[str, dict]] | None = None, default: Union["RootLaw", None] = None) -> "RootLaw":
-        if arg is None:
-            assert default is not None
-            return default
-        if isinstance(arg, RootLaw):
-            return arg
-        clsname, kwargs = arg
-        kwargs = kwargs or dict()
-        assert clsname in globals(), f"{clsname} must be the name of a root law"
-        cls = globals()[clsname]
-        assert issubclass(cls, RootLaw)
-        return cls(**kwargs)
-
     def __repr__(self) -> str:
         return f"{type(self).__name__}({', '.join([f'{k}={v}' for k, v in self.__dict__.items()])})"
 

@@ -6,7 +6,7 @@ N_SEEDS = 3
 
 def test_svd_user_generator():
     n_users = 10
-    users = generators.users.Users(n_users, Normal(5))()
+    users = generators.users.New(n_users, Normal(5))()
     users = generators.users.AddColumn("is_trustworthy", Bernoulli(0.8))(users)
     users = generators.users.BernoulliPretrust(0.2)(users)
     assert len(users) == n_users
@@ -15,7 +15,7 @@ def test_svd_user_generator():
 
 def test_erdos_renyi_vouch_generator():
     n_users = 10
-    users = generators.users.Users(n_users, Normal(5))()
+    users = generators.users.New(n_users, Normal(5))()
     users = generators.users.AddColumn("is_trustworthy", Bernoulli(0.8))(users)
     users = generators.users.BernoulliPretrust(0.2)(users)
     users = generators.users.AddColumn("expected_n_vouches", Zipf(1.5))(users)
@@ -24,12 +24,12 @@ def test_erdos_renyi_vouch_generator():
         assert users[vouch["by"]]["is_trustworthy"] == users[vouch["to"]]["is_trustworthy"]
     
 def test_svd_entity_generator():
-    entities = generators.entities.Entities(100, Normal(5))()
+    entities = generators.entities.New(100, Normal(5))()
     assert len(entities) == 100
 
 def test_evaluation_generator():
-    users = generators.users.Users(10, Normal(5))()
-    entities = generators.entities.Entities(100, Normal(5))()
+    users = generators.users.New(10, Normal(5))()
+    entities = generators.entities.New(100, Normal(5))()
 
     users = generators.users.AddColumn("n_evaluated_entities", Add([Zipf(1.5), Poisson(3.0)]))(users)
     users = generators.users.AddColumn("engagement_bias", Normal())(users)

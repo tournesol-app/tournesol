@@ -13,16 +13,6 @@ class SelectEntities:
         """ Selects a subset of entities that the user will evaluate """
         raise NotImplemented
     
-    @classmethod
-    def load(cls, value: Union["SelectEntities", list, tuple]) -> "SelectEntities":
-        if isinstance(value, SelectEntities):
-            return value
-        assert len(value) == 2
-        classname, kwargs = value
-        from solidago.generators.engagements import select_entities
-        assert hasattr(select_entities, classname), classname
-        return getattr(select_entities, classname)(**kwargs)
-    
     def __repr__(self):
         t = ".".join(str(type(self)).split(".")[2:])[:-2]
         kwargs = ", ".join([f"{k}={v}" for k, v in self.__dict__.items()])
@@ -45,7 +35,8 @@ class Uniform(SelectEntities):
 class BiasedByScore(SelectEntities):
     """ Requires user.n_evaluated_entities and user.engagement_bias """
     def __init__(self, noise: Distribution | tuple[str, dict[str, Any]]):
-        self.noise = Distribution.load(noise)
+        import solidago
+        self.noise = solidago.load(noise, solidago.random)
 
     def __call__(self, user: User, entities: Entities) -> Entities:
         assert "n_evaluated_entities" in user, user

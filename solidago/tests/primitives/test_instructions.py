@@ -23,13 +23,13 @@ def test_parse_keys():
     
 def test_load():
     instructions = Instructions.load("tests/generators/test_generator.yaml")
-    assert instructions.has("modules")
-    assert not instructions.has("module")
-    module_1 = instructions["modules.1"]
+    assert instructions.has("subfunctions")
+    assert not instructions.has("subfunction")
+    module_1 = instructions["subfunctions.1"]
     assert isinstance(module_1, list)
-    assert module_1[0] == "entities.Entities"
+    assert module_1[0] == "entities.New"
     assert len(module_1) == 2
-    assert instructions["modules.1.n_entities"] == 8
+    assert instructions["subfunctions.1.n_entities"] == 8
     instructions_clone = instructions.clone()
     instructions["items"] = dict(test=5)
     assert instructions["items.test"] == 5

@@ -28,15 +28,6 @@ class UncertaintyEvaluator:
         """ Minimizes loss. In loss, jac and partial_derivative, Any should be the *args.
         Note that some minimizers may only require some of these three functions. """
 
-    @classmethod
-    def load(cls, arg: _LoadableType | Self | None = None, **kwargs: Any) -> "UncertaintyEvaluator":
-        if isinstance(arg, UncertaintyEvaluator):
-            return arg
-        import solidago
-        s = solidago.load(arg or dict(), solidago.primitives.minimizer, **kwargs)
-        assert isinstance(s, UncertaintyEvaluator)
-        return s
-
 
 def to_cw_loss_getter(loss: Callable[[NDArray, *tuple[Any, ...]], float]) -> CwLossGetter:
     def cw_loss_getter(values: NDArray[np.float64], *args: Any) -> tuple[

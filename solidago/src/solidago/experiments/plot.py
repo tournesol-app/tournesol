@@ -144,6 +144,9 @@ class XYZPlot:
             if all(indices[i] == control_indices[n] for n, i in enumerate(control_var_indices)):
                 yield indices
 
+    def iter_ranges(self, ranges):
+        raise NotImplementedError
+
     def collect_data(
         self, 
         control_var_indices: list[int], 
@@ -181,16 +184,17 @@ class XYZPlot:
         return data
         
     def collect_value(self, varname: str, indices: list[int]) -> str | int | float:
-        base_yaml = self.source_operation.extract_kwargs(indices)
-        if has_in_dict(varname, base_yaml):
-            value = get_in_dict(varname, base_yaml)
-            assert isinstance(value, (str, int, float))
-            return value
-        # Value must be retrieved from result yaml
-        result_yaml = load_json_yaml(f"{self.source_operation.get_savepath(indices)}.yaml")[1]
-        value = get_in_dict(varname, result_yaml)
-        assert isinstance(value, (str, int, float))
-        return value
+        raise NotImplementedError
+        # base_yaml = self.source_operation.extract_kwargs(indices)
+        # if has_in_dict(varname, base_yaml):
+        #     value = get_in_dict(varname, base_yaml)
+        #     assert isinstance(value, (str, int, float))
+        #     return value
+        # # Value must be retrieved from result yaml
+        # result_yaml = load_json_yaml(f"{self.source_operation.get_savepath(indices)}.yaml")[1]
+        # value = get_in_dict(varname, result_yaml)
+        # assert isinstance(value, (str, int, float))
+        # return value
 
     def get_savename(self, control_values: list) -> Path:
         if not control_values:

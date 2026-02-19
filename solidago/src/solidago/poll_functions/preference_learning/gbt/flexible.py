@@ -62,9 +62,10 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         for key in ("directs", "thresholds", "categories", "parameters"):
             if not key in self.prior_stds:
                 self.prior_stds[key] = 7.0
-        self.entity_similarity = None if entity_similarity is None else Similarity.load(entity_similarity)
-        self.rating_root_law = None if rating_root_law is None else RootLaw.load(rating_root_law)
-        self.comparison_root_law = None if comparison_root_law is None else RootLaw.load(comparison_root_law)
+        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
+        self.entity_similarity = None if entity_similarity is None else solidago.load(entity_similarity, solidago.similarity)
+        self.rating_root_law = None if rating_root_law is None else solidago.load(rating_root_law, root_law_module)
+        self.comparison_root_law = None if comparison_root_law is None else solidago.load(comparison_root_law, root_law_module)
         self.discard_ratings = discard_ratings
 
     #######################
@@ -88,7 +89,8 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         """ Ratings are ignored """
         assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
         entity_indices = [entities.name2index(r["entity_name"]) for r in ratings]
-        root_laws = [RootLaw.load(r["root_law"], self.rating_root_law) for r in ratings]
+        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
+        root_laws = [solidago.load(r["root_law"] or self.rating_root_law, root_law_module) for r in ratings]
         normalized_ratings = [root_law.normalize_rating(r) for r, root_law in zip(ratings, root_laws)]
         context_indices = [len(entities) + rating_contexts.index(r["context"]) for r in ratings]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
@@ -108,7 +110,8 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     ) -> tuple[list[np.int64], list[np.int64], list[float], list[int], list[int | float | None]]:
         lefts = [entities.name2index(c["left_name"]) for c in comparisons]
         rights = [entities.name2index(c["right_name"]) for c in comparisons]
-        root_laws = [RootLaw.load(c["root_law"], self.comparison_root_law) for c in comparisons]
+        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
+        root_laws = [solidago.load(c["root_law"] or self.comparison_root_law, root_law_module) for c in comparisons]
         normalized_comparisons = [r.normalize_comparison(c) for c, r in zip(comparisons, root_laws)]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
         root_law_args = list()

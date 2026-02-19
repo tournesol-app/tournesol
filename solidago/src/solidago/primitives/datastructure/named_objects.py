@@ -16,47 +16,48 @@ Object = TypeVar("Object")
 class NamedObject:
     default: dict[str, Any] = dict(trust=0.0)
 
-    def __init__(self, name: str, row: pd.Series | None = None, vector: Iterable[float] | None = None, **kwargs):
-        if row is None:
-            self.row = pd.Series(kwargs, name=name)
+    def __init__(self, name: str, series: pd.Series | None = None, vector: Iterable[float] | None = None, **kwargs):
+        if series is None:
+            self.series = pd.Series(kwargs, name=name)
         else:
-            self.row = row
-            self.row.name = name
+            self.series = series
+            self.series.name = name
             for key, value in kwargs.items():
-                self.row[key] = value
-        for coordinate, value in enumerate(vector or list()):
-            self.row[f"v{coordinate}"] = value # type: ignore
+                self.series[key] = value
+        if vector is not None:
+            for coordinate, value in enumerate(vector):
+                self.series[f"v{coordinate}"] = value # type: ignore
         self._get_vector_coordinates()
 
     def _get_vector_coordinates(self):
         self._vector_coordinates, coordinate = list(), 0
-        while f"v{coordinate}" in self.row:
+        while f"v{coordinate}" in self.series:
             self._vector_coordinates.append(f"v{coordinate}")
             coordinate += 1
     
     @property
     def name(self) -> str:
-        return str(self.row.name)
+        return str(self.series.name)
 
     @property
     def vector(self) -> NDArray[np.float64]:
-        return self.row[self._vector_coordinates].astype(np.float64).to_numpy()
+        return self.series[self._vector_coordinates].astype(np.float64).to_numpy()
     
     def __contains__(self, key: str) -> bool:
-        return (key in self.row) | (key in self.default)
+        return (key in self.series) | (key in self.default)
 
     def __getitem__(self, key: str) -> Any:
-        if key in self.row:
-            return self.row[key]
+        if key in self.series:
+            return self.series[key]
         if key in self.default:
             return self.default[key]
         raise KeyError(key)
 
     def __setitem__(self, key: str, value: Any):
-        self.row[key] = value
+        self.series[key] = value
     
     def __repr__(self) -> str:
-        return repr(self.row)
+        return repr(self.series)
 
 
 class NamedObjects(Generic[Object]):
@@ -70,9 +71,9 @@ class NamedObjects(Generic[Object]):
     ):
         self.df = args[0] if args and isinstance(args[0], pd.DataFrame) else pd.DataFrame(*args, **kwargs)
         if not self.df.index.name == "name":
-            assert "name" in self.df.columns
-            self.df = self.df.set_index("name")
-        assert self.df.index.dtype == 'O'
+            if "name" in self.df.columns:
+                self.df = self.df.set_index("name")
+            self.df.index.name = "name"
         self._name2index, self._index2name = _name2index, _index2name
         self._get_vector_coordinates()
 
@@ -206,10 +207,10 @@ class NamedObjects(Generic[Object]):
         if not path.is_file():
             return cls(**kwargs)
         if source.endswith(".parquet"):
-            df = pd.read_parquet(path, engine="pyarrow")
+            df = pd.read_parquet(path)
         else:
             assert source.endswith(".csv")
-            df = pd.read_csv(path, engine="pyarrow")
+            df = pd.read_csv(path)
         return cls(df, **kwargs)
 
     def save(self, 
@@ -222,7 +223,7 @@ class NamedObjects(Generic[Object]):
             return self.save_instructions(source, directory, save_instructions)
         path = f"{directory}/{source}"
         if source.endswith(".parquet"):
-            self.df.to_parquet(path, engine="pyarrow")
+            self.df.to_parquet(path)
         elif source.endswith(".csv"):
             self.df.to_csv(path)
         return self.save_instructions(source, directory, save_instructions)

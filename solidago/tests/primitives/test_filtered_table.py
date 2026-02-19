@@ -82,17 +82,19 @@ def test_filter():
     assert not j.must_be_filtered_in(dict(criterion="default", entity_name="entity_5", username="user_5"))
     assert j.must_be_filtered_out(dict(criterion="default", entity_name="entity_5", username="user_5"))
 
-    k = i | Filter(np.array([4, 8]), criterion="default", entity_name="entity_0")
+    k = i.__or__(Filter(np.array([0, 4]), criterion="default", entity_name="entity_0"), 6, 4)
     assert len(k.get_indices(100)) == 4
+    assert set(k.get_indices(100)) == {0, 5, 6, 10}
 
     l = k & g
-    assert len(l.get_indices(100)) == 2
-    assert set(l.get_indices(100)) == {0, 4}
+    assert len(l.get_indices(100)) == 1
+    assert set(l.get_indices(100)) == {0}
 
+    l.add_index(np.int64(4))
     l.remove_index(np.int64(0))
     assert l.get_index() == 4
 
-    k.add_index(np.int64(10))
+    k.add_index(np.int64(11))
     assert len(k.get_indices(100)) == 5
 
 

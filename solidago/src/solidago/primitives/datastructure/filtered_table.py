@@ -59,6 +59,7 @@ class Row:
 
     def detach(self):
         self._table = None
+        self.series = pd.Series(self.to_dict())
 
 
 class NonUniqueError(Exception):
@@ -87,15 +88,13 @@ class Filter:
             indices = np.intersect1d(self.indices, other.indices)
         return Filter(indices, **self.keys | other.keys)
 
-    def __or__(self, other: "Filter") -> "Filter":
+    def __or__(self, other: "Filter", self_len: int, other_len: int) -> "Filter":
         assert all(self.keys[name] == other.keys[name] for name in set(self.keys) & set(other.keys)), \
             (self.keys, other.keys)
         keys = self.keys | other.keys
-        if self.indices is None:
-            return Filter(other.indices, **keys)
-        elif other.indices is None:
-            return Filter(self.indices, **keys)
-        indices = np.append(self.indices, other.indices).astype(np.int64)
+        self_indices = np.arange(self_len) if self.indices is None else self.indices
+        other_indices = np.arange(other_len) if other.indices is None else other.indices
+        indices = np.append(self_indices, other_indices + self_len).astype(np.int64)
         return Filter(indices, **keys)
     
     def remove_index(self, index: np.int64):
@@ -128,11 +127,6 @@ class Filter:
     
     def must_be_filtered_out(self, row: pd.Series | Mapping[str, Scalar]) -> bool:
         return not self.must_be_filtered_in(row)
-
-    def shift(self, shift: int | np.int64, table: "_Table") -> "Filter":
-        if self.indices is None:
-            return Filter(table.df.index.to_numpy(np.int64) + shift, **self.keys)
-        return Filter(self.indices + shift, **self.keys)
     
     def __repr__(self) -> str:
         if not self:
@@ -283,7 +277,7 @@ class _Table:
 
     def append_row(self, row: pd.Series | Mapping[str, Scalar]):
         index = len(self.df)
-        self.df.loc[index] = pd.Series(row)
+        self.df.loc[index] = dict(row) # type: ignore
         for keyname in self._cache.keynames():
             key = row[keyname]
             self._cache.keys(keyname).add(key)
@@ -508,10 +502,9 @@ class FilteredTable(Generic[TableRow]):
         return len(self.filter.indices) if self.filter.indices is not None else len(self.table)
 
     def __or__(self, other: "FilteredTable") -> Self:
-        shift = len(self.table.df)
         return type(self)(
             self.table | other.table, 
-            filter=self.filter | other.filter.shift(shift, other.table), 
+            filter=self.filter.__or__(other.filter, len(self.table), len(other.table)), 
             keynames=self.keynames, 
             **self.filters_kwargs()
         )
@@ -710,10 +703,10 @@ class FilteredTable(Generic[TableRow]):
         if not path.is_file():
             return cls(dtypes=dtypes, **kwargs)
         if source.endswith(".parquet"):
-            df = pd.read_parquet(path, engine="pyarrow")
+            df = pd.read_parquet(path)
         else:
             assert source.endswith(".csv")
-            df = pd.read_csv(path, engine="pyarrow")
+            df = pd.read_csv(path)
         return cls(df, **kwargs)
     
     def save(self, 
@@ -727,7 +720,7 @@ class FilteredTable(Generic[TableRow]):
             return self.save_instructions(source, directory, save_instructions)
         path = f"{directory}/{source}"
         if source.endswith(".parquet"):
-            self.table.df.to_parquet(path, engine="pyarrow")
+            self.table.df.to_parquet(path)
         elif source.endswith(".csv"):
             self.table.df.to_csv(path)
         return self.save_instructions(source, directory, save_instructions)

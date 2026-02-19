@@ -18,16 +18,18 @@ class Sequential(PollFunction):
         super().__init__(max_workers)
         self.name = name or "Sequential"
         self.seed = seed
-        from solidago import load
         self.subfunctions: list[PollFunction] = list()
         for sub in subfunctions or list():
-            subfunction = load(sub, max_workers=max_workers) 
+            import solidago
+            subfunction = solidago.load(sub, solidago.poll_functions, max_workers=max_workers) 
             assert isinstance(subfunction, PollFunction)
             self.subfunctions.append(subfunction)
             
-    
     def poll2poll_function(self, poll: Poll, save_directory: str | None = None) -> Poll:
         return self(poll, save_directory)
+
+    def __getitem__(self, index: int) -> PollFunction:
+        return self.subfunctions[index]
 
     def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set[int] | None = None) -> Poll:
         if self.seed is not None:

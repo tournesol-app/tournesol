@@ -77,7 +77,7 @@ def test_user_models():
     assert scores.get(username="le_science4all", entity_name="entity_1", criterion="default").value == 3.0
     assert scores.get(username="aidjango", entity_name="entity_3", criterion="default").left_unc == 2.0
 
-    squashed = rescaled.post_process("Squash", max=100.)
+    squashed = rescaled.post_process("SquashProcessing", max=100.)
     scores = squashed(entities)
     assert isinstance(scores, Scores)    
     assert scores.get(username="le_science4all", entity_name="entity_1", criterion="importance").value == 0

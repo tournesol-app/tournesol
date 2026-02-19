@@ -26,19 +26,6 @@ class Compare:
         value, max = self.sample_value(comparison, user, left, right, left_public, right_public, criterion)
         comparison["value"] = value
         comparison["max"] = max
-
-    @classmethod
-    def load(cls, compare: Union["Compare", list, tuple], honest: Union["Compare", list, tuple] | None = None):
-        if isinstance(compare, Compare):
-            return compare
-        assert isinstance(compare, (list, tuple)) and len(compare) == 2
-        classname, kwargs = compare
-        from solidago.generators import comparisons
-        assert hasattr(comparisons, classname), classname
-        cls = getattr(comparisons, classname)
-        if honest and "honest" in cls.__init__.__annotations__:
-            kwargs["honest"] = Compare.load(honest)
-        return cls(**kwargs)
     
     def __repr__(self):
         t = ".".join(str(type(self)).split(".")[2:])[:-2]
@@ -61,7 +48,8 @@ class Deterministic(Compare):
 
 class Negate(Compare):
     def __init__(self, honest: Union["Compare", list, tuple]):
-        self.honest = Compare.load(honest)
+        import solidago
+        self.honest = solidago.load(honest, solidago.generators.comparisons)
 
     def sample_value(self, 
         comparison: Comparison, 

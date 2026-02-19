@@ -74,7 +74,7 @@ class LipschiTrust(PollFunction):
         total_vouches = defaultdict(lambda: 0)
         for vouch in personhood_vouches:
             total_vouches[vouch["by"]] += vouch["weight"]
-        pretrusts = users.get_column("pretrust").astype(np.float64).to_numpy() * self.pretrust_value
+        pretrusts = users.get_column("pretrust").to_numpy(np.float64) * self.pretrust_value
         trusts = deepcopy(pretrusts)
 
         n_iterations = -np.log(len(users) / self.error) / np.log(self.decay)

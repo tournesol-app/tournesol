@@ -22,8 +22,8 @@ class Independent(PollFunction):
         criteria: list[str] | None = None, # by default, will be set to ["default"]
         shuffle: bool = True
     ):
-        from solidago.generators.engagements.select_entities import SelectEntities
-        self.select_entities = SelectEntities.load(select_entities)
+        import solidago
+        self.select_entities = solidago.load(select_entities, solidago.generators.engagements.select_entities)
         self.shuffle = shuffle
         self.criteria = criteria or ["default"]
 

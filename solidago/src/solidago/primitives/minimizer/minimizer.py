@@ -18,12 +18,3 @@ class Minimizer:
     ) -> NDArray[np.float64]:
         """ Minimizes loss. In loss, jac and partial_derivative, Any should be the *args.
         Note that some minimizers may only require some of these three functions. """
-
-    @classmethod
-    def load(cls, minimizer: _LoadableType | Self | None = None, **kwargs: Any) -> "Minimizer":
-        if isinstance(minimizer, Minimizer):
-            return minimizer
-        import solidago
-        m = solidago.load(minimizer or dict(), solidago.primitives.minimizer, **kwargs)
-        assert isinstance(m, Minimizer)
-        return m

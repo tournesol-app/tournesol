@@ -35,12 +35,20 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         self.direct, self.categories, self.n_parameters = direct, categories or list(), n_parameters
         self.keep_user_model_score_processing = keep_user_model_score_processing
         
-        import solidago.primitives
-        minimizer = ("SciPyMinimizer", dict()) if minimizer is None else minimizer
-        self.minimizer = solidago.primitives.minimizer.Minimizer.load(minimizer)
+        import solidago
+        if not isinstance(minimizer, Minimizer):
+            minimizer_cls, minimizer_kwargs = ("SciPyMinimizer", dict()) if minimizer is None else minimizer
+            _minimizer = solidago.load(minimizer_cls, solidago.primitives.minimizer, **minimizer_kwargs)
+            assert isinstance(_minimizer, Minimizer)
+            minimizer = _minimizer
+        self.minimizer = minimizer
 
-        uncertainty = ("NLLIncrease", dict()) if uncertainty is None else uncertainty
-        self.uncertainty = solidago.primitives.uncertainty.UncertaintyEvaluator.load(uncertainty)
+        if not isinstance(uncertainty, UncertaintyEvaluator):
+            uncertainty_cls, uncertainty_kwargs = ("NLLIncrease", dict()) if uncertainty is None else uncertainty
+            _uncertainty = solidago.load(uncertainty_cls, solidago.primitives.uncertainty, **uncertainty_kwargs)
+            assert isinstance(_uncertainty, UncertaintyEvaluator)
+            uncertainty = _uncertainty
+        self.uncertainty = uncertainty
 
     #############################################
     ##  Methods to be specified in subclasses  ##

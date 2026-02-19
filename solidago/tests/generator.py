@@ -13,8 +13,8 @@ from solidago.primitives.random import Normal, Multinomial, Bernoulli, Zipf, Poi
 
 _modules = [
     # User and entity generation
-    users.Users(5, Normal(dimension=5)),
-    entities.Entities(8, Normal(dimension=5)),
+    users.New(5, Normal(dimension=5)),
+    entities.New(8, Normal(dimension=5)),
     entities.AddColumn("author", Multinomial(
         probabilities=[.2, .3, .5],
         values=["Science4All", "Après La Bière", "La Fabrique Sociale"],

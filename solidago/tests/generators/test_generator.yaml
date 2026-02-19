@@ -1,8 +1,8 @@
 - Generator
-- modules:
+- subfunctions:
   # User and entity generation
-  - [users.Users, {n_users: 5, distribution: [Normal, dimension: 5]}]
-  - [entities.Entities, {n_entities: 8, distribution: [Normal, dimension: 5]}]
+  - [users.New, {n_users: 5, distribution: [Normal, dimension: 5]}]
+  - [entities.New, {n_entities: 8, distribution: [Normal, dimension: 5]}]
   - [entities.AddColumn, {column: author, distribution: [Multinomial, {probabilities: [0.2, 0.3, 0.5], values: [Science4All, Après la bière, La fabrique sociale]}]}]
   - [entities.AddColumn, {column: journalism, distribution: [Multinomial, {probabilities: [0.4, 0.6], values: [True, False]}]}]
   # User trust generation

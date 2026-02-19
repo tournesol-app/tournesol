@@ -72,8 +72,8 @@ def gbt():
     # poll = TournesolExport("tests/tiny_tournesol.zip")
     # poll.comparisons = poll.comparisons.get(criterion={"largely_recommended"}).reorder("username")
     generator = Generator([
-        generators.users.Users(100, primitives.random.Normal(mean=np.array([3.0, 0.0, 0.0]))),
-        generators.entities.Entities(100000, primitives.random.Normal(3)),
+        generators.users.New(100, primitives.random.Normal(mean=np.array([3.0, 0.0, 0.0]))),
+        generators.entities.New(100000, primitives.random.Normal(3)),
         generators.users.AddColumn("n_evaluated_entities", primitives.random.Poisson(10)),
         generators.users.AddColumn("n_comparisons_per_entity", primitives.random.Uniform(2.0, 10.0)),
         generators.engagements.Independent(generators.engagements.Uniform()),

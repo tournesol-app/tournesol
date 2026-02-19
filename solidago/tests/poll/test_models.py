@@ -44,8 +44,8 @@ def test_scores():
 
 
 def test_direct():
-    from solidago import ScoringModel, Entities, Multipliers, Translations, Scores, Score
-    from solidago.poll.scoring.base import Linear
+    from solidago import ScoringModel, Entity, Entities, Scores, Score
+    from solidago.poll import Multipliers, Translations, Linear
 
     direct = ScoringModel()
     entities = Entities(dict(name=["entity_1", "entity_2"]))
@@ -53,10 +53,10 @@ def test_direct():
     direct.directs.set(entity_name="entity_2", criterion="default", value=2, left_unc=3, right_unc=1)
     direct.directs.set(entity_name="entity_2", criterion="importance", value=2, left_unc=0, right_unc=1)
     assert direct.evaluated_entity_names() == {"entity_1", "entity_2"}
-    entities = direct.sample_entities(entities)
+    entities = direct.sample_entities(entities, {"default", "importance"})
     assert isinstance(entities, Entities)
     assert len(entities) == 2
-    base_scoring = direct.base_scoring()
+    base_scoring = direct.base_scoring
     assert isinstance(base_scoring, Linear)
     scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))
     scores2 = base_scoring.direct_scoring(entities, None)
@@ -74,7 +74,7 @@ def test_direct():
     translations.set(criterion="importance", value=3, left_unc=2, right_unc=0)
     scaled = direct.scale(multipliers, translations)
 
-    nonscaled_scores = scaled.base_score(entities)
+    nonscaled_scores = scaled.base_score(entities, {"default", "importance"})
     assert isinstance(nonscaled_scores, Scores)
     assert len(nonscaled_scores) == 3
     assert nonscaled_scores.get(entity_name="entity_1", criterion="default") == scores.get(entity_name="entity_1", criterion="default")
@@ -83,10 +83,12 @@ def test_direct():
     assert isinstance(scores, Scores)
     assert scores.get(entity_name="entity_1", criterion="default") == Score((2, 5, 2))
 
-    squashed = scaled.post_process("Squash", max=100)
+    squashed = scaled.post_process("SquashProcessing", max=100)
     scores = squashed(entities)
     assert isinstance(scores, Scores)
     assert scores.get(entity_name="entity_1", criterion="importance").isnan()
     assert scores.get(entity_name="entity_2", criterion="importance").value > 98
     assert scores.get(entity_name="entity_2", criterion="importance").value < 100
     assert len(scores) == 3
+
+    assert scores.get(entity_name="entity_2", criterion="importance").value == squashed(Entity("entity_2"), "importance").value

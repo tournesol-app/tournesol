@@ -189,6 +189,9 @@ class Experiment:
     def iter_kwargs(self) -> Iterable[dict]:
         for indices in self.iter_indices():
             yield self.extract_kwargs(indices)
+
+    def extract_kwargs(self, indices: list[int]) -> dict:
+        raise NotImplementedError
     
     def fail_fast(self):
         for indices in self.iter_indices():

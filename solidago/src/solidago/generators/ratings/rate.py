@@ -13,19 +13,6 @@ class Rate:
     @abstractmethod
     def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         raise NotImplemented
-
-    @classmethod
-    def load(cls, rate: Union["Rate", list, tuple], honest: Union["Rate", list, tuple] | None = None):
-        if isinstance(rate, Rate):
-            return rate
-        assert isinstance(rate, (list, tuple)) and len(rate) == 2, rate
-        classname, kwargs = rate
-        from solidago.generators import ratings
-        assert hasattr(ratings, classname), classname
-        cls = getattr(ratings, classname)
-        if honest and "honest" in cls.__init__.__annotations__:
-            kwargs["honest"] = Rate.load(honest)
-        return cls(**kwargs)
     
     def __repr__(self):
         t = ".".join(str(type(self)).split(".")[2:])[:-2]
@@ -46,7 +33,8 @@ class Deterministic(Rate):
 
 class Negate(Rate):
     def __init__(self, honest: Union["Rate", list, tuple]):
-        self.honest = Rate.load(honest)
+        import solidago
+        self.honest = solidago.load(honest, solidago.generators.ratings)
 
     def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         return - self.honest.sample_value(rating, user, entity, public, criterion)
@@ -54,7 +42,8 @@ class Negate(Rate):
 
 class Noisy(Rate):
     def __init__(self, distribution: Distribution | tuple[str, dict[str, Any]]):
-        self.distribution = Distribution.load(distribution)
+        import solidago
+        self.distribution = solidago.load(distribution, solidago.random)
 
     def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         value = Deterministic().sample_value(rating, user, entity, public, criterion)

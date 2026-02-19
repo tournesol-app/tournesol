@@ -13,19 +13,6 @@ class Distribution:
     def sample(self, n_samples: int = 1) -> NDArray[Any] | list[Any]:
         raise NotImplemented
     
-    @classmethod
-    def load(cls, distribution: Self | tuple[str, dict[str, Any]]) -> "Distribution":
-        if isinstance(distribution, Distribution):
-            return distribution
-        assert isinstance(distribution, (list, tuple)), distribution
-        assert len(distribution) == 2, distribution
-        assert isinstance(distribution[0], (str, Type)), distribution
-        assert isinstance(distribution[1], dict), distribution
-        cls, kwargs = distribution
-        distribution = getattr(primitives.random, cls)(**kwargs)
-        assert isinstance(distribution, Distribution)
-        return distribution
-    
     def __repr__(self) -> str:
         if self.__dict__:
             key_values = [f"{key}={value}" for key, value in self.__dict__.items()]
@@ -54,8 +41,8 @@ class Normal(Distribution):
         mean: float | np.float64 | NDArray[np.float64] = 0.0,
         std: float | np.float64 | NDArray[np.float64] = 1.0,
     ):
-        self.dimension = np.array(mean).size if dimension is None else np.uint64(dimension)
-        assert isinstance(self.dimension, int)
+        self.dimension = np.uint64(np.array(mean).size if dimension is None else dimension)
+        assert isinstance(self.dimension, np.integer)
         self.mean = (np.zeros(self.dimension) + mean) if isinstance(mean, float) else mean
         self.std = (np.zeros(self.dimension) + std) if isinstance(mean, float) else mean
 
@@ -117,7 +104,8 @@ class Multinomial(Distribution):
 
 class Add(Distribution):
     def __init__(self, subdistributions: list[Distribution | tuple[str, dict[str, Any]]]):
-        self.subdistributions = [Distribution.load(d) for d in subdistributions]
+        import solidago
+        self.subdistributions = [solidago.load(d, solidago.random) for d in subdistributions]
     
     def sample(self, n_samples: int = 1) -> NDArray[Any] | list[Any]:
         if not self.subdistributions:
