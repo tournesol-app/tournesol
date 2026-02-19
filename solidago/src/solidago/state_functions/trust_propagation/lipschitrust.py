@@ -1,6 +1,6 @@
-""" LipschiTrust does trust propagation with Lipschitz resilience.
-    It is described in "Permissionless Collaborative Algorithmic 
-    Governance with Security Guarantees", available on ArXiV.
+"""LipschiTrust does trust propagation with Lipschitz resilience.
+It is described in "Permissionless Collaborative Algorithmic
+Governance with Security Guarantees", available on ArXiV.
 """
 
 from collections import defaultdict
@@ -81,20 +81,16 @@ class LipschiTrust(StateFunction):
         n_iterations = -np.log(len(users) / self.error) / np.log(self.decay)
         n_iterations = int(np.ceil(n_iterations))
 
-        id_to_idx = users.id_to_idx()
-
         for _ in range(n_iterations):
             # Initialize to pretrust
             new_trusts = pretrusts.copy()
             # Propagate trust through vouches
             for vouch in personhood_vouches.iter():
-                voucher_index = id_to_idx[vouch.by]
-                vouchee_index = id_to_idx[vouch.to]
                 discount = self.decay * vouch.weight / total_vouches[vouch.by]
-                new_trusts[vouchee_index] += discount * trusts[voucher_index]
+                new_trusts[vouch.to] += discount * trusts[vouch.by]
 
             # Bound trusts for Lipschitz resilience
-            new_trusts = new_trusts.clip(max=1.0)
+            new_trusts = new_trusts.clip(upper=1.0)
 
             delta = np.linalg.norm(new_trusts - trusts, ord=1)
             trusts = new_trusts
