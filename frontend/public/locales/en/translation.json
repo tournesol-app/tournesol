@@ -670,8 +670,10 @@
     "tournesolAssociation": "Tournesol Association",
     "tournesolAssociationDetail": "Tournesol is supported by the non-profit Tournesol association based in Lausanne, Switzerland.",
     "rolePresident": "President",
+    "roleVicePresident": "Vice-President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
+    "roleViceSecretary": "Vice-Secretary",
     "significantContributors": "Significant Contributors",
     "weThankOurContributors": "We are extremely thankful to many significant contributor who are or have been very impactful for the project.",
     "sergeiDescription": "Sergei was among the few people who decided to start building Tournesol. He took over most of the engineering effort and developed the back end, the algorithms and the front end of the first version of the platform.",
@@ -852,10 +854,6 @@
       "criteriaScores": {
         "title": "Scores per criterion"
       }
-    },
-    "twitter": {
-      "intro": "I saw this video on @TournesolApp",
-      "conclusion": "I invite you to watch it and to compare it with other videos 🌻"
     },
     "video": {
       "shareMessageIntro": "I saw this video on Tournesol.",

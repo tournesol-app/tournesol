@@ -679,8 +679,10 @@
     "tournesolAssociation": "L'association Tournesol",
     "tournesolAssociationDetail": "Le projet est porté par l'association à but non lucratif « Association Tournesol » basée à Lausanne en Suisse.",
     "rolePresident": "Président",
+    "roleVicePresident": "Vice-Président",
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
+    "roleViceSecretary": "Vice-Secrétaire",
     "significantContributors": "Contributeur·rices important·es",
     "weThankOurContributors": "Nous sommes extrêmement reconnaissant envers les contributrices et contributeurs qui ont eu un très grand impact sur le projet.",
     "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première vesion de la plateforme.",
@@ -861,10 +863,6 @@
       "criteriaScores": {
         "title": "Scores par critère"
       }
-    },
-    "twitter": {
-      "intro": "J'ai vu cette vidéo sur @TournesolApp",
-      "conclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
     },
     "video": {
       "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
