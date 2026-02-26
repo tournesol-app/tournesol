@@ -28,7 +28,7 @@ def test_lipschitrust_generative(seed):
 
     users = trust_propagator(polls[seed].users, polls[seed].vouches)
     for user in users:
-        assert user["is_trustworthy"] or (user["trust"] == 0)
+        assert user["trustworthy"] or (user["trust"] == 0)
 
 
 def test_lipschitrust_ten_users():
@@ -69,7 +69,7 @@ def test_lipschitrust_test_data(seed):
     assert isinstance(pipeline, Sequential)
     users = pipeline.subfunctions[0](polls[seed].users, polls[seed].vouches)
     for user in users:
-        assert user["is_trustworthy"] or (user.trust == 0)
+        assert user["trustworthy"] or (user.trust == 0)
 
 
 def test_trust_all():

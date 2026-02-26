@@ -26,12 +26,12 @@ class DirectScores(Scores):
 class CategoryScores(Scores):
     name: str="categories"
     default_keynames: set[str] = {"category", "group", "criterion"}
-    default_score: tuple[float, float, float] = 0., 0., 0.
+    default_default_score: tuple[float, float, float] = 0., 0., 0.
 
 class Parameters(Scores):
     name: str="parameters"
     default_keynames: set[str] = {"criterion", "coordinate"}
-    default_score: tuple[float, float, float] = 0., 0., 0.
+    default_default_score: tuple[float, float, float] = 0., 0., 0.
 
     def n_coordinates(self, **keys: Hashable) -> int:
         multiscores = self.filters(**keys)
@@ -42,7 +42,7 @@ class Parameters(Scores):
         return list(range(self.n_coordinates(**keys)))
 
     def scores_list(self, **keys: Hashable) -> list[Score]:
-        multiscores, coordinate, values = self.filters(*keys), 0, list()
+        multiscores, coordinate, values = self.filters(**keys), 0, list()
         if not multiscores:
             return list()
         coordinates = [int(i) for i in multiscores.keys("coordinate")] # type: ignore
@@ -51,30 +51,30 @@ class Parameters(Scores):
             values.append(multiscores.get("unique", coordinate=coordinate))
         return values
 
-    def values(self, *keys) -> NDArray:
-        return np.array([score.value for score in self.scores_list(*keys)])
+    def values(self, **keys: Hashable) -> NDArray:
+        return np.array([score.value for score in self.scores_list(**keys)])
     
-    def lefts(self, *keys) -> NDArray:
-        return np.array([score.left_unc for score in self.scores_list(*keys)])
+    def lefts(self, **keys: Hashable) -> NDArray:
+        return np.array([score.left_unc for score in self.scores_list(**keys)])
     
-    def rights(self, *keys) -> NDArray:
-        return np.array([score.right_unc for score in self.scores_list(*keys)])
+    def rights(self, **keys: Hashable) -> NDArray:
+        return np.array([score.right_unc for score in self.scores_list(**keys)])
     
-    def maxima(self, *keys) -> NDArray:
-        return np.array([score.max for score in self.scores_list(*keys)])
+    def maxima(self, **keys: Hashable) -> NDArray:
+        return np.array([score.max for score in self.scores_list(**keys)])
     
-    def minima(self, *keys) -> NDArray:
-        return np.array([score.min for score in self.scores_list(*keys)])
+    def minima(self, **keys: Hashable) -> NDArray:
+        return np.array([score.min for score in self.scores_list(**keys)])
 
 class Multipliers(Scores):
     name: str="multipliers"
     default_keynames: set[str] = {"height", "criterion"}
-    default_score: tuple[float, float, float] = (1., 0., 0.)
+    default_default_score: tuple[float, float, float] = (1., 0., 0.)
 
 class Translations(Scores):
     name: str="translations"
     default_keynames: set[str] = {"height", "criterion"}
-    default_score: tuple[float, float, float] = (0., 0., 0.)
+    default_default_score: tuple[float, float, float] = (0., 0., 0.)
 
 
 class ScoringModel:
@@ -203,9 +203,8 @@ class ScoringModel:
     
     @classmethod
     def load_tables(cls, directory: str | Path, filename: str = "scoring_model", **kwargs) -> "ScoringModel":
-        assert "composition" in kwargs
         def get_kwargs(key):
-            return dict(source=f"{filename}_{key}.csv") | (kwargs[key] if key in kwargs else dict())
+            return dict(source=f"{filename}_{key}.parquet") | (kwargs[key] if key in kwargs else dict())
         return cls(
             composition=kwargs["composition"] if "composition" in kwargs else None,
             directs=DirectScores.load(directory, **get_kwargs("directs")), # type: ignore
@@ -221,15 +220,18 @@ class ScoringModel:
         save_instructions: bool = True,
     ) -> tuple[str, dict[str, Any]]:
         """ save must be given a filename_root (typically without extension),
-        as multiple csv files may be saved, with a name derived from the filename_root
+        as multiple parquet files may be saved, with a name derived from the filename_root
         (in addition to the yaml description) """
         for table_name in ("directs", "categories", "parameters", "multipliers", "translations"):
             table = getattr(self, table_name)
             if table:
                 assert isinstance(table, Scores)
-                table.save(directory, f"{filename}_{table_name}.csv")
+                table.save(directory, f"{filename}_{table_name}.parquet")
         return self.save_instructions(directory, filename, save_instructions)
 
+    def requires_save_instructions(self) -> bool:
+        return False # default value
+    
     def save_instructions(self, 
         directory: str | Path | None = None, 
         filename: str = "scoring_model", 

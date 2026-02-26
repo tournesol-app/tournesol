@@ -58,6 +58,7 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
     def _rating_arg(self, 
         ratings: Ratings, 
         entities: Entities,
+        rating_contexts: list[str],
     ) -> tuple[NDArray[np.int64], NDArray[np.float64]]:
         """ Returns entity_indices and normalized_ratings. May return more. """
     
@@ -146,7 +147,7 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         category_indices = self._category_indices(entities, category_groups, len(entities), n_thresholds)
         return (
             self._init_model_arg(user_models[user], criterion, entities, user, rating_contexts, category_groups),
-            self._rating_arg(ratings.filters(username=user.name, criterion=criterion), entities),
+            self._rating_arg(ratings.filters(username=user.name, criterion=criterion), entities, rating_contexts),
             self._comparison_arg(comparisons.filters(username=user.name, criterion=criterion), entities),
             entities.vectors[:, :self.n_parameters].astype(np.float64),
             category_indices,
@@ -178,10 +179,10 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
             for category, groups in category_groups
             for group in groups
         ]
-        model_parameters = model.parameters.values(criterion)[:self.n_parameters]
+        model_parameters = model.parameters.values(criterion=criterion)[:self.n_parameters]
         n_missing_parameter_values = self.n_parameters - len(model_parameters)
         parameters = np.concatenate([model_parameters, np.zeros(n_missing_parameter_values)])
-        nonparameteric_variables = np.nan_to_num(np.array(directs + thresholds + categories))
+        nonparameteric_variables = np.nan_to_num(np.array(list(directs) + thresholds + categories))
         return np.concatenate([nonparameteric_variables, parameters], dtype=np.float64)
     
     def _category_indices(self, entities: Entities, category_groups: list[tuple[str, list[str]]], n_entities: int, n_thresholds: int) -> NDArray:
@@ -194,7 +195,7 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
             offsets.append(offset)
             offset += len(groups)
         return np.array([
-            [o + g.index(getattr(e, c)) for o, (c, g) in zip(offsets, category_groups)] 
+            [o + g.index(e[c]) for o, (c, g) in zip(offsets, category_groups)] 
             for e in entities
         ], dtype=np.int64)
 
@@ -208,7 +209,7 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         ratings: Ratings,
         comparisons: Comparisons,
         user_models: UserModels,
-    ) -> tuple[Users, Entities, UserModels]:
+    ) -> UserModels:
         """ Assumes that each rating context requires an additional variable, called `threshold`.
         This is the case for FlexibleGeneralizedBradleyTerry, but could require modifications for other
         preference learning algorithms """

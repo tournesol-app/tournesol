@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Iterator, Optional
+from typing import Any, Iterator, Optional
 
 import numpy as np
 
@@ -16,14 +16,14 @@ class Thurston(Compare):
         assert comparison_max > 0
         self.comparison_max = comparison_max
     
-    def sample_value(self, 
+    def __call__(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
         left_public: bool, right_public: bool,
         criterion: str,
-    ) -> tuple[float, float]:
+    ) -> dict[str, Any]:
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        return self.sample_comparison(score_diff), self.comparison_max
+        return dict(value=self.sample_comparison(score_diff), max=self.comparison_max)
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:

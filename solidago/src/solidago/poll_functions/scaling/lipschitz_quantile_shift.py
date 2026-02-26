@@ -68,7 +68,7 @@ class LipschitzQuantileShift(ParallelizedPollFunction):
         return qr_quantile
     
     def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, user_models: UserModels) -> UserModels: # type: ignore
-        translations = CommonTranslations(["criterion"])
+        translations = CommonTranslations(keynames=["criterion"])
         for criterion, translation in zip(variables, results):
             translations[criterion] = Score(self.target_score - translation)
         return user_models.common_scale(translations=translations, note="lipschitz_quantile_shift")

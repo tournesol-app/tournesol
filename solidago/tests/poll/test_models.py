@@ -1,7 +1,6 @@
-from solidago import *
-
-
 def test_score():
+    from solidago import Score
+    
     assert Score(1) + Score(1) == Score(2)
     assert Score((1, 1, 0)) + Score((1, 0, 1)) == Score((2, 1, 1))
     assert (Score((1, 1, 0)) * Score((1, 0, 1))).max == 2

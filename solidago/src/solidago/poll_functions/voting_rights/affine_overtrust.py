@@ -37,8 +37,10 @@ class AffineOvertrust(ParallelizedPollFunction):
         ratings: Ratings,
         comparisons: Comparisons,
     ) -> list[tuple[Entity, str]]:
-        def get_criteria(e):
-            return ratings[e].keys("criterion") | comparisons[e].keys("criterion")
+        def get_criteria(entity):
+            return ratings.filters(entity_name=entity.name).keys("criterion") \
+                | comparisons.filters(left_name=entity.name).keys("criterion") \
+                | comparisons.filters(right_name=entity.name).keys("criterion")
         return [(entity, criterion) for entity in entities for criterion in get_criteria(entity)]
     
     def _nonargs_list(self, # type: ignore

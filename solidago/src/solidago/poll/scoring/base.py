@@ -28,6 +28,8 @@ class BaseScoring:
 class Linear(BaseScoring):
     def __call__(self, entities: Entity | Entities, criteria: str | Iterable[str] | None) -> Score | Scores:
         """ Defines how to score entities on criteria """
+        if self.directs and not self.categories and not self.parameters:
+            return self.direct_scoring(entities, criteria)
         scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))
         if self.directs:
             scores += self.direct_scoring(entities, criteria)
@@ -49,10 +51,10 @@ class Linear(BaseScoring):
         if criteria is not None:
             keys["criterion"] = criteria if isinstance(criteria, str) else list(criteria)
         return Scores(
-            self.directs.filters(**keys).table, 
+            self.directs.df, 
             keynames=["entity_name", "criterion"], 
             default_score=self.directs.default_score
-        )
+        ).filters(**keys)
     
     def categories_scoring(self, entities: Entity | Entities, criteria: str | Iterable[str] | None) -> Scores:
         scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))

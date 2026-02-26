@@ -48,6 +48,7 @@ class UserModels:
         "user_directs", "user_categories", "user_parameters",
         "user_multipliers", "user_translations", "common_multipliers", "common_translations"
     ]
+    default_default_composition: list = [("Linear", dict())]
 
     def __init__(self, 
         default_composition: list[tuple[str, dict[str, Any]]] | None = None,
@@ -61,7 +62,7 @@ class UserModels:
         common_translations: CommonTranslations | None = None,
         user_models_dict: dict[str, ScoringModel] | None = None,
     ):
-        self.default_composition = default_composition or [("Linear", dict())]
+        self.default_composition = default_composition or self.default_default_composition
         self.user_compositions = user_compositions or dict()
         self.user_directs = user_directs or UserDirectScores()
         self.user_categories = user_categories or UserCategoryScores()
@@ -296,7 +297,7 @@ class UserModels:
     @classmethod
     def load_tables(cls, directory: str | Path, **kwargs) -> "UserModels":
         def get_kwargs(key):
-            return dict(source=f"{key}.csv") | kwargs[key] if key in kwargs else dict()
+            return dict(source=f"{key}.parquet") | kwargs[key] if key in kwargs else dict()
         return cls(
             kwargs["default_composition"] if "default_composition" in kwargs else None,
             kwargs["user_compositions"] if "user_compositions" in kwargs else dict(),
@@ -333,9 +334,12 @@ class UserModels:
         table = getattr(self, table_name)
         if directory and table:
             assert isinstance(table, Scores)
-            table.save(directory, f"{table_name}.csv")
-            return f"{table_name}.csv"
+            table.save(directory, f"{table_name}.parquet")
+            return f"{table_name}.parquet"
         return None
+    
+    def requires_save_instructions(self) -> bool:
+        return (self.default_composition != self.default_default_composition) or not self.user_compositions
 
     def __repr__(self) -> str:
         r = type(self).__name__ + ": " + " < ".join([o for o, _ in self.default_composition])
@@ -344,6 +348,3 @@ class UserModels:
             for table_name in self.table_names 
             if getattr(self, table_name)
         ])
-        
-    def has_default_type(self) -> bool:
-        return False

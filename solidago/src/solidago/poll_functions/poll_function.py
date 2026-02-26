@@ -82,10 +82,14 @@ class PollFunction(ABC):
                 f"whose annotation is currently `{annotations}`"
         else:
             for index, return_type in enumerate(annotations["return"].__args__):
-                assert isinstance(value[index], return_type), "" \
-                    f"Please verify type consistency of returned value number {index} " \
-                    f"of `{type(self).__name__}`, " \
-                    f"whose annotation is currently `{annotations}`"
+                if not isinstance(value[index], return_type):
+                    from solidago.poll_functions import ParallelizedPollFunction
+                    fn_to_fix = "_process_results" if isinstance(self, ParallelizedPollFunction) else "__call__"
+                    raise TypeError(
+                        f"Please verify type consistency of returned value number {index} " \
+                        f"of `{type(self).__name__}.{fn_to_fix}`, whose annotation is currently " \
+                        f"{[arg.__name__ for arg in annotations["return"].__args__]}"
+                    )
     
     def save(self, filename: str | Path | None = None) -> tuple[str, dict | list | None]:
         y = type(self).__name__, self.args_save()

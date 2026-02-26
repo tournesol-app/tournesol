@@ -1,27 +1,9 @@
-global_model:
-- ScoringModel
-- composition:
-  - - Direct
-    - {}
-made_public:
-- AllPublic
-- keynames:
-  - username
-  - entity_name
-  source: made_public.csv
-ratings:
-- Ratings
-- keynames:
-  - username
-  - criterion
-  - entity_name
-  source: ratings.csv
 user_models:
 - UserModels
 - default_composition:
-  - - Direct
+  - - Linear
     - {}
-  - - Scale
+  - - ScaleProcessing
     - note: user_scale_test_export
-  - - Scale
+  - - ScaleProcessing
     - note: common_scale_test_export

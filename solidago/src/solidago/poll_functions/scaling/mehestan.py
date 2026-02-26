@@ -94,7 +94,7 @@ class Mehestan(PollFunction):
         criteria = list(user_models.criteria())
         results = [self.scale_criterion(users, entities, public_settings, scores.filters(criterion=c)) for c in criteria]
         keynames = ["username", "criterion"]
-        multipliers, translations, kwargs = UserMultipliers(keynames), UserTranslations(keynames), dict()
+        multipliers, translations, kwargs = UserMultipliers(keynames=keynames), UserTranslations(keynames=keynames), dict()
         for criterion, (submultipliers, subtranslations, activities, is_scaler) in zip(criteria, results):
             multipliers = multipliers | submultipliers.add_keys(criterion=criterion)
             translations = translations | subtranslations.add_keys(criterion=criterion)

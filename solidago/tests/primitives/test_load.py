@@ -138,11 +138,11 @@ def test_generators():
         solidago.generators.users.New
     )
     assert isinstance(
-        solidago.load("users.AddColumn", solidago.generators, column="is_trustworthy", distribution=["Bernoulli", dict(p=0.8)]),
+        solidago.load("users.AddColumn", solidago.generators, column="trustworthy", distribution=["Bernoulli", dict(p=0.8)]),
         solidago.generators.users.AddColumn
     )
     assert isinstance(
-        solidago.load("users.AddColumn", solidago.generators, column="is_trustworthy", distribution=["Bernoulli", dict(p=0.8)]),
+        solidago.load("users.AddColumn", solidago.generators, column="trustworthy", distribution=["Bernoulli", dict(p=0.8)]),
         solidago.generators.users.AddColumn
     )
     assert isinstance(

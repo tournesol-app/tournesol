@@ -1,5 +1,5 @@
 import logging, numpy as np
-from typing import Any
+from typing import Any, Iterator
 
 logger = logging.getLogger(__name__)
 
@@ -30,14 +30,18 @@ class Sequential(PollFunction):
 
     def __getitem__(self, index: int) -> PollFunction:
         return self.subfunctions[index]
-
+    
+    def __iter__(self) -> Iterator[PollFunction]:
+        for subfunction in self.subfunctions:
+            yield subfunction
+    
     def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set[int] | None = None) -> Poll:
         if self.seed is not None:
             assert isinstance(self.seed, int)
             logger.info(f"Set random seed = {self.seed}")
             np.random.seed(self.seed)
         result = poll or Poll()
-        for step, subfunction in enumerate(self.subfunctions):
+        for step, subfunction in enumerate(self):
             if skip_steps is not None and step in skip_steps:
                 continue
             log = f"{self.name} {step+1}. {type(subfunction).__name__}"

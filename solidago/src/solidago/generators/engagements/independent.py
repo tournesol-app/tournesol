@@ -49,7 +49,7 @@ class Independent(PollFunction):
                 ratings.set(username=user.name, criterion="default", entity_name=entity.name)
         for left, right in eval_entities.iter_pairs(shuffle=True):
             if self.compare(user, left, right, eval_entities):
-                comparisons.set(username=user.name, criterion="default", left_name=left.name, right=right.name)
+                comparisons.set(username=user.name, criterion="default", left_name=left.name, right_name=right.name)
         return public_settings, ratings, comparisons
 
     def public(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
@@ -58,15 +58,15 @@ class Independent(PollFunction):
         return bool(np.random.random() < p_public)
 
     def rate(self, user: User, entity: Entity, eval_entities: Entities) -> bool:
-        if not hasattr(user, "p_rate"):
+        if "p_rate" not in user:
             return False
         assert user["p_rate"] >= 0.0, user
         return bool(np.random.random() < user["p_rate"])
         
     def compare(self, user: User, left: Entity, right: Entity, eval_entities: Entities) -> bool:
-        if not hasattr(user, "p_compare") and not hasattr(user, "n_comparisons_per_entity"):
+        if "p_compare" not in user and "n_comparisons_per_entity" not in user:
             return False
-        if hasattr(user, "p_compare"):
+        if "p_compare" in user:
             return np.random.random() < user["p_compare"]
         return bool(np.random.random() < user["n_comparisons_per_entity"] / len(eval_entities))
         

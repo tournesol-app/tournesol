@@ -1,4 +1,4 @@
-from solidago import *
+from solidago import Generator
 
 from solidago.generators.engagements.select_entities import BiasedByScore
 import solidago.generators.users as users
@@ -21,7 +21,7 @@ _modules = [
     )),
     entities.AddColumn("journalism", Multinomial(probabilities=[.4, .6], values=["True", "False"])),
     # User trust generation
-    users.AddColumn("is_trustworthy", Bernoulli(0.8)),
+    users.AddColumn("trustworthy", Bernoulli(0.8)),
     users.BernoulliPretrust(p_if_trustworthy=.2, p_if_untrustworthy=0.),
     # Vouch generation
     users.AddColumn("expected_n_vouches", Zipf(power_decay=2.)),

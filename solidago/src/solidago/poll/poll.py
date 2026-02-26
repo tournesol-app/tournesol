@@ -80,8 +80,8 @@ class Poll:
             ratings=(Ratings, dict()), 
             comparisons=(Comparisons, dict()),
             voting_rights=(VotingRights, dict()),
-            user_models=(UserModels, dict()),
-            global_model=(ScoringModel, dict()),
+            user_models=("UserModels", dict()),
+            global_model=("ScoringModel", dict()),
         ) | kwargs
         with open(Path(directory) / "poll.yaml") as f: 
             kwargs |= yaml.safe_load(f)
@@ -120,7 +120,7 @@ class Poll:
         kwargs = { 
             key: value.save_instructions() 
             for key, value in self.__dict__.items() 
-            if not value.has_default_type()
+            if value.requires_save_instructions()
         }
         if directory:
             with open(Path(directory) / "poll.yaml", "w") as f:
@@ -148,7 +148,7 @@ class Poll:
                 value = getattr(self, key)
                 assert isinstance(value, key_type), (value, key_type)
                 instruction = value.save(directory, save_instructions=False)
-                if not value.has_default_type():
+                if value.requires_save_instructions():
                     poll_yaml[key] = instruction # type: ignore
         
         with open(Path(directory) / "poll.yaml", "w") as f:

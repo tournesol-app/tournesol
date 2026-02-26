@@ -23,7 +23,7 @@ def test_user_models():
     assert isinstance(model, ScoringModel)
 
     scores = directs(entities)
-    assert len(scores) == 10
+    assert len(scores) == len(directs.user_directs)
     assert scores.get(username="le_science4all", entity_name="entity_1", criterion="default").to_triplet() == (0, 0, 0)
 
     user_multipliers = UserMultipliers([
@@ -52,7 +52,7 @@ def test_user_models():
 
     scores = scaled(entities)
     assert isinstance(scores, Scores)
-    assert len(scores) == 10
+    assert len(scores) == len(directs.user_directs)
     assert scores.get(username="le_science4all", entity_name="entity_1", criterion="default").value == 1.0
     assert scores.get(username="aidjango", entity_name="entity_3", criterion="default").left_unc == 1.0
 
@@ -73,7 +73,7 @@ def test_user_models():
 
     scores = rescaled(entities)
     assert isinstance(scores, Scores)
-    assert len(scores) == 10
+    assert len(scores) == len(directs.user_directs)
     assert scores.get(username="le_science4all", entity_name="entity_1", criterion="default").value == 3.0
     assert scores.get(username="aidjango", entity_name="entity_3", criterion="default").left_unc == 2.0
 

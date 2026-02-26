@@ -83,7 +83,7 @@ class Comparison(Row):
 
 class Comparisons(FilteredTable[Comparison]):
     TableRowType: type = Comparison
-    name: str = "ratings"
+    name: str = "comparisons"
     default_column_names: list[str] = ["username", "criterion", "context", "left_name", "right_name",
         "value", "max", "root_law", "root_law_arg"]
     default_keynames: set[str] = {"username", "criterion", "context", "left_name", "right_name"}

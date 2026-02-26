@@ -27,7 +27,7 @@ class TournesolExport(Poll):
                     # such as "NA" are converted to float NaN.
                     return pd.read_csv(f, keep_default_na=False).rename(columns=columns)
                 
-            users = load("users", { "public_username": "username", "trust_score": "trust" })
+            users = load("users", { "public_username": "name", "trust_score": "trust" })
             vouches = load("vouchers", { 
                 "by_username": "by", 
                 "to_username": "to", 
@@ -56,7 +56,7 @@ class TournesolExport(Poll):
             })
         
         missing_usernames = set(vouches["by"]) | set(vouches["to"]) | set(user_scores["username"])
-        missing_usernames = missing_usernames.difference(set(users["username"]))
+        missing_usernames = missing_usernames.difference(set(users["name"]))
         for username in missing_usernames:
             users.loc[len(users)] = [username, 0.]
 
@@ -73,8 +73,9 @@ class TournesolExport(Poll):
         global_scores["right_unc"] = global_scores["left_unc"]
         from solidago.primitives.date import week_date_to_week_number as to_week_number
         comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
+        comparisons["context"] = "tournesol"
                 
-        entities = DataFrame({ "entity_name": list(
+        entities = DataFrame({ "name": list(
             set(global_scores["entity_name"]) | set(comparisons["left_name"]) | set(comparisons["right_name"])
         ) })
         voting_rights = user_scores[["username", "entity_name", "criterion", "voting_right"]]
@@ -84,21 +85,17 @@ class TournesolExport(Poll):
     
     def __init__(self, dataset_zip: str | BinaryIO):
         dfs = TournesolExport.load_dfs(dataset_zip)
-        from solidago.poll import (
-            Users, Vouches, Entities, PublicSettings, Comparisons, 
-            VotingRights, UserModels, ScoringModel
-        )
-        user_directs = UserDirectScores(init_data=dfs["user_scores"])
-        directs = DirectScores(init_data=dfs["global_scores"])
+        directs = DirectScores(dfs["global_scores"])
+        user_directs = UserDirectScores(dfs["user_scores"])
         super().__init__(
             users=Users(dfs["users"]),
-            vouches=Vouches(init_data=dfs["vouches"]),
+            vouches=Vouches(dfs["vouches"]),
             entities=Entities(dfs["entities"]),
             public_settings=PublicSettings(),
-            comparisons=Comparisons(init_data=dfs["comparisons"]),
-            voting_rights=VotingRights(init_data=dfs["voting_rights"]),
+            comparisons=Comparisons(dfs["comparisons"]),
+            voting_rights=VotingRights(dfs["voting_rights"]),
             user_models=UserModels(user_directs=user_directs),
-            global_model=ScoringModel(directs=directs)
+            global_model=ScoringModel(directs=directs),
         )
 
     @classmethod

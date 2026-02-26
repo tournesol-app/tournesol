@@ -1,13 +1,12 @@
-import pytest
-from solidago import *
-from solidago.poll.scoring.user_models import CommonMultipliers, UserMultipliers, UserTranslations
-
 def test_import():
+    import pytest
+    from solidago import TournesolExport, PublicSettings, Scores
+
     t = TournesolExport("tests/tiny_tournesol.zip")
     
     assert "biscuissec" in t.users, t.users
     assert t.users["le_science4all"]["trust"] == 1
-    assert "NatNgs" in set(t.vouches.filters(username="aidjango").keys("to"))
+    assert "NatNgs" in set(t.vouches.filters(by="aidjango").keys("to"))
     assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["weight"] == 1
     assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["priority"] == 0
     assert "aBdymwisfb4" in t.entities
@@ -34,28 +33,35 @@ def test_import():
     assert scores.get(criterion="importance").to_triplet() == pytest.approx((-4.53, 141.1, 141.1))
 
 def test_export():
+    from solidago import TournesolExport
+    from solidago.poll.scoring.user_models import CommonMultipliers, UserMultipliers, UserTranslations
+
     t = TournesolExport("tests/tiny_tournesol.zip")
     t.user_models = t.user_models.user_scale(
         UserMultipliers([
-            (username, "largely_recommended", 2)
+            (username, "largely_recommended", 2, 0, 0)
             for username, _ in t.user_models
-        ], columns=["username", "criterion", "value"]),
+        ], columns=["username", "criterion", "value", "left_unc", "right_unc"], keynames=["username", "criterion"]),
         UserTranslations([
-            (username, "importance", 3)
+            (username, "importance", 3, 0, 0)
             for username, _ in t.user_models
-        ], columns=["username", "criterion", "value"]),
+        ], columns=["username", "criterion", "value", "left_unc", "right_unc"], keynames=["username", "criterion"]),
         note="user_scale_test_export"
     )
     t.user_models = t.user_models.common_scale(
-        CommonMultipliers([("importance", 2)], columns=["criterion", "value"], note="common_scale_test_export")
+        CommonMultipliers([("importance", 2, 0, 0)], columns=["criterion", "value", "left_unc", "right_unc"], keynames=["criterion"]),
+        note="common_scale_test_export"
     )
     t.save("tests/load_save/save_tiny_tournesol")
 
 def test_reimport():
+    import pytest
+    from solidago import PublicSettings, Scores, Poll
+
     t = Poll.load("tests/load_save/save_tiny_tournesol")
     assert "biscuissec" in t.users, t.users
     assert t.users["le_science4all"]["trust"] == 1
-    assert "NatNgs" in set(t.vouches.filters(username="aidjango").keys("to"))
+    assert "NatNgs" in set(t.vouches.filters(by="aidjango").keys("to"))
     assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["weight"] == 1
     assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["priority"] == 0
     assert "aBdymwisfb4" in t.entities

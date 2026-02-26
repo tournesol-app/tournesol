@@ -7,8 +7,14 @@ from solidago.poll import *
 from solidago.primitives.random import Distribution
 
 class Rate:
-    def __call__(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str):
-        rating["value"] = self.sample_value(rating, user, entity, public, criterion)
+    def __call__(self, 
+        rating: Rating, 
+        user: User, 
+        entity: Entity, 
+        public: bool, 
+        criterion: str
+    ) -> dict[str, Any]:
+        return dict(value=self.sample_value(rating, user, entity, public, criterion))
 
     @abstractmethod
     def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:

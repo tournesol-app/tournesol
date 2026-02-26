@@ -12,7 +12,9 @@ class New(PollFunction):
         import solidago
         self.n_entities = n_entities
         if distribution:
-            self.distribution = solidago.load(distribution, solidago.random)
+            distribution = solidago.load(distribution, solidago.random)
+            assert isinstance(distribution, solidago.primitives.random.Distribution)
+            self.distribution = distribution
     
     def sample_entity(self, entity_index: int) -> poll.Entity:
         vector = self.distribution.sample() if hasattr(self, "distribution") else None

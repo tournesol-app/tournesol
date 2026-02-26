@@ -1,4 +1,5 @@
-from typing import Union, TYPE_CHECKING
+from copy import deepcopy
+from typing import Any, Union, TYPE_CHECKING
 
 from solidago.poll import *
 from solidago.poll_functions.poll_function import PollFunction
@@ -26,16 +27,22 @@ class Independent(PollFunction):
     ) -> Ratings:
         """ Fills in the ratings """
         result = Ratings()
-        for index, rating in enumerate(ratings):
+        for rating in ratings:
             user, entity = users[rating["username"]], entities[rating["entity_name"]]
             public = public_settings.get(username=user.name, entity_name=entity.name)["public"]
             assert isinstance(user, User) and isinstance(entity, Entity)
-            self.rate(rating, user, entity, public, rating["criterion"])
+            kwargs = self.rate(rating, user, entity, public, rating["criterion"])
+            result.append(deepcopy(rating), **kwargs)
         return result
     
-    def rate(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str):
-        malicious = "is_trustworthy" in user and not user["is_trustworthy"]
-        sample_function = self.malicious if malicious else self.honest
-        sample_function(rating, user, entity, public, criterion)
-
+    def rate(self, 
+        rating: Rating, 
+        user: User, 
+        entity: Entity, 
+        public: bool, 
+        criterion: str
+    ) -> dict[str, Any]:
+        malicious = "trustworthy" in user and not user["trustworthy"]
+        rate = self.malicious if malicious else self.honest
+        return rate(rating, user, entity, public, criterion)
 

@@ -241,6 +241,9 @@ class NamedObjects(Generic[Object]):
             with open(Path(directory) / filename, "w") as f:
                 yaml.safe_dump(instructions, f)
         return instructions
+    
+    def requires_save_instructions(self) -> bool:
+        return False # default value
 
     def __repr__(self) -> str:
         return repr(self.df)

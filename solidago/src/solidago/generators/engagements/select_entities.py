@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 
@@ -40,8 +40,8 @@ class BiasedByScore(SelectEntities):
 
     def __call__(self, user: User, entities: Entities) -> Entities:
         assert "n_evaluated_entities" in user, user
-        n_evaluated_entities = user["n_evaluated_entities"]
-        assert isinstance(n_evaluated_entities, (int, np.integer)), n_evaluated_entities
+        n_evaluated_entities = int(user["n_evaluated_entities"])
+        assert isinstance(n_evaluated_entities, int), n_evaluated_entities
 
         # To implement engagement bias, we construct a noisy score-based sort of the entities
         scores = entities.vectors @ user.vector
@@ -57,4 +57,3 @@ class BiasedByScore(SelectEntities):
         result = entities[[entities.index2name(argsort[i]) for i in range(n_eval_entities)]]
         assert isinstance(result, Entities)
         return result
-

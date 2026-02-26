@@ -1,4 +1,5 @@
-from typing import Union, TYPE_CHECKING
+from copy import deepcopy
+from typing import Any, Union, TYPE_CHECKING
 
 from solidago.poll import *
 from solidago.poll_functions.poll_function import PollFunction
@@ -14,7 +15,7 @@ class Independent(PollFunction):
         honest: Union["Compare", list, tuple] | None = None, 
         malicious: Union["Compare", list, tuple] | None = None,
     ):
-        from solidago.generators.comparisons import Deterministic, Negate
+        from solidago.generators.comparisons.compare import Deterministic, Negate
         import solidago, solidago.generators.comparisons as comparisons_module
         self.honest = solidago.load(honest, comparisons_module) if honest else Deterministic()
         self.malicious = solidago.load(malicious, comparisons_module, honest=honest) if malicious else Negate(self.honest)
@@ -27,12 +28,16 @@ class Independent(PollFunction):
     ) -> Comparisons:
         result = Comparisons()
         for comparison in comparisons:
-            user = users[comparison["username"]], 
+            user, criterion = users[comparison["username"]], comparison["criterion"]
             left, right = entities[comparison["left_name"]], entities[comparison["right_name"]]
-            assert isinstance(user, User) and isinstance(left, Entity) and isinstance(right, Entity)
+            assert isinstance(user, User), (user, comparison["username"])
+            assert isinstance(left, Entity), (left, comparison["left_name"])
+            assert isinstance(right, Entity), (right, comparison["right_name"])
             left_public = public_settings.get(username=user.name, entity_name=left.name)["public"]
             right_public = public_settings.get(username=user.name, entity_name=right.name)["public"]
-            self.compare(comparison, user, left, right, left_public, right_public, comparison["criterion"])
+            kwargs = self.compare(comparison, user, left, right, left_public, right_public, criterion)
+            result.append(deepcopy(comparison), **kwargs)
+            
         return result
     
     def compare(self, 
@@ -40,9 +45,9 @@ class Independent(PollFunction):
         user: User, left: Entity, right: Entity, 
         left_public: bool, right_public, 
         criterion: str
-    ):
-        malicious = "is_trustworthy" in user and not user["is_trustworthy"]
-        sample_function = self.malicious if malicious else self.honest
-        sample_function(comparison, user, left, right, left_public, right_public, criterion)
+    ) -> dict[str, Any]:
+        malicious = "trustworthy" in user and not user["trustworthy"]
+        compare = self.malicious if malicious else self.honest
+        return compare(comparison, user, left, right, left_public, right_public, criterion)
 
 

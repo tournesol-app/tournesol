@@ -284,14 +284,21 @@ class _Table:
             self._cache.add(np.int64(index), keyname, key)
         self.version += 1
 
-    def set_column(self, column_name: str, values: Scalar | Sequence[Scalar] | NDArray[np.float64], dtype: type | None = None):
+    def set_column(self, 
+        column_name: str, 
+        values: Scalar | Sequence[Scalar] | NDArray[np.float64], 
+        dtype: type | None = None,
+    ):
         if dtype:
             self.df.dtypes[column_name] = dtype
-        self.df[column_name] = values
+        self.df[column_name] = values # type: ignore
         if column_name in self._cache.keynames():
             self._cache.cache(column_name, self, force=True)
 
-    def set_columns(self, dtypes: dict[str, type] | None = None, **values: Scalar | Sequence[Scalar] | NDArray[np.float64]):
+    def set_columns(self, 
+        dtypes: dict[str, type] | None = None, 
+        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+    ):
         for name, value in values.items():
             dtype = dtypes[name] if dtypes and name in dtypes else None
             self.set_column(name, value, dtype)
@@ -349,21 +356,28 @@ class FilteredTable(Generic[TableRow]):
         except AttributeError:
             raise ValueError(f"Cannot transform row {row} of type {type(row).__name__} into series")
     
-    def __init__(self, *args: Any, filter: Filter | None = None, keynames: Iterable[str] | None = None, **kwargs: Any):
+    def __init__(self, 
+        *args: Any, 
+        filter: Filter | None = None, 
+        keynames: Iterable[str] | None = None, 
+        **kwargs: Any,
+    ):
         """ Either args is simply (table: _Table,) or (*args, **kwargs) are used to construct table """
         if args and isinstance(args[0], _Table):
             self.table = args[0]
-            self.table_version = args[0].version
+        elif args and isinstance(args[0], pd.DataFrame):
+            self.table = _Table(args[0])
         else:
             if "columns" not in kwargs:
                 kwargs["columns"] = self.default_column_names
             self.table = _Table(pd.DataFrame(*args, **kwargs))
-            self.table_version = self.table.version
+        self.table_version = self.table.version
         self.keynames = self.default_keynames if keynames is None else set(keynames)
         for keyname in self.keynames:
             if keyname not in self.columns:
-                assert not self.table, \
-                    f"Cannot add non-column keyname {keyname} at init. Please add it to columns or modify keynames arg."
+                assert not self.table, f"Cannot add non-column keyname {keyname} at init. \
+                    Columns are {self.columns}. \
+                    Please add it to columns or modify keynames arg."
                 self.table.df[keyname] = ""
         assert filter is None or isinstance(filter, Filter)
         self._filter = filter or Filter() # self.filter handles version update
@@ -401,6 +415,7 @@ class FilteredTable(Generic[TableRow]):
             return self.table.df
         df = self.table.df.loc[self.filter.indices]
         assert isinstance(df, pd.DataFrame)
+        df.index = list(range(len(df)))
         return df
 
     def _get_filter(self, **keys: Hashable | list[Hashable]) -> Filter:
@@ -426,7 +441,10 @@ class FilteredTable(Generic[TableRow]):
                 if filter.indices is None or len(filter.indices) > 0:
                     yield (key, *other_keys), filter
 
-    def iter(self, *keynames: str, select: Select | None = None) -> Iterator[tuple[tuple[Hashable, ...], Self | TableRow]]:
+    def iter(self, 
+        *keynames: str, 
+        select: Select | None = None
+    ) -> Iterator[tuple[tuple[Hashable, ...], Self | TableRow]]:
         for keys, filter in self.iter_filters(*keynames):
             table = type(self)(self.table, filter=filter)
             result = table if select is None else table.get(select)
@@ -476,6 +494,7 @@ class FilteredTable(Generic[TableRow]):
         return self.series2row(self._get_series(index))
 
     def _get_series(self, index: int | np.int64) -> pd.Series:
+        assert index in self.table.df.index, (index, self.table.df.index)
         row = self.table.df.loc[index]
         assert isinstance(row, pd.Series)
         return row
@@ -516,11 +535,17 @@ class FilteredTable(Generic[TableRow]):
             series = self.table.df[column_name]
         return series if dtype is None else series.astype(dtype).to_numpy() # type: ignore
 
-    def set_columns(self, dtypes: dict[str, type] | None = None, **values: Scalar | Sequence[Scalar] | NDArray[np.float64]):
+    def set_columns(self, 
+        dtypes: dict[str, type] | None = None, 
+        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+    ):
         """ Modifies table. This does not affect filters. """
         self.table.set_columns(dtypes, **values)
 
-    def add_columns(self, dtypes: dict[str, type] | None = None, **values: Scalar | Sequence[Scalar] | NDArray[np.float64]) -> Self:
+    def add_columns(self, 
+        dtypes: dict[str, type] | None = None, 
+        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+    ) -> Self:
         return type(self)(
             self.table.add_columns(dtypes, **values), 
             keynames=self.keynames, 
@@ -528,12 +553,18 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
     
-    def set_keys(self, dtypes: dict[str, type] | None = None, **values: Scalar | Sequence[Scalar] | NDArray[np.float64]):
+    def set_keys(self, 
+        dtypes: dict[str, type] | None = None, 
+        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+    ):
         """ Modifies table. This does not affect filters. """
         self.set_columns(dtypes, **values)
         self.keynames.add(*values)
 
-    def add_keys(self, dtypes: dict[str, type] | None = None, **values: Scalar | Sequence[Scalar] | NDArray[np.float64]) -> Self:
+    def add_keys(self, 
+        dtypes: dict[str, type] | None = None, 
+        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+    ) -> Self:
         result = self.add_columns(dtypes, **values)
         result.keynames.add(*values)
         return result
@@ -568,7 +599,11 @@ class FilteredTable(Generic[TableRow]):
         if not self.filter.must_be_filtered_out(series):
             self.filter.add_index(index)
     
-    def set(self, row: TableRow | pd.Series | None = None, keynames: Iterable[str] | None = None, **values: Scalar):
+    def set(self, 
+        row: TableRow | pd.Series | None = None, 
+        keynames: Iterable[str] | None = None, 
+        **values: Scalar
+    ):
         """ This method aims to guarantee keynames uniqueness. Replacing last is our best effort. """
         if row is None:
             kwargs = dict()
@@ -589,7 +624,10 @@ class FilteredTable(Generic[TableRow]):
         else:
             self.set_series(index, kwargs)
 
-    def append(self, row: pd.Series | TableRow | Mapping[str, Scalar] | Sequence[Scalar] | None = None, **values: Scalar):
+    def append(self, 
+        row: pd.Series | TableRow | Mapping[str, Scalar] | Sequence[Scalar] | None = None, 
+        **values: Scalar
+    ):
         if row is None:
             series = pd.Series(values)
         else:
@@ -641,6 +679,8 @@ class FilteredTable(Generic[TableRow]):
             return bool
         if dtype == "str":
             return str
+        if dtype == "object":
+            return object
         raise ValueError(dtype)
     @classmethod
     def get_dtypes(cls, dtypes: dict[str, DTypeLike | str] | None = None) -> dict[str, DTypeLike]:
@@ -675,6 +715,8 @@ class FilteredTable(Generic[TableRow]):
             return "bool"
         if dtype == str:
             return "str"
+        if dtype == object:
+            return "object"
         raise ValueError(dtype)
     def dtypes_to_str_dict(self) -> dict[str, str]:
         return {str(n): self.dtype_to_str(t) for n, t in self.table.df.dtypes.items()}
@@ -683,7 +725,6 @@ class FilteredTable(Generic[TableRow]):
     def load(cls, 
         directory: str | Path, 
         source: str | None = None, 
-        dtypes: dict[str, DTypeLike | str] | None = None, 
         **kwargs: Any
     ) -> Self:
         directory = Path(directory)
@@ -699,9 +740,8 @@ class FilteredTable(Generic[TableRow]):
             elif (directory / f"{source}.csv").is_file():
                 source = f"{source}.csv"
             path = Path(directory) / source
-        dtypes = cls.get_dtypes(dtypes)
         if not path.is_file():
-            return cls(dtypes=dtypes, **kwargs)
+            return cls(**kwargs)
         if source.endswith(".parquet"):
             df = pd.read_parquet(path)
         else:
@@ -739,12 +779,16 @@ class FilteredTable(Generic[TableRow]):
                 yaml.safe_dump(instructions, f)
         return instructions
 
-    def __repr__(self) -> str:
+    def requires_save_instructions(self) -> bool:
+        return False # default value
+    
+    def __repr__(self, show_cache: bool = False) -> str:
         r = f"{self.name} ({len(self)} rows)\n"
         if not r:
             return r + "empty table (no row)\n"
         r += f"{repr(self.filter)}\n"
-        r += f"{self.table.repr_cache()}\n"
+        if show_cache:
+            r += f"{self.table.repr_cache()}\n"
         return r + repr(self.table.df.loc[self.indices] if self.filter else self.table.df)
 
 

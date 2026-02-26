@@ -69,7 +69,7 @@ class LipschitzStandardize(ParallelizedPollFunction):
         return qr_standard_deviation
     
     def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, user_models: UserModels) -> UserModels: # type: ignore
-        multipliers = CommonMultipliers(["criterion"])
+        multipliers = CommonMultipliers(keynames=["criterion"])
         for criterion, std_dev in zip(variables, results):
             multipliers[criterion] = Score(1./std_dev)
         return user_models.common_scale(multipliers=multipliers, note="lipschitz_standardardize")
