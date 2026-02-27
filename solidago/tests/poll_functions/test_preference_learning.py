@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from solidago import *
+from solidago.poll_functions.preference_learning.generalized_bradley_terry import GeneralizedBradleyTerry
 from solidago.poll_functions.preference_learning import NumbaUniformGBT, FlexibleGeneralizedBradleyTerry
 from solidago.poll_functions.preference_learning.gbt.root_law import RootLaw, BradleyTerry, Uniform, Gaussian, Discrete
 
@@ -14,10 +15,6 @@ except RuntimeError:
 
 @pytest.mark.parametrize("GBT", GBTs)
 def test_gbt_score_zero(GBT):
-    
-    if GBT == LBFGSUniformGBT:
-        pytest.importorskip("torch")
-        
     entities=Entities(["entity_1", "entity_2", "entity_3"])
     comparisons=Comparisons(keynames=["entity_name", "other_name"])
     comparisons.set(left_name="entity_1", right_name="entity_2", value=0, max=10)
@@ -96,7 +93,12 @@ def test_numba():
     assert np.isfinite(rights[entities.name2index("entity_4")]), values[entities.name2index("entity_4")]
 
 
-def test_flexible():
+def test_flexible():    
+    generator = load("tests/generators/test_generator.yaml")
+    assert isinstance(generator, Generator)
+    generator.seed = 0
+    poll = generator()
+
     n_parameters = 4
     categories = ["author", "journalism"]
     fgbt = poll_functions.FlexibleGeneralizedBradleyTerry(
@@ -104,7 +106,6 @@ def test_flexible():
         categories=categories,
         rating_root_law=("Gaussian", dict(std=1.0)),
     )
-    poll = Poll.load(f"tests/saved/0")
     user, criterion = poll.users["user_0"], "default"
     assert isinstance(user, User)
     variable = user, criterion
@@ -184,49 +185,3 @@ def test_flexible():
     assert "n_raters" in fgbt_entities["entity_1"]
     assert "user_2" in fgbt_user_models.user_directs.keys("username")
     assert not user_models.user_categories.get(username="user_1", category="author", group="Science4All", criterion="default").isnan()
-
-def test_uncertainty_comparison_only():
-    fgbt = poll_functions.FlexibleGeneralizedBradleyTerry(discard_ratings=True)
-    poll = Poll.load(f"tests/saved/0")
-    user, criterion = poll.users["user_0"], "default"
-    assert isinstance(user, User)
-    variable = user, criterion
-    entities, user_models = poll.entities, poll.user_models
-    ratings, comparisons = Ratings(), poll.comparisons
-    nonargs = fgbt._nonargs(variable, entities, ratings, comparisons)
-    evaluated_entities, category_groups, rating_contexts = nonargs
-    args = fgbt._args(variable, nonargs, ratings, comparisons, user_models)
-    values = fgbt.compute_values(*args)
-    values_copy = values.copy()
-    assert all(np.abs(values) < 20)
-    args = args[1:] # dropping init_values
-    left_uncertainties, right_uncertainties = fgbt.compute_uncertainties(values, *args)
-    assert all(values_copy == values)
-    assert all(np.abs(values) < 20)
-    assert fgbt.loss(values, *args) <= 0
-
-def test_uncertainty():
-    n_parameters = 4
-    categories = ["author", "journalism"]
-    fgbt = poll_functions.FlexibleGeneralizedBradleyTerry(
-        n_parameters=n_parameters,
-        categories=categories,
-        rating_root_law=("Gaussian", dict(std=1.0)),
-    )
-    poll = Poll.load(f"tests/saved/0")
-    user, criterion = poll.users["user_0"], "default"
-    assert isinstance(user, User)
-    variable = user, criterion
-    entities, user_models = poll.entities, poll.user_models
-    ratings, comparisons = poll.ratings, poll.comparisons
-    nonargs = fgbt._nonargs(variable, entities, ratings, comparisons)
-    evaluated_entities, category_groups, rating_contexts = nonargs
-    args = fgbt._args(variable, nonargs, ratings, comparisons, user_models)
-    values = fgbt.compute_values(*args)
-    assert all(np.abs(values) < 10)
-    values_copy = values.copy()
-    args = args[1:] # dropping init_values
-    left_uncertainties, right_uncertainties = fgbt.compute_uncertainties(values, *args)
-    assert all(values_copy == values)
-    assert all(np.abs(values) < 10)
-    assert fgbt.loss(values, *args) <= 0

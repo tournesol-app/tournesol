@@ -70,9 +70,9 @@ class LipschiTrust(PollFunction):
             return users.assign(trust=list())
 
         personhood_vouches = vouches.filters(kind="Personhood")
-        bys = personhood_vouches.get_column("by").map(users.name2index).to_numpy(np.int64)
-        tos = personhood_vouches.get_column("to").map(users.name2index).to_numpy(np.int64)
-        weights = personhood_vouches.get_column("weight").to_numpy(np.float64)
+        bys = personhood_vouches.get_column("by").map(users.name2index).to_numpy(np.int64) # type: ignore
+        tos = personhood_vouches.get_column("to").map(users.name2index).to_numpy(np.int64) # type: ignore
+        weights = personhood_vouches.get_column("weight", np.float64)
         outvouches = np.zeros(len(users))
         for by, weight in zip(bys, tos):
             assert weight >= 0, weight
