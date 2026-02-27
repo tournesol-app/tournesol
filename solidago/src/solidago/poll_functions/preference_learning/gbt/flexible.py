@@ -32,10 +32,10 @@ gauss_cgf2 = Gaussian.cgf2
 discrete_cgf2 = Discrete.cgf2
 
 ComparisonType = tuple[
-    tuple[NDArray, NDArray, NDArray],
-    tuple[NDArray, NDArray, NDArray],
-    tuple[NDArray, NDArray, NDArray, NDArray],
-    tuple[NDArray, NDArray, NDArray, NDArray],
+    tuple[NDArray[np.int64], NDArray[np.int64], NDArray[np.float64]], # Bradley-Terry
+    tuple[NDArray[np.int64], NDArray[np.int64], NDArray[np.float64]], # Uniform
+    tuple[NDArray[np.int64], NDArray[np.int64], NDArray[np.float64], NDArray[np.float64]], # Gaussian
+    tuple[NDArray[np.int64], NDArray[np.int64], NDArray[np.float64], NDArray[np.int64]], # Discrete
 ]
 
 
@@ -90,7 +90,7 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
         entity_indices = [entities.name2index(r["entity_name"]) for r in ratings]
         import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        root_laws = [solidago.load(r["root_law"] or self.rating_root_law, root_law_module) for r in ratings]
+        root_laws = [solidago.load(r["root_law"] or self.rating_root_law, root_law_module, r["root_law_arg"]) for r in ratings]
         normalized_ratings = [root_law.normalize_rating(r) for r, root_law in zip(ratings, root_laws)]
         context_indices = [len(entities) + rating_contexts.index(r["context"]) for r in ratings]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
@@ -111,7 +111,7 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         lefts = [entities.name2index(c["left_name"]) for c in comparisons]
         rights = [entities.name2index(c["right_name"]) for c in comparisons]
         import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        root_laws = [solidago.load(c["root_law"] or self.comparison_root_law, root_law_module) for c in comparisons]
+        root_laws = [solidago.load(c["root_law"] or self.comparison_root_law, root_law_module, c["root_law_arg"]) for c in comparisons]
         normalized_comparisons = [r.normalize_comparison(c) for c, r in zip(comparisons, root_laws)]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
         root_law_args = list()
@@ -221,7 +221,7 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         embedding_matrix: NDArray[np.float64], # shape (len(entities), self.n_parameters) 
         category_indices: NDArray[np.int64], # shape (len(entities), len(category_list))
         values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64],
-    ) -> NDArray:
+    ) -> NDArray[np.float64]:
         direct, n_entities, n_thresholds, category_group_lengths, parameters_offset = values_args
         assert isinstance(n_entities, int), n_entities
         assert isinstance(n_thresholds, int), n_thresholds
@@ -239,10 +239,10 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     @njit
     def njit_score_partial_derivative(
         value_index: np.int64,
-        embedding_matrix: NDArray, # shape (len(entities), self.n_parameters) 
-        category_indices: NDArray, # shape (len(entities), len(category_list))
-        values_args: tuple[bool, np.int64, np.int64, NDArray, np.int64],
-    ) -> NDArray:
+        embedding_matrix: NDArray[np.float64], # shape (len(entities), self.n_parameters) 
+        category_indices: NDArray[np.int64], # shape (len(entities), len(category_list))
+        values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64],
+    ) -> NDArray[np.float64]:
         """ Given that the scores are a linear function of the values,
         the scores are a function of the values and of the partial derivatives.
         This method is especially useful to measure loss increases given a variation
@@ -267,21 +267,21 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         return scores
     
     def prior_loss(self,  # type: ignore
-        values: NDArray, 
-        prior_inv_vars: NDArray,
-        diffusion_prior_matrix: NDArray | None,
+        values: NDArray[np.float64], 
+        prior_inv_vars: NDArray[np.float64],
+        diffusion_prior_matrix: NDArray[np.float64] | None,
         comparisons: ComparisonType, # not used
-        category_indices: NDArray, # not used
-        embedding_matrix: NDArray, # not used
-        values_args: tuple[bool, np.int64, np.int64, NDArray, np.int64], # not used
+        category_indices: NDArray[np.int64], # not used
+        embedding_matrix: NDArray[np.float64], # not used
+        values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64], # not used
     ) -> float:
         return type(self).njit_prior_loss(values, prior_inv_vars, diffusion_prior_matrix)
     @staticmethod
     @njit
     def njit_prior_loss(
-        values: NDArray, 
-        prior_inv_vars: NDArray,
-        diffusion_prior_matrix: NDArray | None, # not used
+        values: NDArray[np.float64], 
+        prior_inv_vars: NDArray[np.float64],
+        diffusion_prior_matrix: NDArray[np.float64] | None, # not used
     ) -> float:
         prior = (prior_inv_vars * values**2).sum() / 2
         if diffusion_prior_matrix is None:
@@ -293,19 +293,19 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         return prior
     
     def nlls(self,  # type: ignore
-        values: NDArray, 
-        prior_inv_vars: NDArray, # not used
-        diffusion_prior_matrix: NDArray | None, # not used
+        values: NDArray[np.float64], 
+        prior_inv_vars: NDArray[np.float64], # not used
+        diffusion_prior_matrix: NDArray[np.float64] | None, # not used
         comparisons: ComparisonType,
-        category_indices: NDArray,
-        embedding_matrix: NDArray,
-        values_args: tuple[bool, np.int64, np.int64, NDArray, np.int64],
+        category_indices: NDArray[np.int64],
+        embedding_matrix: NDArray[np.float64],
+        values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64],
     ) -> NDArray:
         scores = type(self).njit_scores(values, embedding_matrix, category_indices, values_args)
         return type(self).njit_nlls(scores, comparisons)
     @staticmethod
     @njit
-    def njit_nlls(scores: NDArray, comparisons: ComparisonType) -> NDArray:
+    def njit_nlls(scores: NDArray[np.float64], comparisons: ComparisonType) -> NDArray[np.float64]:
         bt_comparisons, unif_comparisons, gauss_comparisons, discrete_comparisons = comparisons
         bt_lefts, bt_rights, bt_values = bt_comparisons
         unif_lefts, unif_rights, unif_values = unif_comparisons
@@ -332,14 +332,14 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         return nlls
 
     def gradient(self,  # type: ignore
-        values: NDArray, 
-        prior_inv_vars: NDArray,
-        diffusion_prior_matrix: NDArray | None,
+        values: NDArray[np.float64], 
+        prior_inv_vars: NDArray[np.float64],
+        diffusion_prior_matrix: NDArray[np.float64] | None,
         comparisons: ComparisonType,
-        category_indices: NDArray,
-        embedding_matrix: NDArray,
-        values_args: tuple[bool, np.int64, np.int64, NDArray, np.int64],
-    ) -> NDArray:
+        category_indices: NDArray[np.int64],
+        embedding_matrix: NDArray[np.float64],
+        values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64],
+    ) -> NDArray[np.float64]:
         gradient = type(self).njit_prior_gradient(values, prior_inv_vars, diffusion_prior_matrix)
         args = embedding_matrix, category_indices, values_args
         scores = type(self).njit_scores(values, *args)
@@ -348,10 +348,10 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     @staticmethod
     @njit
     def njit_prior_gradient(
-        values: NDArray, 
-        prior_inv_vars: NDArray, 
-        diffusion_prior_matrix: NDArray | None, 
-    ) -> NDArray:
+        values: NDArray[np.float64], 
+        prior_inv_vars: NDArray[np.float64], 
+        diffusion_prior_matrix: NDArray[np.float64] | None, 
+    ) -> NDArray[np.float64]:
         prior_grad = prior_inv_vars * values
         if diffusion_prior_matrix is None:
             return prior_grad
@@ -365,12 +365,12 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     @staticmethod
     @njit
     def njit_nll_gradient(
-        values: NDArray,
-        scores: NDArray,
+        values: NDArray[np.float64],
+        scores: NDArray[np.float64],
         comparisons: ComparisonType, # left_index, right_index, comparison, root_law
-        embedding_matrix: NDArray, # shape (len(entities), self.n_parameters) 
-        category_indices: NDArray, # shape (len(entities), len(category_list))
-        values_args: tuple[bool, np.int64, np.int64, NDArray, np.int64],
+        embedding_matrix: NDArray[np.float64], # shape (len(entities), self.n_parameters) 
+        category_indices: NDArray[np.int64], # shape (len(entities), len(category_list))
+        values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64],
     ) -> NDArray:
         direct, n_entities, _, category_group_lengths, parameters_offset = values_args
 
@@ -427,63 +427,48 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         return gradient
 
     def hess_diagonal(self,  # type: ignore
-        values: NDArray, 
-        prior_inv_vars: NDArray,
-        diffusion_prior_matrix: NDArray | None,
+        values: NDArray[np.float64], 
+        prior_inv_vars: NDArray[np.float64],
+        diffusion_prior_matrix: NDArray[np.float64] | None,
         comparisons: ComparisonType,
-        category_indices: NDArray,
-        embedding_matrix: NDArray,
-        values_args: tuple[bool, np.int64, np.int64, NDArray, np.int64],
-    ) -> NDArray:
+        category_indices: NDArray[np.int64],
+        embedding_matrix: NDArray[np.float64],
+        values_args: tuple[bool, np.int64, np.int64, NDArray[np.int64], np.int64],
+    ) -> NDArray[np.float64]:
         scores = type(self).njit_scores(values, embedding_matrix, category_indices, values_args)
         return type(self).njit_hess_diagonal(values, scores, comparisons, prior_inv_vars, diffusion_prior_matrix)
     @staticmethod
     @njit
     def njit_hess_diagonal(
-        values: NDArray, 
-        scores: NDArray,
+        values: NDArray[np.float64], 
+        scores: NDArray[np.float64],
         comparisons: ComparisonType, # left_index, right_index, comparison, root_law
-        prior_inv_vars: NDArray,
-        diffusion_prior_matrix: NDArray | None,
-    ) -> NDArray:
+        prior_inv_vars: NDArray[np.float64],
+        diffusion_prior_matrix: NDArray[np.float64] | None,
+    ) -> NDArray[np.float64]:
+        hess = prior_inv_vars.copy()
         bt_comparisons, unif_comparisons, gauss_comparisons, discrete_comparisons = comparisons
+        
         bt_lefts, bt_rights, _ = bt_comparisons
-        unif_lefts, unif_rights, _ = unif_comparisons
-        gauss_lefts, gauss_rights, _, gauss_args = gauss_comparisons
-        discrete_lefts, discrete_rights, _, discrete_args = discrete_comparisons
-        n_comparisons = len(bt_lefts) + len(unif_lefts) + len(gauss_lefts) + len(discrete_lefts)
-        
-        lefts, rights, hesses = np.empty(n_comparisons), np.empty(n_comparisons), np.empty(n_comparisons)
         score_diffs = scores[bt_lefts] - scores[bt_rights]
-        hesses[:len(bt_lefts)] = bt_cgf2(score_diffs)
-        lefts[:len(bt_lefts)] = bt_lefts
-        rights[:len(bt_rights)] = bt_rights
-        offset = len(bt_lefts)
+        for left, right, h in zip(bt_lefts, bt_rights, bt_cgf2(score_diffs)):
+            hess[[left, right]] += h
 
+        unif_lefts, unif_rights, _ = unif_comparisons
         score_diffs = scores[unif_lefts] - scores[unif_rights]
-        hesses[offset:offset + len(unif_lefts)] = unif_cgf2(score_diffs)
-        lefts[offset:offset + len(unif_lefts)] = unif_lefts
-        rights[offset:offset + len(unif_rights)] = unif_rights
-        offset += len(unif_lefts)
+        for left, right, h in zip(unif_lefts, unif_rights, unif_cgf2(score_diffs)):
+            hess[[left, right]] += h
 
+        gauss_lefts, gauss_rights, _, gauss_args = gauss_comparisons
         score_diffs = scores[gauss_lefts] - scores[gauss_rights]
-        hesses[offset:offset + len(gauss_lefts)] = gauss_cgf2(score_diffs, gauss_args)
-        lefts[offset:offset + len(gauss_lefts)] = gauss_lefts
-        rights[offset:offset + len(gauss_rights)] = gauss_rights
-        offset += len(gauss_lefts)
+        for left, right, h in zip(gauss_lefts, gauss_rights, gauss_cgf2(score_diffs, gauss_args)):
+            hess[[left, right]] += h
 
+        discrete_lefts, discrete_rights, _, discrete_args = discrete_comparisons
         score_diffs = scores[discrete_lefts] - scores[discrete_rights]
-        hesses[offset:] = score_diffs * discrete_cgf2(score_diffs, discrete_args)
-        lefts[offset:] = discrete_lefts
-        rights[offset:] = discrete_rights
+        for left, right, h in zip(discrete_lefts, discrete_rights, discrete_cgf2(score_diffs, discrete_args)):
+            hess[[left, right]] += h
 
-        nll_hess = np.zeros_like(values)
-        lefts, rights, _, root_laws = comparisons
-        score_diffs = scores[lefts] - scores[rights]
-        for left, right, h in zip(lefts, rights, hesses):
-            nll_hess[[left, right]] += h
-        
-        hess = prior_inv_vars + nll_hess
         if diffusion_prior_matrix is not None:
             hess[:len(diffusion_prior_matrix)] += diffusion_prior_matrix.sum(axis=0)
 

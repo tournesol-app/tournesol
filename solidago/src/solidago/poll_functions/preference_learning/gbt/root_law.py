@@ -149,8 +149,8 @@ class Discrete(RootLaw):
     by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud (AAAI'24).
     """
     def __init__(self, n_values: int):
-        assert isinstance(n_values, int) and n_values >= 2, n_values
-        self.n_values = n_values
+        assert n_values >= 2, n_values
+        self.n_values = int(n_values)
     
     def get_arg(self) -> int | float | None:
         return self.n_values
@@ -169,7 +169,7 @@ class Discrete(RootLaw):
     
     @staticmethod
     @njit
-    def cgf(score_diffs: NDArray[np.float64], arg: NDArray[np.float64]) -> NDArray[np.float64]: # arg == n_values
+    def cgf(score_diffs: NDArray[np.float64], arg: NDArray[np.int64]) -> NDArray[np.float64]: # arg == n_values
         x, K, Km1 = np.abs(score_diffs), arg, arg - 1
         return np.where(
             x > 1e-1,
@@ -183,7 +183,7 @@ class Discrete(RootLaw):
         
     @staticmethod
     @njit
-    def cgf1(score_diffs: NDArray[np.float64], arg: NDArray[np.float64]) -> NDArray[np.float64]: # arg == n_values
+    def cgf1(score_diffs: NDArray[np.float64], arg: NDArray[np.int64]) -> NDArray[np.float64]: # arg == n_values
         x, K, Km1 = score_diffs, arg, arg - 1
         return np.where(
             np.abs(x) < 1e-2,
@@ -193,7 +193,7 @@ class Discrete(RootLaw):
         
     @staticmethod
     @njit
-    def cgf2(score_diffs: NDArray[np.float64], arg: NDArray[np.float64]) -> NDArray[np.float64]: # arg == n_values
+    def cgf2(score_diffs: NDArray[np.float64], arg: NDArray[np.int64]) -> NDArray[np.float64]: # arg == n_values
         x, K, Km1 = np.abs(score_diffs), arg, arg - 1
         return (K + 1) / Km1 + np.where(
             np.abs(x) < 1e-2,

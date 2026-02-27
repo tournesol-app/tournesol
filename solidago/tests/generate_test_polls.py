@@ -9,7 +9,7 @@ N_SEEDS = 3
 generator = sdg.load("tests/generators/test_generator.yaml")
 assert isinstance(generator, sdg.Generator)
 
-pipeline = sdg.load("tests/poll_functions/test_pipeline.yaml")
+pipeline = sdg.load("tests/poll_functions/test_pipeline.yaml", max_workers=1)
 assert isinstance(pipeline, sdg.Sequential)
 
 

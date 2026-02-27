@@ -8,13 +8,19 @@ from .compare import Compare
 
 
 class Thurston(Compare):
-    def __init__(self, comparison_max: float=float("inf")):
+    def __init__(self, 
+        comparison_max: float = float("inf"), 
+        root_law_name: str = "Gaussian", 
+        root_law_arg: Any = 1.0,
+    ):
         """ Louis Leon Thurston is a psychologist who modeled comparisons as resulting
         from an evaluation of alternative scores on a common scale,
         and the comparison was then a noisy function of the score difference.
         This class generates comparisons by conforming to the Thurston model. """
         assert comparison_max > 0
         self.comparison_max = comparison_max
+        self.root_law_name = root_law_name
+        self.root_law_arg = root_law_arg
     
     def __call__(self, 
         comparison: Comparison, 
@@ -23,7 +29,12 @@ class Thurston(Compare):
         criterion: str,
     ) -> dict[str, Any]:
         score_diff = (user.vector @ (right.vector - left.vector)) / np.sqrt(user.vector.size)
-        return dict(value=self.sample_comparison(score_diff), max=self.comparison_max)
+        return dict(
+            value=self.sample_comparison(score_diff),
+            max=self.comparison_max,
+            root_law=self.root_law_name,
+            root_law_arg=self.root_law_arg,
+        )
     
     @abstractmethod
     def sample_comparison(self, score_diff: float) -> float:
@@ -36,8 +47,12 @@ class DiscreteGBT(Thurston):
     "Generalized Bradley-Terry Models for Score Estimation from Paired Comparisons"
     by Julien Fageot, Sadegh Farhadkhani, Lê-Nguyên Hoang and Oscar Villemaud,
     published at AAAI 2024. """
-    def __init__(self, comparison_max: float=float("inf")):
-        super().__init__(comparison_max)
+    def __init__(self, 
+        comparison_max: float = float("inf"), 
+        root_law_name: str = "Discrete", 
+        root_law_arg: Any = 7,
+    ):
+        super().__init__(comparison_max, root_law_name, root_law_arg)
 
     @abstractmethod
     def root_law(self, comparison: float) -> float:
@@ -89,12 +104,12 @@ class DiscreteGBT(Thurston):
 class KnaryGBT(DiscreteGBT):
     def __init__(self, n_options: int = 2, comparison_max: float = 1):
         """ n_options is k in the paper """
-        super().__init__(comparison_max)
-        assert (n_options >= 2)
+        super().__init__(comparison_max, "Discrete", n_options)
+        assert n_options >= 2, n_options
         self.n_options = n_options
 
     def root_law(self, comparison: float) -> float:
-        return 1
+        return 1 # uniform over possible discrete values
 
     def comparison_generator(self) -> Iterator[float]:
         delta = 2 * self.comparison_max / (self.n_options - 1)

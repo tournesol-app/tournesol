@@ -55,12 +55,13 @@ class LipschitzQuantileShift(ParallelizedPollFunction):
         nonargs, # MultiScore
     ) -> tuple[float, float, NDArray, NDArray, NDArray, NDArray, float]:
         scores = nonargs
-        n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
+        assert isinstance(scores, Scores)
+        n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") } # type: ignore
         values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
         lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
-        for index, ((username, _), score) in enumerate(scores):
+        for index, score in enumerate(scores):
             values[index], lefts[index], rights[index] = score.to_triplet()
-            voting_rights[index] = 1. / n_scored_entities[username]
+            voting_rights[index] = 1. / n_scored_entities[score["username"]]
         return self.lipschitz, self.quantile, values, voting_rights, lefts, rights, self.error
     
     @property
@@ -70,7 +71,7 @@ class LipschitzQuantileShift(ParallelizedPollFunction):
     def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, user_models: UserModels) -> UserModels: # type: ignore
         translations = CommonTranslations(keynames=["criterion"])
         for criterion, translation in zip(variables, results):
-            translations[criterion] = Score(self.target_score - translation)
+            translations.set(Score(self.target_score - translation), criterion=criterion)
         return user_models.common_scale(translations=translations, note="lipschitz_quantile_shift")
 
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:

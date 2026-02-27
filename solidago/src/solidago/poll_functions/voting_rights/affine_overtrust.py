@@ -41,7 +41,7 @@ class AffineOvertrust(ParallelizedPollFunction):
             return ratings.filters(entity_name=entity.name).keys("criterion") \
                 | comparisons.filters(left_name=entity.name).keys("criterion") \
                 | comparisons.filters(right_name=entity.name).keys("criterion")
-        return [(entity, criterion) for entity in entities for criterion in get_criteria(entity)]
+        return [(entity, str(criterion)) for entity in entities for criterion in get_criteria(entity)]
     
     def _nonargs_list(self, # type: ignore
         variables: list[tuple[Entity, str]],
@@ -68,7 +68,7 @@ class AffineOvertrust(ParallelizedPollFunction):
         (entity, _), evaluators = variable, nonargs
         assert isinstance(evaluators, Users)
         trusts = np.array([user["trust"] for user in evaluators])
-        public = np.array([public_settings.get(username=user.name, entity_name=entity.name) for user in evaluators])
+        public = np.array([public_settings.get(username=user.name, entity_name=entity.name)["public"] for user in evaluators])
         privacy_weights = public * (1 - self.privacy_penalty) + self.privacy_penalty
         return trusts, privacy_weights, self.overtrust_ratio, self.min_overtrust
 

@@ -169,7 +169,9 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         """ Assumes that each rating context requires an additional variable, called `threshold`.
         This is the case for FlexibleGeneralizedBradleyTerry, but could require modifications for other
         preference learning algorithms """
-        directs = model.directs.filters(criterion=criterion, entity_name=list(entities.names())).value
+        directs = np.zeros(len(entities))
+        for entity_index, entity in enumerate(entities):
+            directs[entity_index] = model.directs.get(criterion=criterion, entity_name=entity.name).value
         thresholds = [
             user[f"rating_threshold_{context}_value"] if f"rating_threshold_{context}_value" in user else 0.0 
             for context in rating_contexts

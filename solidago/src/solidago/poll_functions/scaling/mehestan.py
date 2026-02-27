@@ -1,6 +1,5 @@
 import itertools
 from typing import Callable, Hashable
-from collections import defaultdict
 from numpy.typing import NDArray
 
 import numpy as np
@@ -118,7 +117,7 @@ class Mehestan(PollFunction):
         activities, is_scaler = self.compute_activities_and_scalers(users, public_settings, scores)
         if not any(is_scaler):
             logger.warning("  No user qualifies as a scaler. No scaling performed.")
-            return UserMultipliers(["username"]), UserTranslations(["username"]), activities, is_scaler
+            return UserMultipliers(keynames=["username"]), UserTranslations(keynames=["username"]), activities, is_scaler
         scalers, nonscalers = set(), set()
         for index, user in enumerate(users):
             (scalers if is_scaler[index] else nonscalers).add(user.name)
@@ -252,8 +251,8 @@ class Mehestan(PollFunction):
             return 0.0
         
         sum_of_activities = sum([
-            public_settings.penalty(self.privacy_penalty, entity_name)
-            for (entity_name,), score in scores if not score.contains(0)
+            public_settings.penalty(self.privacy_penalty, score["entity_name"])
+            for score in scores if not score.contains(0)
         ])
         
         return trust * sum_of_activities

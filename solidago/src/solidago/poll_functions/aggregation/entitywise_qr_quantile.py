@@ -31,7 +31,7 @@ class EntitywiseQrQuantile(EntityCriterionWise):
         if len(values) == 0:
             return np.nan, np.inf, np.inf
         kwargs = dict(lipschitz=lipschitz, error=error, voting_rights=vrights)
-        kwargs |= dict(values=values, left_uncertainties=lefts, right_uncertainties=rights)
+        kwargs |= dict(values=values, left_unc=lefts, right_unc=rights)
         quantile_score = qr_quantile(quantile=quantile, **kwargs) # type: ignore
         median = quantile_score if quantile == 0.5 else None
         uncertainty = qr_uncertainty(default_dev=1.0, median=median, **kwargs) # type: ignore

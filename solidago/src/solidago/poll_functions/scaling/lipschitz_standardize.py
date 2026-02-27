@@ -56,12 +56,13 @@ class LipschitzStandardize(ParallelizedPollFunction):
     ) -> tuple[float, NDArray[np.float64], float, NDArray[np.float64], NDArray[np.float64], NDArray[np.float64], float, float]:
         """ variable is criterion """
         scores = nonargs
-        n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") }
+        assert isinstance(scores, Scores)
+        n_scored_entities = { username: len(s) for (username,), s in scores.iter("username") } # type: ignore
         values, voting_rights = np.zeros(len(scores)), np.zeros(len(scores))
         lefts, rights = np.zeros(len(scores)), np.zeros(len(scores))
-        for index, ((username, _), score) in enumerate(scores):
+        for index, score in enumerate(scores):
             values[index], lefts[index], rights[index] = score.to_triplet()
-            voting_rights[index] = 1. / n_scored_entities[username]
+            voting_rights[index] = 1. / n_scored_entities[score["username"]]
         return self.lipschitz, values, self.dev_quantile, voting_rights, lefts, rights, self.default_dev, self.error
 
     @property
@@ -71,7 +72,7 @@ class LipschitzStandardize(ParallelizedPollFunction):
     def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, user_models: UserModels) -> UserModels: # type: ignore
         multipliers = CommonMultipliers(keynames=["criterion"])
         for criterion, std_dev in zip(variables, results):
-            multipliers[criterion] = Score(1./std_dev)
+            multipliers.set(Score(1./std_dev), criterion=criterion)
         return user_models.common_scale(multipliers=multipliers, note="lipschitz_standardardize")
     
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:

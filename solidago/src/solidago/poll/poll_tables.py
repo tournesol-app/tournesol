@@ -77,7 +77,7 @@ class Ratings(FilteredTable[Rating]):
 class Comparison(Row):
     default: dict[str, Any] = dict(
         value=np.nan, max=np.inf,
-        root_law="Normal", root_law_arg=1., 
+        root_law="Gaussian", root_law_arg=1., 
         context="undefined",
     )
 

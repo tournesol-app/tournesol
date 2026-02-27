@@ -47,5 +47,6 @@ class Negate(Compare):
         criterion: str,
     ) -> dict[str, Any]:
         kwargs = self.honest(comparison, user, left, right, left_public, right_public, criterion)
-        return dict(value=-kwargs["value"], max=kwargs["max"])
+        kwargs["value"] = - kwargs["value"]
+        return kwargs
         
