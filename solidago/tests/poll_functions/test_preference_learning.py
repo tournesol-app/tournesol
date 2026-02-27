@@ -2,11 +2,17 @@ import numpy as np
 import pytest
 
 from solidago import *
-from solidago.poll_functions.preference_learning import NumbaUniformGBT, LBFGSUniformGBT, FlexibleGeneralizedBradleyTerry
+from solidago.poll_functions.preference_learning import NumbaUniformGBT, FlexibleGeneralizedBradleyTerry
 from solidago.poll_functions.preference_learning.gbt.root_law import RootLaw, BradleyTerry, Uniform, Gaussian, Discrete
 
+try:
+    from solidago.poll_functions.preference_learning.lbfgs_generalized_bradley_terry import LBFGSUniformGBT
+    GBTs = [NumbaUniformGBT, LBFGSUniformGBT]
+except RuntimeError:
+    GBTs = [NumbaUniformGBT]
 
-@pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
+
+@pytest.mark.parametrize("GBT", GBTs)
 def test_gbt_score_zero(GBT):
     
     if GBT == LBFGSUniformGBT:
@@ -23,12 +29,8 @@ def test_gbt_score_zero(GBT):
     assert scores["entity_2"].to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
     assert scores["entity_3"].to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
         
-@pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
+@pytest.mark.parametrize("GBT", GBTs)
 def test_gbt_score_monotonicity(GBT):
-    
-    if GBT == LBFGSUniformGBT:
-        pytest.importorskip("torch")
-        
     entities = Entities(["entity_1", "entity_2", "entity_3"])
     comparisons = Comparisons(["entity_name", "other_name"])
     comparisons.set(left_name="entity_1", right_name="entity_2", value=5, max=10)
@@ -43,7 +45,7 @@ def test_gbt_score_monotonicity(GBT):
     assert scores.get(entity_name="entity_2").left_unc < scores.get(entity_name="entity_2").right_unc
 
 
-@pytest.mark.parametrize("GBT", [NumbaUniformGBT, LBFGSUniformGBT])
+@pytest.mark.parametrize("GBT", GBTs)
 def test_uniform_gbt(GBT):
     poll = Poll.load(f"tests/saved/0")
     _, _, fgbt_user_models = FlexibleGeneralizedBradleyTerry(discard_ratings=True).poll2objects_function(poll)
