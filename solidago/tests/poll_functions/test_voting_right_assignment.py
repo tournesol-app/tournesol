@@ -186,10 +186,10 @@ def test_min_voting_right_more_than_min_trust(n_random_users):
 
 def test_voting_rights_abstraction():
     voting_rights = VotingRights()
-    voting_rights.set(username="3", entity_name="46", criterion="default", value=0.4)
-    value = voting_rights.get(username="3", entity_name="46", criterion="default")["value"]
-    voting_rights.set(username="3", entity_name="46", criterion="default", value=2*value)
-    assert voting_rights.get(username="3", entity_name="46", criterion="default")["value"] == 0.8
+    voting_rights.set(username="3", entity_name="46", criterion="default", voting_right=0.4)
+    voting_right = voting_rights.get(username="3", entity_name="46", criterion="default")["voting_right"]
+    voting_rights.set(username="3", entity_name="46", criterion="default", voting_right=2*voting_right)
+    assert voting_rights.get(username="3", entity_name="46", criterion="default")["voting_right"] == 0.8
 
 
 def test_affine_overtrust():

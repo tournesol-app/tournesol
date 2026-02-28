@@ -69,7 +69,12 @@ class NamedObjects(Generic[Object]):
         _index2name: list[str] | None = None, 
         **kwargs: Any
     ):
-        self.df = args[0] if args and isinstance(args[0], pd.DataFrame) else pd.DataFrame(*args, **kwargs)
+        if args and isinstance(args[0], pd.DataFrame):
+            self.df = args[0]
+        elif args and isinstance(args[0], list) and all(isinstance(n, str) for n in args[0]):
+            self.df = pd.DataFrame(dict(name=args[0]))
+        else:
+            self.df = pd.DataFrame(*args, **kwargs)
         if not self.df.index.name == "name":
             if "name" in self.df.columns:
                 self.df = self.df.set_index("name")

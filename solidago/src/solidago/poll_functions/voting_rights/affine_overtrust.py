@@ -1,4 +1,5 @@
 from copy import deepcopy
+import itertools
 from numpy.typing import NDArray
 
 import numpy as np
@@ -106,9 +107,12 @@ class AffineOvertrust(ParallelizedPollFunction):
     ) -> tuple[Entities, VotingRights]:
         entities, voting_rights = deepcopy(entities), VotingRights()
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
+        criteria = {variable[1] for variable in variables}
+        for c, n in itertools.product(criteria, stat_names):
+            entities.set_column(f"{c}_{n}", np.nan)
         for (entity, criterion), evaluators, (vrights, statistics) in zip(variables, nonargs_list, results):
             for user, voting_right in zip(evaluators, vrights):
-                voting_rights.set(username=user.name, entity=entity.name, criterion=criterion, voting_right=voting_right)
+                voting_rights.append(username=user.name, entity=entity.name, criterion=criterion, voting_right=voting_right)
             for name, stat in zip(stat_names, statistics):
-                entity[f"{criterion}_{name}"] = stat
+                entities[entity.name][f"{criterion}_{name}"] = stat
         return entities, voting_rights

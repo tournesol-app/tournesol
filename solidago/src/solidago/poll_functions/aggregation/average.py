@@ -13,10 +13,10 @@ class Average(EntityCriterionWise):
         super().__init__(*args, **kwargs)
  
     def thread_function(self, 
-        vrights: NDArray, 
-        values: NDArray, 
-        lefts: NDArray, 
-        rights: NDArray
+        vrights: NDArray[np.float64], 
+        values: NDArray[np.float64], 
+        lefts: NDArray[np.float64], 
+        rights: NDArray[np.float64],
     ) -> tuple[float, float, float]:
         total_voting_rights = vrights.sum()
         if total_voting_rights == 0:

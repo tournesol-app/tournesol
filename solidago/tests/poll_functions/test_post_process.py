@@ -26,6 +26,7 @@ global_model = ScoringModel(
 )
 
 def test_squash():
-    post_user_models, post_global_model = Squash(score_max=100)(user_models, global_model)
-    assert post_user_models["user_0"](Entity("entity_1"), "default").value == pytest.approx(100/np.sqrt(2), 1e-3)
+    post_user_models, _ = Squash(score_max=100)(user_models, global_model)
+    score = post_user_models["user_0"](Entity("entity_1"), "default")
+    assert score.value == pytest.approx(100/np.sqrt(2), 1e-3)
 

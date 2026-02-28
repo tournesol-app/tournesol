@@ -29,15 +29,13 @@ class EntityCriterionWise(ParallelizedPollFunction):
     ) -> tuple[NDArray, NDArray, NDArray, NDArray]:
         assert isinstance(nonargs, Scores) and "username" in nonargs.keynames, nonargs
         (entity, criterion), scores = variable, nonargs
-        vrights, values, lefts, rights = list(), list(), list(), list()
+        vrights = list()
         for score in scores:
             assert isinstance(score, Score)
-            vrights.append(voting_rights.get(username=score["username"], entity_name=entity, criterion=criterion)["voting_right"])
-            values.append(score.value)
-            lefts.append(score.left_unc)
-            rights.append(score.right_unc)
-        return (np.array(vrights, dtype=np.float64), np.array(values, dtype=np.float64), 
-            np.array(lefts, dtype=np.float64), np.array(rights, dtype=np.float64))
+            kwargs = dict(username=score["username"], entity_name=entity.name, criterion=criterion)
+            vright = voting_rights.get(**kwargs)["voting_right"]
+            vrights.append(vright)
+        return np.array(vrights, dtype=np.float64), scores.values, scores.left_uncs, scores.right_uncs
 
     def _process_results(self,  # type: ignore
         variables: list[tuple[Entity, str]], 

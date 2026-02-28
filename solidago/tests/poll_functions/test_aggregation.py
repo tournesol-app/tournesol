@@ -18,10 +18,7 @@ user_models = UserModels(
         ("user_1", "entity_0", "default", -1.2, 1, .5),
         ("user_1", "entity_2", "default", -.3, .2, .1),
         ("user_1", "entity_3", "default", .4, .4, .3),
-    ], 
-        columns=["username", "entity_name", "criterion", "value", "left_unc", "right_unc"],
-        keynames=["username", "entity_name", "criterion"],
-    )
+    ], columns=["username", "entity_name", "criterion", "value", "left_unc", "right_unc"])
 )
 
 def test_average_simple_instance():
