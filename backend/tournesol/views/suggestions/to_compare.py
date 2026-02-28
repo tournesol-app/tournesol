@@ -5,7 +5,10 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy, WatchedEntitySuggestionStrategy
+from tournesol.lib.suggestions.strategies import (
+    ClassicEntitySuggestionStrategy,
+    WatchedEntitySuggestionStrategy,
+)
 from tournesol.serializers.suggestion import EntityToCompare
 from tournesol.utils.http import langs_from_header_accept_language
 from tournesol.views import PollScopedViewMixin
