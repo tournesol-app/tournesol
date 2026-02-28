@@ -14,8 +14,8 @@ class IdPool:
 
 class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
     """
-    A variation of the strategy `ClassicEntitySuggestionStrategy` suggests
-    in priority entities that have been watched/consumed/understood.
+    A variation of the strategy `ClassicEntitySuggestionStrategy` that
+    suggests in priority entities that have been watched/consumed/understood.
     """
 
     # The expected number of entities retrieved from each pool. The sum should
