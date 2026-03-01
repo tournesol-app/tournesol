@@ -27,6 +27,11 @@ class AffineOvertrust(ParallelizedPollFunction):
         ----------
         privacy_penalty: float
             Penalty on private entity evaluation
+        min_overtrust: float
+            Minimal overtrust assigned to nontrusted users, especially if they are very active
+        overtrust_ratio: float
+            Asymptotically, for many trusted and many more nontrusted voting users, 
+            overtrust_ratio is the ratio of the cumulated voting rights of nontrusted among all voting rights
         """
         super().__init__(*args, **kwargs)
         self.privacy_penalty = privacy_penalty
@@ -105,14 +110,14 @@ class AffineOvertrust(ParallelizedPollFunction):
         args_lists: list, # not used
         entities: Entities,
     ) -> tuple[Entities, VotingRights]:
-        entities, voting_rights = deepcopy(entities), VotingRights()
+        result_entities, voting_rights = deepcopy(entities), VotingRights()
         stat_names = ("cumulative_trust", "min_voting_right", "overtrust")
-        criteria = {variable[1] for variable in variables}
-        for c, n in itertools.product(criteria, stat_names):
-            entities.set_column(f"{c}_{n}", np.nan)
+        # criteria = {variable[1] for variable in variables}
+        # for c, n in itertools.product(criteria, stat_names):
+        #     result_entities.set_column(f"{c}_{n}", np.nan)
         for (entity, criterion), evaluators, (vrights, statistics) in zip(variables, nonargs_list, results):
             for user, voting_right in zip(evaluators, vrights):
-                voting_rights.append(username=user.name, entity=entity.name, criterion=criterion, voting_right=voting_right)
+                voting_rights.append(username=user.name, entity_name=entity.name, criterion=criterion, voting_right=voting_right)
             for name, stat in zip(stat_names, statistics):
-                entities[entity.name][f"{criterion}_{name}"] = stat
-        return entities, voting_rights
+                result_entities[entity.name, f"{criterion}_{name}"] = stat
+        return result_entities, voting_rights

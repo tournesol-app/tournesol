@@ -272,8 +272,6 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
     def _returned_model_composition(self) -> tuple[str, dict]:
         """ This assumes model linearity. It should be modified for non-linear models """
         base_scoring = "Linear"
-        if self.n_parameters == 0:
-            base_scoring = "MetaAndData" if self.categories else "Direct"
         return base_scoring, dict(note=type(self).__name__)
        
     ########################################

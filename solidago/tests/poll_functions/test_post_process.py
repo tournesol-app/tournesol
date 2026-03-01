@@ -1,9 +1,10 @@
+from copy import deepcopy
+
 import pytest
 import numpy as np
 
 from solidago import *
 from solidago.poll.scoring import *
-from solidago.poll_functions.post_process import Squash
 
 
 user_models = UserModels(
@@ -25,8 +26,24 @@ global_model = ScoringModel(
     ], columns=["entity_name", "criterion", "value", "left_unc", "right_unc"])
 )
 
+def test_step_by_step_squash():
+    """ criteria is not used """
+    scores = user_models()
+    assert isinstance(scores, Scores), scores 
+    squashed_scores = deepcopy(scores)
+    squash = poll_functions.SquashProcessing(max=100)
+    value, min, max = squash.squash(scores.value), squash.squash(scores.min), squash.squash(scores.max)
+    left_unc, right_unc = value - min, max - value
+    squashed_scores.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
+    assert all(np.isfinite(v) for v in squashed_scores.value)
+    assert all(-100 <= v and v <= 100 for v in squashed_scores.value)
+    assert all(np.isfinite(l) for l in squashed_scores.left_unc)
+    assert all(-100 <= m and m <= 100 for m in squashed_scores.value - squashed_scores.left_unc)
+    assert all(np.isfinite(r) for r in squashed_scores.right_unc)
+    assert all(-100 <= m and m <= 100 for m in squashed_scores.value + squashed_scores.right_unc)
+
 def test_squash():
-    post_user_models, _ = Squash(score_max=100)(user_models, global_model)
+    post_user_models, _ = poll_functions.Squash(score_max=100)(user_models, global_model)
     score = post_user_models["user_0"](Entity("entity_1"), "default")
     assert score.value == pytest.approx(100/np.sqrt(2), 1e-3)
 

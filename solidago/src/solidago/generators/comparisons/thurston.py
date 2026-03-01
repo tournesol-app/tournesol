@@ -32,8 +32,8 @@ class Thurston(Compare):
         return dict(
             value=self.sample_comparison(score_diff),
             max=self.comparison_max,
-            root_law=self.root_law_name,
-            root_law_arg=self.root_law_arg,
+            generation_root_law=self.root_law_name,
+            generation_root_law_arg=self.root_law_arg,
         )
     
     @abstractmethod

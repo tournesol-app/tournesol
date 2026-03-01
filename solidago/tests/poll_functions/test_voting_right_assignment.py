@@ -2,10 +2,9 @@ import pytest
 import numpy as np
 
 from solidago import *
-from solidago.poll_functions.voting_rights import AffineOvertrust
 
 
-ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=2)
+ao = poll_functions.AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=1)
 
 def test_empty_input():
     np.testing.assert_array_equal(
@@ -85,7 +84,6 @@ def test_untrusted_get_partial_voting_right(n_trusted, n_non_trusted):
         [expected_partial_right] * n_non_trusted + [1] * n_trusted,
     )
 
-
 @pytest.mark.parametrize(
     "n_random_users",
     [
@@ -106,7 +104,6 @@ def test_random_input_voting_right_more_than_trust_score(n_random_users):
         ao.min_overtrust,
     )[0]
     assert all(v >= t for v, t in zip(voting_rights, trust_scores))
-
 
 @pytest.mark.parametrize(
     "n_random_users",
@@ -132,7 +129,6 @@ def test_total_over_trust_less_than_expected(n_random_users):
     assert total_over_trust < expected_over_trust or np.isclose(
         total_over_trust, expected_over_trust
     )
-
 
 @pytest.mark.parametrize(
     "n_random_users",
@@ -160,7 +156,6 @@ def test_total_over_trust_less_than_expected_with_random_penalizations(n_random_
         total_over_trust, expected_over_trust
     )
 
-
 @pytest.mark.parametrize(
     "n_random_users",
     [
@@ -183,14 +178,12 @@ def test_min_voting_right_more_than_min_trust(n_random_users):
     min_trust_score = trust_scores.min()
     assert min_voting_right > min_trust_score
 
-
 def test_voting_rights_abstraction():
     voting_rights = VotingRights()
     voting_rights.set(username="3", entity_name="46", criterion="default", voting_right=0.4)
     voting_right = voting_rights.get(username="3", entity_name="46", criterion="default")["voting_right"]
     voting_rights.set(username="3", entity_name="46", criterion="default", voting_right=2*voting_right)
     assert voting_rights.get(username="3", entity_name="46", criterion="default")["voting_right"] == 0.8
-
 
 def test_affine_overtrust():
     users = Users([str(i) for i in range(5)])
@@ -214,14 +207,14 @@ def test_affine_overtrust():
     comparisons.set(username="1", criterion="default", left_name="1", right_name="5", value=1)
     comparisons.set(username="2", criterion="default", left_name="0", right_name="1", value=5)
     
-    ao = AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=2)
-    entities, voting_rights = ao(users, entities, public_settings, ratings, comparisons)
+    ao = poll_functions.AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=1)
+    result_entities, voting_rights = ao(users, entities, public_settings, ratings, comparisons)
 
-    assert isinstance(entities, Entities)
+    assert isinstance(result_entities, Entities)
     assert isinstance(voting_rights, VotingRights)
 
-    assert len(entities) == 6  # 6 entities
-    assert list(entities.df.columns) == [
+    assert len(result_entities) == 6  # 6 entities
+    assert list(result_entities.df.columns) == [
         'default_cumulative_trust', 
         'default_min_voting_right', 
         'default_overtrust'
@@ -229,5 +222,3 @@ def test_affine_overtrust():
 
     # Voting rights are assigned only on entities where evaluations have been made.
     assert voting_rights.keys("entity_name") == {"0", "1", "3", "5"}
-
-

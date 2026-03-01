@@ -8,7 +8,7 @@ from solidago.poll import *
 
 class Compare:
     @abstractmethod
-    def sample_value(self, 
+    def __call__(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
         left_public: bool, right_public: bool, 

@@ -348,7 +348,7 @@ class Mehestan(PollFunction):
             filtered_scores = full_scores.filters(scalee_name=scalee_name, scaler_name=scaler_name)
             kwargs = common_kwargs | dict(
                 values=filtered_scores.value,
-                voting_rights=filtered_weights.get_column("voting_right", dtype=np.float64),
+                voting_rights=filtered_weights.get_column("voting_right").to_numpy(np.float64),
                 left_unc=filtered_scores.left_unc,
                 right_unc=filtered_scores.right_unc,
             )
@@ -389,7 +389,7 @@ class Mehestan(PollFunction):
         """
         kwargs = dict(
             lipschitz=lipschitz, 
-            voting_rights=voting_rights.get_column("voting_right", np.float64),
+            voting_rights=voting_rights.get_column("voting_right").to_numpy(np.float64),
             values=scores.value,
             left_unc=scores.left_unc,
             right_unc=scores.right_unc,

@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 from solidago import *
-from solidago.poll_functions.preference_learning.generalized_bradley_terry import GeneralizedBradleyTerry
 from solidago.poll_functions.preference_learning import NumbaUniformGBT, FlexibleGeneralizedBradleyTerry
 from solidago.poll_functions.preference_learning.gbt.root_law import RootLaw, BradleyTerry, Uniform, Gaussian, Discrete
 
@@ -21,15 +20,16 @@ def test_gbt_score_zero(GBT):
     comparisons.set(left_name="entity_1", right_name="entity_3", value=0, max=10)
     
     scores = GBT(max_workers=2).user_learn_criterion(entities, comparisons)
+    assert isinstance(scores, Scores)
     
-    assert scores["entity_1"].to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
-    assert scores["entity_2"].to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
-    assert scores["entity_3"].to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
+    assert scores.get(entity_name="entity_1").to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
+    assert scores.get(entity_name="entity_2").to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
+    assert scores.get(entity_name="entity_3").to_triplet() == pytest.approx((0, 2.7, 2.7), abs=0.1)
         
 @pytest.mark.parametrize("GBT", GBTs)
 def test_gbt_score_monotonicity(GBT):
     entities = Entities(["entity_1", "entity_2", "entity_3"])
-    comparisons = Comparisons(["entity_name", "other_name"])
+    comparisons = Comparisons()
     comparisons.set(left_name="entity_1", right_name="entity_2", value=5, max=10)
     comparisons.set(left_name="entity_1", right_name="entity_3", value=2, max=10)
     
@@ -44,9 +44,17 @@ def test_gbt_score_monotonicity(GBT):
 
 @pytest.mark.parametrize("GBT", GBTs)
 def test_uniform_gbt(GBT):
-    poll = Poll.load(f"tests/saved/0")
-    _, _, fgbt_user_models = FlexibleGeneralizedBradleyTerry(discard_ratings=True).poll2objects_function(poll)
-    _, _, gbt_user_models = GBT().poll2objects_function(poll)
+    generator = load("tests/generators/test_generator.yaml")
+    assert isinstance(generator, Generator)
+    generator.seed = 0
+    poll = generator()
+
+    fgbt_user_models = FlexibleGeneralizedBradleyTerry(
+        discard_ratings=True, 
+        rating_root_law=("Gaussian", dict(std=1.0)), 
+        comparison_root_law=("Uniform", dict()),
+    ).poll2objects_function(poll)
+    gbt_user_models = GBT().poll2objects_function(poll)
     for user in poll.users:
         for entity in poll.entities:
             for criterion in poll.criteria():
@@ -81,7 +89,7 @@ def test_numba():
     _, criterion = poll.users["user_4"], "default"
     init_model = ScoringModel()
     comparisons = poll.comparisons.filters(criterion=criterion)
-    entities = poll.entities[list(comparisons.keys("entity_name"))]
+    entities = poll.entities[list(comparisons.keys("left_name") | comparisons.keys("right_name"))]
     assert "entity_4" in entities
     assert isinstance(entities, Entities)
     init = init_model(entities, criterion)
@@ -93,7 +101,7 @@ def test_numba():
     assert np.isfinite(rights[entities.name2index("entity_4")]), values[entities.name2index("entity_4")]
 
 
-def test_flexible():    
+def test_flexible():
     generator = load("tests/generators/test_generator.yaml")
     assert isinstance(generator, Generator)
     generator.seed = 0
@@ -105,6 +113,7 @@ def test_flexible():
         n_parameters=n_parameters,
         categories=categories,
         rating_root_law=("Gaussian", dict(std=1.0)),
+        comparison_root_law=("Uniform", dict()),
     )
     user, criterion = poll.users["user_0"], "default"
     assert isinstance(user, User)
@@ -178,10 +187,6 @@ def test_flexible():
         embedding -= embedding_matrix[right]
     gradient[parameters_offset:] += diff_derivative * embedding
 
-    fgbt_users, fgbt_entities, fgbt_user_models = fgbt.poll2objects_function(poll)
-    assert len(fgbt_users) == len(poll.users)
-    assert "rating_threshold_undefined_value" in fgbt_users["user_0"]
-    assert len(fgbt_entities) == len(poll.entities)
-    assert "n_raters" in fgbt_entities["entity_1"]
+    fgbt_user_models = fgbt.poll2objects_function(poll)
     assert "user_2" in fgbt_user_models.user_directs.keys("username")
     assert not user_models.user_categories.get(username="user_1", category="author", group="Science4All", criterion="default").isnan()

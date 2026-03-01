@@ -9,6 +9,9 @@ from solidago.poll import *
 
 
 class RootLaw:
+    def __init__(self, *args, **kwargs):
+        pass
+
     def normalize_rating(self, rating: Rating) -> float:
         return float(rating["value"])
     

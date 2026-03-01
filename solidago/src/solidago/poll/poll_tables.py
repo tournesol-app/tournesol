@@ -60,7 +60,7 @@ class PublicSettings(FilteredTable[PublicSetting]):
 class Rating(Row):
     default: dict[str, Any] = dict(
         value=np.nan, min=-np.inf, max=np.inf,
-        root_law=None, root_law_arg=(), 
+        root_law=None, root_law_arg=None, 
         context="undefined",
     )
 
@@ -77,7 +77,7 @@ class Ratings(FilteredTable[Rating]):
 class Comparison(Row):
     default: dict[str, Any] = dict(
         value=np.nan, max=np.inf,
-        root_law="Gaussian", root_law_arg=1., 
+        root_law=None, root_law_arg=None, 
         context="undefined",
     )
 
@@ -96,12 +96,12 @@ class Comparisons(FilteredTable[Comparison]):
         for entity in entities:
             as_left = self.filters(left_name=entity.name)
             as_left_other_indices = [entities.name2index(right_name) for right_name in as_left.get_column("right_name")]
-            as_left_values = as_left.get_column("value", np.float64)
-            as_left_maxs = as_left.get_column("max", np.float64)
+            as_left_values = as_left.get_column("value").to_numpy(np.float64)
+            as_left_maxs = as_left.get_column("max").to_numpy(np.float64)
             as_right = self.filters(right_name=entity.name)
             as_right_other_indices = [entities.name2index(left_name) for left_name in as_right.get_column("left_name")]
-            as_right_values = - as_right.get_column("value", np.float64)
-            as_right_maxs = as_right.get_column("max", np.float64)
+            as_right_values = - as_right.get_column("value").to_numpy(np.float64)
+            as_right_maxs = as_right.get_column("max").to_numpy(np.float64)
             other_indices = np.array(as_left_other_indices + as_right_other_indices, dtype=np.int64)
             comparison_values = np.concatenate([as_left_values, as_right_values], dtype=np.float64)
             comparison_maxs = np.concatenate([as_left_maxs, as_right_maxs], dtype=np.float64)

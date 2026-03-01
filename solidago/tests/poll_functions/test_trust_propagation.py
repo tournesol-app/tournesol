@@ -4,6 +4,22 @@ from solidago import *
 from solidago.poll_functions.trust_propagation import LipschiTrust, TrustAll
 
 
+def test_lipschitrust_main():
+    import numpy as np
+    bys = np.array([0, 0, 2, 3], dtype=np.int64)
+    tos = np.array([1, 2, 3, 4], dtype=np.int64)
+    weights = np.array([1, 1, 1, 1], dtype=np.float64)
+    pretrusts = np.array([.8, .8, 0, 0, .8], dtype=np.float64)
+    sink_vouch = 5.
+    decay = .7
+    error = 1e-8
+
+    trusts = LipschiTrust.main(bys, tos, weights, pretrusts, sink_vouch, decay, error)
+    assert trusts[0] == 0.8
+    assert trusts[4] > 0
+    assert trusts[2] == pytest.approx(0.8 * 0.7 / (5 + 2)), trusts
+
+
 def test_lipschitrust_simple():
     users0 = Users(dict(name=["0", "1", "2", "3", "4"]))
     users0 = users0.assign(pretrust=[True, True, False, False, False])
@@ -16,7 +32,7 @@ def test_lipschitrust_simple():
     users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)(users0, vouches)
     assert users[0]["trust"] == 0.8
     assert users[4]["trust"] > 0 # type: ignore
-    assert users[2]["trust"] == pytest.approx(0.8 * 0.8 / 2), users
+    assert users[2]["trust"] == pytest.approx(0.8 * 0.8 / (5 + 2)), users
 
 
 def test_lipschitrust_ten_users():

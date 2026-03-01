@@ -1,6 +1,6 @@
 - Sequential
 - name: TestPipeline
-  modules:
+  subfunctions:
   - - LipschiTrust
     - pretrust_value: 0.8
       decay: 0.8

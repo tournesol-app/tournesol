@@ -239,9 +239,9 @@ class _Table:
     
     def __or__(self, other: Self) -> "_Table":
         """ Filtered table points to the same column names and dtypes as self """
-        if self.df.empty:
+        if len(self.df) == 0:
             return other
-        elif other.df.empty:
+        elif len(other.df) == 0:
             return self
         assert set(other.df.columns) == set(self.df.columns), (other.df.columns, self.df.columns)
         other_df = deepcopy(other.df)
@@ -291,6 +291,7 @@ class _Table:
     ):
         if dtype:
             self.df.dtypes[column_name] = dtype
+        assert isinstance(column_name, str), column_name
         self.df[column_name] = values # type: ignore
         if column_name in self._cache.keynames():
             self._cache.cache(column_name, self, force=True)
@@ -515,7 +516,7 @@ class FilteredTable(Generic[TableRow]):
         return self.filter.must_be_filtered_out(row)
 
     def __bool__(self) -> bool:
-        return len(self.filter.indices) > 0 if self.filter.indices is not None else not self.table.df.empty
+        return len(self.filter.indices) > 0 if self.filter.indices is not None else len(self.table.df) > 0
 
     def __len__(self) -> int:
         return len(self.filter.indices) if self.filter.indices is not None else len(self.table)
@@ -528,19 +529,24 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
 
-    def get_column(self, column_name: str, dtype: DTypeLike | None = None) -> pd.Series | NDArray:
+    def get_column(self, column_name: str) -> pd.Series:
         if self.filter.indices is not None:
             series = self.table.df.loc[self.filter.indices][column_name]
         else:
             series = self.table.df[column_name]
-        return series if dtype is None else series.astype(dtype).to_numpy() # type: ignore
+        return series
 
     def set_columns(self, 
         dtypes: dict[str, type] | None = None, 
         **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
     ):
         """ Modifies table. This does not affect filters. """
-        self.table.set_columns(dtypes, **values)
+        if self.filter.indices is None:
+            self.table.set_columns(dtypes, **values)
+        else:
+            for column, column_values in values.items():
+                column_index = self.table.df.columns.get_loc(column)
+                self.table.df.iloc[self.filter.indices, column_index] = column_values # type: ignore
 
     def add_columns(self, 
         dtypes: dict[str, type] | None = None, 
@@ -784,7 +790,7 @@ class FilteredTable(Generic[TableRow]):
     
     def __repr__(self, show_cache: bool = False) -> str:
         r = f"{self.name} ({len(self)} rows)\n"
-        if not r:
+        if not self:
             return r + "empty table (no row)\n"
         r += f"{repr(self.filter)}\n"
         if show_cache:

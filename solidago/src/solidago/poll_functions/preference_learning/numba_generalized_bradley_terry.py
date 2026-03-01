@@ -92,15 +92,11 @@ class NumbaCoordinateDescentGBT(GeneralizedBradleyTerry):
         
         entity_comparisons = comparisons.entity_comparisons(entities)
 
-        def f(entity_index: int, values: np.ndarray) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+        def f(entity_index: int, values: NDArray[np.float64]) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
             """ Returns compared_values and normalized_comparisons against compared entities """
-            other_indices, comparison_values, comparison_maxs = entity_comparisons[entity_index]
-            normalized_comparisons = np.where(
-                np.isfinite(comparison_maxs), 
-                comparison_values / comparison_maxs, 
-                comparison_values
-            )
-            return values[other_indices], normalized_comparisons[entity_index]
+            other_indices, comparison_values, maxs = entity_comparisons[entity_index]
+            normalized_comparisons = np.where(np.isfinite(maxs), comparison_values / maxs, comparison_values)
+            return values[other_indices], normalized_comparisons
             
         return f
 

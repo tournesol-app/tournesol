@@ -117,7 +117,9 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         init_model = ScoringModel() if init_model is None else init_model
         model = ScoringModel(note=type(self).__name__)
         for criterion in comparisons.keys("criterion"):
-            criterion_entities = entities[list(comparisons.filters(criterion=criterion).keys("entity_name"))]
+            evaluated_entity_names = comparisons.filters(criterion=criterion).keys("left_name") \
+                | comparisons.filters(criterion=criterion).keys("right_name")
+            criterion_entities = entities[list(evaluated_entity_names)]
             assert isinstance(criterion_entities, Entities)
             if len(criterion_entities) <= 1:
                 continue

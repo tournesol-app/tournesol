@@ -1,7 +1,6 @@
 import pytest
 from solidago import *
-from solidago.poll_functions import Average, EntitywiseQrQuantile
-from solidago.poll.scoring.user_models import UserDirectScores
+from solidago.poll.scoring import *
 
 entities = Entities(["entity_0", "entity_1", "entity_2", "entity_3"])
 voting_rights = VotingRights()
@@ -21,18 +20,22 @@ user_models = UserModels(
     ], columns=["username", "entity_name", "criterion", "value", "left_unc", "right_unc"])
 )
 
+def test_step_by_step_average():
+    average = poll_functions.Average(max_workers=1)
+    kwargs, variables, nonargs_lists, args_lists = average.precompute(entities, voting_rights, user_models)
+
 def test_average_simple_instance():
-    global_model = Average(max_workers=1)(entities, voting_rights, user_models)
+    global_model = poll_functions.Average(max_workers=1)(entities, voting_rights, user_models)
     assert global_model(entities["entity_0"], "default").value == 0.4
     assert global_model(entities["entity_1"]).get(criterion="default").value == 1
     assert global_model(entities["entity_2"]).get(criterion="default").value == -.3
     assert global_model(entities["entity_3"], "default").to_triplet() == pytest.approx((0.3, .4, .3), abs=1e-2)
 
 def test_qr_quantile_simple_instance():
-    aggregator = EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=1)
+    aggregator = poll_functions.EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=1)
     global_model = aggregator(entities, voting_rights, user_models)
-    assert global_model("entity_0", "default").value < -1
-    assert global_model("entity_1", "default").value == pytest.approx(1., abs=1e-2)
-    assert global_model("entity_2", "default").value == pytest.approx(-.3, abs=1e-2)
-    assert global_model("entity_3", "default").value > 0.2
+    assert global_model(entities["entity_0"], "default").value < -1
+    assert global_model(entities["entity_1"], "default").value == pytest.approx(1., abs=1e-2)
+    assert global_model(entities["entity_2"], "default").value == pytest.approx(-.3, abs=1e-2)
+    assert global_model(entities["entity_3"], "default").value > 0.2
 

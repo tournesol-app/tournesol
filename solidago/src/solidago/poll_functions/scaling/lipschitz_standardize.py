@@ -44,10 +44,7 @@ class LipschitzStandardize(ParallelizedPollFunction):
         entities: Entities,
         user_models: UserModels,
     ) -> list[Scores]:
-        scores = user_models(
-            entities,
-            n_sampled_entities_per_user=self.n_sampled_entities_per_user,
-        )
+        scores = user_models(entities, None, self.n_sampled_entities_per_user)
         return [scores.filters(criterion=criterion) for criterion in variables]
     
     def _args(self,  # type: ignore

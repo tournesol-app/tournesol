@@ -90,7 +90,15 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
         entity_indices = [entities.name2index(r["entity_name"]) for r in ratings]
         import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        root_laws = [solidago.load(r["root_law"] or self.rating_root_law, root_law_module, r["root_law_arg"]) for r in ratings]
+        root_laws: list[RootLaw] = list()
+        for r in ratings:
+            if not "root_law" in r or r["root_law"] is None:
+                assert self.rating_root_law is not None
+                root_laws.append(self.rating_root_law)
+            else:
+                arg = () if r["root_law_arg"] is None else r["root_law_arg"]
+                arg = arg if isinstance(arg, tuple) else (arg,)
+                root_laws.append(solidago.load(r["root_law"], root_law_module, *arg))
         normalized_ratings = [root_law.normalize_rating(r) for r, root_law in zip(ratings, root_laws)]
         context_indices = [len(entities) + rating_contexts.index(r["context"]) for r in ratings]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
@@ -111,7 +119,15 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         lefts = [entities.name2index(c["left_name"]) for c in comparisons]
         rights = [entities.name2index(c["right_name"]) for c in comparisons]
         import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        root_laws = [solidago.load(c["root_law"] or self.comparison_root_law, root_law_module, c["root_law_arg"]) for c in comparisons]
+        root_laws: list[RootLaw] = list()
+        for c in comparisons:
+            if not "root_law" in c or c["root_law"] is None:
+                assert self.comparison_root_law is not None
+                root_laws.append(self.comparison_root_law)
+            else:
+                arg = () if c["root_law_arg"] is None else c["root_law_arg"]
+                arg = arg if isinstance(arg, tuple) else (arg,)
+                root_laws.append(solidago.load(c["root_law"], root_law_module, *arg))
         normalized_comparisons = [r.normalize_comparison(c) for c, r in zip(comparisons, root_laws)]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
         root_law_args = list()

@@ -149,6 +149,9 @@ class NamedObjects(Generic[Object]):
             return self.row2object(rows)
         return type(self)(rows)
     
+    def __setitem__(self, key: tuple[str, str], value: Any):
+        self.df.loc[key[0], key[1]] = value
+    
     def sample(self, n_items: int | None = None) -> Self:
         if n_items is None or len(self) < n_items:
             return deepcopy(self)

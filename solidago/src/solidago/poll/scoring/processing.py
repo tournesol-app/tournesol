@@ -9,9 +9,15 @@ from solidago.poll.scoring.model import Multipliers, Translations
     
     
 class ScoreProcessing:
-    def __init__(self, multipliers: Multipliers, translations: Translations, note: str | None = None):
+    def __init__(self, 
+        multipliers: Multipliers | None = None, 
+        translations: Translations | None = None, 
+        note: str | None = None
+    ):
+        multipliers = Multipliers(keynames=["criterion"]) if multipliers is None else multipliers
         assert isinstance(multipliers, Multipliers), (multipliers, type(multipliers))
         assert multipliers.keynames == {"criterion"}, multipliers.keynames
+        translations = Translations(keynames=["criterion"]) if translations is None else translations
         assert isinstance(translations, Translations), (translations, type(multipliers))
         assert translations.keynames == {"criterion"}, translations.keynames
         self.multipliers, self.translations = multipliers, translations
@@ -35,7 +41,11 @@ class ScoreProcessing:
 
 
 class ScaleProcessing(ScoreProcessing):
-    def __init__(self, multipliers: Multipliers, translations: Translations, note: str | None = None):
+    def __init__(self, 
+        multipliers: Multipliers | None = None, 
+        translations: Translations | None = None, 
+        note: str | None = None
+    ):
         super().__init__(multipliers, translations, note)
 
     def __call__(self, criteria: set[str], scores: Scores) -> Scores:
@@ -50,7 +60,12 @@ class ScaleProcessing(ScoreProcessing):
 
 
 class SquashProcessing(ScoreProcessing):
-    def __init__(self, multipliers: Multipliers, translations: Translations, max: float, note: str | None = None):
+    def __init__(self, 
+        multipliers: Multipliers | None = None, 
+        translations: Translations | None = None, 
+        max: float = 100,
+        note: str | None = None
+    ):
         super().__init__(multipliers, translations, note)
         assert max > 0, max
         self.max = max
@@ -69,3 +84,6 @@ class SquashProcessing(ScoreProcessing):
     
     def squash(self, x: NDArray[np.float64]) -> NDArray[np.float64]:
         return self.max * x / np.sqrt(1 + x**2)
+    
+    def __repr__(self):
+        return f"{type(self).__name__} (max={self.max})"

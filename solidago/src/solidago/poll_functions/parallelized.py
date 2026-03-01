@@ -19,18 +19,33 @@ class ParallelizedPollFunction(PollFunction):
         
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         with time(f"{type(self).__name__} - Loading data", logger):
-            kwargs |= {Poll.key_by_type(arg): arg for arg in args}
-            kwargs |= self._process_kwargs(**self._extract(kwargs, "_process_kwargs"))
-            variables = self._variables(**self._extract(kwargs, "_variables"))
-            nonargs_kwargs = self._extract(kwargs, "_nonargs") | self._extract(kwargs, "_nonargs_list")
-            nonargs_list = self._nonargs_list(variables, **nonargs_kwargs)
-            args_lists_kwargs = self._extract(kwargs, "_args_lists") | self._extract(kwargs, "_args")
-            args_lists = self._args_lists(variables, nonargs_list, **args_lists_kwargs)
+            kwargs, variables, nonargs_list, args_lists = self.precompute(*args, **kwargs)
         with time(f"{type(self).__name__} - Parallelized computing", logger):
             results = ParallelizedPollFunction.threading(self.max_workers, self.thread_function, *args_lists)
         with time(f"{type(self).__name__} - Processing results", logger):
             process_kwargs = self._extract(kwargs, "_process_results")
             return self._process_results(variables, nonargs_list, results, args_lists, **process_kwargs)
+        
+    def precompute(self, *args: Any, **kwargs: Any) -> tuple[
+        dict[str, Any], # kwargs
+        list[Any], # variables
+        list[Any], # nonargs_lists
+        list[Any], # args_lists
+    ]: 
+        kwargs |= {Poll.key_by_type(arg): arg for arg in args}
+        kwargs |= self._process_kwargs(**self._extract(kwargs, "_process_kwargs"))
+        variables = self._variables(**self._extract(kwargs, "_variables"))
+        nonargs_kwargs = self._extract(kwargs, "_nonargs") | self._extract(kwargs, "_nonargs_list")
+        nonargs_list = self._nonargs_list(variables, **nonargs_kwargs)
+        args_lists_kwargs = self._extract(kwargs, "_args_lists") | self._extract(kwargs, "_args")
+        args_lists = self._args_lists(variables, nonargs_list, **args_lists_kwargs)
+        return kwargs, variables, nonargs_list, args_lists
+    
+    def _precompute_args_lists(self, *args, **kwargs) -> list[Any]:
+        return self.precompute(*args, **kwargs)[3]
+    
+    def _first_args(self, *args, **kwargs) -> list[Any]:
+        return self.precompute(*args, **kwargs)[3]
 
     def _get_max_workers(self):
         return 1 if self.block_parallelization else self.max_workers
