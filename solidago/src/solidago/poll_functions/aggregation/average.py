@@ -15,13 +15,15 @@ class Average(EntityCriterionWise):
     def thread_function(self, 
         vrights: NDArray[np.float64], 
         values: NDArray[np.float64], 
-        lefts: NDArray[np.float64], 
-        rights: NDArray[np.float64],
+        left_uncs: NDArray[np.float64], 
+        right_uncs: NDArray[np.float64],
     ) -> tuple[float, float, float]:
+        assert len(vrights) == len(values) == len(left_uncs) == len(right_uncs)
+        print((vrights, values, left_uncs, right_uncs))
         total_voting_rights = vrights.sum()
         if total_voting_rights == 0:
             return np.nan, np.inf, np.inf
         value = (values * vrights).sum() / total_voting_rights
-        left = (lefts * vrights).sum() / total_voting_rights
-        right = (rights * vrights).sum() / total_voting_rights
-        return value, left, right
+        left_unc = (left_uncs * vrights).sum() / total_voting_rights
+        right_unc = (right_uncs * vrights).sum() / total_voting_rights
+        return value, left_unc, right_unc

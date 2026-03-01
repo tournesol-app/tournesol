@@ -565,14 +565,14 @@ class FilteredTable(Generic[TableRow]):
     ):
         """ Modifies table. This does not affect filters. """
         self.set_columns(dtypes, **values)
-        self.keynames.add(*values)
+        self.keynames.update(values)
 
     def add_keys(self, 
         dtypes: dict[str, type] | None = None, 
         **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
     ) -> Self:
         result = self.add_columns(dtypes, **values)
-        result.keynames.add(*values)
+        result.keynames.update(values)
         return result
     
     def drop_column(self, *columns: str) -> Self:

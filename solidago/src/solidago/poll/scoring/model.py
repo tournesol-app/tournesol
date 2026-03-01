@@ -156,10 +156,10 @@ class ScoringModel:
     ) -> Entities:
         if isinstance(entity, Entity):
             return Entities([entity.series])
-        evaluated_entity_names = list(self.evaluated_entity_names(criteria))
+        evaluated_entity_names = self.evaluated_entity_names(criteria)
         if entity is None:
-            return Entities(dict(name=evaluated_entity_names))
-        entities = entity[evaluated_entity_names]
+            return Entities(list(evaluated_entity_names))
+        entities = entity[list(evaluated_entity_names & set(entity.names()))]
         assert isinstance(entities, Entities)
         return entities.sample(n_sampled_entities)
 

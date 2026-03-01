@@ -121,20 +121,24 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
         root_laws: list[RootLaw] = list()
         for c in comparisons:
-            if not "root_law" in c or c["root_law"] is None:
+            if "root_law" not in c or c["root_law"] is None or np.isnan(c["root_law"]):
                 assert self.comparison_root_law is not None
+                assert isinstance(self.comparison_root_law, RootLaw), self.comparison_root_law
                 root_laws.append(self.comparison_root_law)
             else:
                 arg = () if c["root_law_arg"] is None else c["root_law_arg"]
                 arg = arg if isinstance(arg, tuple) else (arg,)
-                root_laws.append(solidago.load(c["root_law"], root_law_module, *arg))
+                root_law = solidago.load(c["root_law"], root_law_module, *arg)
+                assert isinstance(root_law, RootLaw), root_law
+                root_laws.append(root_law)
+        assert all(isinstance(r, RootLaw) for r in root_laws)
         normalized_comparisons = [r.normalize_comparison(c) for c, r in zip(comparisons, root_laws)]
         root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
         root_law_args = list()
         for c in comparisons:
             if c["root_law_arg"] is None:
-                assert self.rating_root_law is not None
-                root_law_arg = self.rating_root_law.get_arg()
+                assert self.comparison_root_law is not None
+                root_law_arg = self.comparison_root_law.get_arg()
             else:
                 root_law_arg = c["root_law_arg"]
             root_law_args.append(root_law_arg)

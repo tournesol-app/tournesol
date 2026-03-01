@@ -6,6 +6,7 @@ entities = Entities(["entity_0", "entity_1", "entity_2", "entity_3"])
 voting_rights = VotingRights()
 voting_rights.set(username="user_0", entity_name="entity_0", criterion="default", voting_right=1)
 voting_rights.set(username="user_0", entity_name="entity_1", criterion="default", voting_right=1)
+voting_rights.set(username="user_0", entity_name="entity_3", criterion="default", voting_right=1)
 voting_rights.set(username="user_1", entity_name="entity_0", criterion="default", voting_right=1)
 voting_rights.set(username="user_1", entity_name="entity_2", criterion="default", voting_right=1)
 voting_rights.set(username="user_1", entity_name="entity_3", criterion="default", voting_right=1)
@@ -19,10 +20,6 @@ user_models = UserModels(
         ("user_1", "entity_3", "default", .4, .4, .3),
     ], columns=["username", "entity_name", "criterion", "value", "left_unc", "right_unc"])
 )
-
-def test_step_by_step_average():
-    average = poll_functions.Average(max_workers=1)
-    kwargs, variables, nonargs_lists, args_lists = average.precompute(entities, voting_rights, user_models)
 
 def test_average_simple_instance():
     global_model = poll_functions.Average(max_workers=1)(entities, voting_rights, user_models)

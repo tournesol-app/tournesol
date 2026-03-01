@@ -75,9 +75,9 @@ class TournesolExport(Poll):
         comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
         comparisons["context"] = "tournesol"
                 
-        entities = DataFrame({ "name": list(
-            set(global_scores["entity_name"]) | set(comparisons["left_name"]) | set(comparisons["right_name"])
-        ) })
+        entity_names = set(global_scores["entity_name"]) | set(user_scores["entity_name"]) \
+            | set(comparisons["left_name"]) | set(comparisons["right_name"])
+        entities = DataFrame(dict(name=list(entity_names)))
         voting_rights = user_scores[["username", "entity_name", "criterion", "voting_right"]]
         
         return dict(users=users, vouches=vouches, entities=entities, comparisons= comparisons, 

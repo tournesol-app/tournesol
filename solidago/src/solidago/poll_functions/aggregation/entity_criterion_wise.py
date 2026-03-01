@@ -20,7 +20,7 @@ class EntityCriterionWise(ParallelizedPollFunction):
         user_models: UserModels,
     ) -> list[Scores]:
         scores = user_models(entities)
-        return [scores.filters(entity_name=entity.name, criterion=criterion) for entity, criterion in variables]
+        return [scores.filters(entity_name=e.name, criterion=c) for e, c in variables]
 
     def _args(self, # type: ignore
         variable: tuple[Entity, str], 
@@ -35,7 +35,8 @@ class EntityCriterionWise(ParallelizedPollFunction):
             kwargs = dict(username=score["username"], entity_name=entity.name, criterion=criterion)
             vright = voting_rights.get(**kwargs)["voting_right"]
             vrights.append(vright)
-        return np.array(vrights, dtype=np.float64), scores.value, scores.left_unc, scores.right_unc
+        values, left_uncs, right_uncs = scores.value, scores.left_unc, scores.right_unc
+        return np.array(vrights, dtype=np.float64), values, left_uncs, right_uncs
 
     def _process_results(self,  # type: ignore
         variables: list[tuple[Entity, str]], 

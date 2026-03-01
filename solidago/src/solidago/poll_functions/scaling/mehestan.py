@@ -449,8 +449,8 @@ class Mehestan(PollFunction):
         norm: float
         """
         weight_sum, weighted_sum = 0., 0.
-        for (entity_name,), score in scores:
-            weight = public_settings.penalty(self.privacy_penalty, entity_name)
+        for score in scores:
+            weight = public_settings.penalty(self.privacy_penalty, score["entity_name"])
             weight_sum += weight
             weighted_sum += weight * (score.value**self.p_norm_for_multiplicative_resilience)
     

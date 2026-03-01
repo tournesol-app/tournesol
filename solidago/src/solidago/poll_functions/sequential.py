@@ -35,6 +35,9 @@ class Sequential(PollFunction):
         for subfunction in self.subfunctions:
             yield subfunction
     
+    def __len__(self) -> int:
+        return len(self.subfunctions)
+    
     def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set[int] | None = None) -> Poll:
         if self.seed is not None:
             assert isinstance(self.seed, int)
