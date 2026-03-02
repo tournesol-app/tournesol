@@ -106,7 +106,7 @@ class Experiment:
             # For security reasons, we only allow the removal of files of a folder
             # if all files of the folder are of the expected kind
             if file.is_file():
-                assert str(file).endswith((".pt", ".yaml", ".json", ".csv")), file
+                assert str(file).endswith((".pt", ".yaml", ".json", ".csv", ".parquet")), file
         for sub in path.iterdir():
             if sub.is_file():
                 sub.unlink()

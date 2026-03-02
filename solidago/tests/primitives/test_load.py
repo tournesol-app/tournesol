@@ -157,6 +157,6 @@ def test_generators():
 def test_pipeline():
     import solidago
     assert isinstance(
-        solidago.load("tests/poll_functions/test_pipeline.yaml", solidago.poll_functions),
+        solidago.load("tests/save_load/pipeline.yaml", solidago.poll_functions),
         solidago.poll_functions.Sequential
     )

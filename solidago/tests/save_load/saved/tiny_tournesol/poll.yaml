@@ -1,0 +1,9 @@
+user_models:
+- UserModels
+- default_composition:
+  - - Linear
+    - {}
+  - - ScaleProcessing
+    - note: user_scale_test_export
+  - - ScaleProcessing
+    - note: common_scale_test_export

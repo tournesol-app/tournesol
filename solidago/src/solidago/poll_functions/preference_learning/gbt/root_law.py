@@ -121,7 +121,7 @@ class Uniform(RootLaw):
 
 class Gaussian(RootLaw):
     def __init__(self, std: float):
-        assert isinstance(std, (int, float))
+        assert isinstance(std, (int, float)), std
         self.std = std
     
     def get_arg(self) -> int | float | None:

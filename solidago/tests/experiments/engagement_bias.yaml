@@ -2,14 +2,14 @@ overwrite: true
 reproducibility: true
 max_workers: 1
 variables:
- - generator.modules.7.distribution.std # engagement bias
+ - generator.subfunctions.7.distribution.std # engagement bias
  - functions.3.lipschitz # mehestan lipschitz
 poll: null
 generator:
   seed: 0
-  modules:
-    - [users.Users, {n_users: 3, distribution: [Normal, mean: [3.0, 0.0]]}]
-    - [entities.Entities, {n_entities: 3, distribution: [Normal, dimension: 2]}]
+  subfunctions:
+    - [users.New, {n_users: 3, distribution: [Normal, mean: [3.0, 0.0]]}]
+    - [entities.New, {n_entities: 3, distribution: [Normal, dimension: 2]}]
     # User trust generation
     - [users.AddColumn, {column: trustworthy, distribution: [Bernoulli, p: 0.8]}]
     - [users.BernoulliPretrust, {p_if_trustworthy: 0.5, p_if_untrustworthy: 0.0}] # requires users["trustworthy"]
@@ -33,7 +33,7 @@ generator:
         malicious: [Negate, {}]
 functions:
   - [LipschiTrust, {pretrust_value: 0.8, decay: 0.8, sink_vouch: 5.0, error: 1.0e-8}]
-  - - NumbaUniformGBT
+  - - preference_learning.numba_generalized_bradley_terry.NumbaUniformGBT
     - prior_std: 7
       uncertainty_nll_increase: 1.0
       max_uncertainty: 1.0e+3

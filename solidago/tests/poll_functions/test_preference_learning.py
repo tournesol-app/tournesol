@@ -19,7 +19,7 @@ def test_gbt_score_zero(GBT):
     comparisons.set(left_name="entity_1", right_name="entity_2", value=0, max=10)
     comparisons.set(left_name="entity_1", right_name="entity_3", value=0, max=10)
     
-    scores = GBT(max_workers=2).user_learn_criterion(entities, comparisons)
+    scores = GBT(max_workers=1).user_learn_criterion(entities, comparisons)
     assert isinstance(scores, Scores)
     
     assert scores.get(entity_name="entity_1").to_triplet() == pytest.approx((0, 1.8, 1.8), abs=0.1)
@@ -33,7 +33,7 @@ def test_gbt_score_monotonicity(GBT):
     comparisons.set(left_name="entity_1", right_name="entity_2", value=5, max=10)
     comparisons.set(left_name="entity_1", right_name="entity_3", value=2, max=10)
     
-    scores = GBT(max_workers=2).user_learn_criterion(entities, comparisons)
+    scores = GBT(max_workers=1).user_learn_criterion(entities, comparisons)
     assert isinstance(scores, Scores)
     
     assert scores.get(entity_name="entity_1").value < scores.get(entity_name="entity_3").value
@@ -85,7 +85,11 @@ def test_root_laws(RootLawClass):
 
 def test_numba():
     gbt = NumbaUniformGBT()
-    poll = Poll.load(f"tests/saved/0")
+    generator = load("tests/generators/test_generator.yaml")
+    assert isinstance(generator, Generator)
+    generator.seed = 0
+    poll = generator()
+
     _, criterion = poll.users["user_4"], "default"
     init_model = ScoringModel()
     comparisons = poll.comparisons.filters(criterion=criterion)
@@ -112,8 +116,8 @@ def test_flexible():
     fgbt = poll_functions.FlexibleGeneralizedBradleyTerry(
         n_parameters=n_parameters,
         categories=categories,
-        rating_root_law=("Gaussian", dict(std=1.0)),
-        comparison_root_law=("Uniform", dict()),
+        rating_root_law=("Gaussian", 1.0),
+        comparison_root_law=("Uniform", ()),
     )
     user, criterion = poll.users["user_0"], "default"
     assert isinstance(user, User)

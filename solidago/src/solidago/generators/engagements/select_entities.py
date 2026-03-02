@@ -22,8 +22,7 @@ class Uniform(SelectEntities):
     """ Requires user.n_evaluated_entities """
     def __call__(self, user: User, entities: Entities) -> Entities:
         assert "n_evaluated_entities" in user, user
-        n_evaluated_entities = user["n_evaluated_entities"]
-        assert isinstance(n_evaluated_entities, (int, np.integer)), n_evaluated_entities
+        n_evaluated_entities = int(user["n_evaluated_entities"])
         assert n_evaluated_entities >= 0, n_evaluated_entities
         if n_evaluated_entities > len(entities):
             return entities

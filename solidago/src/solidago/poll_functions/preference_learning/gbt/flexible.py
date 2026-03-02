@@ -9,6 +9,7 @@ from solidago.poll import *
 
 from solidago.poll_functions.preference_learning.parallelized import ParallelizedPreferenceLearning
 from solidago.poll_functions.preference_learning.gbt.root_law import RootLaw, BradleyTerry, Uniform, Gaussian, Discrete
+from solidago.primitives.datastructure.filtered_table import FilteredTable
 from solidago.primitives.minimizer.minimizer import Minimizer
 from solidago.primitives.similarity import Similarity
 from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator
@@ -40,7 +41,7 @@ ComparisonType = tuple[
 
 
 class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
-    root_laws = (BradleyTerry, Uniform, Gaussian, Discrete)
+    root_law_names: list[str] = ["BradleyTerry", "Uniform", "Gaussian", "Discrete"]
 
     def __init__(self, 
         max_workers: int = 1,
@@ -51,8 +52,8 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         entity_similarity: Similarity | tuple[str, dict] | None = None,
         minimizer: Minimizer | tuple[str, dict] | None = None,
         uncertainty: UncertaintyEvaluator | tuple[str, dict] | None = None,
-        rating_root_law: RootLaw | tuple[str, dict] | None = None,
-        comparison_root_law: RootLaw | tuple[str, dict] | None = None,
+        rating_root_law: str | tuple[str | None, Any] = (None, ()),
+        comparison_root_law: str | tuple[str | None, Any] = (None, ()),
         discard_ratings: bool = False,
     ):
         """ Flexible Generalized Bradley Terry is a preference learning model 
@@ -64,8 +65,8 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
                 self.prior_stds[key] = 7.0
         import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
         self.entity_similarity = None if entity_similarity is None else solidago.load(entity_similarity, solidago.similarity)
-        self.rating_root_law = None if rating_root_law is None else solidago.load(rating_root_law, root_law_module)
-        self.comparison_root_law = None if comparison_root_law is None else solidago.load(comparison_root_law, root_law_module)
+        self.rating_root_law = (rating_root_law, ()) if isinstance(rating_root_law, str) else rating_root_law
+        self.comparison_root_law = (comparison_root_law, ()) if isinstance(comparison_root_law, str) else comparison_root_law
         self.discard_ratings = discard_ratings
 
     #######################
@@ -75,11 +76,8 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     def _process_kwargs(self): # type: ignore
         return dict(ratings=Ratings()) if self.discard_ratings else dict()
     
-    def _get_root_law_index(self, root_law: RootLaw) -> int:
-        for root_law_index, root_law_type in enumerate(self.root_laws):
-            if isinstance(root_law, root_law_type):
-                return root_law_index
-        raise ValueError(f"Root law {type(root_law).__name__} unknown")
+    def _get_root_law_index(self, root_law_name: str) -> int:
+        return self.root_law_names.index(root_law_name)
 
     def _rating_arg(self,  # type: ignore
         ratings: Ratings, 
@@ -89,27 +87,9 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         """ Ratings are ignored """
         assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
         entity_indices = [entities.name2index(r["entity_name"]) for r in ratings]
-        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        root_laws: list[RootLaw] = list()
-        for r in ratings:
-            if not "root_law" in r or r["root_law"] is None:
-                assert self.rating_root_law is not None
-                root_laws.append(self.rating_root_law)
-            else:
-                arg = () if r["root_law_arg"] is None else r["root_law_arg"]
-                arg = arg if isinstance(arg, tuple) else (arg,)
-                root_laws.append(solidago.load(r["root_law"], root_law_module, *arg))
-        normalized_ratings = [root_law.normalize_rating(r) for r, root_law in zip(ratings, root_laws)]
         context_indices = [len(entities) + rating_contexts.index(r["context"]) for r in ratings]
-        root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
-        root_law_args = list()
-        for r in ratings:
-            if r["root_law_arg"] is None:
-                assert self.rating_root_law is not None
-                root_law_arg = self.rating_root_law.get_arg()
-            else:
-                root_law_arg = r["root_law_arg"]
-            root_law_args.append(root_law_arg)
+        root_laws, root_law_indices, root_law_args = self._get_root_laws(ratings, *self.rating_root_law)
+        normalized_ratings = [root_law.normalize_rating(r) for r, root_law in zip(ratings, root_laws)]
         return entity_indices, context_indices, normalized_ratings, root_law_indices, root_law_args
     
     def _comparison_arg(self,  # type: ignore
@@ -118,31 +98,30 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
     ) -> tuple[list[np.int64], list[np.int64], list[float], list[int], list[int | float | None]]:
         lefts = [entities.name2index(c["left_name"]) for c in comparisons]
         rights = [entities.name2index(c["right_name"]) for c in comparisons]
-        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        root_laws: list[RootLaw] = list()
-        for c in comparisons:
-            if "root_law" not in c or c["root_law"] is None or np.isnan(c["root_law"]):
-                assert self.comparison_root_law is not None
-                assert isinstance(self.comparison_root_law, RootLaw), self.comparison_root_law
-                root_laws.append(self.comparison_root_law)
-            else:
-                arg = () if c["root_law_arg"] is None else c["root_law_arg"]
-                arg = arg if isinstance(arg, tuple) else (arg,)
-                root_law = solidago.load(c["root_law"], root_law_module, *arg)
-                assert isinstance(root_law, RootLaw), root_law
-                root_laws.append(root_law)
-        assert all(isinstance(r, RootLaw) for r in root_laws)
+        root_laws, root_law_indices, root_law_args = self._get_root_laws(comparisons, *self.comparison_root_law)
         normalized_comparisons = [r.normalize_comparison(c) for c, r in zip(comparisons, root_laws)]
-        root_law_indices = [self._get_root_law_index(root_law) for root_law in root_laws]
-        root_law_args = list()
-        for c in comparisons:
-            if c["root_law_arg"] is None:
-                assert self.comparison_root_law is not None
-                root_law_arg = self.comparison_root_law.get_arg()
-            else:
-                root_law_arg = c["root_law_arg"]
-            root_law_args.append(root_law_arg)
         return lefts, rights, normalized_comparisons, root_law_indices, root_law_args
+    
+    def _get_root_laws(self,
+        table: FilteredTable, 
+        default_root_law_name: str | None = None, 
+        default_arg: tuple = (),
+    ) -> tuple[list[RootLaw], list[int], list[Any]]: # root_law_indices, root_law_args
+        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
+        root_laws, indices, args = list(), list(), list()
+        default_index = None if default_root_law_name is None else self.root_law_names.index(default_root_law_name)
+        for row in table:
+            if "root_law" not in row or row["root_law"] is None or np.isnan(row["root_law"]):
+                assert default_index is not None
+                index, arg = default_index, default_arg
+            else:
+                index = self.root_law_names.index(row["root_law"])
+                arg = row["root_law_arg"] if "root_law_arg" in row else ()
+            indices.append(index)
+            args.append(arg)
+            root_law_arg = arg if isinstance(arg, tuple) else (arg,)
+            root_laws.append(solidago.load(self.root_law_names[index], root_law_module, *root_law_arg))
+        return root_laws, indices, args
 
     def _args(self,  # type: ignore
         variable: tuple[User, str], 

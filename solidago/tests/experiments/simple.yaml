@@ -5,9 +5,9 @@ variables: [generator.seed]
 poll: null
 generator:
   seed: range(2)
-  modules:
-    - [users.Users, {n_users: 5, distribution: [Normal, mean: [3.0, 0.0]]}]
-    - [entities.Entities, {n_entities: 10, distribution: [Normal, dimension: 2]}]
+  subfunctions:
+    - [users.New, {n_users: 5, distribution: [Normal, mean: [3.0, 0.0]]}]
+    - [entities.New, {n_entities: 10, distribution: [Normal, dimension: 2]}]
     # Engagement generation
     - [users.AddColumn, {column: n_evaluated_entities, distribution: [Poisson, mean: 5.0]}]
     - [users.AddColumn, {column: n_comparisons_per_entity, distribution: [Uniform, {min: 1.0, max: 5.0}]}]
@@ -17,7 +17,7 @@ generator:
     - - comparisons.Independent
       - honest: [KnaryGBT, {n_options: 21, comparison_max: 10}]
 functions:
-  - - NumbaUniformGBT
+  - - preference_learning.numba_generalized_bradley_terry.NumbaUniformGBT
     - prior_std: 7
       convergence_error: 1.0e-5
       uncertainty_nll_increase: 1.0
