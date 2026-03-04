@@ -1,15 +1,8 @@
 import random
-from dataclasses import dataclass
 
 from tournesol.lib.suggestions.strategies.tocompare.classic import ClassicEntitySuggestionStrategy
 from tournesol.models import ContributorRating, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
-
-
-@dataclass
-class IdPool:
-    ids: list[int]
-    sample_size: int
 
 
 class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
@@ -53,21 +46,21 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
 
         results = RateLater.objects.raw(
             """
-          SELECT
-            rate_later.id,
-            rate_later.entity_id
+            SELECT
+              rate_later.id,
+              rate_later.entity_id
 
-          FROM tournesol_ratelater rate_later
+            FROM tournesol_ratelater rate_later
 
-          JOIN tournesol_contributorrating
-            ON tournesol_contributorrating.user_id = rate_later.user_id
-           AND tournesol_contributorrating.entity_id = rate_later.entity_id
+            JOIN tournesol_contributorrating
+              ON tournesol_contributorrating.user_id = rate_later.user_id
+              AND tournesol_contributorrating.entity_id = rate_later.entity_id
 
-          WHERE rate_later.poll_id = %(poll_id)s
-            AND rate_later.user_id = %(user_id)s
-            AND tournesol_contributorrating.entity_seen = true
+            WHERE rate_later.poll_id = %(poll_id)s
+              AND rate_later.user_id = %(user_id)s
+              AND tournesol_contributorrating.entity_seen = true
 
-            AND rate_later.entity_id NOT IN %(exclude_ids)s
+              AND rate_later.entity_id NOT IN %(exclude_ids)s
           """,
             {"poll_id": poll.id, "user_id": user.id, "exclude_ids": tuple(exclude_ids)},
         )
