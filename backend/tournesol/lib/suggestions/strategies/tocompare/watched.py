@@ -44,6 +44,14 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         poll = self.poll
         user = self.user
 
+        # Prevent Django.db.utils.ProgrammingError when `exclude_ids` is
+        # empty:
+        #
+        #    AND rate_later.entity_id NOT IN ()
+        #                                     ^
+        if not exclude_ids:
+            exclude_ids.append(-1)
+
         results = RateLater.objects.raw(
             """
             SELECT
@@ -53,8 +61,9 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
             FROM tournesol_ratelater rate_later
 
             JOIN tournesol_contributorrating
-              ON tournesol_contributorrating.user_id = rate_later.user_id
-              AND tournesol_contributorrating.entity_id = rate_later.entity_id
+              ON tournesol_contributorrating.poll_id = rate_later.poll_id
+             AND tournesol_contributorrating.user_id = rate_later.user_id
+             AND tournesol_contributorrating.entity_id = rate_later.entity_id
 
             WHERE rate_later.poll_id = %(poll_id)s
               AND rate_later.user_id = %(user_id)s
