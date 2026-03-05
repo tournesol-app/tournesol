@@ -20,12 +20,12 @@ user_models = UserModels(
 
 
 def test_learned_models():
-    scaled_users, scaled = poll_functions.Mehestan(max_workers=1)(users, entities, public_settings, user_models)
+    scaled_users, scaled = poll_functions.Mehestan(max_workers=1).fn(users, entities, public_settings, user_models)
     assert len(scaled_users) == len(users)
     assert len(user_models) == len(scaled)
 
 def test_standardize():
-    standardized_models = poll_functions.LipschitzStandardize(lipschitz=1000, max_workers=1)(entities, user_models)
+    standardized_models = poll_functions.LipschitzStandardize(lipschitz=1000, max_workers=1).fn(entities, user_models)
     values = standardized_models().value
     deviations = np.abs(values - np.median(values))
     quantile = int(0.9 * len(deviations))
@@ -35,6 +35,6 @@ def test_standardize():
 def test_quantile_shift():
     quantile_shift = poll_functions.LipschitzQuantileShift(lipschitz=1000, max_workers=1)
     base_models = UserModels(user_directs=user_models.user_directs)
-    shifted_models = quantile_shift(entities, base_models)
+    shifted_models = quantile_shift.fn(entities, base_models)
     assert np.median(shifted_models().value) > 0
 

@@ -66,7 +66,7 @@ class LipschiTrust(PollFunction):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def __call__(self, users: Users, vouches: Vouches) -> Users:
+    def fn(self, users: Users, vouches: Vouches) -> Users:
         if len(users) == 0:
             return users.assign(trust=list())
 

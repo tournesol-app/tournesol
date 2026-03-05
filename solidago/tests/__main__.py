@@ -14,10 +14,10 @@ def simple():
 
     experiment = Experiment.load(source, ignore_ongoing_run=True, max_workers=15)
     poll, generator, poll_functions = experiment.extract_poll_generator_functions([0])
-    poll = generator(poll)
+    poll = generator.fn(poll)
 
     with time("SimpleExperiment"):
-        poll2 = poll_functions.poll2poll_function(poll)
+        poll2 = poll_functions(poll)
     
     return source, experiment, poll, poll2, generator, poll_functions
 
@@ -30,7 +30,7 @@ def gbt_poll0():
         max_uncertainty=1e3, 
         max_workers=2
     )
-    poll2 = f.poll2poll_function(poll)
+    poll2 = f(poll)
     return poll, f, poll2
 
 def f(score_diffs: NDArray) -> NDArray:

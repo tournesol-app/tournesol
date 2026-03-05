@@ -13,7 +13,7 @@ class PreferenceLearning(PollFunction, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
-    def __call__(self, 
+    def fn(self, 
         users: Users,
         entities: Entities,
         ratings: Ratings,

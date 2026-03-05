@@ -65,7 +65,7 @@ class PrimeFunction(ParallelizedPollFunction):
 def primes2(base_value: int, n_values: int):
     for max_workers in (1, 2, 6, 15):
         with time(f"Prime listing with max_workers={max_workers}"):
-            PrimeFunction(base_value, n_values, max_workers)()
+            PrimeFunction(base_value, n_values, max_workers).fn()
 
 def gbt():
     # poll = TournesolExport("tests/tournesol_dataset.zip")
@@ -79,10 +79,10 @@ def gbt():
         generators.engagements.Independent(generators.engagements.Uniform()),
         generators.comparisons.Independent(generators.comparisons.KnaryGBT(21, 10))
     ], seed=0)
-    poll = generator()
+    poll = generator.fn()
     for max_workers in (1, 2, 6, 15):
         with time(f"Preference learning with max_workers={max_workers}"):
-            preference_learning = poll_functions.NumbaUniformGBT(max_workers=max_workers)
+            preference_learning = poll_functions.preference_learning.numba_generalized_bradley_terry.NumbaUniformGBT(max_workers=max_workers)
             preference_learning.poll2objects_function(poll)
 
 def scoring():
@@ -104,12 +104,12 @@ def pipeline(step = None, tiny = True):
             pipeline = load("src/solidago/functions/tournesol_full.yaml", max_workers=max_workers)
             assert isinstance(pipeline, Sequential)
             if isinstance(step, int):
-                pipeline.subfunctions[step].poll2poll_function(poll)
+                pipeline.subfunctions[step](poll)
             elif isinstance(step, list):
                 skip_steps = {i for i in range(len(pipeline.subfunctions)) if i not in step}
-                pipeline(poll, skip_steps=skip_steps)
+                pipeline.fn(poll, skip_steps=skip_steps)
             else:
-                pipeline(poll, "tests/tournesol_processed")
+                pipeline.fn(poll, "tests/tournesol_processed")
 
 
 if __name__ == "__main__":

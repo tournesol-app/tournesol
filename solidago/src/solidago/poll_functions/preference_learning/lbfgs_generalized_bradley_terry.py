@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    import torch
+    import torch # type: ignore
 except ImportError as exc:
     raise RuntimeError(
         "Using LBFGS requires 'torch' to be installed. "
@@ -105,7 +105,9 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         comparisons = comparisons.filters(left_name=entity_names, right_names=entity_names)
         left_indices = [entities.name2index(name) for name in comparisons.get_column("left_name")]
         right_indices = [entities.name2index(name) for name in comparisons.get_column("right_name")]
-        normalized_comparisons = torch.tensor(comparisons.get_column("value", np.float64) / comparisons.get_column("max", np.float64))
+        comparison_values = comparisons.get_column("value").to_numpy(np.float64)
+        comparison_maxs = comparisons.get_column("max").to_numpy(np.float64)
+        normalized_comparisons = torch.tensor(comparison_values / comparison_maxs)
             
         lbfgs = torch.optim.LBFGS(
             (values,),

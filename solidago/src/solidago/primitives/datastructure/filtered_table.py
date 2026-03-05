@@ -225,7 +225,7 @@ class _Table:
 
     def get_filter(self, **keys: Hashable | list[Hashable]) -> Filter:
         """ Filtered tables only have a changed filter """
-        assert all(name in self.df.columns for name in keys)
+        assert all(name in self.df.columns for name in keys), (keys, self.df.columns)
         self.cache(*keys.keys())
         filter = Filter()
         for name, key in keys.items():

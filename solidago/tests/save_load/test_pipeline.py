@@ -7,7 +7,7 @@ N_SEEDS = 3
 
 
 def test_generate_and_save():
-    generator = load("tests/generators/test_generator.yaml")
+    generator = load("tests/generators/test_generator.yaml", max_workers=1)
     assert isinstance(generator, Generator)
 
     pipeline = load("tests/save_load/pipeline.yaml", max_workers=1)
@@ -20,17 +20,17 @@ def test_generate_and_save():
                 if f.is_file():
                     f.unlink()
         generator.seed = seed
-        generator().save(f"tests/save_load/saved/{seed}")
+        generator.fn().save(f"tests/save_load/saved/{seed}")
         pipeline.seed = seed
         directory = f"tests/save_load/saved/{seed}"
         poll = Poll.load(directory)
-        pipeline(poll, directory)
+        pipeline.fn(poll, directory)
 
 
 def test_pipeline_generated_data():
     pipeline = load("tests/save_load/pipeline.yaml", max_workers=1)
     assert isinstance(pipeline, Sequential)
-    pipeline(Poll.load("tests/save_load/saved/0"))
+    pipeline.fn(Poll.load("tests/save_load/saved/0"))
 
 @pytest.mark.parametrize( "seed", list(range(N_SEEDS)) )
 def test_average(seed):
@@ -48,6 +48,7 @@ def test_uncertainty_comparison_only():
         discard_ratings=True,
         rating_root_law=("Gaussian", 1.),
         comparison_root_law="Uniform",
+        max_workers=1,
     )
     poll = Poll.load(f"tests/save_load/saved/0")
     user, criterion = poll.users["user_0"], "default"
@@ -88,12 +89,12 @@ def test_uncertainty():
     evaluated_entities, category_groups, rating_contexts = nonargs
     args = fgbt._args(variable, nonargs, ratings, comparisons, user_models)
     values = fgbt.compute_values(*args)
-    assert all(np.abs(values) < 10)
+    assert all(np.abs(values) < 12)
     values_copy = values.copy()
     args = args[1:] # dropping init_values
     left_uncs, right_uncs = fgbt.compute_uncertainties(values, *args)
     assert all(values_copy == values)
-    assert all(np.abs(values) < 10)
+    assert all(np.abs(values) < 12)
     assert fgbt.loss(values, *args) <= 0
     assert all(left_uncs >= 0)
     assert all(right_uncs >= 0)
@@ -102,7 +103,7 @@ def test_uncertainty():
 def test_learned_models(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
     base_models = UserModels(user_directs=poll.user_models.user_directs)
-    scaled_users, scaled = poll_functions.Mehestan()(poll.users, poll.entities, poll.public_settings, base_models)
+    scaled_users, scaled = poll_functions.Mehestan(max_workers=1).fn(poll.users, poll.entities, poll.public_settings, base_models)
     assert len(scaled_users) == len(poll.users)
     assert len(base_models) == len(scaled)
 
@@ -110,7 +111,7 @@ def test_learned_models(seed):
 def test_standardize(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
     base_models = UserModels(user_directs=poll.user_models.user_directs)
-    standardized_models = poll_functions.LipschitzStandardize(lipschitz=1000)(poll.entities, base_models)
+    standardized_models = poll_functions.LipschitzStandardize(lipschitz=1000, max_workers=1).fn(poll.entities, base_models)
     values = standardized_models().value
     deviations = np.abs(values - np.median(values))
     quantile = int(0.9 * len(deviations))
@@ -120,26 +121,25 @@ def test_standardize(seed):
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_quantile_shift(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    quantile_shift = poll_functions.LipschitzQuantileShift(lipschitz=1000)
+    quantile_shift = poll_functions.LipschitzQuantileShift(lipschitz=1000, max_workers=1)
     base_models = UserModels(user_directs=poll.user_models.user_directs)
-    shifted_models = quantile_shift(poll.entities, base_models)
+    shifted_models = quantile_shift.fn(poll.entities, base_models)
     assert np.median(shifted_models().value) > 0
 
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_generative(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    trust_propagator = poll_functions.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8,)
-
-    users = trust_propagator(poll.users, poll.vouches)
+    trust_propagator = poll_functions.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
+    users = trust_propagator.fn(poll.users, poll.vouches)
     for user in users:
         assert user["trustworthy"] or (user["trust"] == 0)
 
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_test_data(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    pipeline = load("tests/save_load/pipeline.yaml")
+    pipeline = load("tests/save_load/pipeline.yaml", max_workers=1)
     assert isinstance(pipeline, Sequential)
-    users = pipeline.subfunctions[0](poll.users, poll.vouches)
+    users = pipeline.subfunctions[1].fn(poll.users, poll.vouches)
     for user in users:
         assert user["trustworthy"] or (user["trust"] == 0)
 

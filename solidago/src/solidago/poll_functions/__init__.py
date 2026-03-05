@@ -10,13 +10,18 @@ from .scaling import *
 from .aggregation import *
 from .post_process import *
 from .filtering import *
+from .simple_stats import *
+from .tournesol_full import TournesolFull
 
 __all__ = [
+    "PollFunction", "ParallelizedPollFunction", "Sequential", "Identity",
     "TrustAll", "NoTrustPropagation", "LipschiTrust",
     "FlexibleGeneralizedBradleyTerry",
     "Trust2VotingRights", "AffineOvertrust",
     "Mehestan", "LipschitzQuantileShift", "LipschitzStandardize",
     "EntitywiseQrQuantile", "Average",
     "Squash",
-    "Filtering",
+    "SimpleUserStats", "SimpleEntityStats", "SimpleComparisonStats",
+    "Filtering", 
+    "TournesolFull",
 ]

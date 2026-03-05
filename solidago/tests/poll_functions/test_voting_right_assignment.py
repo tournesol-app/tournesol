@@ -208,7 +208,7 @@ def test_affine_overtrust():
     comparisons.set(username="2", criterion="default", left_name="0", right_name="1", value=5)
     
     ao = poll_functions.AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=1)
-    result_entities, voting_rights = ao(users, entities, public_settings, ratings, comparisons)
+    result_entities, voting_rights = ao.fn(users, entities, public_settings, ratings, comparisons)
 
     assert isinstance(result_entities, Entities)
     assert isinstance(voting_rights, VotingRights)

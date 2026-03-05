@@ -19,7 +19,7 @@ class New(PollFunction):
         vector = self.distribution.sample() if hasattr(self, "distribution") else None
         return poll.User(f"user_{user_index}", vector=vector)
 
-    def __call__(self) -> poll.Users:
+    def fn(self) -> poll.Users:
         return poll.Users([self.sample_user(user_index).series for user_index in range(self.n_users)])
 
 class AddColumn(PollFunction):
@@ -30,7 +30,7 @@ class AddColumn(PollFunction):
         assert isinstance(distribution, Distribution)
         self.distribution = distribution
     
-    def __call__(self, users: poll.Users) -> poll.Users:
+    def fn(self, users: poll.Users) -> poll.Users:
         return users.assign(**{self.column: self.distribution.sample(len(users))})
 
 class BernoulliPretrust(PollFunction):
@@ -40,7 +40,7 @@ class BernoulliPretrust(PollFunction):
         self.p_if_trustworthy = p_if_trustworthy
         self.p_if_untrustworthy = p_if_untrustworthy
     
-    def __call__(self, users: poll.Users) -> poll.Users:
+    def fn(self, users: poll.Users) -> poll.Users:
         trustworthy = users.get_column("trustworthy")
         pretrust = np.random.random(len(users)) < np.where(trustworthy, self.p_if_trustworthy, self.p_if_untrustworthy)
         return users.assign(pretrust=pretrust)

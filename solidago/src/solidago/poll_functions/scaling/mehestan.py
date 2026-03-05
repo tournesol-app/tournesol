@@ -72,8 +72,8 @@ class Mehestan(PollFunction):
         self.default_translation_dev = default_translation_dev
         self.error = error
 
-    """ A simple way to distribute computations is to parallelize the loop of __call__ """
-    def __call__(self, 
+    """ A simple way to distribute computations is to parallelize the loop of fn """
+    def fn(self, 
         users: Users,
         entities: Entities,
         public_settings: PublicSettings,

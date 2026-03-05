@@ -15,7 +15,7 @@ class Filtering:
         self.entity_names = {entity_names} if isinstance(entity_names, str) else entity_names
         self.criteria = {criteria} if isinstance(criteria, str) else criteria
 
-    def __call__(self, poll: Poll) -> Poll:
+    def fn(self, poll: Poll) -> Poll:
         return Poll(
             self._get_users(poll.users),
             self._get_entities(poll.entities),

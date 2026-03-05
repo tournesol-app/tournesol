@@ -8,7 +8,7 @@ class Squash(PollFunction):
         super().__init__(*args, **kwargs)
         self.score_max = score_max
     
-    def __call__(self, 
+    def fn(self, 
         user_models: UserModels,
         global_model: ScoringModel,
     ) -> tuple[UserModels, ScoringModel]:

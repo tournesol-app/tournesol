@@ -20,7 +20,7 @@ class UserClustering(PollFunction):
         self.pca_dimension = pca_dimension
         self.n_clusters = n_clusters
     
-    def __call__(self, users: Users, entities: Entities, user_models: UserModels) -> Users:
+    def fn(self, users: Users, entities: Entities, user_models: UserModels) -> Users:
         for criterion in user_models.criteria():
             users = self.cluster(users, entities, criterion, user_models)
         return users

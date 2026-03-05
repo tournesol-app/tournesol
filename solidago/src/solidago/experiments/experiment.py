@@ -133,8 +133,8 @@ class Experiment:
     def _run_indices(self, indices: list[int]):
         poll, generator, functions = self.extract_poll_generator_functions(indices)
         working_savepath = self.get_working_subpath(indices)
-        poll = generator(poll, str(working_savepath))
-        poll = functions.poll2poll_function(poll, str(working_savepath))
+        poll = generator.fn(poll, str(working_savepath))
+        poll = functions(poll, str(working_savepath))
         self.terminate_iteration(indices)
 
     def clear_status(self):

@@ -27,7 +27,7 @@ class Independent(PollFunction):
         self.shuffle = shuffle
         self.criteria = criteria or ["default"]
 
-    def __call__(self, users: Users, entities: Entities) -> tuple[PublicSettings, Ratings, Comparisons]:
+    def fn(self, users: Users, entities: Entities) -> tuple[PublicSettings, Ratings, Comparisons]:
         public_settings, ratings, comparisons = PublicSettings(), Ratings(), Comparisons()
         for user in users:
             evaluated_entities = self.select_entities(user, entities)

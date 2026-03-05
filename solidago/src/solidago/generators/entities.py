@@ -20,7 +20,7 @@ class New(PollFunction):
         vector = self.distribution.sample() if hasattr(self, "distribution") else None
         return poll.Entity(f"entity_{entity_index}", vector=vector)
 
-    def __call__(self) -> poll.Entities:
+    def fn(self) -> poll.Entities:
         return poll.Entities([self.sample_entity(entity_index).series for entity_index in range(self.n_entities)])
 
 class AddColumn(PollFunction):
@@ -29,6 +29,6 @@ class AddColumn(PollFunction):
         self.column = column
         self.distribution = solidago.load(distribution, solidago.random)
     
-    def __call__(self, entities: poll.Entities) -> poll.Entities:
+    def fn(self, entities: poll.Entities) -> poll.Entities:
         kwargs = {self.column: self.distribution.sample(len(entities))}
         return entities.assign(**kwargs)

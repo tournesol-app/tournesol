@@ -23,15 +23,15 @@ class PollFunction(ABC):
                     f"{set(self.poll_cls.__init__.__annotations__.keys())}."
 
     @abstractmethod
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+    def fn(self, *args: Any, **kwargs: Any) -> Any:
         return None
     
     def annotations(self) -> dict:
-        return self.__call__.__annotations__
+        return self.fn.__annotations__
     
     def poll2objects_function(self, poll: Poll) -> Any:
         """ Must not modify the poll """
-        values = self(poll) if "poll" in self.annotations() else self(**{ 
+        values = self.fn(poll) if "poll" in self.annotations() else self.fn(**{ 
             key: getattr(poll, key) 
             for key in self.annotations() if key != "return" 
         })
@@ -57,7 +57,7 @@ class PollFunction(ABC):
                 assert isinstance(value, result.__init__.__annotations__[key])
                 setattr(result, key, v)
 
-    def poll2poll_function(self, poll: Poll, save_directory: str | None = None) -> Any:
+    def __call__(self, poll: Poll, save_directory: str | None = None) -> Any:
         """ Must not modify the poll """
         if self.annotations()["return"] == Poll:
             result = self.poll2objects_function(poll)
@@ -84,7 +84,7 @@ class PollFunction(ABC):
             for index, return_type in enumerate(annotations["return"].__args__):
                 if not isinstance(value[index], return_type):
                     from solidago.poll_functions import ParallelizedPollFunction
-                    fn_to_fix = "_process_results" if isinstance(self, ParallelizedPollFunction) else "__call__"
+                    fn_to_fix = "_process_results" if isinstance(self, ParallelizedPollFunction) else "fn"
                     raise TypeError(
                         f"Please verify type consistency of returned value number {index} " \
                         f"of `{type(self).__name__}.{fn_to_fix}`, whose annotation is currently " \

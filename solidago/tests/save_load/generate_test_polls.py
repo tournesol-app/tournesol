@@ -16,7 +16,7 @@ assert isinstance(pipeline, sdg.Sequential)
 def save_generated_data(seed: int):
     assert isinstance(generator, sdg.Generator)
     generator.seed = seed
-    generator().save(f"tests/save_load/saved/{seed}")
+    generator.fn().save(f"tests/save_load/saved/{seed}")
 
 def save_all_generated_data():
     for seed in range(N_SEEDS):
@@ -27,7 +27,7 @@ def save_pipeline_results(seed: int, skip_steps={}):
     pipeline.seed = seed
     directory = f"tests/save_load/saved/{seed}"
     poll = sdg.Poll.load(directory)
-    pipeline(poll, directory, skip_steps)
+    pipeline.fn(poll, directory, skip_steps)
 
 def save_all_pipeline_results(skip_steps={}):
     for seed in range(N_SEEDS):
@@ -37,11 +37,11 @@ def step_by_step(sequential: sdg.Sequential, poll: sdg.Poll | None, seed: int = 
     sequential.seed = seed
     assert isinstance(sequential, sdg.Sequential)
     polls = [sdg.Poll() if poll is None else poll]
-    polls.append(sequential[0].poll2poll_function(polls[-1]))
-    polls.append(sequential[1].poll2poll_function(polls[-1]))
-    polls.append(sequential[2].poll2poll_function(polls[-1]))
-    polls.append(sequential[3].poll2poll_function(polls[-1]))
-    polls.append(sequential[4].poll2poll_function(polls[-1]))
+    polls.append(sequential[0](polls[-1]))
+    polls.append(sequential[1](polls[-1]))
+    polls.append(sequential[2](polls[-1]))
+    polls.append(sequential[3](polls[-1]))
+    polls.append(sequential[4](polls[-1]))
     return polls
 
 def step_by_step_generator() -> list[sdg.Poll]:

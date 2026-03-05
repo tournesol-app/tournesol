@@ -15,7 +15,7 @@ class CollaborativeFiltering(PollFunction, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
-    def __call__(self, users: Users, entities: Entities, user_models: UserModels) -> UserModels:
+    def fn(self, users: Users, entities: Entities, user_models: UserModels) -> UserModels:
         user_directs = UserDirectScores()
         for criterion in user_models.criteria():
             self.fill_criterion(users, entities, user_models, criterion, user_directs)

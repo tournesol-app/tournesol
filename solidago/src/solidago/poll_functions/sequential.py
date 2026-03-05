@@ -25,8 +25,8 @@ class Sequential(PollFunction):
             assert isinstance(subfunction, PollFunction)
             self.subfunctions.append(subfunction)
             
-    def poll2poll_function(self, poll: Poll, save_directory: str | None = None) -> Poll:
-        return self(poll, save_directory)
+    def __call__(self, poll: Poll, save_directory: str | None = None) -> Poll:
+        return self.fn(poll, save_directory)
 
     def __getitem__(self, index: int) -> PollFunction:
         return self.subfunctions[index]
@@ -38,7 +38,7 @@ class Sequential(PollFunction):
     def __len__(self) -> int:
         return len(self.subfunctions)
     
-    def __call__(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set[int] | None = None) -> Poll:
+    def fn(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set[int] | None = None) -> Poll:
         if self.seed is not None:
             assert isinstance(self.seed, int)
             logger.info(f"Set random seed = {self.seed}")
@@ -49,7 +49,7 @@ class Sequential(PollFunction):
                 continue
             log = f"{self.name} {step+1}. {type(subfunction).__name__}"
             with time(log, logger):
-                result = subfunction.poll2poll_function(result, save_directory)
+                result = subfunction(result, save_directory)
         return result
     
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict[str, Any]] | None:

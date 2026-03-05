@@ -17,7 +17,7 @@ class ParallelizedPollFunction(PollFunction):
     def __init__(self, max_workers: int | None = None):
         super().__init__(max_workers)
         
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+    def fn(self, *args: Any, **kwargs: Any) -> Any:
         with time(f"{type(self).__name__} - Loading data", logger):
             kwargs, variables, nonargs_list, args_lists = self.precompute(*args, **kwargs)
         with time(f"{type(self).__name__} - Parallelized computing", logger):

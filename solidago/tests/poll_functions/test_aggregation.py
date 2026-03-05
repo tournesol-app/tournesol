@@ -22,7 +22,7 @@ user_models = UserModels(
 )
 
 def test_average_simple_instance():
-    global_model = poll_functions.Average(max_workers=1)(entities, voting_rights, user_models)
+    global_model = poll_functions.Average(max_workers=1).fn(entities, voting_rights, user_models)
     assert global_model(entities["entity_0"], "default").value == 0.4
     assert global_model(entities["entity_1"]).get(criterion="default").value == 1
     assert global_model(entities["entity_2"]).get(criterion="default").value == -.3
@@ -30,7 +30,7 @@ def test_average_simple_instance():
 
 def test_qr_quantile_simple_instance():
     aggregator = poll_functions.EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=1)
-    global_model = aggregator(entities, voting_rights, user_models)
+    global_model = aggregator.fn(entities, voting_rights, user_models)
     assert global_model(entities["entity_0"], "default").value < -1
     assert global_model(entities["entity_1"], "default").value == pytest.approx(1., abs=1e-2)
     assert global_model(entities["entity_2"], "default").value == pytest.approx(-.3, abs=1e-2)

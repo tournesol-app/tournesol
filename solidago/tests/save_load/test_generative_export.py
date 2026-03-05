@@ -6,7 +6,7 @@ N_SEEDS = 3
 def test_generative_model():
     generator = load("tests/generators/test_generator.yaml")
     assert isinstance(generator, Generator)
-    s1 = generator()
+    s1 = generator.fn()
     
     s1.save("tests/save_load/saved/test_generative")
     s2 = Poll.load("tests/save_load/saved/test_generative")

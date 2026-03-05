@@ -43,7 +43,7 @@ def test_step_by_step_squash():
     assert all(-100 <= m and m <= 100 for m in squashed_scores.value + squashed_scores.right_unc)
 
 def test_squash():
-    post_user_models, _ = poll_functions.Squash(score_max=100)(user_models, global_model)
+    post_user_models, _ = poll_functions.Squash(score_max=100).fn(user_models, global_model)
     score = post_user_models["user_0"](Entity("entity_1"), "default")
     assert score.value == pytest.approx(100/np.sqrt(2), 1e-3)
 

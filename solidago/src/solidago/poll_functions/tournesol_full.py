@@ -1,19 +1,21 @@
 from solidago.poll_functions import (
-    Sequential, LipschiTrust, FlexibleGeneralizedBradleyTerry, AffineOvertrust, Mehestan, 
+    Sequential, SimpleUserStats, SimpleEntityStats,
+    LipschiTrust, FlexibleGeneralizedBradleyTerry, AffineOvertrust, Mehestan, 
     LipschitzStandardize, LipschitzQuantileShift, EntitywiseQrQuantile, Squash
 )
-from solidago.poll_functions.preference_learning.gbt.root_law import Uniform
 from solidago.primitives.minimizer import SciPyMinimizer
 from solidago.primitives.uncertainty import NLLIncrease
 
 
 _modules = [
+    SimpleUserStats(),
+    SimpleEntityStats(),
     LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1.0e-8),
     FlexibleGeneralizedBradleyTerry(
         prior_stds=dict(directs=7., thresholds=7., categories=7., parameters=7.),
         minimizer=SciPyMinimizer(method="L-BFGS-B", convergence_error=1e-5),
         uncertainty=NLLIncrease(nll_increase=1., error=1e-1, max=1e3),
-        comparison_root_law=Uniform(),
+        comparison_root_law="Uniform",
         discard_ratings=True
     ),
     AffineOvertrust(privacy_penalty=0.5, min_overtrust=2., overtrust_ratio=.1),

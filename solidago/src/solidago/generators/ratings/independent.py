@@ -19,7 +19,7 @@ class Independent(PollFunction):
         self.honest = solidago.load(honest, ratings_module) if honest else Deterministic()
         self.malicious = solidago.load(malicious, ratings_module, honest=honest) if malicious else Negate(self.honest)
         
-    def __call__(self, 
+    def fn(self, 
         users: Users, 
         entities: Entities, 
         public_settings: PublicSettings, 

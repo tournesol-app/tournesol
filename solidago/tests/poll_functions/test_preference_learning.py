@@ -47,7 +47,7 @@ def test_uniform_gbt(GBT):
     generator = load("tests/generators/test_generator.yaml")
     assert isinstance(generator, Generator)
     generator.seed = 0
-    poll = generator()
+    poll = generator.fn()
 
     fgbt_user_models = FlexibleGeneralizedBradleyTerry(
         discard_ratings=True, 
@@ -88,7 +88,7 @@ def test_numba():
     generator = load("tests/generators/test_generator.yaml")
     assert isinstance(generator, Generator)
     generator.seed = 0
-    poll = generator()
+    poll = generator.fn()
 
     _, criterion = poll.users["user_4"], "default"
     init_model = ScoringModel()
@@ -109,7 +109,7 @@ def test_flexible():
     generator = load("tests/generators/test_generator.yaml")
     assert isinstance(generator, Generator)
     generator.seed = 0
-    poll = generator()
+    poll = generator.fn()
 
     n_parameters = 4
     categories = ["author", "journalism"]

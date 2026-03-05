@@ -29,7 +29,7 @@ def test_lipschitrust_simple():
         ("2", "3", "Personhood", 1, 0),
         ("3", "4", "Personhood", 1, 0),
     ], columns=["by", "to", "kind", "weight", "priority"])
-    users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)(users0, vouches)
+    users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8).fn(users0, vouches)
     assert users[0]["trust"] == 0.8
     assert users[4]["trust"] > 0 # type: ignore
     assert users[2]["trust"] == pytest.approx(0.8 * 0.8 / (5 + 2)), users
@@ -55,7 +55,7 @@ def test_lipschitrust_ten_users():
     ], columns=["by", "to", "kind", "weight", "priority"])
     
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
-    users = trust_propagator(users, vouches)
+    users = trust_propagator.fn(users, vouches)
     assert users["1"]["trust"] > 0.8 # type: ignore
     assert users["2"]["trust"] > 0.0 # type: ignore
     assert users["8"]["trust"] == 0.0
@@ -63,7 +63,7 @@ def test_lipschitrust_ten_users():
 
     # Add one vouch: 1 -> 8
     vouches.set(by="1", to="8", kind="Personhood", weight=1, priority=0)
-    users = trust_propagator(users, vouches)
+    users = trust_propagator.fn(users, vouches)
     assert users["8"]["trust"] > 0.0 # type: ignore
 
 
@@ -76,7 +76,7 @@ def test_trust_all():
         ("2", "3", "Personhood", 1, 0),
         ("3", "4", "Personhood", 1, 0),
     ], columns=["by", "to", "kind", "weight", "priority"])
-    out_users = TrustAll()(users, vouches)
+    out_users = TrustAll().fn(users, vouches)
     for user in out_users:
         assert user["trust"] == 1.0
         

@@ -5,7 +5,7 @@ from solidago.poll_functions.poll_function import PollFunction
 
 
 class ErdosRenyi(PollFunction):
-    def __call__(self, users: Users) -> Vouches:
+    def fn(self, users: Users) -> Vouches:
         """ Each vouch is sampled independently, with a probability dependent on users' metadata.
         Each user must have the two keys `trustworthy: bool` and `n_expected_vouches: float`.
         Trustworthy vouchers only vouch for trustworthy vouchees,

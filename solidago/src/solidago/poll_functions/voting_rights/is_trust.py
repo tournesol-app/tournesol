@@ -15,7 +15,7 @@ class Trust2VotingRights(PollFunction):
         super().__init__(*args, **kwargs)
         self.privacy_penalty = privacy_penalty
     
-    def __call__(self, 
+    def fn(self, 
         users: Users, 
         entities: Entities, 
         public_settings: PublicSettings,

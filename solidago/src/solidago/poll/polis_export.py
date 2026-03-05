@@ -1,6 +1,6 @@
 from io import StringIO
+from urllib.request import urlretrieve
 
-import requests
 import pandas as pd
 
 from .poll import *
@@ -13,7 +13,7 @@ class PolisExport(Poll):
             return pd.read_csv(f"{poll_identifier}/{name}.csv")
         except FileNotFoundError:
             url = lambda name: f"https://pol.is/api/v3/reportExport/{poll_identifier}/{name}.csv"
-            return pd.read_csv(StringIO(requests.get(url(name)).text))
+            return pd.read_csv(urlretrieve(url(name))[0])
     
     @staticmethod
     def _load_dfs(poll_identifier: str) -> tuple:

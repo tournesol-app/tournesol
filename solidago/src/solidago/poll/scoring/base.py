@@ -78,8 +78,8 @@ class Linear(BaseScoring):
         for entity in (entities if isinstance(entities, Entities) else [entities]):
             entity_vector = entity.vector
             for criterion in ([criteria] if isinstance(criteria, str) else criteria):
-                linear_value = self.parameters.values(criteria) @ entity_vector
-                mins, maxs = self.parameters.minima(criterion), self.parameters.maxima(criterion)
+                linear_value = self.parameters.values(criterion=criterion) @ entity_vector
+                mins, maxs = self.parameters.minima(criterion=criterion), self.parameters.maxima(criterion=criterion)
                 minimizer = np.where(entity_vector > 0, maxs, mins)
                 min_linear_value = minimizer @ entity_vector
                 maximizer = np.where(entity_vector < 0, maxs, mins)
