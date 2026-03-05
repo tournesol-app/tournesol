@@ -65,7 +65,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.1",
     "i18next-parser": "^9",
-    "jsdom": "^22.1.0",
+    "jsdom": "^28",
     "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.3.2",
     "redux-mock-store": "^1.5.4",
