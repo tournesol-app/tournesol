@@ -18,7 +18,7 @@ __all__ = [
     "minimizer", "uncertainty", "similarity", "random",
     "PollFunction", "Sequential", "Identity", "Generator", 
     "User", "Users", "Entity", "Entities",
-    "Vouches", "PublicSettings",
+    "Socials", "PublicSettings",
     "Rating", "Ratings", "Comparison", "Comparisons",
     "VotingRights", "Score", "Scores", "ScoringModel", "UserModels",
     "Poll", "TournesolExport", "Experiment",

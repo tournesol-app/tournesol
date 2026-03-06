@@ -3,14 +3,14 @@ from .parallelized import ParallelizedPollFunction
 from .sequential import Sequential
 from .identity import Identity
 
-from .trust_propagation import *
+from .trust_propagation import TrustAll, NoTrustPropagation, LipschiTrust
 from .preference_learning import FlexibleGeneralizedBradleyTerry
-from .voting_rights import *
-from .scaling import *
-from .aggregation import *
-from .post_process import *
-from .filtering import *
-from .simple_stats import *
+from .voting_rights import Trust2VotingRights, AffineOvertrust
+from .scaling import Mehestan, LipschitzQuantileShift, LipschitzStandardize
+from .aggregation import EntitywiseQrQuantile, Average
+from .post_process import Squash
+from .filtering import Filtering
+from .simple_stats import SimpleUserStats, SimpleEntityStats, SimpleComparisonStats
 from .tournesol_full import TournesolFull
 
 __all__ = [

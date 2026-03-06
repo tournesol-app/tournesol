@@ -76,8 +76,8 @@ def plot(results, plot_filename):
             results["window"]["xmax"] = max(results["window"]["xmax"], window["xmax"])
             results["window"]["ymax"] = max(results["window"]["ymax"], window["ymax"])
     
-    plt.gca().set_xlim([results["window"]["xmin"], results["window"]["xmax"]])
-    plt.gca().set_ylim([results["window"]["ymin"], results["window"]["ymax"]])
+    plt.gca().set_xlim((results["window"]["xmin"], results["window"]["xmax"]))
+    plt.gca().set_ylim((results["window"]["ymin"], results["window"]["ymax"]))
     for vline in results["vlines"]:
         plt.axvline(vline)
     for hline in results["hlines"]:
@@ -108,7 +108,8 @@ def _seeds_plot(yvalues, results, legend, color, linestyle, alpha_confidence=0.1
         plt.fill_between(xvalues, ymeans - std_devs, ymeans + std_devs, 
             alpha=alpha_confidence, color=color)
     else:
-        confs = [0] * len(x_values)
+        std_devs = [0] * len(xvalues)
+        confs = [0] * len(xvalues)
     window = dict(xmin=xvalues.min(), ymin=(ymeans - std_devs).min(), 
         xmax=xvalues.max(), ymax=(ymeans + std_devs).max())
     return line, window

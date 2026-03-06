@@ -7,11 +7,8 @@ N_SEEDS = 3
 
 
 def test_generate_and_save():
-    generator = load("tests/generators/test_generator.yaml", max_workers=1)
-    assert isinstance(generator, Generator)
-
-    pipeline = load("tests/save_load/pipeline.yaml", max_workers=1)
-    assert isinstance(pipeline, Sequential)
+    generator = Generator.load("tests/generators/test_generator.yaml", max_workers=1)
+    pipeline = Sequential.load("tests/save_load/pipeline.yaml", max_workers=1)
 
     for seed in range(N_SEEDS):
         path = Path(f"tests/save_load/saved/{seed}")
@@ -28,8 +25,7 @@ def test_generate_and_save():
 
 
 def test_pipeline_generated_data():
-    pipeline = load("tests/save_load/pipeline.yaml", max_workers=1)
-    assert isinstance(pipeline, Sequential)
+    pipeline = Sequential.load("tests/save_load/pipeline.yaml", max_workers=1)
     pipeline.fn(Poll.load("tests/save_load/saved/0"))
 
 @pytest.mark.parametrize( "seed", list(range(N_SEEDS)) )
@@ -130,16 +126,15 @@ def test_quantile_shift(seed):
 def test_lipschitrust_generative(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
     trust_propagator = poll_functions.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
-    users = trust_propagator.fn(poll.users, poll.vouches)
+    users = trust_propagator.fn(poll.users, poll.socials)
     for user in users:
         assert user["trustworthy"] or (user["trust"] == 0)
 
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_test_data(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    pipeline = load("tests/save_load/pipeline.yaml", max_workers=1)
-    assert isinstance(pipeline, Sequential)
-    users = pipeline.subfunctions[1].fn(poll.users, poll.vouches)
+    pipeline = Sequential.load("tests/save_load/pipeline.yaml", max_workers=1)
+    users = pipeline.subfunctions[1].fn(poll.users, poll.socials)
     for user in users:
         assert user["trustworthy"] or (user["trust"] == 0)
 

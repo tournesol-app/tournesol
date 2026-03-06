@@ -1,12 +1,12 @@
 import numpy as np
 
-from solidago.poll import User, Users, Vouches
+from solidago.poll import *
 from solidago.poll_functions.poll_function import PollFunction
 
 
-class ErdosRenyi(PollFunction):
-    def fn(self, users: Users) -> Vouches:
-        """ Each vouch is sampled independently, with a probability dependent on users' metadata.
+class ErdosRenyiVouch(PollFunction):
+    def fn(self, users: Users, socials: Socials) -> Socials:
+        """ Each social is sampled independently, with a probability dependent on users' metadata.
         Each user must have the two keys `trustworthy: bool` and `n_expected_vouches: float`.
         Trustworthy vouchers only vouch for trustworthy vouchees,
         and untrustworthy vouchers only vouch for untrustworthy vouchees.
@@ -14,7 +14,6 @@ class ErdosRenyi(PollFunction):
         `voucher["expected_n_vouches"] / len({ user if user["trustworthy"] == voucher["trustworthy"] })`,
         assuming the voucher and vouchee have the same "trustworthy" value.
         """
-        vouches = Vouches()
         for user in users:
             assert "trustworthy" in user
             assert "expected_n_vouches" in user
@@ -30,7 +29,7 @@ class ErdosRenyi(PollFunction):
                 for to in usernames_subset:
                     if (by != to) and (np.random.random() < p_vouch):
                         value = (1 - np.random.random()**2, 0)
-                        vouches.set(by=by, to=to, kind="Personhood", value=value)
+                        socials.set(by=by, to=to, kind="Personhood", value=value)
         
-        return vouches
+        return socials
         

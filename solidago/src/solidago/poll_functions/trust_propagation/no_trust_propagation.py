@@ -13,5 +13,5 @@ class NoTrustPropagation(PollFunction):
         super().__init__(*args, **kwargs)
         self.pretrust_value = pretrust_value
 
-    def fn(self, users: Users, vouches: Vouches) -> Users:
+    def fn(self, users: Users) -> Users:
         return users.assign(trust=(users.get_column("is_pretrusted") * self.pretrust_value))

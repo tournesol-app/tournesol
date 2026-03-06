@@ -66,11 +66,11 @@ class LipschiTrust(PollFunction):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def fn(self, users: Users, vouches: Vouches) -> Users:
+    def fn(self, users: Users, socials: Socials) -> Users:
         if len(users) == 0:
             return users.assign(trust=list())
 
-        personhood_vouches = vouches.filters(kind="Personhood")
+        personhood_vouches = socials.filters(kind="Personhood")
         bys = personhood_vouches.get_column("by").map(users.name2index).to_numpy(np.int64)
         tos = personhood_vouches.get_column("to").map(users.name2index).to_numpy(np.int64)
         weights = personhood_vouches.get_column("weight").to_numpy(np.float64)

@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from .poll_tables import Users, Entities, Vouches, PublicSettings, Ratings, Comparisons, VotingRights
+from .poll_tables import *
 from .scoring import ScoringModel, UserModels
 
 
@@ -20,34 +20,37 @@ class Poll:
     global_direct_scores_filename = "global_direct_scores.csv"
 
     types: dict[str, type] = dict(
-        users=Users, entities=Entities, vouches=Vouches, public_settings=PublicSettings,
+        users=Users, entities=Entities, socials=Socials, public_settings=PublicSettings,
         ratings=Ratings, comparisons=Comparisons, voting_rights=VotingRights,
-        user_models=UserModels, global_model=ScoringModel
+        user_models=UserModels, global_model=ScoringModel,
+        past_recommendations=PastRecommendations,
     )
     
     def __init__(self,
         users: Users | None = None,
         entities: Entities | None = None,
-        vouches: Vouches | None = None,
+        socials: Socials | None = None,
         public_settings: PublicSettings | None = None,
         ratings: Ratings | None = None,
         comparisons: Comparisons | None = None,
         voting_rights: VotingRights | None = None,
         user_models : UserModels | None = None,
         global_model: ScoringModel | None = None,
+        past_recommendations: PastRecommendations | None = None,
     ):
         """ Poll contains all information being processed by the pipeline 
         save_directory == False means that no save operation will be performed
         """
         self.users = Users() if users is None else users
         self.entities = Entities() if entities is None else entities
-        self.vouches = Vouches() if vouches is None else vouches
+        self.socials = Socials() if socials is None else socials
         self.public_settings = PublicSettings() if public_settings is None else public_settings
         self.ratings = Ratings() if ratings is None else ratings
         self.comparisons = Comparisons() if comparisons is None else comparisons
         self.voting_rights = VotingRights() if voting_rights is None else voting_rights
         self.user_models = UserModels() if user_models is None else user_models
         self.global_model = ScoringModel() if global_model is None else global_model
+        self.past_recommendations = PastRecommendations() if past_recommendations is None else past_recommendations
         for name, t in self.types.items():
             assert isinstance(getattr(self, name), t), (name, getattr(self, name), t)
 
@@ -75,13 +78,14 @@ class Poll:
         kwargs = dict(
             users=(Users, dict()), 
             entities=(Entities, dict()), 
-            vouches=(Vouches, dict()), 
+            socials=(Socials, dict()), 
             public_settings=(PublicSettings, dict()),
             ratings=(Ratings, dict()), 
             comparisons=(Comparisons, dict()),
             voting_rights=(VotingRights, dict()),
             user_models=("UserModels", dict()),
             global_model=("ScoringModel", dict()),
+            past_recommendations=(PastRecommendations, dict())
         ) | kwargs
         with open(Path(directory) / "poll.yaml") as f: 
             kwargs |= yaml.safe_load(f)
@@ -107,13 +111,14 @@ class Poll:
         Path(directory).mkdir(parents=True, exist_ok=True)
         self.users.save(directory)
         self.entities.save(directory)
-        self.vouches.save(directory)
+        self.socials.save(directory)
         self.public_settings.save(directory)
         self.ratings.save(directory)
         self.comparisons.save(directory)
         self.voting_rights.save(directory)
         self.user_models.save(directory, False)
         self.global_model.save(directory, "global", save_instructions=False)
+        self.past_recommendations.save(directory)
         return self.save_instructions(directory if save_instructions else None)
     
     def save_instructions(self, directory: str | Path | None = None) -> tuple[str, dict]:

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Self
 from pathlib import Path
 
 import yaml
@@ -57,7 +57,7 @@ class PollFunction(ABC):
                 assert isinstance(value, result.__init__.__annotations__[key])
                 setattr(result, key, v)
 
-    def __call__(self, poll: Poll, save_directory: str | None = None) -> Any:
+    def __call__(self, poll: Poll, save_directory: str | None = None) -> Poll:
         """ Must not modify the poll """
         if self.annotations()["return"] == Poll:
             result = self.poll2objects_function(poll)
@@ -91,6 +91,11 @@ class PollFunction(ABC):
                         f"{[arg.__name__ for arg in annotations["return"].__args__]}"
                     )
     
+    @classmethod
+    def load(cls, *args, **kwargs) -> Self:
+        import solidago
+        return solidago.load(*args, **kwargs)
+
     def save(self, filename: str | Path | None = None) -> tuple[str, dict | list | None]:
         y = type(self).__name__, self.args_save()
         if filename is not None:

@@ -7,12 +7,9 @@ from .poll import Poll
 from .tournesol_export import TournesolExport
 
 __all__ = [
-    "User", "Users",
-    "Vouches",
-    "Entity", "Entities",
-    "PublicSetting", "PublicSettings",
-    "Rating", "Ratings",
-    "Comparison", "Comparisons",
+    "User", "Users", "Entity", "Entities",
+    "Social", "Socials", "PublicSetting", "PublicSettings",
+    "Rating", "Ratings", "Comparison", "Comparisons",
     "VotingRights",
     "Score", "Scores", "ScoringModel", "UserModels",
     "DirectScores", "CategoryScores", "Parameters", "Multipliers", "Translations",

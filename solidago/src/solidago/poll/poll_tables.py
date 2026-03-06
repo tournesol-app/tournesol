@@ -27,12 +27,12 @@ class Entities(NamedObjects[Entity]):
         return Entity(str(row.name), row)
 
 
-class Vouch(Row):
+class Social(Row):
     default: dict[str, Any] = dict(weight=0.0, priority=-0.0)
 
-class Vouches(FilteredTable[Vouch]):
-    TableRowType: type = Vouch
-    name: str = "vouches"
+class Socials(FilteredTable[Social]):
+    TableRowType: type = Social
+    name: str = "socials"
     default_column_names: list[str] = ["by", "to", "kind", "weight", "priority"]
     default_keynames: set[str] = {"by", "to", "kind"}
     default_dtypes: dict[str, DTypeLike] = dict(weight=np.float64, priority=np.float64)
@@ -118,3 +118,14 @@ class VotingRights(FilteredTable[VotingRight]):
     default_column_names: list[str] = ["username", "entity_name", "criterion", "voting_right"]
     default_keynames: set[str] = {"username", "entity_name", "criterion"}
     default_dtypes: dict[str, DTypeLike] = dict(voting_right=np.float64)
+
+
+class PastRecommendation(Row):
+    pass
+
+class PastRecommendations(FilteredTable[PastRecommendation]):
+    TableRowType: type = PastRecommendation
+    name: str = "past_recommendations"
+    default_column_names: list[str] = ["username", "entity_name", "context", "timestamp"]
+    default_keynames: set[str] = {"username", "entity_name", "context"}
+    default_dtypes: dict[str, DTypeLike] = dict(timestamp=np.int64)

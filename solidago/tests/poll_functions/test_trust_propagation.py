@@ -23,13 +23,13 @@ def test_lipschitrust_main():
 def test_lipschitrust_simple():
     users0 = Users(dict(name=["0", "1", "2", "3", "4"]))
     users0 = users0.assign(pretrust=[True, True, False, False, False])
-    vouches = Vouches([
+    socials = Socials([
         ("0", "1", "Personhood", 1, 0),
         ("0", "2", "Personhood", 1, 0),
         ("2", "3", "Personhood", 1, 0),
         ("3", "4", "Personhood", 1, 0),
     ], columns=["by", "to", "kind", "weight", "priority"])
-    users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8).fn(users0, vouches)
+    users = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8).fn(users0, socials)
     assert users[0]["trust"] == 0.8
     assert users[4]["trust"] > 0 # type: ignore
     assert users[2]["trust"] == pytest.approx(0.8 * 0.8 / (5 + 2)), users
@@ -38,7 +38,7 @@ def test_lipschitrust_simple():
 def test_lipschitrust_ten_users():
     users = Users(dict(name=[str(i) for i in range(10)]))
     users = users.assign(pretrust=[False, True, False, True, False, False, True, False, False, False])
-    vouches = Vouches([
+    socials = Socials([
         ("1", "0", "Personhood", 1, 0),
         ("1", "3", "Personhood", 1, 0),
         ("1", "7", "Personhood", 1, 0),
@@ -55,28 +55,22 @@ def test_lipschitrust_ten_users():
     ], columns=["by", "to", "kind", "weight", "priority"])
     
     trust_propagator = LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
-    users = trust_propagator.fn(users, vouches)
+    users = trust_propagator.fn(users, socials)
     assert users["1"]["trust"] > 0.8 # type: ignore
     assert users["2"]["trust"] > 0.0 # type: ignore
     assert users["8"]["trust"] == 0.0
     assert users["9"]["trust"] == 0.0
 
     # Add one vouch: 1 -> 8
-    vouches.set(by="1", to="8", kind="Personhood", weight=1, priority=0)
-    users = trust_propagator.fn(users, vouches)
+    socials.set(by="1", to="8", kind="Personhood", weight=1, priority=0)
+    users = trust_propagator.fn(users, socials)
     assert users["8"]["trust"] > 0.0 # type: ignore
 
 
 def test_trust_all():
     users = Users(range(5))
     users = users.assign(pretrust=[True, True, False, False, False])
-    vouches = Vouches([
-        ("0", "1", "Personhood", 1, 0),
-        ("0", "2", "Personhood", 1, 0),
-        ("2", "3", "Personhood", 1, 0),
-        ("3", "4", "Personhood", 1, 0),
-    ], columns=["by", "to", "kind", "weight", "priority"])
-    out_users = TrustAll().fn(users, vouches)
+    out_users = TrustAll().fn(users)
     for user in out_users:
         assert user["trust"] == 1.0
         

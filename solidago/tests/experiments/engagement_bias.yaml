@@ -15,7 +15,7 @@ generator:
     - [users.BernoulliPretrust, {p_if_trustworthy: 0.5, p_if_untrustworthy: 0.0}] # requires users["trustworthy"]
     # Vouch generation
     - [users.AddColumn, {column: expected_n_vouches, distribution: [Zipf, power_decay: 2.0]}]
-    - [vouches.ErdosRenyi, {}] # requires users.expected_n_vouches
+    - [socials.ErdosRenyiVouch, {}] # requires users.expected_n_vouches
     # Engagement generation
     - - users.AddColumn
       - column: n_evaluated_entities

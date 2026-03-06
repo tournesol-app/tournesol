@@ -1,2 +1,2 @@
 from .generator import Generator
-from . import users, entities, vouches, engagements, comparisons, ratings
+from . import socials, users, entities, engagements, comparisons, ratings

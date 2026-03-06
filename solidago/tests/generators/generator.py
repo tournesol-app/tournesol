@@ -3,7 +3,7 @@ from solidago import Generator
 from solidago.generators.engagements.select_entities import BiasedByScore
 import solidago.generators.users as users
 import solidago.generators.entities as entities
-import solidago.generators.vouches as vouches
+import solidago.generators.socials as socials
 import solidago.generators.engagements as engagements
 import solidago.generators.ratings as ratings
 import solidago.generators.comparisons as comparisons
@@ -25,7 +25,7 @@ _modules = [
     users.BernoulliPretrust(p_if_trustworthy=.2, p_if_untrustworthy=0.),
     # Vouch generation
     users.AddColumn("expected_n_vouches", Zipf(power_decay=2.)),
-    vouches.ErdosRenyi(),
+    socials.ErdosRenyiVouch(),
     # Engagement generation
     users.AddColumn("n_evaluated_entities", random.Add([Zipf(power_decay=2.), Poisson(mean=.5)])),
     users.AddColumn("engagement_bias", Normal()),

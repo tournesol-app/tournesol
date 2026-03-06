@@ -28,7 +28,7 @@ class TournesolExport(Poll):
                     return pd.read_csv(f, keep_default_na=False).rename(columns=columns)
                 
             users = load("users", { "public_username": "name", "trust_score": "trust" })
-            vouches = load("vouchers", { 
+            socials = load("vouchers", { 
                 "by_username": "by", 
                 "to_username": "to", 
                 "value": "weight" 
@@ -55,14 +55,14 @@ class TournesolExport(Poll):
                 "uncertainty": "squashed_left_unc",                
             })
         
-        missing_usernames = set(vouches["by"]) | set(vouches["to"]) | set(user_scores["username"])
+        missing_usernames = set(socials["by"]) | set(socials["to"]) | set(user_scores["username"])
         missing_usernames = missing_usernames.difference(set(users["name"]))
         for username in missing_usernames:
             users.loc[len(users)] = [username, 0.]
 
         users["pretrust"] = pd.to_numeric(users["trust"]) >= 0.8
-        vouches["kind"] = "Personhood"
-        vouches["priority"] = 0
+        socials["kind"] = "Personhood"
+        socials["priority"] = 0
         user_scores["depth"] = 0
         global_scores["depth"] = 0
         unsquash = lambda x: np.clip(x, a_min=-99.9, a_max=99.9) / np.sqrt(100**2 - np.clip(x, a_min=-99.9, a_max=99.9)**2)
@@ -80,7 +80,7 @@ class TournesolExport(Poll):
         entities = DataFrame(dict(name=list(entity_names)))
         voting_rights = user_scores[["username", "entity_name", "criterion", "voting_right"]]
         
-        return dict(users=users, vouches=vouches, entities=entities, comparisons= comparisons, 
+        return dict(users=users, socials=socials, entities=entities, comparisons= comparisons, 
             voting_rights=voting_rights, user_scores=user_scores, global_scores=global_scores)
     
     def __init__(self, dataset_zip: str | BinaryIO):
@@ -89,7 +89,7 @@ class TournesolExport(Poll):
         user_directs = UserDirectScores(dfs["user_scores"])
         super().__init__(
             users=Users(dfs["users"]),
-            vouches=Vouches(dfs["vouches"]),
+            socials=Socials(dfs["socials"]),
             entities=Entities(dfs["entities"]),
             public_settings=PublicSettings(),
             comparisons=Comparisons(dfs["comparisons"]),

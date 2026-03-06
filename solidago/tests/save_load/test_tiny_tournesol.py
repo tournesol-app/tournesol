@@ -6,9 +6,9 @@ def test_import():
     
     assert "biscuissec" in t.users, t.users
     assert t.users["le_science4all"]["trust"] == 1
-    assert "NatNgs" in set(t.vouches.filters(by="aidjango").keys("to"))
-    assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["weight"] == 1
-    assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["priority"] == 0
+    assert "NatNgs" in set(t.socials.filters(by="aidjango").keys("to"))
+    assert t.socials.get(by="aidjango", to="biscuissec", kind="Personhood")["weight"] == 1
+    assert t.socials.get(by="aidjango", to="biscuissec", kind="Personhood")["priority"] == 0
     assert "aBdymwisfb4" in t.entities
     assert isinstance(t.public_settings, PublicSettings)
     assert len(t.ratings) == 0
@@ -61,9 +61,9 @@ def test_reimport():
     t = Poll.load("tests/save_load/saved/tiny_tournesol")
     assert "biscuissec" in t.users, t.users
     assert t.users["le_science4all"]["trust"] == 1
-    assert "NatNgs" in set(t.vouches.filters(by="aidjango").keys("to"))
-    assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["weight"] == 1
-    assert t.vouches.get(by="aidjango", to="biscuissec", kind="Personhood")["priority"] == 0
+    assert "NatNgs" in set(t.socials.filters(by="aidjango").keys("to"))
+    assert t.socials.get(by="aidjango", to="biscuissec", kind="Personhood")["weight"] == 1
+    assert t.socials.get(by="aidjango", to="biscuissec", kind="Personhood")["priority"] == 0
     assert "aBdymwisfb4" in t.entities
     assert isinstance(t.public_settings, PublicSettings)
     assert len(t.ratings) == 0

@@ -31,7 +31,7 @@ def test_step_by_step_squash():
     scores = user_models()
     assert isinstance(scores, Scores), scores 
     squashed_scores = deepcopy(scores)
-    squash = poll_functions.SquashProcessing(max=100)
+    squash = SquashProcessing(max=100)
     value, min, max = squash.squash(scores.value), squash.squash(scores.min), squash.squash(scores.max)
     left_unc, right_unc = value - min, max - value
     squashed_scores.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)

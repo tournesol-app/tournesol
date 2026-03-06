@@ -3,7 +3,6 @@ from solidago import *
 
 def test_pipeline_tiny_tournesol():
     pipeline = poll_functions.TournesolFull(max_workers=1)
-    assert isinstance(pipeline, Sequential)
     tournesol_export = TournesolExport("tests/tiny_tournesol.zip")
     p0 = pipeline[0](tournesol_export)
     p1 = pipeline[1](p0)

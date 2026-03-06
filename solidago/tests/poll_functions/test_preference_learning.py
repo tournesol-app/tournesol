@@ -44,8 +44,7 @@ def test_gbt_score_monotonicity(GBT):
 
 @pytest.mark.parametrize("GBT", GBTs)
 def test_uniform_gbt(GBT):
-    generator = load("tests/generators/test_generator.yaml")
-    assert isinstance(generator, Generator)
+    generator = Generator.load("tests/generators/test_generator.yaml")
     generator.seed = 0
     poll = generator.fn()
 
@@ -85,8 +84,7 @@ def test_root_laws(RootLawClass):
 
 def test_numba():
     gbt = NumbaUniformGBT()
-    generator = load("tests/generators/test_generator.yaml")
-    assert isinstance(generator, Generator)
+    generator = Generator.load("tests/generators/test_generator.yaml")
     generator.seed = 0
     poll = generator.fn()
 

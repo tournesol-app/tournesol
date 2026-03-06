@@ -7,15 +7,7 @@ import pandas as pd
 
 from threading import Thread
 
-from solidago.privacy_settings import PrivacySettings
-from solidago.judgments import Judgments, DataFrameJudgments
-from solidago.scoring_model import (
-    ScoringModel, DirectScoringModel, ScaledScoringModel, PostProcessedScoringModel
-)
-
-from solidago.generative_model import GenerativeModel
-from solidago.pipeline import Pipeline
-
+from solidago import *
 from plot import plot, plot_file
 
 logger = logging.getLogger(__name__)
@@ -160,11 +152,11 @@ def run_from_hyperparameters_file(filename):
         hps = json.load(json_file)
     
     logger.info(f"Running experiment with hyperparameters {filename}")
-    generative_model = GenerativeModel.from_json(hps["generative_model"])
-    pipeline = Pipeline.from_json(hps["pipeline"])
+    generator = Generator.load(hps["generative_model"])
+    pipeline = Sequential.load(hps["pipeline"])
     hps["yvalues"] = run_experiment(hps["n_users"], hps["n_entities"], hps["n_seeds"],
         hps["xparameter"], hps["xvalues"], hps["zparameter"], hps["zvalues"],
-        generative_model, pipeline)
+        generator, pipeline)
     
     with open(results_filename, "w") as results_file:
         json.dump(hps, results_file)
@@ -176,10 +168,10 @@ def run_from_hyperparameters_file(filename):
 
 
 if len(sys.argv) == 1:
-    logger.warn("Please specify the hyperparameters of the pipeline experiments in a json file.")
-    logger.warn("The file must specify n_users, n_entities, n_seeds, x_parameter, x_values,")
-    logger.warn("z_parameter, z_values. See `experiments/hyperparameters.json` for an example.")
-    logger.warn("You may then add the filename of the json hyperparameters file.")
+    logger.warning("Please specify the hyperparameters of the pipeline experiments in a json file.")
+    logger.warning("The file must specify n_users, n_entities, n_seeds, x_parameter, x_values,")
+    logger.warning("z_parameter, z_values. See `experiments/hyperparameters.json` for an example.")
+    logger.warning("You may then add the filename of the json hyperparameters file.")
 
 elif sys.argv[1] == "plot":
     from plot import plot_file

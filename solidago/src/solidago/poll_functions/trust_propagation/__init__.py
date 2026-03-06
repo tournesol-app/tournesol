@@ -1,6 +1,6 @@
 """ **Step 1 in the pipeline**
     
-Trust propagation is tasked to combine pretrusts and vouches
+Trust propagation is tasked to combine pretrusts and socials
 to derive trust scores for the different users.
 """
 

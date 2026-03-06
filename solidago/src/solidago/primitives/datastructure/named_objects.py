@@ -149,6 +149,17 @@ class NamedObjects(Generic[Object]):
             return self.row2object(rows)
         return type(self)(rows)
     
+    def filters(self, **kwargs: Any) -> Self:
+        if not kwargs:
+            return self
+        key, value = next(iter(kwargs.items()))
+        del kwargs[key]
+        if isinstance(value, (str, tuple)):
+            return type(self)(self.df[self.df[key] == value]).filters(**kwargs)
+        if isinstance(value, Iterable):
+            return type(self)(self.df[~self.df[key].isin(value)]).filters(**kwargs)
+        return type(self)(self.df[self.df[key] == value]).filters(**kwargs)
+    
     def __setitem__(self, key: tuple[str, str], value: Any):
         self.df.loc[key[0], key[1]] = value
     

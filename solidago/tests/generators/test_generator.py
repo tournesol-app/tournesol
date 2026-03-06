@@ -11,15 +11,16 @@ def test_svd_user_generator():
 
 def test_erdos_renyi_vouch_generator():
     from solidago.primitives.random import Normal, Bernoulli, Zipf
+    from solidago.poll.poll_tables import Socials
     from solidago import generators
     n_users = 10
     users = generators.users.New(n_users, Normal(5)).fn()
     users = generators.users.AddColumn("trustworthy", Bernoulli(0.8)).fn(users)
     users = generators.users.BernoulliPretrust(0.2).fn(users)
     users = generators.users.AddColumn("expected_n_vouches", Zipf(1.5)).fn(users)
-    vouches = generators.vouches.ErdosRenyi().fn(users)
-    for vouch in vouches:
-        assert users[vouch["by"]]["trustworthy"] == users[vouch["to"]]["trustworthy"]
+    socials = generators.socials.ErdosRenyiVouch().fn(users, Socials())
+    for social in socials:
+        assert users[social["by"]]["trustworthy"] == users[social["to"]]["trustworthy"]
     
 def test_svd_entity_generator():
     from solidago.primitives.random import Normal

@@ -40,7 +40,8 @@ def load(classname: Any, base_module: ModuleType | None = None, *args: Any, **kw
         cls = getattr(cls, name)
     
     if type_recovery:
-        f = getattr(cls, "load") if hasattr(cls, "load") else cls
+        # f = getattr(cls, "load") if hasattr(cls, "load") else cls
+        f = cls
         if "path" in kwargs and "path" not in getfullargspec(f).args:
             del kwargs["path"]
         return f(*args, **kwargs) # type: ignore

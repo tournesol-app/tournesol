@@ -21,7 +21,7 @@ class FairChronological:
         self.main_criterion = main_criterion
 
     @abstractmethod
-    def __call__(self, user: User, poll: Poll) -> Entities:
+    def __call__(self, poll: Poll, username: str, limit: int, cursor: str | None = None) -> Entities:
         """ Given a poll, computes a list of entities to be recommended """
 
     def squash(self, x: NDArray) -> NDArray:

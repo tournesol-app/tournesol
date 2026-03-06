@@ -3,9 +3,10 @@ from typing import Iterable
 
 from solidago.poll import *
 from solidago.poll.scoring import *
+from solidago.poll_functions.poll_function import PollFunction
 
 
-class Filtering:
+class Filtering(PollFunction):
     def __init__(self,
         usernames: str | Iterable[str] | None = None,
         entity_names: str | Iterable[str] | None = None,
@@ -19,7 +20,7 @@ class Filtering:
         return Poll(
             self._get_users(poll.users),
             self._get_entities(poll.entities),
-            self._get_vouches(poll.vouches),
+            self._get_socials(poll.socials),
             self._get_public_settings(poll.public_settings),
             self._get_ratings(poll.ratings),
             self._get_comparisons(poll.comparisons),
@@ -38,12 +39,12 @@ class Filtering:
             return deepcopy(entities)
         return Entities(entities.df[entities.df.index.isin(self.entity_names)])
     
-    def _get_vouches(self, vouches: Vouches) -> Vouches:
+    def _get_socials(self, socials: Socials) -> Socials:
         if self.usernames is None:
-            return deepcopy(vouches)
-        df = vouches.df
+            return deepcopy(socials)
+        df = socials.df
         df = df[df.by.isin(self.usernames) & df.to.isin(self.usernames)]
-        return Vouches(df)
+        return Socials(df)
     
     def _get_public_settings(self, public_settings: PublicSettings) -> PublicSettings:
         df = public_settings.df
