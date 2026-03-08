@@ -1,1 +1,2 @@
 from .tocompare.classic import ClassicEntitySuggestionStrategy
+from .tocompare.watched import WatchedEntitySuggestionStrategy

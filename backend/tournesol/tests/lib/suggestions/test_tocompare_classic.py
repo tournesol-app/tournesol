@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
 from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
-from tournesol.lib.suggestions.strategies.tocompare.classic import IdPool
+from tournesol.lib.suggestions.strategies.base import IdPool
 from tournesol.models import RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory
@@ -447,9 +447,9 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results), 15)
         self.assertTrue(set(results) == set(entities_es + entities_fr + entities_it))
 
-    def test_consolidate_results(self):
+    def test_consolidate_pools(self):
         """
-        The `_consolidate_results` should return list made of items from three
+        The `_consolidate_pools` should return list made of items from three
         pools.
 
         If one pool doesn't contain enough items, more items from the other
@@ -465,7 +465,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         # [WHEN] all the pools contain enough items to create samples
         # of the expected size.
-        results = self.strategy._consolidate_results(
+        results = self.strategy._consolidate_pools(
             IdPool(pool1, p1_sample_size),
             IdPool(pool2, p2_sample_size),
             IdPool(pool3, p3_sample_size),
@@ -478,7 +478,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[16:]).issubset(pool3))
 
         # [WHEN] the pool 1 contains empty slots.
-        results = self.strategy._consolidate_results(
+        results = self.strategy._consolidate_pools(
             IdPool(pool1[:7], 9),
             IdPool(pool2, 7),
             IdPool(pool3, 4),
@@ -490,7 +490,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[16:]).issubset(pool3))
 
         # [WHEN] the pool 2 contains empty slots.
-        results = self.strategy._consolidate_results(
+        results = self.strategy._consolidate_pools(
             IdPool(pool1, 9),
             IdPool(pool2[:5], 7),
             IdPool(pool3, 4),
@@ -502,7 +502,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[16:]).issubset(pool3))
 
         # [WHEN] the pool 1 and 2 contain empty slots.
-        results = self.strategy._consolidate_results(
+        results = self.strategy._consolidate_pools(
             IdPool(pool1[:7], 9),
             IdPool(pool2[:5], 7),
             IdPool(pool3, 4),
@@ -513,13 +513,13 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertTrue(set(results[7:12]).issubset(pool2))
         self.assertTrue(set(results[12:]).issubset(pool3))
 
-    def test_get_results_for_user_intermediate_only_compared(self):
+    def test_get_consolidated_results_only_compared(self):
         """
         When the user has 0 entity in his/her rate-later list, the slots
         dedicated to the rate-late list should be filled by compared entity
         ids.
         """
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         self.assertEqual(len(results), 0)
 
         create_contributor_rating_criteria_scores(self.poll1, self.user1, self.videos_new)
@@ -533,7 +533,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         for comp in comparisons_batch_user1:
             ComparisonFactory(poll=self.poll1, user=self.user1, **comp)
 
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         results_ids = [entity.id for entity in results]
 
         self.assertEqual(len(results), 16)
@@ -541,7 +541,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         # The all-time recommendations always fill the remaining empty slots.
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
 
         results_ids = [entity.id for entity in results]
         results_compared = set(results_ids) & set([vid.id for vid in self.videos_new])
@@ -551,13 +551,13 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results_compared), 16)
         self.assertEqual(len(results_alltime_reco), 4)
 
-    def test_get_results_for_user_intermediate_only_ratelater(self):
+    def test_get_consolidated_results_only_ratelater(self):
         """
         When 0 entities have been compared by the user, the slots dedicated to
         compared entities should be filled by ids from the user's rate-later
         list.
         """
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         self.assertEqual(len(results), 0)
 
         rate_later_id = []
@@ -566,7 +566,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
                 RateLater.objects.create(poll=self.poll1, entity=vid, user=self.user1).entity_id
             )
 
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         results_ids = [entity.id for entity in results]
 
         self.assertEqual(len(results), 16)
@@ -574,7 +574,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         # The all-time recommendations always fill the remaining empty slots.
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
 
         results_ids = [entity.id for entity in results]
         results_rate_later = set(results_ids) & set([vid.id for vid in self.videos_new])
@@ -584,17 +584,17 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results_rate_later), 16)
         self.assertEqual(len(results_alltime_reco), 4)
 
-    def test_get_results_for_user_intermediate_only_reco_recent(self):
+    def test_get_consolidated_results_only_reco_recent(self):
         """
         When the user has compared 0 entity and has 0 entity in his/her
         rate later-list, the recent and all-time recommendations should each
         fill half of the free slots.
         """
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         self.assertEqual(len(results), 0)
 
         create_entity_poll_ratings(self.poll1, self.videos_new, True)
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         results_ids = [entity.id for entity in results]
 
         self.assertEqual(len(results), 12)
@@ -602,7 +602,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
 
         # The all-time recommendations always fill the remaining empty slots.
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
 
         results_ids = [entity.id for entity in results]
         results_recent_reco = set(results_ids) & set([vid.id for vid in self.videos_new])
@@ -612,24 +612,24 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(results_recent_reco), 12)
         self.assertEqual(len(results_alltime_reco), 8)
 
-    def test_get_results_for_user_intermediate_only_reco_alltime(self):
-        results = self.strategy.get_results_for_user_intermediate()
+    def test_get_consolidated_results_only_reco_alltime(self):
+        results = self.strategy._get_consolidated_results()
         self.assertEqual(len(results), 0)
 
         create_entity_poll_ratings(self.poll1, self.videos_past, True)
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         results_ids = [entity.id for entity in results]
 
         self.assertEqual(len(results), 20)
         self.assertTrue(set(results_ids).issubset([vid.id for vid in self.videos_past]))
 
-    def test_get_results_for_user_intermediate(self):
+    def test_get_consolidated_results(self):
         """
         The method `_get_result_for_user_intermediate` should return 9
         entities compared by the user, 7 from his/her rate-later list, and 4
         from the recent recommendations.
         """
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         self.assertEqual(len(results), 0)
 
         compared_entities = self.videos_past[:10]
@@ -653,7 +653,7 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
             )
 
         create_entity_poll_ratings(self.poll1, self.videos_new, True)
-        results = self.strategy.get_results_for_user_intermediate()
+        results = self.strategy._get_consolidated_results()
         results_ids = [entity.id for entity in results]
 
         self.assertEqual(len(results), 20)

@@ -58,7 +58,7 @@ class SuggestionsToCompareTestCase(TestCase):
         # limited by poll.
         self.poll2 = PollWithCriteriasFactory.create()
 
-        self.base_url = f"/users/me/suggestions/{self.poll1.name}/tocompare/"
+        self.base_url = f"/users/me/suggestions/{self.poll1.name}/tocompare/?strategy=classic"
 
         self.user1 = UserFactory(username=self._username1)
         self.user2 = UserFactory(username=self._username2)
