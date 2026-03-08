@@ -11,8 +11,6 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
     suggests in priority entities that have been watched/consumed/understood.
     """
 
-    # The expected number of entities retrieved from each pool. The sum should
-    # match the `max_suggestions`.
     sample_size_pool1 = 13
     sample_size_pool2 = 7
     sample_size_pool3 = 0
@@ -78,12 +76,9 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         )
 
         return [sample.id for sample in samples]
-    def get_ids_from_pool1(self) -> list[int]:
 
+    def get_ids_from_pool1(self) -> list[int]:
         return self._ids_watched_from_pool_compared()
 
     def get_ids_from_pool2(self, exclude_ids: list[int]) -> list[int]:
         return self._ids_watched_from_pool_rate_later(exclude_ids)
-
-    def get_results(self):
-        return self.get_results_for_user_intermediate()
