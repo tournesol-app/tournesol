@@ -33,9 +33,9 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
     # The expected number of entities retrieved from each pool. The sum should
     # match the `max_suggestions`.
-    sample_size_compared = 9
-    sample_size_rate_later = 7
-    sample_size_reco_last_month = 4
+    sample_size_pool1 = 9
+    sample_size_pool2 = 7
+    sample_size_pool3 = 4
 
     top_recommendations_limit = 400
     recent_recommendations_days = 30
@@ -217,6 +217,18 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
 
         return sample1 + sample2 + sample3
 
+    def get_ids_from_pool1(self) -> list[int]:
+        return self._ids_from_pool_compared()
+
+    def get_ids_from_pool2(self, exclude_ids: list[int]) -> list[int]:
+        return self._ids_from_pool_rate_later(exclude_ids)
+
+    def get_ids_from_pool3(self, exclude_ids: list[int]) -> list[int]:
+        return self._ids_from_pool_reco_last_month(exclude_ids)
+
+    def get_ids_from_fallback_pool(self, exclude_ids: list[int]) -> list[int]:
+        return self._ids_from_pool_reco_all_time(exclude_ids)
+
     def get_results(self):
         return self.get_results_for_user_intermediate()
 
@@ -226,20 +238,20 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
     def get_results_for_user_intermediate(self):
         poll = self.poll
 
-        pool1 = self._ids_from_pool_compared()
-        pool2 = self._ids_from_pool_rate_later(pool1)
-        pool3 = self._ids_from_pool_reco_last_month(pool1 + pool2)
+        pool1 = self.get_ids_from_pool1()
+        pool2 = self.get_ids_from_pool2(pool1)
+        pool3 = self.get_ids_from_pool3(pool1 + pool2)
 
-        sample1_size = len(pool1[: self.sample_size_compared])
-        sample2_size = len(pool2[: self.sample_size_rate_later])
-        sample3_size = len(pool3[: self.sample_size_reco_last_month])
+        sample1_size = len(pool1[: self.sample_size_pool1])
+        sample2_size = len(pool2[: self.sample_size_pool2])
+        sample3_size = len(pool3[: self.sample_size_pool3])
 
         if sample1_size + sample2_size + sample3_size >= self.max_suggestions:
             return (
                 Entity.objects.filter(
-                    id__in=pool1[: self.sample_size_compared]
-                    + pool2[: self.sample_size_rate_later]
-                    + pool3[: self.sample_size_reco_last_month]
+                    id__in=pool1[: self.sample_size_pool1]
+                    + pool2[: self.sample_size_pool2]
+                    + pool3[: self.sample_size_pool3]
                 )
                 .with_prefetched_poll_ratings(poll_name=poll.name)
                 .order_by("?")
@@ -248,15 +260,15 @@ class ClassicEntitySuggestionStrategy(ContributionSuggestionStrategy):
         # Allow the empty slots from the pool "compared" to be filled by the
         # items of the pool "rate-later" and vice-versa.
         results = self._consolidate_results(
-            IdPool(pool1, self.sample_size_compared),
-            IdPool(pool2, self.sample_size_rate_later),
-            IdPool(pool3, self.sample_size_reco_last_month),
+            IdPool(pool1, self.sample_size_pool1),
+            IdPool(pool2, self.sample_size_pool2),
+            IdPool(pool3, self.sample_size_pool3),
         )
 
         free_slots = self.max_suggestions - len(results)
 
         if free_slots > 0:
-            last_resort = self._ids_from_pool_reco_all_time(results)
+            last_resort = self.get_ids_from_fallback_pool(results)
             results += last_resort[:free_slots]
 
         return (

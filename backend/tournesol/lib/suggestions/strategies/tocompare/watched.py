@@ -13,11 +13,11 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
 
     # The expected number of entities retrieved from each pool. The sum should
     # match the `max_suggestions`.
-    sample_size_compared = 13
-    sample_size_rate_later = 7
-    sample_size_reco_last_month = 0
+    sample_size_pool1 = 13
+    sample_size_pool2 = 7
+    sample_size_pool3 = 0
 
-    def _ids_from_pool_compared(self) -> list[int]:
+    def _ids_watched_from_pool_compared(self) -> list[int]:
         poll = self.poll
         user = self.user
 
@@ -40,7 +40,7 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
             min(len(compared), self.max_suggestions),
         )
 
-    def _ids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
+    def _ids_watched_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
         poll = self.poll
         user = self.user
 
@@ -78,6 +78,12 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         )
 
         return [sample.id for sample in samples]
+    def get_ids_from_pool1(self) -> list[int]:
+
+        return self._ids_watched_from_pool_compared()
+
+    def get_ids_from_pool2(self, exclude_ids: list[int]) -> list[int]:
+        return self._ids_watched_from_pool_rate_later(exclude_ids)
 
     def get_results(self):
         return self.get_results_for_user_intermediate()
