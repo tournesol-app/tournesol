@@ -64,7 +64,7 @@ class NamedObjects(Generic[Object]):
     name: str = "objects"
     
     def __init__(self, 
-        *args: Any, 
+        *args: Any, # df, name_list or pd.DataFrame args
         _name2index: pd.Series | None = None, 
         _index2name: list[str] | None = None, 
         **kwargs: Any
@@ -206,6 +206,13 @@ class NamedObjects(Generic[Object]):
     
     def get_columns(self, names: Iterable[str]) -> pd.DataFrame:
         return self.df[list(names)]
+
+    def drop(self, names: Iterable[str] | str) -> Self:
+        names = [names] if isinstance(names, str) else list(names)
+        return type(self)(self.df.drop(names))
+    
+    def shuffle(self, shuffle: bool = True) -> Self:
+        return type(self)(self.df.sample(frac=1))
 
     @classmethod
     def load(cls, directory: str | Path, source: str | None = None, **kwargs: Any) -> Self:

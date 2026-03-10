@@ -3,21 +3,19 @@ from numpy.typing import NDArray
 import numpy as np
 
 from solidago.poll import *
-from solidago.primitives.similarity import Similarity
+from solidago.recommenders.pivot import Pivot
 
 
-class FairChronological:
+class FairChronological(Pivot):
     def __init__(self, 
         utility_max: float, 
         time_max: float, 
         source_max: float, 
-        entity_similarity: Similarity, 
         main_criterion: str
     ):
         self.utility_max = utility_max
         self.time_max = time_max
         self.source_max = source_max
-        self.entity_similarity = entity_similarity
         self.main_criterion = main_criterion
 
     @abstractmethod
