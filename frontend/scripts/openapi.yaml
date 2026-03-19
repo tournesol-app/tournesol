@@ -3493,6 +3493,8 @@ components:
           type: boolean
         notifications_email__new_features:
           type: boolean
+        home__intro_hidden:
+          type: boolean
     GeneralUserSettingsRequest:
       type: object
       description: The general user settings that are not related to Tournesol polls.
@@ -3502,6 +3504,8 @@ components:
         notifications_email__research:
           type: boolean
         notifications_email__new_features:
+          type: boolean
+        home__intro_hidden:
           type: boolean
     GivenVoucher:
       type: object

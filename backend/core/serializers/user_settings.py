@@ -22,6 +22,7 @@ class GeneralUserSettingsSerializer(serializers.Serializer):
     )
     notifications_email__research = serializers.BooleanField(required=False)
     notifications_email__new_features = serializers.BooleanField(required=False)
+    home__intro_hidden = serializers.BooleanField(required=False)
 
 
 class GenericPollUserSettingsSerializer(serializers.Serializer):
