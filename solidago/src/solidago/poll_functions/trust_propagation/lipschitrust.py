@@ -7,11 +7,11 @@ from collections import defaultdict
 
 import numpy as np
 
-from solidago.state import State
-from solidago.state_functions import StateFunction
+from solidago.poll import Poll
+from solidago.poll_functions import PollFunction
 
 
-class LipschiTrust(StateFunction):
+class LipschiTrust(PollFunction):
     def __init__(
         self,
         pretrust_value: float = 0.8,
@@ -66,7 +66,7 @@ class LipschiTrust(StateFunction):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def __call__(self, state: State) -> State:
+    def __call__(self, state: Poll) -> Poll:
         if len(state.users) == 0:
             return state
 

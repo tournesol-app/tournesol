@@ -7,7 +7,7 @@ from .base import TrustPropagation
 
 import pandas as pd
 
-from solidago.state_functions.trust_propagation.lipschitrust import LipschiTrust as LipschiTrustSF
+from solidago.poll_functions.trust_propagation.lipschitrust import LipschiTrust as LipschiTrustPF
 
 
 class LipschiTrust(TrustPropagation):
@@ -67,7 +67,7 @@ class LipschiTrust(TrustPropagation):
             return users.assign(trust_score=[])
 
         state = self.init_state(users, vouches)
-        propa = LipschiTrustSF(
+        propa = LipschiTrustPF(
             pretrust_value=self.pretrust_value,
             decay=self.decay,
             sink_vouch=self.sink_vouch,

@@ -5,7 +5,7 @@ from .vouches import Vouches
 
 
 @dataclass(frozen=True)
-class State:
+class Poll:
     users: Users
     vouches: Vouches
 

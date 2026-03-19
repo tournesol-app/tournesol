@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from solidago.state import State
-from solidago.state_functions.base import StateFunction
+from solidago.poll import Poll
+from solidago.poll_functions.base import PollFunction
 
 
-class NoTrustPropagation(StateFunction):
+class NoTrustPropagation(PollFunction):
     def __init__(self, pretrust_value: float=0.8, *args, **kwargs):
         """
         Parameters
@@ -15,7 +15,7 @@ class NoTrustPropagation(StateFunction):
         super().__init__(*args, **kwargs)
         self.pretrust_value = pretrust_value
 
-    def __call__(self, state: State) -> State:
+    def __call__(self, state: Poll) -> Poll:
         users = state.users
         return state.assign(
             users=users.assign(
