@@ -8,6 +8,7 @@ import DurationFilter from 'src/features/recommendation/DurationFilter';
 
 import LanguageFilter from './LanguageFilter';
 import DateFilter from './DateFilter';
+import SortFilter from './SortFilter';
 import CriteriaFilter from './CriteriaFilter';
 import UploaderFilter from './UploaderFilter';
 import AdvancedFilter from './AdvancedFilter';
@@ -116,6 +117,16 @@ function SearchFilter({
         <Grid container spacing={4}>
           {pollName === YOUTUBE_POLL_NAME && (
             <>
+              <Grid item xs={6} md={3} lg={3}>
+                <SortFilter
+                  value={
+                    filterParams.get(pollVideosFilters.ordering) ?? 'top_rated'
+                  }
+                  onChange={(value) =>
+                    setFilter(pollVideosFilters.ordering, value)
+                  }
+                />
+              </Grid>
               <Grid
                 item
                 xs={6}
