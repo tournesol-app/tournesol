@@ -16,6 +16,7 @@ from tournesol.tests.factories.ratings import (
     ContributorRatingCriteriaScoreFactory,
     ContributorRatingFactory,
 )
+from tournesol.utils.text_search import build_prefix_tsquery
 
 
 class TextSearchTestCase(TestCase):
@@ -746,3 +747,139 @@ class TextSearchTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], self.setup_results_count)
+
+
+class BuildPrefixTsqueryTest(TestCase):
+    """Verify that build_prefix_tsquery produces valid tsquery strings
+    e.g. "climate chan" -> 'climate & chan:*'."""
+    def test_single_word(self):
+        self.assertEqual(build_prefix_tsquery("climate"), "climate:*")
+
+    def test_multi_word(self):
+        self.assertEqual(build_prefix_tsquery("climate chan"), "climate & chan:*")
+
+    def test_special_chars_stripped(self):
+        self.assertEqual(build_prefix_tsquery("yt:abc"), "yt & abc:*")
+
+    def test_empty_string(self):
+        self.assertEqual(build_prefix_tsquery(""), "")
+
+    def test_only_special_chars(self):
+        self.assertEqual(build_prefix_tsquery("@#$"), "")
+
+
+class TrigramSearchTestCase(TestCase):
+    """Test trigram (pg_trgm) fallback for fuzzy search in FTS."""
+
+    def setUp(self):
+        self.poll = Poll.default_poll()
+        self.poll.algorithm = ALGORITHM_MEHESTAN
+        self.poll.save()
+
+        self.url_base = f"/polls/{self.poll.name}/recommendations/"
+        self.client = APIClient()
+        self.user = UserFactory()
+
+    def _create_rated_entity(self, name="", uploader="", language="en"):
+        entity = VideoFactory(
+            metadata__name=name,
+            metadata__uploader=uploader,
+            metadata__language=language,
+            tournesol_score=30.0,
+            make_safe_for_poll=self.poll,
+        )
+        rating = ContributorRatingFactory(
+            user=self.user, entity=entity, is_public=True
+        )
+        for criteria in self.poll.criterias_list:
+            EntityCriteriaScoreFactory(
+                poll=self.poll, entity=entity, criteria=criteria, score=5.0,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=rating, criteria=criteria, score=5.0,
+            )
+        return entity
+
+    def _search(self, query):
+        url = self.url_base + f"?search={query}&unsafe=true"
+        return self.client.get(url, format="json")
+
+    def test_typo_in_channel_name(self):
+        self._create_rated_entity(uploader="Science4All")
+        response = self._search("Sciance4Al")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+    def test_fts_takes_priority_over_trigram(self):
+        self._create_rated_entity(
+            name="Trafiquant d'humains et marchand de haine",
+            uploader="Science4All",
+        )
+        response = self._search("trafique")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+    def test_no_match_for_unrelated_query(self):
+        self._create_rated_entity(
+            name="Tournesol Live S3E6 - @MonsieurPhi",
+            uploader="Tournesol",
+        )
+        response = self._search("furry")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+
+
+class PrefixSearchTestCase(TestCase):
+    """Test prefix matching (:* operator) in FTS."""
+
+    def setUp(self):
+        self.poll = Poll.default_poll()
+        self.poll.algorithm = ALGORITHM_MEHESTAN
+        self.poll.save()
+        self.url_base = f"/polls/{self.poll.name}/recommendations/"
+        self.client = APIClient()
+        self.user = UserFactory()
+
+    def _create_rated_entity(self, name="", uploader="", language="en"):
+        entity = VideoFactory(
+            metadata__name=name,
+            metadata__uploader=uploader,
+            metadata__language=language,
+            tournesol_score=30.0,
+            make_safe_for_poll=self.poll,
+        )
+        rating = ContributorRatingFactory(
+            user=self.user, entity=entity, is_public=True
+        )
+        for criteria in self.poll.criterias_list:
+            EntityCriteriaScoreFactory(
+                poll=self.poll, entity=entity, criteria=criteria, score=5.0,
+            )
+            ContributorRatingCriteriaScoreFactory(
+                contributor_rating=rating, criteria=criteria, score=5.0,
+            )
+        return entity
+
+    def _search(self, query, language=None):
+        url = self.url_base + f"?search={query}&unsafe=true"
+        if language:
+            url += f"&metadata[language]={language}"
+        return self.client.get(url, format="json")
+
+    def test_partial_word_matches_title(self):
+        self._create_rated_entity(
+            name="Microsoft is endangering national security",
+            uploader="Science4All",
+        )
+        response = self._search("endanger", language="en")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+    def test_multi_word_prefix(self):
+        self._create_rated_entity(
+            name="Google poisoned the science community",
+            uploader="Science4All",
+        )
+        response = self._search("poison comm", language="en")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)

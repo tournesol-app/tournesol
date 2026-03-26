@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Case, F, Prefetch, Sum, When
+from django.db.models import Case, F, FloatField, Prefetch, Sum, When
 from django.shortcuts import get_object_or_404
 from django.utils.cache import patch_vary_headers
 from django.utils.decorators import method_decorator
@@ -225,7 +225,7 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             weights_sum = 1.0
 
         self._weights_sum = weights_sum
-        return Case(*criteria_cases, default=0)
+        return Case(*criteria_cases, default=0, output_field=FloatField())
 
     def _get_raw_weight(self, request, criteria):
         """Get the weight parameters from the URL"""
