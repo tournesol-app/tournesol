@@ -6,7 +6,8 @@
 from .base import TrustPropagation
 
 import pandas as pd
-import numpy as np
+
+from solidago.state_functions.trust_propagation.lipschitrust import LipschiTrust as LipschiTrustSF
 
 
 class LipschiTrust(TrustPropagation):
@@ -65,29 +66,17 @@ class LipschiTrust(TrustPropagation):
         if len(users) == 0:
             return users.assign(trust_score=[])
 
-        total_vouches = vouches["voucher"].value_counts() + self.sink_vouch
-        pretrusts = users["is_pretrusted"] * self.pretrust_value
-        trusts = pretrusts.copy()
-
-        n_iterations = -np.log(len(users) / self.error) / np.log(self.decay)
-        n_iterations = int(np.ceil(n_iterations))
-        for _ in range(n_iterations):
-            # Initialize to pretrust
-            new_trusts = pretrusts.copy()
-            # Propagate trust through vouches
-            for row in vouches.itertuples():
-                discount = self.decay * row.vouch / total_vouches[row.voucher]
-                new_trusts[row.vouchee] += discount * trusts[row.voucher]
-
-            # Bound trusts for Lipschitz resilience
-            new_trusts = new_trusts.clip(upper=1.0)
-
-            delta = np.linalg.norm(new_trusts - trusts, ord=1)
-            trusts = new_trusts
-            if delta < self.error:
-                break
-
-        return users.assign(trust_score=trusts)
+        state = self.init_state(users, vouches)
+        propa = LipschiTrustSF(
+            pretrust_value=self.pretrust_value,
+            decay=self.decay,
+            sink_vouch=self.sink_vouch,
+            error=self.error,
+        )
+        new_state = propa(state)
+        return users.assign(
+            trust_score=pd.Series(index=new_state.users.keys(), data=new_state.users.values("trust"))
+        )
 
     def __str__(self):
         prop_names = ["pretrust_value", "decay", "sink_vouch", "error"]
