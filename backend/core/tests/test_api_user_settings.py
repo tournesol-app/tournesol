@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -45,6 +47,7 @@ class UserSettingsDetailTestCase(TestCase):
                 "notifications__lang": "en",
                 "notifications_email__research": True,
                 "notifications_email__new_features": False,
+                "home__intro_hidden": True,
             },
             "videos": {
                 "comparison__auto_select_entities": True,
@@ -119,11 +122,15 @@ class UserSettingsDetailTestCase(TestCase):
 
         # [WHEN] The user updates its settings by new ones containing only one
         # scope and no extre key.
-        new_settings = {"videos": {"rate_later__auto_remove": 99}}
+        new_settings = {
+            "general": {"home__intro_hidden": True},
+            "videos": {"rate_later__auto_remove": 99},
+        }
         response = self.client.patch(self.settings_base_url, data=new_settings, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        merged_settings = initial_settings.copy()
+        merged_settings = deepcopy(initial_settings)
+        merged_settings["general"] = new_settings["general"]
         merged_settings["videos"].update(new_settings["videos"])
 
         # [THEN] Only the provided keys of the provided scope should be
@@ -132,7 +139,7 @@ class UserSettingsDetailTestCase(TestCase):
         # The API return the settings according ot its serializer...
         self.assertDictEqual(
             response.data,
-            {"videos": {"rate_later__auto_remove": 99}},
+            new_settings,
         )
         # ... but the database contains all saved settings.
         self.user.refresh_from_db()
