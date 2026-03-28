@@ -5,7 +5,10 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
+from tournesol.lib.suggestions.strategies import (
+    ClassicEntitySuggestionStrategy,
+    WatchedEntitySuggestionStrategy,
+)
 from tournesol.serializers.suggestion import EntityToCompare
 from tournesol.utils.http import langs_from_header_accept_language
 from tournesol.views import PollScopedViewMixin
@@ -13,6 +16,7 @@ from tournesol.views import PollScopedViewMixin
 
 class ToCompareStrategy(models.TextChoices):
     CLASSIC = "classic"
+    WATCHED = "watched"
 
 
 @extend_schema_view(
@@ -22,7 +26,7 @@ class ToCompareStrategy(models.TextChoices):
                 name="strategy",
                 required=False,
                 enum=ToCompareStrategy.values,
-                default=ToCompareStrategy.CLASSIC,
+                default=ToCompareStrategy.WATCHED,
                 description="The strategy used to suggest a entities to compare.",
             ),
         ],
@@ -69,15 +73,20 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
         super().initial(request, *args, **kwargs)
 
         langs = self._get_user_preferred_langs(self.fallback_lang)
-        strategy = request.query_params.get("strategy", ToCompareStrategy.CLASSIC)
+        strategy = request.query_params.get("strategy", ToCompareStrategy.WATCHED)
 
         if strategy == ToCompareStrategy.CLASSIC:
             self.strategy = ClassicEntitySuggestionStrategy(
                 self.poll_from_url, request.user, langs
             )
+        elif strategy == ToCompareStrategy.WATCHED:
+            self.strategy = WatchedEntitySuggestionStrategy(
+                self.poll_from_url, request.user, langs
+            )
         else:
-            # Fallback to the classic strategy if an unknown strategy is provided.
-            self.strategy = ClassicEntitySuggestionStrategy(
+            # Fallback to a default strategy if an unknown strategy is
+            # provided.
+            self.strategy = WatchedEntitySuggestionStrategy(
                 self.poll_from_url, request.user, langs
             )
 
