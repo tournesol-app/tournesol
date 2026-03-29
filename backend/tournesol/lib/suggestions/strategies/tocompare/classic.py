@@ -1,5 +1,4 @@
 import random
-from typing import Optional
 
 from core.utils.time import time_ago
 from tournesol.lib.suggestions.strategies.tocompare.base import PoolBasedEntitySuggestionStrategy
