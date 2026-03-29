@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
 from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
-from tournesol.lib.suggestions.strategies.base import IdPool
+from tournesol.lib.suggestions.strategies.tocompare.base import IdPool
 from tournesol.models import RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
 from tournesol.tests.factories.entity import VideoFactory

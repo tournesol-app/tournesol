@@ -1,7 +1,7 @@
 import random
 
 from core.utils.time import time_ago
-from tournesol.lib.suggestions.strategies.base import PoolBasedEntitySuggestionStrategy
+from tournesol.lib.suggestions.strategies.tocompare.base import PoolBasedEntitySuggestionStrategy
 from tournesol.models import ContributorRating, Entity, RateLater
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT
 
@@ -92,7 +92,7 @@ class ClassicEntitySuggestionStrategy(PoolBasedEntitySuggestionStrategy):
 
     def _ids_from_pool_rate_later(self, exclude_ids: list[int]) -> list[int]:
         """
-        Return a random list entity ids from the user's rate-later list.
+        Return a random list of entity ids from the user's rate-later list.
         """
         poll = self.poll
         user = self.user
@@ -176,5 +176,5 @@ class ClassicEntitySuggestionStrategy(PoolBasedEntitySuggestionStrategy):
     def get_ids_from_pool3(self, exclude_ids: list[int]) -> list[int]:
         return self._ids_from_pool_reco_last_month(exclude_ids)
 
-    def get_ids_from_fallback_pool(self, exclude_ids: list[int]) -> list[int]:
+    def get_ids_from_fallback_pool(self, exclude_ids: list[int], _: int) -> list[int]:
         return self._ids_from_pool_reco_all_time(exclude_ids)
