@@ -178,19 +178,19 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
 
         classic_strategy = ClassicEntitySuggestionStrategy(self.poll, self.user, self.languages)
 
-        free_slots -= fallback_ids
+        free_slots -= len(fallback_ids)
         pool1 = classic_strategy.get_ids_from_pool1()
 
         if len(pool1) >= free_slots:
             return fallback_ids + pool1
 
-        free_slots -= pool1
+        free_slots -= len(pool1)
         pool2 = classic_strategy.get_ids_from_pool2(pool1)
 
         if len(pool2) >= free_slots:
             return fallback_ids + pool1 + pool2
 
-        free_slots -= pool2
+        free_slots -= len(pool2)
         pool3 = classic_strategy.get_ids_from_pool3(pool1 + pool2)
 
         return fallback_ids + pool1 + pool2 + pool3
