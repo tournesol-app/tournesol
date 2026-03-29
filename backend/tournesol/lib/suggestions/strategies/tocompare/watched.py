@@ -196,7 +196,8 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         if len(pool3) >= free_slots:
             return watched_ids + pool1 + pool2 + pool3
 
+        free_slots -= len(pool3)
         last_resort = classic_strategy.get_ids_from_fallback_pool(
-            exclude_ids + watched_ids + pool1 + pool2 + pool3
+            exclude_ids + watched_ids + pool1 + pool2 + pool3, free_slots
         )
         return watched_ids + pool1 + pool2 + pool3 + last_resort
