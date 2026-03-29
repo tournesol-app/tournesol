@@ -171,26 +171,26 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         return self._ids_watched_and_reco_last_month(exclude_ids)
 
     def get_ids_from_fallback_pool(self, exclude_ids: list[int], free_slots: int) -> list[int]:
-        fallback_ids = self._ids_watched_and_reco_all_time(exclude_ids)
+        watched_ids = self._ids_watched_and_reco_all_time(exclude_ids)
 
-        if len(fallback_ids) >= free_slots:
-            return fallback_ids
+        if len(watched_ids) >= free_slots:
+            return watched_ids
 
         classic_strategy = ClassicEntitySuggestionStrategy(self.poll, self.user, self.languages)
 
-        free_slots -= len(fallback_ids)
+        free_slots -= len(watched_ids)
         pool1 = classic_strategy.get_ids_from_pool1()
 
         if len(pool1) >= free_slots:
-            return fallback_ids + pool1
+            return watched_ids + pool1
 
         free_slots -= len(pool1)
-        pool2 = classic_strategy.get_ids_from_pool2(pool1)
+        pool2 = classic_strategy.get_ids_from_pool2(exclude_ids + watched_ids + pool1)
 
         if len(pool2) >= free_slots:
-            return fallback_ids + pool1 + pool2
+            return watched_ids + pool1 + pool2
 
         free_slots -= len(pool2)
-        pool3 = classic_strategy.get_ids_from_pool3(pool1 + pool2)
+        pool3 = classic_strategy.get_ids_from_pool3(exclude_ids + watched_ids + pool1 + pool2)
 
-        return fallback_ids + pool1 + pool2 + pool3
+        return watched_ids + pool1 + pool2 + pool3
