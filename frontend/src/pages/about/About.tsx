@@ -52,7 +52,7 @@ const CoreTeamCard = ({
 }: {
   name: string;
   image: string;
-  institution: string;
+  institution?: string;
   role?: string;
   title?: string;
   job: string;
@@ -164,10 +164,13 @@ const AboutPage = () => {
             h3: {
               mb: 1,
             },
+            '.MuiDivider-root': {
+              my: 4,
+            },
           },
         }}
       >
-        <Box my={3}>
+        <Box my={3} textAlign="justify">
           <Typography variant="h3">{t('about.whatIsTournesol')}</Typography>
           <p>
             <Trans i18nKey="about.tournesolIsANonProfit" t={t}>
@@ -187,10 +190,10 @@ const AboutPage = () => {
           </p>
           <p>
             <Trans
-              i18nKey="about.weBelieveThatTheDefinitionOfPublicUtility"
+              i18nKey="about.weBelieveThatTheDefinitionOfCommonInterest"
               t={t}
             >
-              We believe that the definition of &quot;public utility&quot;
+              We believe that the definition of &quot;common interest&quot;
               belongs to citizens, not private corporations. By aggregating
               contributors&apos; judgments through our platform, we aim to
               produce the open data and scores necessary to audit industrial
@@ -216,19 +219,12 @@ const AboutPage = () => {
           </p>
         </Box>
 
-        {/* </ContentBox> */}
+        <Divider />
 
-        <Divider sx={{ maxWidth: '500px', mx: 'auto', my: 3 }} />
-
-        {/* <ContentBox sx={{ p: 4 }}> */}
         <Box my={3}>
           <Grid2 container className={classes.root}>
-            {/* <img height="64px" src="/logos/Tournesol_Logo.png" /> */}
             <Box width="100%">
-              <Typography variant="h3">
-                {/* {t('about.tournesolAssociation')} */}
-                {t('about.currentTeam')}
-              </Typography>
+              <Typography variant="h3">{t('about.currentTeam')}</Typography>
               <p>{t('about.tournesolAssociationDetail')}</p>
             </Box>
             <Grid2
@@ -251,7 +247,6 @@ const AboutPage = () => {
                   name="Jean-Lou Fourquet"
                   image="/people/JeanLou.jpg"
                   institution="AprèsLaBière"
-                  title=""
                   role={t('about.rolePresident')}
                   job="Journalist & Youtuber"
                 />
@@ -298,7 +293,6 @@ const AboutPage = () => {
                 <CoreTeamCard
                   name="Adrien Matissart"
                   image="/people/Adrien.jpeg"
-                  institution=""
                   role={t('about.roleSecretary')}
                   job="Senior Software Engineer"
                 />
@@ -313,9 +307,7 @@ const AboutPage = () => {
                 <CoreTeamCard
                   name="Romain"
                   image="/people/Tournecat.jpeg"
-                  institution=""
                   role={t('about.roleViceSecretary')}
-                  title=""
                   job="Senior Software Engineer"
                 />
               </Grid2>
@@ -330,13 +322,10 @@ const AboutPage = () => {
                   name="Lê Nguyên Hoang"
                   image="/people/Le.jpeg"
                   role="Executive Director"
-                  institution=""
                   title="Dr. in Mathematics"
                   job="AI Researcher and Communicator"
                 />
               </Grid2>
-
-              <Divider flexItem sx={{ width: '100%', my: 2 }} />
 
               <Grid2
                 size={{
@@ -348,8 +337,6 @@ const AboutPage = () => {
                   name="Victor Fersing"
                   image="/people/Victor.jpg"
                   institution="La Fabrique Sociale"
-                  title=""
-                  role="Communication & Events"
                   job="Youtuber"
                 />
               </Grid2>
@@ -371,7 +358,7 @@ const AboutPage = () => {
           </Grid2>
         </Box>
 
-        <Divider sx={{ maxWidth: '500px', mx: 'auto', my: 3 }} />
+        <Divider />
 
         <Grid2 container className={classes.root}>
           <Grid2 className={classes.container} size={12}>
@@ -415,7 +402,7 @@ const AboutPage = () => {
           </Grid2>
         </Grid2>
 
-        <Divider sx={{ maxWidth: '500px', mx: 'auto', my: 3 }} />
+        <Divider />
 
         <Grid2 container className={classes.root}>
           <Grid2 className={classes.container} size={12}>
@@ -558,7 +545,7 @@ const AboutPage = () => {
         </Grid2>
         <Grid2 container className={classes.root}>
           <Grid2 className={classes.container}>
-            <Box maxWidth="100%" sx={{ p: 2 }}>
+            <Box maxWidth="100%" sx={{ p: 2 }} className={classes.card}>
               <img height="64px" src="/logos/Foss_Logo.png" />
               <Typography variant="h4">
                 {t('about.openSourceContributions')}
@@ -579,18 +566,16 @@ const AboutPage = () => {
           </Grid2>
         </Grid2>
         <Grid2 container className={classes.root}>
-          <Grid2 className={classes.container}>
-            <Paper
-              sx={{
-                bgcolor: 'background.emphatic',
-                color: 'white',
-                p: 2,
-                m: 1,
-              }}
-            >
-              <PublicDownloadSection />
-            </Paper>
-          </Grid2>
+          <Paper
+            sx={{
+              bgcolor: 'background.emphatic',
+              color: 'white',
+              p: 2,
+              m: 1,
+            }}
+          >
+            <PublicDownloadSection />
+          </Paper>
         </Grid2>
       </ContentBox>
     </>
