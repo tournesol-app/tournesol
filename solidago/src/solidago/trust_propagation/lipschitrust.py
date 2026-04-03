@@ -75,7 +75,7 @@ class LipschiTrust(TrustPropagation):
         )
         new_state = propa(state)
         return users.assign(
-            trust_score=pd.Series(index=new_state.users.keys(), data=new_state.users.values("trust"))
+            trust_score=new_state.users.values("trust"),
         )
 
     def __str__(self):

@@ -66,15 +66,18 @@ class LipschiTrust(PollFunction):
         self.sink_vouch = sink_vouch
         self.error = error
 
-    def __call__(self, state: Poll) -> Poll:
-        if len(state.users) == 0:
-            return state
+    def __call__(self, poll: Poll) -> Poll:
+        if len(poll.users) == 0:
+            return poll
 
-        users = state.users
-        personhood_vouches = state.vouches.where(lambda v: v["kind"] == "Personhood")
+        users = poll.users
+        personhood_vouches = poll.vouches.filter(kind="Personhood")
+        # personhood_vouches = poll.vouches.where(lambda v: v["kind"] == "Personhood")
+
         total_vouches = defaultdict(lambda: self.sink_vouch)
         for vouch in personhood_vouches.iter():
             total_vouches[vouch.by] += vouch.weight
+
         pretrusts = users.values("is_pretrusted") * self.pretrust_value
         trusts = pretrusts.copy()
 
@@ -97,4 +100,4 @@ class LipschiTrust(PollFunction):
             if delta < self.error:
                 break
 
-        return state.assign(users=users.assign(trust=trusts))
+        return poll.assign(users=users.assign(trust=trusts))

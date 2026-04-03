@@ -10,61 +10,52 @@ from .multi_key_array import MultiKeyArray
 class Objects(MultiKeyArray):
     KEY_NAMES = ["id"]
 
+    def __init__(self, df: pd.DataFrame) -> None:
+        super().__init__(df)
+        self._df.set_index("id", drop=False, inplace=True)
+        self._vectors = pd.DataFrame(index=df["id"])
+
     @classmethod
-    def from_dict(cls, data: dict[tuple, tuple], sparse=False, vector_dims=0):
-        objects = super().from_dict(data, sparse)
+    def from_dict(cls, data: dict[tuple, tuple], vector_dims=0):
+        objects = super().from_dict(data)
         if vector_dims > 0:
-            objects.dataset["vector"] = (
-                cls.KEY_NAMES + ["vector_dim"],
-                np.zeros((objects.n_objects, vector_dims)),
+            objects._vectors = pd.DataFrame(
+                index=objects.keys(),
+                data=np.zeros((objects.n_objects, vector_dims))
             )
         return objects
 
     @property
     def n_objects(self):
-        return len(self.dataset["id"])
+        return len(self)
 
     @property
     def vectors(self):
-        return self.dataset["vector"].to_numpy()
+        return self._vectors.to_numpy()
 
     def values(self, field: str) -> pd.Series:
         if field not in self.VALUE_NAMES:
             raise ValueError(f"Unknown field {field!r}")
-        return self.dataset[field].to_series()
+        return pd.Series(index=self._df["id"], data=self._df[field])
 
     def keys(self) -> np.ndarray:
-        return self.dataset["id"].values
+        return self._df["id"].to_numpy()
 
     def sample(self, n_items: int, replace=False) -> Self:
-        sample_ids = np.random.choice(self.dataset["id"], size=n_items, replace=replace)
+        sample_ids = np.random.choice(self.keys(), size=n_items, replace=replace)
         return self.filter(id=sample_ids)
 
-    def assign(self, **kwargs):
-        dataset = self.dataset.copy()
-        for key, values in kwargs.items():
-            if key not in self.VALUE_NAMES:
-                raise ValueError(f"Unknown field {key!r}")
-            if isinstance(values, (list, np.ndarray)):
-                dataset[key] = (self.KEY_NAMES, values)
-            else:
-                dataset[key] = values
-        return type(self)(dataset=dataset)
+    # def __getitem__(self, key):
+    #     return self._df.where
 
-    def __len__(self):
-        return len(self.dataset["id"])
-
-    def __getitem__(self, key):
-        return self.dataset.sel(id=key)
-
-    @classmethod
-    def load(cls, directory: str, name: str, id_column: str | None = None, **kwargs):
-        if not name.endswith(".csv"):
-            name = f"{name}.csv"
-        filename = f"{directory}/{name}"
-        df = pd.read_csv(filename, keep_default_na=False)
-        if id_column is not None:
-            df.index = df[id_column]
-        df.index.name = "id"
-        dataset = Dataset.from_dataframe(df, sparse=False)
-        return cls(dataset)
+    # @classmethod
+    # def load(cls, directory: str, name: str, id_column: str | None = None, **kwargs):
+    #     if not name.endswith(".csv"):
+    #         name = f"{name}.csv"
+    #     filename = f"{directory}/{name}"
+    #     df = pd.read_csv(filename, keep_default_na=False)
+    #     if id_column is not None:
+    #         df.index = df[id_column]
+    #     df.index.name = "id"
+    #     dataset = Dataset.from_dataframe(df, sparse=False)
+    #     return cls(dataset)

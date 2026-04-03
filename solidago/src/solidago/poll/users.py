@@ -8,7 +8,6 @@ class Users(Objects):
     def range(cls, n: int, vector_dims=0):
         return cls.from_dict(
             {(idx,): ("", False, 0.0) for idx in range(n)},
-            sparse=False,
             vector_dims=vector_dims,
         )
 
@@ -22,4 +21,3 @@ class Users(Objects):
     @classmethod
     def load(cls, directory: str, name: str, id_column: str | None = "username"):
         return super().load(directory=directory, name=name, id_column=id_column)
-        
