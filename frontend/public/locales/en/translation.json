@@ -659,19 +659,16 @@
   },
   "about": {
     "whatIsTournesol": "What is Tournesol?",
-    "introductionTournesol": "Tournesol is an open source platform which provides a tool for collaborative decisions. The main aim of the Tournesol project is to collaboratively identify top videos of public interest by eliciting contributors' judgements on content quality. We hope to contribute to making today's and tomorrow's large-scale algorithms robustly beneficial for all of humanity. Another application of Tournesol's algorithm that we are currently exploring is to collaboratively evaluate candidates in an election. Find out more with our <2>white paper</2>, our <5>GitHub</5>, our <8>Discord</8>, or our <11>LinkedIn page</11>.",
-    "tournesolVision": "We seek to build the foundations of a robust and beneficial algorithmic governance of information at scale",
-    "tournesolVisionRaisingAwareness": "Through raising awareness of the global information crisis",
-    "tournesolVisionCollaborativePlatform": "Through the development of a collaborative platform for evaluation and recommendation of online content",
-    "tournesolVisionResearchOnEthicsOfAlgorithms": "Through research on ethics of algorithms relying on a large and reliable database of human judgements",
-    "whoBuildsTournesol": "Who builds Tournesol?",
-    "tournesolTransparency": "Tournesol seeks to be an extremely transparent project. All contributions to the project are openly visible on our GitHub, description of important concepts and Tournesol's vision can be found on this website, and discussions that guide the development of Tournesol happen openly on our Discord.",
-    "considerHelpingWithDonation": "If you can, please consider helping us <2>with a donation</2>.",
-    "tournesolAssociation": "Tournesol Association",
-    "tournesolAssociationDetail": "Tournesol is supported by the non-profit Tournesol association based in Lausanne, Switzerland.",
+    "tournesolIsANonProfit": "Tournesol is a non-profit association working to protect democracies against the dangers of unregulated recommendation and generative AIs. These AIs shape how we understand the world, but without proper governance, they pose systemic risks to our societies. On <2>tournesol.app</2>, we are leading a participatory research project to study the philosophical principles and desirable mathematical properties that algorithms must possess to be secure, democratic, and robustly beneficial.",
+    "weBelieveThatTheDefinitionOfCommonInterest": "We believe that the definition of \"common interest\" belongs to citizens, not private corporations. By aggregating contributors' judgments through our platform, we aim to produce the open data necessary to audit industrial algorithms and steer the future of AI regulation towards a model that serves the general interest.",
+    "findOutMore": "Find out more with our <2>manifesto</2>, <4>white paper</4>, <7>GitHub</7>, <10>Discord</10>, or <13>LinkedIn page</13>.",
+    "currentTeam": "Current Team",
+    "tournesolAssociationDetail": "Tournesol is supported by the Swiss non-profit Association Tournesol, based in Lausanne, and its chapter Tournesol France, based in Marseille.",
     "rolePresident": "President",
+    "roleVicePresident": "Vice-President",
     "roleTreasurer": "Treasurer",
     "roleSecretary": "Secretary",
+    "roleViceSecretary": "Vice-Secretary",
     "significantContributors": "Significant Contributors",
     "weThankOurContributors": "We are extremely thankful to many significant contributor who are or have been very impactful for the project.",
     "sergeiDescription": "Sergei was among the few people who decided to start building Tournesol. He took over most of the engineering effort and developed the back end, the algorithms and the front end of the first version of the platform.",
@@ -852,10 +849,6 @@
       "criteriaScores": {
         "title": "Scores per criterion"
       }
-    },
-    "twitter": {
-      "intro": "I saw this video on @TournesolApp",
-      "conclusion": "I invite you to watch it and to compare it with other videos 🌻"
     },
     "video": {
       "shareMessageIntro": "I saw this video on Tournesol.",

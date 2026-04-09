@@ -668,22 +668,19 @@
   },
   "about": {
     "whatIsTournesol": "Qu'est-ce que Tournesol ?",
-    "introductionTournesol": "Tournesol est une plateforme libre et open source qui propose un outil de décision collaboratif. Le but principal de cet outil est d'identifier les vidéos d'utilité publique de grandes qualités, de manière collaborative, en s'appuyant sur le jugement de contributeurs. Nous espérons rendre les algorithmes d'aujourd'hui et de demain robustement bénéfiques à grande échelle, pour toute l'humanité. Une autre application que nous explorons en ce moment est d'utiliser l'algorithme de Tournesol pour évaluer des candidats à une élection. Pour en savoir plus consultez notre <2>white paper</2>, notre <5>dépôt GitHub</5>, notre <8>serveur Discord</8>, et notre <11>page LinkedIn </11>.",
-    "tournesolVision": "Nous souhaitons construire les fondations d'une gouvernance algorithmique robuste et bénéfique à grande échelle pour l'information",
-    "tournesolVisionRaisingAwareness": "À travers la sensibilisation à la crise globale de l'information",
-    "tournesolVisionCollaborativePlatform": "À travers le développement d'une plateforme collaborative pour l'évaluation et la recommandation de contenu en ligne",
-    "tournesolVisionResearchOnEthicsOfAlgorithms": "À travers la recherche sur l'éthique des algorithmes en construisant une grande base de données fiable de jugements humains",
-    "whoBuildsTournesol": "Qui fabrique Tournesol ?",
-    "tournesolTransparency": "Tournesol se veut être un projet extrêmement transparent. Toutes les contributions au code source de la plateforme sont visibles sur GitHub\u00a0; la description des concepts importants et la vision du projet sont consultables sur ce site\u00a0; enfin les discussions relatives au développement de Tournesol se déroulent ouvertement sur Discord.",
-    "considerHelpingWithDonation": "Si vous en avez la possibilité, n'hésitez pas à nous aider <2>en faisant un don</2>.",
-    "tournesolAssociation": "L'association Tournesol",
-    "tournesolAssociationDetail": "Le projet est porté par l'association à but non lucratif « Association Tournesol » basée à Lausanne en Suisse.",
+    "tournesolIsANonProfit": "Tournesol est une association à but non lucratif qui œuvre pour protéger les démocraties contre les dangers des IA de recommandation et génératives non régulées. Ces IA façonnent notre compréhension du monde, mais sans une gouvernance appropriée, elles présentent des risques systémiques pour nos sociétés. Sur <2>tournesol.app</2>, nous menons un projet de recherche participatif pour étudier les principes philosophiques et les propriétés mathématiques souhaitables que les algorithmes doivent posséder pour être sûrs, démocratiques et robustement bénéfiques.",
+    "weBelieveThatTheDefinitionOfCommonInterest": "Nous pensons que la définition de l'intérêt général appartient aux citoyens, et non aux entreprises privées. En agrégeant les jugements des contributeurs via notre plateforme, nous visons à produire les données ouvertes nécessaires pour auditer les algorithmes industriels et orienter l'avenir de la régulation de l'IA vers un modèle qui sert l'intérêt général.",
+    "findOutMore": "Pour en savoir plus, consultez notre <2>manifeste</2>, notre <4>livre blanc</4>, <7>GitHub</7>, <10>Discord</10>, ou notre <13>page LinkedIn</13>.",
+    "currentTeam": "Équipe actuelle",
+    "tournesolAssociationDetail": "Le projet est porté par l'association à but non lucratif « Association Tournesol » basée à Lausanne en Suisse, et son antenne Tournesol France, basée à Marseille.",
     "rolePresident": "Président",
+    "roleVicePresident": "Vice-Président",
     "roleTreasurer": "Trésorier",
     "roleSecretary": "Secrétaire",
+    "roleViceSecretary": "Vice-Secrétaire",
     "significantContributors": "Contributeur·rices important·es",
     "weThankOurContributors": "Nous sommes extrêmement reconnaissant envers les contributrices et contributeurs qui ont eu un très grand impact sur le projet.",
-    "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première vesion de la plateforme.",
+    "sergeiDescription": "Sergei était une des quelques personnes qui ont décidé de développer le projet Tournesol. Il a au début assumé la majorité des efforts de developpement pour le back end, les algorithmes et le front end de la première version de la plateforme.",
     "sigmikeDescription": "Michael contribue volontairement au développement open source de beaucoup d'aspects du project comme le site web et l'extension navigateur.",
     "weThankOurPartners": "Partenariats & Collaborations",
     "partnershipWithCalicarpa": "Partenariat avec Calicarpa",
@@ -861,10 +858,6 @@
       "criteriaScores": {
         "title": "Scores par critère"
       }
-    },
-    "twitter": {
-      "intro": "J'ai vu cette vidéo sur @TournesolApp",
-      "conclusion": "Je vous invite à la regarder et à la comparer avec d'autres vidéos 🌻"
     },
     "video": {
       "shareMessageIntro": "J'ai vu cette vidéo sur Tournesol.",
