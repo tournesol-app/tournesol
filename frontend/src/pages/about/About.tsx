@@ -337,7 +337,7 @@ const AboutPage = () => {
                   name="Victor Fersing"
                   image="/people/Victor.jpg"
                   institution="La Fabrique Sociale"
-                  job="Youtuber"
+                  job="Journalist & YouTuber"
                 />
               </Grid2>
 
