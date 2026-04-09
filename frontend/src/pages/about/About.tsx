@@ -248,7 +248,7 @@ const AboutPage = () => {
                   image="/people/JeanLou.jpg"
                   institution="AprèsLaBière"
                   role={t('about.rolePresident')}
-                  job="Journalist & Youtuber"
+                  job="Journalist & YouTuber"
                 />
               </Grid2>
 
