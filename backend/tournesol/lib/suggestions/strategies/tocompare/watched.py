@@ -88,7 +88,7 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
             min(len(results), self.max_suggestions),
         )
 
-        return [sample.id for sample in samples]
+        return [sample.entity_id for sample in samples]
 
     def _ids_watched_and_recommended(
         self,
@@ -119,9 +119,9 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         if limit:
             recommendations = recommendations[:limit]
 
-        already_compared = self._get_compared_sufficiently(entity_filters)
+        already_compared = set(self._get_compared_sufficiently(entity_filters))
 
-        watched = (
+        watched = set(
             ContributorRating.objects.filter(poll=poll, user=user, entity_seen=True)
             .select_related("entity")
             .annotate_n_comparisons()

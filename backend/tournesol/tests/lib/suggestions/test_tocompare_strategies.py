@@ -1,18 +1,25 @@
 from datetime import timedelta
 
+import factory
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
-from tournesol.lib.suggestions.strategies import ClassicEntitySuggestionStrategy
+from tournesol.lib.suggestions.strategies import (
+    ClassicEntitySuggestionStrategy,
+    WatchedEntitySuggestionStrategy,
+)
 from tournesol.lib.suggestions.strategies.tocompare.base import IdPool
 from tournesol.models import RateLater
 from tournesol.tests.factories.comparison import ComparisonFactory
-from tournesol.tests.factories.entity import VideoFactory
+from tournesol.tests.factories.entity import RateLaterFactory, VideoFactory
 from tournesol.tests.factories.entity_poll_rating import EntityPollRatingFactory
 from tournesol.tests.factories.poll import PollWithCriteriasFactory
-from tournesol.tests.factories.ratings import ContributorRatingCriteriaScoreFactory
+from tournesol.tests.factories.ratings import (
+    ContributorRatingCriteriaScoreFactory,
+    ContributorRatingFactory,
+)
 
 
 def create_entity_poll_ratings(poll, entities, recommended):
@@ -660,3 +667,53 @@ class ClassicEntitySuggestionStrategyTestCase(TestCase):
         self.assertEqual(len(set(results_ids) & set([vid.id for vid in compared_entities])), 9)
         self.assertEqual(len(set(results_ids) & set([vid.id for vid in rate_later_entities])), 7)
         self.assertEqual(len(set(results_ids) & set([vid.id for vid in self.videos_new])), 4)
+
+
+class WatchedStragegyTestCase(TestCase):
+    def setUp(self):
+        self.poll1 = PollWithCriteriasFactory(name="poll1", entity_type="video")
+        self.user1 = UserFactory(
+            username="username1",
+            settings={
+                "poll1": {"rate_later__auto_remove": 4},
+            },
+        )
+
+        self.strategy = WatchedEntitySuggestionStrategy(self.poll1, self.user1)
+
+        self.non_watched_videos = VideoFactory.create_batch(20)
+        self.watched_videos = [
+            c.entity
+            for c in ContributorRatingFactory.create_batch(
+                20,
+                entity=factory.Sequence(lambda _n: VideoFactory()),
+                user=self.user1,
+                poll=self.poll1,
+                entity_seen=True,
+            )
+        ]
+
+    def test_get_results_no_result(self):
+        # No video in rate_later, or compared, or recommended
+        results = self.strategy.get_results()
+        self.assertEqual(len(results), 0)
+
+    def test_get_results_with_watched_videos_first(self):
+        # 13 videos watched + compared
+        for v in self.watched_videos[:13]:
+            ComparisonFactory(
+                entity_1=v,
+                entity_2=self.non_watched_videos[0],
+                poll=self.poll1,
+                user=self.user1,
+            )
+        # 7 videos watched + rate_later
+        for v in self.watched_videos[13:20]:
+            RateLaterFactory(entity=v, user=self.user1, poll=self.poll1)
+
+        results = self.strategy.get_results()
+        self.assertEqual(len(results), 20)
+        self.assertSetEqual(
+            set(results),
+            set(self.watched_videos[:20]),
+        )
