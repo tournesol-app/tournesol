@@ -17,6 +17,8 @@ const PROGRESS_TICK_MS = 1000;
 // A video is considered watched if more than this fraction of time has
 // passed.
 const WATCHED_FRACTION = 0.6;
+// NOTE: these constants are also duplicated in the browser extension
+// (see browser-extension/src/detectVideoWatched.js). Keep them in sync.
 
 export const DurationWrapper = React.forwardRef(function DurationWrapper(
   {
