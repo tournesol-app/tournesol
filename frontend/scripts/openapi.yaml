@@ -2400,7 +2400,8 @@ paths:
           type: string
           enum:
           - classic
-          default: classic
+          - watched
+          default: watched
         description: The strategy used to suggest a entities to compare.
       tags:
       - users

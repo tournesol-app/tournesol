@@ -10,7 +10,7 @@ class ContributionSuggestionStrategy(ABC):
     Abstract Base Class for all contribution suggestion strategies.
 
     A contribution can be a list of entities to compare, or comparisons to
-    make, etc.
+    make, a channel to follow, etc.
     """
 
     def __init__(self, poll: Poll, user: User, languages: Optional[list[str]] = None):
