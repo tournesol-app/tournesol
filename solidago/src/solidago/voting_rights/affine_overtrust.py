@@ -108,7 +108,7 @@ class AffineOvertrust(VotingRightsAssignment):
         trust_scores: pd.Series,
         privacy_weights: pd.Series,
     ) -> tuple[pd.Series, float, float, float]:
-        trust_scores_np = trust_scores[privacy_weights.index].fillna(0.0).to_numpy()
+        trust_scores_np = trust_scores[privacy_weights.index].astype(float).fillna(0.0).to_numpy()
         privacy_weights_np = privacy_weights.to_numpy()
         cumulative_trust = self.cumulative_trust(trust_scores_np, privacy_weights_np)
         max_overtrust = self.maximal_overtrust(cumulative_trust)
