@@ -265,7 +265,7 @@ describe('GenericPollUserSettingsForm', () => {
 
       expect(storeDispatchSpy).toHaveBeenCalledTimes(1);
       expect(storeDispatchSpy).lastCalledWith({
-        type: 'settings/replaceSettings',
+        type: 'settings/mergeSettings',
         payload: {
           general: {
             notifications_email__research: true,
