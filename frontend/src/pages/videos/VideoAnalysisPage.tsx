@@ -11,11 +11,10 @@ import CriteriaScoresDistribution from 'src/features/charts/CriteriaScoresDistri
 import EntityContextBox from 'src/features/entity_context/EntityContextBox';
 import ContextualRecommendations from 'src/features/recommendation/ContextualRecommendations';
 import EntityCard from 'src/components/entity/EntityCard';
-import { useLoginState, useScrollToLocation } from 'src/hooks';
+import { useScrollToLocation } from 'src/hooks';
 import { ContributorRating, Recommendation } from 'src/services/openapi';
 import { SelectedCriterionProvider } from 'src/hooks/useSelectedCriterion';
 import PersonalScoreCheckbox from 'src/components/PersonalScoreCheckbox';
-import { CompareNowAction, AddToRateLaterList } from 'src/utils/action';
 import linkifyStr from 'linkify-string';
 import VideoAnalysisActionBar from './VideoAnalysisActionBar';
 import useContributorRating from 'src/hooks/useContributorRating';
@@ -27,7 +26,6 @@ export const VideoAnalysis = ({
 }) => {
   const { t } = useTranslation();
   const [descriptionCollapsed, setDescriptionCollapsed] = useState(false);
-  const actions = useLoginState() ? [CompareNowAction, AddToRateLaterList] : [];
   useScrollToLocation();
 
   const { contributorRating, loadContributorRating } = useContributorRating();
@@ -84,7 +82,6 @@ export const VideoAnalysis = ({
           <Grid2 size={12}>
             <EntityCard
               result={video}
-              actions={actions}
               displayImage={false}
               showEntitySeenIndicator={true}
             />
