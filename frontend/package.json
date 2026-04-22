@@ -17,7 +17,7 @@
     "@use-gesture/react": "^10.3.1",
     "i18next": "^22.4.0",
     "i18next-browser-languagedetector": "^8.0.0",
-    "i18next-http-backend": "^2.1.1",
+    "i18next-http-backend": "^3.0.5",
     "linkify-string": "^4.1",
     "linkifyjs": "^4.3",
     "notistack": "^3.0.2",
