@@ -45,6 +45,7 @@ class UserSettingsDetailTestCase(TestCase):
                 "notifications__lang": "en",
                 "notifications_email__research": True,
                 "notifications_email__new_features": False,
+                "home__intro_hidden": True,
             },
             "videos": {
                 "comparison__auto_select_entities": True,
