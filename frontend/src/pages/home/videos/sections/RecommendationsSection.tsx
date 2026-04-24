@@ -16,7 +16,7 @@ import {
 
 import { useAppDispatch, useAppSelector } from 'src/app/hooks';
 import {
-  mergeSettings,
+  replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
 import { useLoginState } from 'src/hooks';
@@ -38,7 +38,7 @@ const IntroHeader = () => {
   const setIntroHidden = (nextHidden: boolean) => {
     UsersService.usersMeSettingsPartialUpdate({
       requestBody: { general: { home__intro_hidden: nextHidden } },
-    }).then((response) => dispatch(mergeSettings(response)));
+    }).then((response) => dispatch(replaceSettings(response)));
   };
 
   if (isIntroHidden) {

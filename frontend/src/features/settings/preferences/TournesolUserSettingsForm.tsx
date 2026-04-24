@@ -7,7 +7,7 @@ import { Save } from '@mui/icons-material';
 
 import { SettingsSection } from 'src/components';
 import {
-  mergeSettings,
+  replaceSettings,
   selectSettings,
 } from 'src/features/settings/userSettingsSlice';
 import { useNotifications, useScrollToLocation } from 'src/hooks';
@@ -277,7 +277,7 @@ const TournesolUserSettingsForm = () => {
         t('pollUserSettingsForm.preferencesUpdatedSuccessfully')
       );
       setApiErrors(null);
-      dispatch(mergeSettings(response));
+      dispatch(replaceSettings(response));
       (document.activeElement as HTMLElement).blur();
     }
     setDisabled(false);
