@@ -418,6 +418,9 @@
     "thisMonth": "Un mois",
     "thisYear": "Une année",
     "allTime": "Toujours",
+    "sortBy": "Trier par",
+    "topRated": "Mieux notés",
+    "mostRecent": "Plus récent",
     "uploadDate": "Mises en ligne depuis",
     "duration": {
       "title": "Durée (minutes)",

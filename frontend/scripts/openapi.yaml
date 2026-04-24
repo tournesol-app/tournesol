@@ -694,6 +694,20 @@ paths:
         description: If true and a user is authenticated, then entities compared by
           the user will be removed from the response
       - in: query
+        name: ordering
+        schema:
+          enum:
+          - top_rated
+          - most_recent
+          type: string
+          default: top_rated
+          minLength: 1
+        description: |-
+          Sort order for recommendations.
+
+          * `top_rated` - Sort by highest score
+          * `most_recent` - Sort by most recent
+      - in: query
         name: weights
         schema:
           type: object
@@ -1213,6 +1227,20 @@ paths:
           default: false
         description: If true and a user is authenticated, then entities compared by
           the user will be removed from the response
+      - in: query
+        name: ordering
+        schema:
+          enum:
+          - top_rated
+          - most_recent
+          type: string
+          default: top_rated
+          minLength: 1
+        description: |-
+          Sort order for recommendations.
+
+          * `top_rated` - Sort by highest score
+          * `most_recent` - Sort by most recent
       - in: query
         name: weights
         schema:
@@ -2213,6 +2241,20 @@ paths:
           default: false
         description: If true and a user is authenticated, then entities compared by
           the user will be removed from the response
+      - in: query
+        name: ordering
+        schema:
+          enum:
+          - top_rated
+          - most_recent
+          type: string
+          default: top_rated
+          minLength: 1
+        description: |-
+          Sort order for recommendations.
+
+          * `top_rated` - Sort by highest score
+          * `most_recent` - Sort by most recent
       - in: query
         name: weights
         schema:

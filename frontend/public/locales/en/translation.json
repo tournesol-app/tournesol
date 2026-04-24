@@ -410,6 +410,9 @@
     "thisMonth": "A month ago",
     "thisYear": "A year ago",
     "allTime": "All time",
+    "sortBy": "Sort by",
+    "topRated": "Top rated",
+    "mostRecent": "Most recent",
     "uploadDate": "Uploaded",
     "duration": {
       "title": "Duration (minutes)",
