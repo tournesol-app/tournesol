@@ -22,12 +22,12 @@ import {
 import { useLoginState } from 'src/hooks';
 import { UsersService } from 'src/services/openapi';
 
-// Renders the homepage intro and lets authenticated users collapse or expand it.
 const IntroHeader = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { isLoggedIn } = useLoginState();
   const { settings, loaded: settingsLoaded } = useAppSelector(selectSettings);
+  const [btnDisabled, setBtnDisabled] = useState(false);
 
   // Avoid intro flickering on load
   if (isLoggedIn && !settingsLoaded) return null;
@@ -36,9 +36,13 @@ const IntroHeader = () => {
     isLoggedIn && (settings?.general?.home__intro_hidden ?? false);
 
   const setIntroHidden = (nextHidden: boolean) => {
+    setBtnDisabled(true);
     UsersService.usersMeSettingsPartialUpdate({
       requestBody: { general: { home__intro_hidden: nextHidden } },
-    }).then((response) => dispatch(replaceSettings(response)));
+    }).then((response) => {
+      dispatch(replaceSettings(response));
+      setBtnDisabled(false);
+    });
   };
 
   if (isIntroHidden) {
@@ -48,7 +52,7 @@ const IntroHeader = () => {
           position: 'relative',
           display: 'flex',
           justifyContent: 'center',
-          mb: 1,
+          my: 1,
         }}
       >
         <Button
@@ -63,8 +67,9 @@ const IntroHeader = () => {
         </Button>
         <Tooltip title={t('home.expandIntro')}>
           <IconButton
-            onClick={() => setIntroHidden(false)}
             size="small"
+            disabled={btnDisabled}
+            onClick={() => setIntroHidden(false)}
             sx={{
               position: 'absolute',
               top: '50%',
@@ -87,8 +92,9 @@ const IntroHeader = () => {
       {isLoggedIn && (
         <Tooltip title={t('home.collapseIntro')}>
           <IconButton
-            onClick={() => setIntroHidden(true)}
             size="small"
+            disabled={btnDisabled}
+            onClick={() => setIntroHidden(true)}
             sx={{
               position: 'absolute',
               top: 8,
