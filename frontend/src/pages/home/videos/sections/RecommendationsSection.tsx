@@ -70,6 +70,7 @@ const IntroHeader = () => {
             size="small"
             disabled={btnDisabled}
             onClick={() => setIntroHidden(false)}
+            aria-label={t('home.expandIntro')}
             sx={{
               position: 'absolute',
               top: '50%',
@@ -95,6 +96,7 @@ const IntroHeader = () => {
             size="small"
             disabled={btnDisabled}
             onClick={() => setIntroHidden(true)}
+            aria-label={t('home.collapseIntro')}
             sx={{
               position: 'absolute',
               top: 8,
