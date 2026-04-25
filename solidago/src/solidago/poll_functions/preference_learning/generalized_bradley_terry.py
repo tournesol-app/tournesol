@@ -291,7 +291,7 @@ class UniformGBT(GeneralizedBradleyTerry):
             max_workers=max_workers,
         )
     
-    def cumulant_generating_function(self, value_diffs: NDArray) -> NDArray: # type: ignore
+    def cumulant_generating_function(self, value_diffs: NDArray[np.float64]) -> NDArray[np.float64]: # type: ignore
         """ The cgf of UniformGBT is simply log( sinh(value_diff) / value_diff ).
         However, numerical accuracy requires care in the cases 
         where abs(value_diff) is small (because of division by zero)

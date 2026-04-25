@@ -18,7 +18,7 @@ class Users(NamedObjects[User]):
 
 
 class Entity(NamedObject):
-    default: dict[str, bool | int | float | str] = dict()
+    default: dict[str, bool | int | float | str] = dict(date=0.)
 
 class Entities(NamedObjects[Entity]):
     name: str = "entities"
@@ -61,7 +61,7 @@ class Rating(Row):
     default: dict[str, Any] = dict(
         value=np.nan, min=-np.inf, max=np.inf,
         root_law=None, root_law_arg=None, 
-        context="undefined",
+        context="undefined", timestamp=0,
     )
 
 class Ratings(FilteredTable[Rating]):
@@ -78,7 +78,7 @@ class Comparison(Row):
     default: dict[str, Any] = dict(
         value=np.nan, max=np.inf,
         root_law=None, root_law_arg=None, 
-        context="undefined",
+        context="undefined", timestamp=0,
     )
 
 class Comparisons(FilteredTable[Comparison]):

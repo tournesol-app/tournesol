@@ -133,7 +133,7 @@ class NamedObjects(Generic[Object]):
         return self.df.index
     
     def __getitem__(self, 
-        name: Hashable | Object | list[str] | list[Hashable] | NDArray[np.int64] | "NamedObjects" | pd.Index
+        name: int | np.integer | Hashable | Object | list[str] | list[Hashable] | NDArray[np.int64] | "NamedObjects" | pd.Index
     ) -> Object | Self:
         if isinstance(name, (int, np.integer)):
             return self.row2object(self.df.iloc[name])

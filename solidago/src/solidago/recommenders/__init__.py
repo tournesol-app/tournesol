@@ -2,5 +2,7 @@
 
 from .recommender import Recommender
 from .chronological import Chronological
-from .pivot.pivot import Pivot
+from .veche import Veche
 from .fair_chronological import FairChronological
+
+__all__ = ["Recommender", "Chronological", "Veche", "FairChronological"]

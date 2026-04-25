@@ -376,9 +376,11 @@ class FilteredTable(Generic[TableRow]):
         self.keynames = self.default_keynames if keynames is None else set(keynames)
         for keyname in self.keynames:
             if keyname not in self.columns:
-                assert not self.table, f"Cannot add non-column keyname {keyname} at init. \
-                    Columns are {self.columns}. \
-                    Please add it to columns or modify keynames arg."
+                assert not self.table, (
+                    f"Cannot add non-column keyname '{keyname}' at init. "
+                    f"Columns are {self.columns}. "
+                    f"Please add '{keyname}' to columns or modify keynames arg."
+                )
                 self.table.df[keyname] = ""
         assert filter is None or isinstance(filter, Filter)
         self._filter = filter or Filter() # self.filter handles version update

@@ -8,11 +8,11 @@ from solidago.primitives.uncertainty import *
 
 
 @njit
-def prior(values: NDArray, targets: NDArray) -> float:
+def prior(values: NDArray[np.float64], targets: NDArray) -> float:
     return (values**2).sum()
 
 @njit
-def nll(values: NDArray, targets: NDArray) -> float:
+def nll(values: NDArray[np.float64], targets: NDArray) -> float:
     return ((values - targets)**2).sum() / 2
 
 prior_cw_loss_getter, nll_cw_loss_getter = to_cw_loss_getter(prior), to_cw_loss_getter(nll) # type: ignore
