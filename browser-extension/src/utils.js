@@ -89,6 +89,51 @@ export const addRateLater = async (video_id, entitySeen = false) => {
   };
 };
 
+/**
+ * Update the `entity_seen` field of a contributor rating.
+ *
+ * If the contributor rating doesn't exist yet, it is created.
+ * This matches the frontend's `updateContributorRatingEntitySeen` behavior.
+ */
+export const updateContributorRatingEntitySeen = async ({
+  videoId,
+  entitySeen,
+}) => {
+  const uid = 'yt:' + videoId;
+
+  const patchResponse = await fetchTournesolApi(
+    `users/me/contributor_ratings/videos/${uid}/`,
+    { method: 'PATCH', data: { entity_seen: entitySeen } }
+  );
+
+  if (!patchResponse) {
+    return { success: false };
+  }
+
+  if (patchResponse.ok) {
+    return { success: true };
+  }
+
+  // If the contributor rating doesn't exist, create it.
+  if (patchResponse.status === 404) {
+    // `is_public` matches the `comparisonsCanBePublic` poll option of the
+    // `videos` poll in the frontend (see frontend/src/utils/constants.tsx).
+    const postResponse = await fetchTournesolApi(
+      'users/me/contributor_ratings/videos/',
+      {
+        method: 'POST',
+        data: { uid: uid, entity_seen: entitySeen, is_public: true },
+      }
+    );
+
+    if (postResponse && postResponse.ok) {
+      return { success: true };
+    }
+  }
+
+  return { success: false };
+};
+
 export const addRateLaterBulk = async (videoIds) => {
   const rateLaterBulkResponse = await fetchTournesolApi(
     'users/me/rate_later/videos/_bulk_create?entity_seen=true',

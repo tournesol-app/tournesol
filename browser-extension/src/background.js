@@ -11,6 +11,7 @@ import {
   getRecommendationsLanguagesAuthenticated,
   getSingleSetting,
   getVideoStatistics,
+  updateContributorRatingEntitySeen,
 } from './utils.js';
 
 import { frontendHost } from './config.js';
@@ -146,6 +147,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.message == 'addRateLater') {
     addRateLater(request.video_id).then(sendResponse);
+    return true;
+  }
+
+  if (request.message === 'updateContributorRatingEntitySeen') {
+    updateContributorRatingEntitySeen({
+      videoId: request.videoId,
+      entitySeen: request.entitySeen,
+    }).then(sendResponse);
     return true;
   }
 

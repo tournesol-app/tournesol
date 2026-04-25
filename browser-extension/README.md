@@ -46,6 +46,8 @@ Before loading the extension into your browser, you need to run `yarn configure`
 
 By default, the script creates an extension that connects to the production Tournesol website. If you want to connect to your development servers, you can run `yarn configure:dev` instead.
 
+The default is also to build a Manifest V2 extension for Firefox. To build a Manifest V3 extension for Chrome, run `EXTENSION_BROWSER=chrome MANIFEST_VERSION=3 yarn configure`.
+
 ### Code Quality
 
 We use `ESLint` to find and fix problems in the JavaScript code.
