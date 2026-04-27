@@ -12,19 +12,20 @@ class Chronological(Recommender):
         cursor: str | None = None
     ) -> Entities:
         followings = poll.socials.filters(by=username, kind="follow").get_column("to")
-        entities = poll.entities.filters(author=followings)
         reposts = poll.ratings.filters(username=list(followings), criterion="repost")
-        entity_dates = {e.name: e["date"] for e in entities}
+        
+        entity_dates = {e.name: e["date"] for e in poll.entities.filters(author=followings)}
         for repost in reposts:
             entity_name = repost["entity_name"]
-            if entity_name in entity_dates:
+            if poll.entities[entity_name]["author"] == username:
+                continue
+            elif entity_name not in entity_dates:
                 entity_dates[entity_name] = repost["timestamp"]
             else:
                 date = entity_dates[entity_name]
-                entity_dates[entity_name] = np.max(repost["timestamp"], date)
-        dates = np.array(entity_dates.values())
+                entity_dates[entity_name] = max(repost["timestamp"], date)
+        
+        dates = np.array(list(entity_dates.values()))
         argsort = np.argsort(dates)[::-1][:limit]
-        entity_names = np.array(entity_dates.keys())[argsort]
-        recommendations = entities[entity_names]
-        assert isinstance(recommendations, Entities)
-        return recommendations
+        entity_names = np.array(list(entity_dates.keys()))[argsort]
+        return poll.entities.filters(list(entity_names))

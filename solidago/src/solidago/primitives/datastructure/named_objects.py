@@ -148,8 +148,13 @@ class NamedObjects(Generic[Object]):
         if isinstance(rows, pd.Series):
             return self.row2object(rows)
         return type(self)(rows)
-    
-    def filters(self, **kwargs: Any) -> Self:
+
+    def filters(self, 
+        names: list[str] | NDArray[np.int64] | pd.Index | None = None,
+        **kwargs: Any
+    ) -> Self:
+        if names is not None:
+            return type(self)(self.df.loc[names]).filters(**kwargs)
         if not kwargs:
             return self
         key, value = next(iter(kwargs.items()))
@@ -157,7 +162,7 @@ class NamedObjects(Generic[Object]):
         if isinstance(value, (str, tuple)):
             return type(self)(self.df[self.df[key] == value]).filters(**kwargs)
         if isinstance(value, Iterable):
-            return type(self)(self.df[~self.df[key].isin(value)]).filters(**kwargs)
+            return type(self)(self.df[self.df[key].isin(value)]).filters(**kwargs)
         return type(self)(self.df[self.df[key] == value]).filters(**kwargs)
     
     def __setitem__(self, key: tuple[str, str], value: Any):

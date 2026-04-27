@@ -230,7 +230,9 @@ class _Table:
         filter = Filter()
         for name, key in keys.items():
             if isinstance(key, list):
-                indices = np.concatenate([self._cache.indices(name, k) for k in key], dtype=np.int64)
+                indices = np.concatenate([
+                    self._cache.indices(name, k) for k in key
+                ], dtype=np.int64)
                 filter = filter & Filter(indices)
             else:
                 indices = self._cache.indices(name, key)
@@ -425,8 +427,16 @@ class FilteredTable(Generic[TableRow]):
         return self.filter & self.table.get_filter(**keys)
     
     def filters(self, **keys: Hashable | list[Hashable]) -> Self:
-        keynames = [name for name in self.keynames if name not in keys or isinstance(keys[name], list)]
-        return type(self)(self.table, filter=self._get_filter(**keys), keynames=keynames, **self.filters_kwargs())
+        keynames = [
+            name for name in self.keynames 
+            if name not in keys or isinstance(keys[name], list)
+        ]
+        return type(self)(
+            self.table, 
+            filter=self._get_filter(**keys), 
+            keynames=keynames, 
+            **self.filters_kwargs()
+        )
     
     def filters_kwargs(self) -> dict[str, Any]:
         return dict()
