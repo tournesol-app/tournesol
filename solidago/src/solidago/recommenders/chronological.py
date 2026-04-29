@@ -16,10 +16,10 @@ class Chronological(Recommender):
         cursor: str | None = None
     ) -> Entities:
         followings = poll.socials.filters(by=username, kind=self.follow_kind).get_column("to")
-        reposts = poll.ratings.filters(username=list(followings), criterion=self.rating_criteria)
-        entity_names = set(poll.entities.filters(author=followings).names()) \
-            | reposts.keys("entity_name")
-        entities = poll.entities.filters(entity_names)
+        reposts = poll.ratings.filters(username=followings, criterion=self.rating_criteria)
+        names = set(poll.entities.filters(author=followings).names()) | reposts.keys("entity_name")
+        entities = poll.entities.filters(names)
+        entities = entities.excludes(author=username)
         entities = entities.assign(last_date=entities.get_column("date"))
         
         for repost in reposts:

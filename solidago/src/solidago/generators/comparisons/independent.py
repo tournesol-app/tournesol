@@ -42,7 +42,7 @@ class Independent(PollFunction):
     def compare(self, 
         comparison: Comparison, 
         user: User, left: Entity, right: Entity, 
-        left_public: bool, right_public, 
+        left_public: bool, right_public: bool, 
         criterion: str
     ) -> dict[str, Any]:
         malicious = "trustworthy" in user and not user["trustworthy"]

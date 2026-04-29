@@ -1,0 +1,59 @@
+\section{Context}
+\label{sec:context}
+
+The classical approach to the design of recommendation algorithms
+strongly relies on prediciting users' preference signals (e.g., likes or ratings)
+~\cite{bobadilla2013recommender,DBLP:journals/csur/ZangerleB23,DBLP:journals/inffus/PanPCC26}.
+Such a prediction method can leverage user and/or item similarities \cite{DBLP:journals/csur/SilvaMH24}, 
+(nonnegative) matrix factorization \cite{DBLP:journals/tai/AhmadianBRFMJ25},
+deep learning algorithms \cite{DBLP:conf/recsys/CovingtonAS16},
+graph neural networks \cite{DBLP:journals/tors/GaoZLLQPQCJHL23},
+or reinforcement learning \cite{DBLP:journals/csur/AfsarCF23}.
+
+However, by fitting a user's like, swipe and scroll actions, 
+these algorithms may create radicalization~\cite{gauthier2026political} 
+and affective polarization~\cite{tornberg2022digital},
+overemphasize instinctive preferences while dismissing thoughtful judgments~\cite{kahneman2011thinking},
+and exacerbate rabbit holes that endanger mental health~\cite{ahmed2024social}.
+Such considerations are unfortunately too often deprioritized by academic research.
+For instance, the survey~\cite{DBLP:journals/ijon/AljunidHHASA25}
+reads ``the main objective of RS is to increase the company's sales.''
+Given the recent judicial rulings in the US and the EU about ``addictive social media designs''
+that include a qualification of some recommendation systems as ``dark patterns'' 
+\cite{eu-tiktok-preliminary,reuters-dutch-meta,instagram-youtube-landmark},
+the algorithms that result from this line of research could be considered
+to run the risk of producing potentially illegal algorithms.
+
+Conversely, increasing attention has been given to 
+``trustworthy recommender systems''~\cite{DBLP:journals/tors/GeLFTLXLXZ25}
+with greater focus on privacy~\cite{DBLP:journals/ejis/LiU12}, 
+explainability~\cite{DBLP:journals/ftir/ZhangC20}, 
+fairness~\cite{DBLP:conf/sigir/DoU22,DBLP:journals/tois/WangM00M23}, 
+diversity~\cite{wu2024result}, 
+robustness~\cite{DBLP:journals/csur/ZhangCSWTSC26}
+and user control~\cite{DBLP:journals/jiis/AtasFEPTU21}.
+Our solution \Veche{} arguably scores brilliantly in all these dimensions.
+It naturally provides high explainability, 
+strong fairness between followed users,
+robustness to non-followed users,
+and user control through follow decisions and hyperparameter selections.
+By upgrading it with Tillé's pivot algorithm~\CITE{}, 
+we can additionally provide diversity.
+Finally, Section~\ref{sec:interoperability} discusses 
+how a decentralization of \Veche{} can provide privacy for following users,
+and how homomorphic encryption~\cite{rivest1978data} and differential privacy~\cite{DBLP:conf/tamc/Dwork08}
+could yield privacy for followed users.
+
+To construct \Veche{}, we built upon inspiring prior work on AI governance.
+We especially leverage the concept of simulating a vote 
+between the stakeholders' algorithmic representatives introduced by
+WeBuildAI~\cite{DBLP:journals/pacmhci/LeeKKKYCSNLPP19} for food donation,
+as well as by~\cite{DBLP:conf/aaai/NoothigattuGADR18} and~\cite{DBLP:journals/ai/FreedmanBSDC20}
+for autonomous car dilemmas and kidney donation.
+Inspired by the more careful psychological analysis 
+of human preferences of~\cite{DBLP:conf/aaai/Hoang19,DBLP:conf/hci/LechiakhM23},
+\Veche{} also provides a clear distinction 
+between a user's preferences for what the recommendations they receive,
+and their preferences for what they want their followers to be recommended,
+Finally, it leverages alternative platforms that welcome alternative recommendation systems,
+in particular BlueSky~\cite{kleppmann2024bluesky} and Tournesol~\cite{hoang2025tournesol}.

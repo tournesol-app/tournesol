@@ -1,0 +1,194 @@
+\usepackage{nicefrac}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm,bbm,xfrac,url,hyperref,authblk}
+\usepackage{fullpage}
+\usepackage{graphicx,xcolor,mathtools}
+\usepackage{caption,subcaption,wrapfig}
+\usepackage{enumitem}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+% \usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+% \usepackage{ifthen}
+% \usepackage[font=small]{subfig}
+% \usepackage{lineno}
+
+\usepackage{todonotes}
+\newcommand{\len}[1]{\todo[linecolor=green,backgroundcolor=green!25,bordercolor=green,inline]{{\bf Lê:} #1}}
+
+\newcommand{\CITE}{{\bf \color{red} [CITE]}}
+
+\newcommand{\mathsep}{,~}
+\newcommand{\st}{\,\middle|\,}
+\newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{\card}[1]{\left\lvert{#1}\right\rvert}
+\newcommand{\absv}[1]{\card{#1}}
+\newcommand{\norm}[2]{\left\lVert{#1}\right\rVert_{#2}}
+\newcommand{\floor}[1]{\left\lfloor{#1}\right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil{#1}\right\rceil}
+
+\newcommand{\setR}{\mathbb R}
+\newcommand{\setN}{\mathbb N}
+\newcommand{\setS}[1]{\mathbb S^{#1}}
+\newcommand{\setX}{\mathbb X}
+\newcommand{\setY}{\mathbb Y}
+
+\newcommand{\pb}[1]{\mathbb P\left[#1\right]}
+\newcommand{\expect}[1]{\mathbb E\left[#1\right]}
+\newcommand{\var}[1]{\mathbb V\left[#1\right]}
+\newcommand{\indicator}[1]{\mathbbm{1}\left[#1\right]}
+
+\newcommand{\pbVariable}[2]{\mathbb P_{#1}\left[#2\right]}
+\newcommand{\expectVariable}[2]{\mathbb E_{#1}\left[#2\right]}
+\newcommand{\varVariable}[2]{\mathbb V_{#1}\left[#2\right]}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{example}{Example}
+\newtheorem{corollary}{Corollary}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Position}{\bbX}
+
+\newcommand{\cA}{\mathcal A}
+\newcommand{\cB}{\mathcal B}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\cD}{\mathcal D}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cF}{\mathcal F}
+\newcommand{\cG}{\mathcal G}
+\newcommand{\cH}{\mathcal H}
+\newcommand{\cI}{\mathcal I}
+\newcommand{\cJ}{\mathcal J}
+\newcommand{\cK}{\mathcal K}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\cM}{\mathcal M}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\cO}{\mathcal O}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\cQ}{\mathcal Q}
+\newcommand{\cR}{\mathcal R}
+\newcommand{\cS}{\mathcal S}
+\newcommand{\cT}{\mathcal T}
+\newcommand{\cU}{\mathcal U}
+\newcommand{\cV}{\mathcal V}
+\newcommand{\cW}{\mathcal W}
+\newcommand{\cX}{\mathcal X}
+\newcommand{\cY}{\mathcal Y}
+\newcommand{\cZ}{\mathcal Z}
+
+\newcommand{\bA}{{\bf A}}
+\newcommand{\bB}{{\bf B}}
+\newcommand{\bC}{{\bf C}}
+\newcommand{\bD}{{\bf D}}
+\newcommand{\bE}{{\bf E}}
+\newcommand{\bF}{{\bf F}}
+\newcommand{\bG}{{\bf G}}
+\newcommand{\bH}{{\bf H}}
+\newcommand{\bI}{{\bf I}}
+\newcommand{\bJ}{{\bf J}}
+\newcommand{\bK}{{\bf K}}
+\newcommand{\bL}{{\bf L}}
+\newcommand{\bM}{{\bf M}}
+\newcommand{\bN}{{\bf N}}
+\newcommand{\bO}{{\bf O}}
+\newcommand{\bP}{{\bf P}}
+\newcommand{\bQ}{{\bf Q}}
+\newcommand{\bR}{{\bf R}}
+\newcommand{\bS}{{\bf S}}
+\newcommand{\bT}{{\bf T}}
+\newcommand{\bU}{{\bf U}}
+\newcommand{\bV}{{\bf V}}
+\newcommand{\bW}{{\bf W}}
+\newcommand{\bX}{{\bf X}}
+\newcommand{\bY}{{\bf Y}}
+\newcommand{\bZ}{{\bf Z}}
+
+\newcommand{\ba}{{\bf a}}
+\newcommand{\bb}{{\bf b}}
+\newcommand{\bc}{{\bf c}}
+\newcommand{\bd}{{\bf d}}
+\newcommand{\be}{{\bf e}}
+% \newcommand{\bf}{{\bf f}}
+\newcommand{\bg}{{\bf g}}
+\newcommand{\bh}{{\bf h}}
+\newcommand{\bi}{{\bf i}}
+\newcommand{\bj}{{\bf j}}
+\newcommand{\bk}{{\bf k}}
+\newcommand{\bl}{{\bf l}}
+% \newcommand{\bm}{{\bf m}}
+\newcommand{\bn}{{\bf n}}
+\newcommand{\bo}{{\bf o}}
+\newcommand{\bp}{{\bf p}}
+\newcommand{\bq}{{\bf q}}
+\newcommand{\br}{{\bf r}}
+\newcommand{\bs}{{\bf s}}
+\newcommand{\bt}{{\bf t}}
+\newcommand{\bu}{{\bf u}}
+\newcommand{\bv}{{\bf v}}
+\newcommand{\bw}{{\bf w}}
+\newcommand{\bx}{{\bf x}}
+\newcommand{\by}{{\bf y}}
+\newcommand{\bz}{{\bf z}}
+
+\newcommand{\bbA}{\mathbb A}
+\newcommand{\bbB}{\mathbb B}
+\newcommand{\bbC}{\mathbb C}
+\newcommand{\bbD}{\mathbb D}
+\newcommand{\bbE}{\mathbb E}
+\newcommand{\bbF}{\mathbb F}
+\newcommand{\bbG}{\mathbb G}
+\newcommand{\bbH}{\mathbb H}
+\newcommand{\bbI}{\mathbb I}
+\newcommand{\bbJ}{\mathbb J}
+\newcommand{\bbK}{\mathbb K}
+\newcommand{\bbL}{\mathbb L}
+\newcommand{\bbM}{\mathbb M}
+\newcommand{\bbN}{\mathbb N}
+\newcommand{\bbO}{\mathbb O}
+\newcommand{\bbP}{\mathbb P}
+\newcommand{\bbQ}{\mathbb Q}
+\newcommand{\bbR}{\mathbb R}
+\newcommand{\bbS}{\mathbb S}
+\newcommand{\bbT}{\mathbb T}
+\newcommand{\bbU}{\mathbb U}
+\newcommand{\bbV}{\mathbb V}
+\newcommand{\bbW}{\mathbb W}
+\newcommand{\bbX}{\mathbb X}
+\newcommand{\bbY}{\mathbb Y}
+\newcommand{\bbZ}{\mathbb Z}
+
+\newcommand{\ta}{\tilde a}
+\newcommand{\tb}{\tilde b}
+\newcommand{\tc}{\tilde c}
+\newcommand{\td}{\tilde d}
+\newcommand{\te}{\tilde e}
+\newcommand{\tf}{\tilde f}
+\newcommand{\tg}{\tilde g}
+% \newcommand{\th}{\tilde h}
+\newcommand{\ti}{\tilde i}
+\newcommand{\tj}{\tilde j}
+\newcommand{\tk}{\tilde k}
+\newcommand{\tl}{\tilde l}
+\newcommand{\tm}{\tilde m}
+\newcommand{\tn}{\tilde n}
+% \newcommand{\to}{\tilde o}
+\newcommand{\tp}{\tilde p}
+\newcommand{\tq}{\tilde q}
+\newcommand{\tr}{\tilde r}
+\newcommand{\ts}{\tilde s}
+% \newcommand{\tt}{\tilde t}
+\newcommand{\tu}{\tilde u}
+\newcommand{\tv}{\tilde v}
+\newcommand{\tw}{\tilde w}
+\newcommand{\tx}{\tilde x}
+\newcommand{\ty}{\tilde y}
+\newcommand{\tz}{\tilde z}

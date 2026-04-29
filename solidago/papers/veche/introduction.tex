@@ -1,0 +1,97 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Social media have been recently sentenced 
+for their endangerement of the mental health of young people.
+In the Netherlands, this has led to an imposition on Meta 
+to reintroduce a reverse chronological feed~\cite{reuters-dutch-meta}.
+This feed is also widely used by alternative social media,
+like Mastodon, PeerTube and BlueSky.
+However, even though it is extremely interpretable,
+the reverse chronology recommendation algorithm fails 
+to provide a satisfactory user experience.
+Additionally, it favors hyperactive publishers,
+and incentivizes fast and massive content creation.
+More generally, it does not fully address the demands for influence traceability.
+
+In this paper, we propose \Veche{}\footnote{
+    Veche was a popular assembly among some Slavic peoples during the Middle Ages. \\
+    The name is not set in stone yet, but I would strongly want it to promote democracy.
+    Other candidates include T\'uath, Ecclesia or Landsgemeinde.
+    Ideally, I'd love something close in spirit to the algorithm
+    (i.e. selecting who you listen and gathering them to vote on what you should know).
+    Feel free to check \url{https://en.wikipedia.org/wiki/History_of_democracy}
+    or other sources to come up with other proposals.
+},
+an alternative, modular and flexible following-based recommendation algorithm
+grounded in social choice theory principles.
+\Veche{} implements the following key principle.
+
+\begin{center}
+    \emph{A follow is the allocation of a unit voting right of influence.}
+\end{center}
+
+More specifically, \Veche{} considers that, when Alice follows some user $u$,
+the user $u$ is given a unit voting right in a social choice mechanism
+that will then (stochastically) construct Alice's recommendation feed.
+Put differently, the user $u$ then gets to submit a ballot $b_u$.
+A voting system will then aggregate all followed users' ballots,
+and return a feed based on these ballots,
+with the guarantee that each user $u$'s influence is bounded by their unit voting right,
+no matter what ballot $b_u$ is submitted.
+
+Given that a ballot $b_u$ must be be submitted upon any of Alice's query for a feed,
+and given that she expects to receive a feed within a fraction of a second,
+the construction of $b_u$ will have to be automated, 
+based on user $u$'s past activities (posts, reposts, reports...).
+The ballot-construction mechanism may called an \emph{algorithmic representative},
+following the principles put forth 
+by~\cite{DBLP:journals/pacmhci/LeeKKKYCSNLPP19,DBLP:conf/aaai/NoothigattuGADR18,DBLP:journals/ai/FreedmanBSDC20}.
+While any user $u$ could construct any algorithm to represent them by submitting ballots $b_u$,
+most users will require a default construction of an algorithmic representative.
+The paper also proposes a default algorithmic representative for all users.
+
+More concretely, our contributions are the following.
+
+\begin{itemize}
+    \item We introduce \Veche{}, a highly flexible social choice mechanism,
+    through which followed users can vote for the content of Alice's feed,
+    and we provide mathematical guarantees on the maximal impact of a followed user.
+    \item We show how to leverage \Veche{}'s flexibility and algorithmic representatives
+    to propose a general and practical deployment that responds to user needs and constraints,
+    such as minimal user experience modifications,
+    simple time decay management with desirable mathematical properties,
+    tunable followed users' volumes,
+    including preferred semantic biases,
+    encouraging reposts and reports over posts,
+    and feed diversification using Tillé's pivot algorithm~\CITE{}.
+    \item We provide mathematical proofs that \Veche{} 
+    and some of its proposed instantiation details are well-behaved,
+    thereby providing interpretability and trustworthiness.
+    \item We provide a free and open-source implementation of \Veche{},
+    as part of the Solidago library~\cite{hoang2022solidago}.
+    We also deploy \Veche{} on Tournesol~\cite{hoang2025tournesol} and BlueSky~\cite{kleppmann2024bluesky}.
+    We also provide the materials to effortlessly 
+    adapt and redeploy our algorithms through the AT protocol~\cite{kleppmann2024bluesky}.
+    % \item We evaluate our algorithms through user surveys,
+    % thereby directly assessing their concrete impacts.
+\end{itemize}
+
+Overall, we believe that the desirable properties of our algorithm,
+especially in terms of the traceability of influence,
+make a compelling case to make it, perhaps through legal enforcement, 
+the default recommendation algorithm for all social media,
+instead of the reverse chronological feed.
+
+The rest of the paper is organized as follows.
+First, Section~\ref{sec:context} provides some context and a review of related literature.
+Next, for mostly pedagogical reasons,
+Section~\ref{sec:model} opens with a simple instantiation of \Veche{}, 
+and provides proofs of its main guarantees.
+Section~\ref{sec:generalizations} then shows generalization of the first instantiation,
+to highlight the flexibility of \Veche{},
+and to show how to respond to various needs in practical deployments.
+Section~\ref{sec:evaluation} evaluates \Veche{} and other recommendation algorithms
+along Tournesol's four digital democracy pillars.
+Section~\ref{sec:experiments} reports our empirical analysis.
+Section~\ref{sec:conclusion} concludes.

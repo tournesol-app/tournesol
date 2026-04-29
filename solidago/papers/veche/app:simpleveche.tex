@@ -1,0 +1,436 @@
+\section{Proof that $\norm{\cdot}{1,k}$ is a semi-norm (Proposition~\ref{prop:seminorm})}
+\label{app:seminorm}
+
+\begin{proof}
+    Absolute homonogeneity 
+    $\norm{\lambda w}{1, k} = \absv{\lambda} \cdot \norm{w}{1,k}$
+    is straightforward.
+    We also have
+    \begin{align*}
+        \norm{w + w'}{1,k}
+        &= \inf_{\substack{\bE \subset [E] \\ \card{\bE} = E - k + 1}}
+            \sum_{e \in \bE} \absv{w_e + w_e'} 
+        \leq \inf_{\substack{\bE \subset [E] \\ \card{\bE} = E - k + 1}} \set{
+            \sum_{e \in \bE} \absv{w_e} 
+            + \sum_{e \in \bE} \absv{w_e'} 
+        } \\
+        &\leq \inf_{\substack{\bE \subset [E] \\ \card{\bE} = E - k + 1}} \set{
+            \sum_{e \in \bE} \absv{w_e}
+        } + \inf_{\substack{\bE' \subset [E] \\ \card{\bE'} = E - k + 1}} \set{
+            + \sum_{e \in \bE'} \absv{w_e'} 
+        } 
+        = \norm{w}{1,k} + \norm{w'}{1,k}.
+    \end{align*}
+    Note however that, while clearly nonnegative,
+    $\norm{\cdot}{1,k}$ is not positive definite.
+    Indeed, for $k \geq 2$, vectors ${\bf e}$ of the canonical basis 
+    verify $\norm{\bf e}{1,k} = 0$.
+\end{proof}
+
+
+\section{Proof of \SimpleVeche{}'s resilience (Theorem~\ref{th:simpleveche})}
+\label{app:simpleveche}
+
+This section provides a proof of a generalization of Theorem~\ref{th:simpleveche},
+which bounds the maximal impact of a followed user.
+More precisely, we consider a slightly generalized setting with user volumes.
+Define the weights as
+\begin{align}
+    \Weights(v, b) 
+    \triangleq \max \set{0, \sum_{u \in [U]} v_u b_u / \norm{b_u}{1}}.
+\end{align}
+
+\begin{theorem}
+\label{th:lipschitz_simpleveche}
+    Let $v \in \setR_{\geq 0}^U$, $b \in \setR^{U \times E}$ and $k \in \setN$.
+    If $\norm{W(v, b)}{1, k} > 0$, then
+    \begin{align}
+        \TotalVariationDistance \left(
+            \SimpleVeche_{1:k} (v, b),
+            \SimpleVeche_{1:k} (v', b),
+        \right)
+        \leq \norm{v - v'}{1} 
+            \sum_{i=1}^k \norm{\Weights(v, b)}{1, i}^{-1}.
+    \end{align}
+\end{theorem}
+
+Note that when 
+$\norm{v - v'}{1} > \left( \sum \norm{\Weights(v, b)}{1, k}^{-1} \right)^{-1}$,
+the bound becomes trivial as,
+by definition, the total variational distance lies between $0$ and $1$.
+This will hold in particular if 
+$\norm{v - v'}{1} > \sum \norm{\Weights(v, b)}{1, k}$,
+i.e. the shift in voting right allocations is larger 
+than the worst-case weight allocation after $k-1$ recommendations.
+It is also noteworthy that the obvious inequality
+$\norm{w}{1,i} \leq \norm{w}{1,j}$ for $i < j$
+implies that the right-hand side is itself upper-bounded by
+$k \norm{v - v'}{1} \norm{\Weights (v, b)}{1,k}^{-1}$.
+
+\begin{proof}[Proof of Theorem~\ref{th:simpleveche}]
+Theorem~\ref{th:simpleveche} is easily derived 
+from Theorem~\ref{th:lipschitz_simpleveche} as the special case
+where $v \triangleq (1)_{u \in [U]} \in \setR_{\geq 0}^U$,
+and $v'_{x} \triangleq v_x \indicator{x \neq u}$ for all $x \in [U]$,
+i.e. $v'$ removes user $u$'s voting right.
+\end{proof}
+
+
+% \subsection{A few remarks}
+
+% Before moving to the proof, let us make a couple of remarks.
+
+% \paragraph{Weighing first recommendations more.}
+% In practice, Alice may care more about the first recommendations that are made,
+% rather than about the latter ones.
+% While it does not do so formally, 
+% our proof can be easily modified to account for this.
+% More precisely, for $\tilde f, \tilde f' \in \cF_k^E$ 
+% and $L \in \setR_{\geq 0}^k$, denote
+% \begin{align}
+%     \WeightedTotalVariationDistance (\tilde f, \tilde f' | L)
+%     \triangleq \inf_{\text{Coupling} F, F' \text{ of } \tilde f, \tilde f'}
+%         \sum_{i = 1}^k L_i \pb{F_i \neq F_i'}
+% \end{align}
+
+
+\paragraph{Relation with Lipschitz resilience.}
+Theorem~\ref{th:lipschitz_simpleveche} looks similar 
+to Lipschitz resilience~\cite{DBLP:conf/aistats/AllouahGHV24}.
+Lipschitz resilience demands that 
+the social mechanism $\setR_{\geq 0}^U \times \bbX^U \to \bbY$ 
+be Lipschitz continuous as a function of users' voting rights
+(using the $\ell_1$ norm as a metric for voting rights).
+In our context, we would have $\bbX \triangleq \setR^E$ (user ballots)
+and $\bbY \triangleq \Delta(\cF^E)$ with the $\TotalVariationDistance$ metric.
+Theorem~\ref{th:lipschitz_simpleveche} does not guarantee Lipschitz resilience,
+because our right-hand side is a function of $\norm{\Weights(v, b)}{1,i}$
+for $i \in [1, k]$,
+which depends on both $v$ and $b$.
+This highlights two aspects of \SimpleVeche{}.
+
+First, as already discussed in the main part of our paper,
+the resilience of \SimpleVeche{} is weakened by negative ballot weights,
+as preventing the recommendations of many entities
+facilitate the arecommendations of other entities.
+This could be mitigated 
+by the prior identification of definitely safe entities to recommend.
+
+Second, the dependence on $v$ simply highlights the fact 
+that if Alice only follows a single user,
+then her recommendations will be heavily influenced by this single user.
+This dependency risk can be mitigated by encouraging Alice 
+to multiply and diversify her list of followed accounts.
+It could also be mitigated once again by a fallback to safe entities to recommend,
+when her follow list is insufficiently long.
+
+
+\subsection{Useful lemmas to prove Theorem~\ref{th:lipschitz_simpleveche}}
+
+We first prove a lemma.
+
+\begin{lemma}
+    \label{lemma:weights_resilience}
+    For all $v \in \setR_{\geq 0}^U$ and $b \in \setR^{U \times E}$,
+    $\norm{\Weights(v, b) - \Weights(v', b)}{1} \leq \norm{v - v'}{1}$.
+\end{lemma}
+
+\begin{proof}
+    Now note that, for all entity $e \in [E]$, we can bound
+    \begin{align}
+        \absv{w_e - w_e'}
+        &= \absv{
+            \max\set{0, \sum_{u \in [U]} v_u \tilde b_{ue}}
+            - \max\set{0, \sum_{u \in [U]} v_u' \tilde b_{ue}}
+        }.
+    \end{align}
+    Using the fact that $z \mapsto \max \set{0, z}$ 
+    is clearly 1-Lipschitz continuous,
+    we derive
+    \begin{align}
+        \absv{w_e - w_e'}
+        &\leq \absv{
+            \sum_{u \in [U]} v_u \tilde b_{ue}
+            - \sum_{u \in [U]} v_u' \tilde b_{ue}
+        }
+        = \absv{\sum_{u \in [U]} (v_u - v_u') \tilde b_{ue}}
+        \leq \sum_{u \in [U]} \absv{v_u - v_u'} \cdot \absv{\tilde b_{ue}}.
+    \end{align}
+    Adding up over $e \in [E]$ then yields
+    \begin{align}
+        \norm{w - w'}{1}
+        &= \sum_{e \in [E]} \absv{w_e - w_e'}
+        \leq \sum_{e \in [E]} \sum_{u \in [U]} \absv{v_u - v_u'} \cdot \absv{\tilde b_{ue}} \\
+        &= \sum_{u \in [U]} \absv{v_u - v_u'} \sum_{e \in [E]} \absv{\tilde b_{ue}}
+        = \sum_{u \in [U]}\absv{v_u - v_u'} \underbrace{\norm{\tilde b_u}{1}}_{=1}
+        = \norm{v - v'}{1},
+    \end{align}
+    which yields the lemma.
+\end{proof}
+
+\begin{lemma}
+    \label{lemma:one-sample}
+    For $w \in \setR_{\geq 0}^E$ with $\norm{w}{1} > 0$,
+    define $\tilde e(w) \in \Delta([E])$ the distribution of an element $e \in [E]$ selected,
+    if it is drawn with probability $w_e / \norm{w}{1}$.
+    Then, for any $w, w' \in \setR_{\geq 0}^E$ with $\norm{w}{1} > 0$ and $\norm{w'}{1} > 0$,
+    \begin{align}
+        \TotalVariationDistance(\tilde e(w), \tilde e(w')) \leq \frac{\norm{w - w'}{1}}{\norm{w}{1}}.
+    \end{align}
+\end{lemma}
+
+\begin{proof}
+    Given that $\norm{w}{1} > 0$ and $\norm{w'}{1} > 0$,
+    the distributions of $\tilde e(w)$ and $\tilde e(w')$ 
+    are discrete probabilities in $\Delta([E])$.
+    It is well-known that the total variation distance for discrete probabilities is given by
+    \begin{align}
+        \TotalVariationDistance (\tilde e(w), \tilde e(w'))
+        &= \frac{1}{2} \sum_{e^* \in [E]} \absv{
+            \pb{e = e^* \st e \sim \tilde e(w)}
+            - \pb{e = e^* \st e \sim \tilde e(w')}
+        } \\
+        &= \frac{1}{2} \sum_{e \in [E]} \absv{
+            \frac{w_e}{\norm{w}{1}}
+            - \frac{w_e'}{\norm{w'}{1}}
+        }.
+    \end{align}
+    We now leverage the triangle inequality, yielding
+    \begin{align}
+        \TotalVariationDistance &(\tilde e(w), \tilde e(w'))
+        = \frac{1}{2} \sum_{e \in [E]} \absv{
+            \frac{w_e}{\norm{w}{1}} - \frac{w_e'}{\norm{w}{1}}
+            + \frac{w_e'}{\norm{w}{1}} - \frac{w_e'}{\norm{w'}{1}}
+        } \\
+        &\leq \frac{1}{2} \sum_{e \in [E]} \frac{\absv{w_e - w_e'}}{\norm{w}{1}}
+        + \frac{1}{2} \sum_{e \in [E]} \absv{
+            \left( \frac{1}{\norm{w}{1}} - \frac{1}{\norm{w}{1}}\right) 
+            w_e'
+        } \\
+        &\leq \frac{1}{2 \norm{w}{1}} \sum_{e \in [E]} \absv{w_e - w_e'}
+        + \frac{\absv{\norm{w'}{1} - \norm{w}{1}}}{2 \norm{w}{1} \cdot \norm{w'}{1}} 
+            \sum_{e \in [E]} \absv{w_e'} \\
+        &= \frac{\norm{w - w'}{1} + \absv{\norm{w}{1} - \norm{w'}{1}}}{2 \norm{w}{1}}.
+    \end{align}
+    Again, by the triangle inequality, 
+    we have $\norm{w - w'}{1} \geq \absv{\norm{w}{1} - \norm{w'}{1}}$.
+    This then yields
+    \begin{align}
+        \TotalVariationDistance &(\tilde e(w), \tilde e(w'))
+        \leq \frac{\absv{\norm{w}{1} - \norm{w'}{1}} + \norm{w - w'}{1}}{2 \norm{w}{1}} 
+        \leq \frac{\norm{w - w'}{1}}{\norm{w}{1}},
+    \end{align}
+    which concludes the proof.
+\end{proof}
+
+
+\subsection{Total variation distance of joint distribution}
+
+For any distribution $\tilde x$ on a finite set $\bbX$,
+we define $\Support(\tilde x) \triangleq \set{x \in \bbX \st \pb{\tilde x = x} > 0}$
+its support.
+
+\begin{lemma}
+    \label{lemma:joint-distribution}
+    Consider two finite sets $\bbX_1$ and $\bbX_2$.
+    Let $\tilde x, \tilde x' \in \Delta(\bbX_1 \times \bbX_2)$.
+    Then 
+    \begin{align}
+        \TotalVariationDistance (\tilde x, \tilde x') 
+        &\leq \TotalVariationDistance (\tilde x_1, \tilde x_1') 
+        + \sup_{x_1 \in \Support(\tilde x_1) \cup \Support(\tilde x_1')} 
+            \TotalVariationDistance (\tilde x_2 | x_1, \tilde x_2' | x_1).
+    \end{align}
+\end{lemma}
+
+\begin{proof}
+    By a slight abuse of notation, 
+    we use interchangeably the distribution $\tilde x$
+    and a random variable $\tilde x$ that follows this distribution.
+    Denote alose $\bS_1 \triangleq \Support(\tilde x_1) \cup \Support(\tilde x_1')$.
+    Our proof essentially boils down to the triangle inequality.
+    More precisely, we have
+    \begin{align}
+        &\TotalVariationDistance (\tilde x, \tilde x') 
+        = \frac{1}{2} \sum_{x \in \bbX_1 \times \bbX_2} \absv{
+            \pb{\tilde x = x}
+            - \pb{\tilde x' = x}
+        } \\
+        &= \frac{1}{2} \sum_{(x_1, x_2) \in \bbX_1 \times \bbX_2} \absv{
+            \pb{\tilde x_1 = x_1 \wedge \tilde x_2 = x_2}
+            - \pb{\tilde x_1' = x_1 \wedge \tilde x_2' = x_2}
+        } \\
+        &= \frac{1}{2} \sum_{(x_1, x_2) \in \bbX_1 \times \bbX_2} \absv{
+            \pb{\tilde x_1 = x_1} \pb{\tilde x_2 = x_2 \st \tilde x_1 = x_1}
+            - \pb{\tilde x_1' = x_1} \pb{\tilde x_2' = x_2 \st \tilde x_1' = x_1}
+        } \\
+        &\leq \frac{1}{2} \sum_{(x_1, x_2) \in \bbX_1 \times \bbX_2} \absv{
+            \pb{\tilde x_1 = x_1} \pb{\tilde x_2 = x_2 \st \tilde x_1 = x_1}
+            - \pb{\tilde x_1' = x_1} \pb{\tilde x_2 = x_2 \st \tilde x_1 = x_1}
+        } \nonumber \\
+        &\quad + \frac{1}{2} \sum_{(x_1, x_2) \in \bbX_1 \times \bbX_2} \absv{
+            \pb{\tilde x_1' = x_1} \pb{\tilde x_2 = x_2 \st \tilde x_1 = x_1}
+            - \pb{\tilde x_1' = x_1} \pb{\tilde x_2' = x_2 \st \tilde x_1' = x_1}
+        } \\
+        &\leq \frac{1}{2} \sum_{x_1 \in \bbX_1} 
+        \absv{
+            \pb{\tilde x_1 = x_1} - \pb{\tilde x_1' = x_1}
+        } \underbrace{
+            \sum_{x_2 \in \bbX_2} \pb{\tilde x_2 = x_2 \st \tilde x_1 = x_1}
+        }_{= 1}
+        \nonumber \\
+        &\quad + \sum_{x_1 \in \bbX_1} 
+        \pb{\tilde x_1' = x_1} \cdot \underbrace{
+            \frac{1}{2} \sum_{x_2 \in \bbX_2} \absv{
+                \pb{\tilde x_2 = x_2 \st \tilde x_1 = x_1}
+                - \pb{\tilde x_2' = x_2 \st \tilde x_1' = x_1}
+            }
+        }_{= \TotalVariationDistance(\tilde x_2|x_1, \tilde x_2'|x_1)} \\
+        &\leq \frac{1}{2} \sum_{x_1 \in \bbX_1} \absv{
+            \pb{\tilde x_1 = x_1} - \pb{\tilde x_1' = x_1}
+        } + \left( 
+            \sup_{x_1 \in \bbX_1} 
+            \TotalVariationDistance(\tilde x_2 | x_1, \tilde x_2' | x_1) 
+        \right) \underbrace{\sum_{x_1 \in \bS_1} \pb{\tilde x_1' = x_1}}_{= 1} \\
+        &= \TotalVariationDistance(\tilde x_1, \tilde x_1')
+        + \sup_{x_1 \in \bS_1} 
+            \TotalVariationDistance(\tilde x_2 | x_1, \tilde x_2' | x_1),
+    \end{align}
+    which is the lemma.
+\end{proof}
+
+% \begin{proof}
+%     We construct a maximal coupling for two random variables $(X, X')$,
+%     such that the marginal distribution of $X$ equals $\tilde x$,
+%     and the marginal distribution of $X'$ equals $\tilde x'$.
+%     It is well known that 
+%     $\TotalVariationDistance (\tilde x, \tilde x') \leq \pb{X \neq X'}$.
+%     Therefore
+%     \begin{align}
+%         \TotalVariationDistance (\tilde x, \tilde x') 
+%         &\leq \pb{X_1 \neq X_1' \vee X_2 \neq X_2'} \\
+%         &= \pb{X_1 \neq X_1' \vee \left( 
+%             (X_2 \neq X_2') \wedge (X_1' = X_1) 
+%         \right)} \\
+%         &= \pb{X_1 \neq X_1'} + \pb{(X_2 \neq X_2') \wedge (X_1' = X_1)}.
+%     \end{align}
+% \end{proof}
+
+\subsection{Proof of Theorem~\ref{th:lipschitz_simpleveche}}
+
+\begin{proof}[Proof of Theorem~\ref{th:lipschitz_simpleveche}]
+    Our proof goes by induction. 
+    The case $k = 1$ is a direct result 
+    of Lemma~\ref{lemma:weights_resilience} and 
+    Lemma~\ref{lemma:one-sample}
+    (using the fact that $\norm{\cdot}{1,1} = \norm{\cdot}{1}$).
+
+    Now assume that 
+    \begin{align}
+        \TotalVariationDistance \left(
+            \SimpleVeche_{1:k} (v, b),
+            \SimpleVeche_{1:k} (v', b),
+        \right)
+        \leq \norm{v - v'}{1} \sum_{i=1}^k \norm{W(v, b)}{1, i}^{-1}.
+    \end{align}
+    We then note that $\SimpleVeche_{1:k+1}$ can be viewed as a distribution
+    over $E^k \times E$,
+    i.e. it first selects the first $k$ entities of the feed,
+    and then the $(k+1)$-th entity.
+    Denote $\cF^E_k \triangleq \set{f \in [E]^k \st \card{f([k])} = k}$
+    the set of feeds of $k$ all-different entities
+    and $d \triangleq \TotalVariationDistance \left(
+        \SimpleVeche_{1:k+1} (v, b),
+        \SimpleVeche_{1:k+1} (v', b),
+    \right)$ the distance we want to upper-bound.
+    By Lemma~\ref{lemma:joint-distribution}, we have
+    \begin{align}
+        d \leq \norm{v - v'}{1} \sum_{i=1}^k \norm{W(v, b)}{1, i}^{-1}.
+            + \sup_{f_{1:k} \in \cF^E_k} \TotalVariationDistance\left(
+            \SimpleVeche_{k+1} (v, b) | f_{1:k},
+            \SimpleVeche_{k+1} (v', b) | f_{1:k},
+        \right).
+    \end{align}
+    We now remark that $k+1$-th entity to be drawn 
+    is drawn as described in Lemma~\ref{lemma:one-sample},
+    but with the vectors $\Weights(v, b)_{|[E] - f_{1:k}([k])}$
+    and $\Weights(v', b)_{|[E] - f_{1:k}([k])}$,
+    i.e. with the weight vectors where the weights 
+    of the previously drawn entities $e \in f_{1:k} ([k])$ are nullified.
+    Therefore,
+    \begin{align}
+        d \leq \norm{v - v'}{1} \sum_{i=1}^k \norm{W(v, b)}{1, i}^{-1}.
+        + \sup_{f_{1:k} \in \cF^E_k} \frac{
+            \norm{
+                \Weights(v, b)_{|[E] - f_{1:k}([k])}
+                - \Weights(v', b)_{|[E] - f_{1:k}([k])}
+            }{1}
+        }{
+            \norm{\Weights(v, b)_{|[E] - f_{1:k}([k])}}{1}
+        }.
+    \end{align}
+    We now observe that canceling some coordinates 
+    can only reduce the $\ell_1$ distance between two vectors, 
+    thus
+    $\norm{
+        \Weights(v, b)_{|[E] - f_{1:k}([k])}
+        - \Weights(v', b)_{|[E] - f_{1:k}([k])}
+    }{1} \leq \norm{
+        \Weights(v, b)
+        - \Weights(v', b)
+    }{1}$.
+    By Lemma~\ref{lemma:weights_resilience},
+    we know that this is at most $\norm{v - v'}{1}$.
+    Hence
+    \begin{align}
+        d 
+        &\leq \norm{v - v'}{1} \sum_{i=1}^k \norm{W(v, b)}{1, i}^{-1}.
+        + \norm{v - v'}{1} \sup_{f_{1:k} \in \cF^E_k}
+            \norm{\Weights(v, b)_{|[E] - f_{1:k}([k])}}{1}^{-1}
+    \end{align}
+    We now note that
+    \begin{align}
+        \sup_{f_{1:k} \in \cF^E_k}
+            \norm{\Weights(v, b)_{|[E] - f_{1:k}([k])}}{1}^{-1}
+        \leq \left(
+            \inf_{\substack{\bF \subset [E] \\ \card{\bF} = k}}
+            \norm{\Weights(v, b)_{|[E] - \bF}}{1}
+        \right)^{-1}
+        \leq \norm{\Weights(v, b)}{1, k+1}^{-1}.
+    \end{align}
+    Using additionally that we trivially have 
+    $\norm{W(v, b)}{1, k} \geq \norm{W(v, b)}{1, k+1}$,
+    we finally obtain
+    \begin{align}
+        d 
+        \leq \norm{v - v'}{1} \sum_{i=1}^k \norm{W(v, b)}{1, i}^{-1}.
+        + \frac{\norm{v - v'}{1}}{\norm{\Weights(v, b)}{1, k+1}}
+        = \norm{v - v'}{1} \sum_{i=1}^{k+1} \norm{W(v, b)}{1, i}^{-1},
+    \end{align}
+    which concludes the proof.
+\end{proof}
+
+
+% \subsection{Paella}
+
+% \begin{lemma}
+%     \label{lemma:weights_resilience_removed_entities}
+%     Let $v \in \setR_{\geq 0}^U$ and $b \in \setR^{U \times E}$.
+%     Let $\bE \subset [E]$ and write 
+%     $p_{\bE}: \setR^E \to \setR^E$ the orthogonal projection on 
+%     $\set{ w \in \setR^E \st \forall e \notin \bE, w_e = 0}$
+%     (i.e. $p_\bE$ sets to zero the coordinates that do note correspond to entities in $\bE$).
+%     Then $\norm{p_\bE (\Weights(v, b)) - p_\bE (\Weights(v', b))}{1} \leq \norm{v - v'}{1}$.
+% \end{lemma}
+
+% \begin{proof}
+%     This follows from the previous lemma and the fact that the projector is 1-Lipschitz continuous.
+%     More precisely,
+%     \begin{align}
+%         \norm{p_\bE(w) - p_\bE(w')}{1}
+%         = \sum_{e \in \bE} \absv{w_e - w'_e}
+%         \leq \sum_{e \in [E]} \absv{w_e - w'_e}
+%         = \norm{w - w'}{1}.
+%     \end{align}
+%     Plugging $w \triangleq \Weights(v, b)$ and $w' \triangleq \Weights(v', b)$ yields the lemma.
+% \end{proof}

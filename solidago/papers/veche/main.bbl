@@ -1,0 +1,273 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{WZM{\etalchar{+}}24}
+
+\bibitem[ABR{\etalchar{+}}25]{DBLP:journals/tai/AhmadianBRFMJ25}
+Sajad Ahmadian, Kamal Berahmand, Mehrdad Rostami, Saman Forouzandeh, Parham
+  Moradi, and Mahdi Jalili.
+\newblock Recommender systems based on nonnegative matrix factorization: {A}
+  survey.
+\newblock {\em {IEEE} Trans. Artif. Intell.}, 6(10):2554--2574, 2025.
+
+\bibitem[ACF23]{DBLP:journals/csur/AfsarCF23}
+Mohammad~Mehdi Afsar, Trafford Crump, and Behrouz~H. Far.
+\newblock Reinforcement learning based recommender systems: {A} survey.
+\newblock {\em {ACM} Comput. Surv.}, 55(7):145:1--145:38, 2023.
+
+\bibitem[AFE{\etalchar{+}}21]{DBLP:journals/jiis/AtasFEPTU21}
+M{\"{u}}sl{\"{u}}m Atas, Alexander Felfernig, Seda~Polat Erdeniz, Andrei
+  Popescu, Thi Ngoc~Trang Tran, and Mathias Uta.
+\newblock Towards psychology-aware preference construction in recommender
+  systems: Overview and research issues.
+\newblock {\em J. Intell. Inf. Syst.}, 57(3):467--489, 2021.
+
+\bibitem[AGHV24]{DBLP:conf/aistats/AllouahGHV24}
+Youssef Allouah, Rachid Guerraoui, L{\^{e}}{-}Nguy{\^{e}}n Hoang, and Oscar
+  Villemaud.
+\newblock Robust sparse voting.
+\newblock In Sanjoy Dasgupta, Stephan Mandt, and Yingzhen Li, editors, {\em
+  International Conference on Artificial Intelligence and Statistics, 2-4 May
+  2024, Palau de Congressos, Valencia, Spain}, volume 238 of {\em Proceedings
+  of Machine Learning Research}, pages 991--999. {PMLR}, 2024.
+
+\bibitem[AHH{\etalchar{+}}25]{DBLP:journals/ijon/AljunidHHASA25}
+Mohammed~Fadhel Aljunid, Manjaiah~Doddaghatta Huchaiah, Mohammad~Kazim
+  Hooshmand, Wasim~A. Ali, Amrithkala~M. Shetty, and Sadiq~Qaid Alzoubah.
+\newblock A collaborative filtering recommender systems: Survey.
+\newblock {\em Neurocomputing}, 617:128718, 2025.
+
+\bibitem[AWD{\etalchar{+}}24]{ahmed2024social}
+Oli Ahmed, Erin~I Walsh, Amy Dawel, Khawlah Alateeq, Daniela Andrea~Espinoza
+  Oyarce, and Nicolas Cherbuin.
+\newblock Social media use, mental health and sleep: A systematic review with
+  meta-analyses.
+\newblock {\em Journal of affective disorders}, 367:701--712, 2024.
+
+\bibitem[BOHG13]{bobadilla2013recommender}
+Jes{\'u}s Bobadilla, Fernando Ortega, Antonio Hernando, and Abraham
+  Guti{\'e}rrez.
+\newblock Recommender systems survey.
+\newblock {\em Knowledge-based systems}, 46:109--132, 2013.
+
+\bibitem[CAS16]{DBLP:conf/recsys/CovingtonAS16}
+Paul Covington, Jay Adams, and Emre Sargin.
+\newblock Deep neural networks for youtube recommendations.
+\newblock In Shilad Sen, Werner Geyer, Jill Freyne, and Pablo Castells,
+  editors, {\em Proceedings of the 10th {ACM} Conference on Recommender
+  Systems, Boston, MA, USA, September 15-19, 2016}, pages 191--198. {ACM},
+  2016.
+
+\bibitem[Com26]{eu-tiktok-preliminary}
+European Commission.
+\newblock Commission preliminarily finds tiktok's addictive design in breach of
+  the digital services act.
+\newblock Technical report, European Commission, 2026.
+
+\bibitem[DU22]{DBLP:conf/sigir/DoU22}
+Virginie Do and Nicolas Usunier.
+\newblock Optimizing generalized gini indices for fairness in rankings.
+\newblock In Enrique Amig{\'{o}}, Pablo Castells, Julio Gonzalo, Ben
+  Carterette, J.~Shane Culpepper, and Gabriella Kazai, editors, {\em {SIGIR}
+  '22: The 45th International {ACM} {SIGIR} Conference on Research and
+  Development in Information Retrieval, Madrid, Spain, July 11 - 15, 2022},
+  pages 737--747. {ACM}, 2022.
+
+\bibitem[Dwo08]{DBLP:conf/tamc/Dwork08}
+Cynthia Dwork.
+\newblock Differential privacy: {A} survey of results.
+\newblock In Manindra Agrawal, Ding{-}Zhu Du, Zhenhua Duan, and Angsheng Li,
+  editors, {\em Theory and Applications of Models of Computation, 5th
+  International Conference, {TAMC} 2008, Xi'an, China, April 25-29, 2008.
+  Proceedings}, Lecture Notes in Computer Science, pages 1--19. Springer, 2008.
+
+\bibitem[EFGH23]{DBLP:conf/aistats/El-MhamdiFGH23}
+El{-}Mahdi El{-}Mhamdi, Sadegh Farhadkhani, Rachid Guerraoui, and
+  L{\^{e}}{-}Nguy{\^{e}}n Hoang.
+\newblock On the strategyproofness of the geometric median.
+\newblock In Francisco J.~R. Ruiz, Jennifer~G. Dy, and Jan{-}Willem van~de
+  Meent, editors, {\em International Conference on Artificial Intelligence and
+  Statistics, 25-27 April 2023, Palau de Congressos, Valencia, Spain},
+  Proceedings of Machine Learning Research, pages 2603--2640. {PMLR}, 2023.
+
+\bibitem[FBS{\etalchar{+}}20]{DBLP:journals/ai/FreedmanBSDC20}
+Rachel Freedman, Jana~Schaich Borg, Walter Sinnott{-}Armstrong, John~P.
+  Dickerson, and Vincent Conitzer.
+\newblock Adapting a kidney exchange algorithm to align with human values.
+\newblock {\em Artif. Intell.}, 283:103261, 2020.
+
+\bibitem[FFHV24]{DBLP:conf/aaai/FageotFHV24}
+Julien Fageot, Sadegh Farhadkhani, L{\^{e}}{-}Nguy{\^{e}}n Hoang, and Oscar
+  Villemaud.
+\newblock Generalized bradley-terry models for score estimation from paired
+  comparisons.
+\newblock In Michael~J. Wooldridge, Jennifer~G. Dy, and Sriraam Natarajan,
+  editors, {\em Thirty-Eighth {AAAI} Conference on Artificial Intelligence,
+  {AAAI} 2024, Thirty-Sixth Conference on Innovative Applications of Artificial
+  Intelligence, {IAAI} 2024, Fourteenth Symposium on Educational Advances in
+  Artificial Intelligence, {EAAI} 2014, February 20-27, 2024, Vancouver,
+  Canada}, pages 20379--20386. {AAAI} Press, 2024.
+
+\bibitem[FGH{\etalchar{+}}26]{DBLP:journals/corr/abs-2602-08033}
+Julien Fageot, Matthias Grossglauser, L{\^{e}}{-}Nguy{\^{e}}n Hoang, Matteo
+  Tacchi{-}B{\'{e}}nard, and Oscar Villemaud.
+\newblock The benefits of diversity: Combining comparisons and ratings for
+  efficient scoring.
+\newblock {\em CoRR}, abs/2602.08033, 2026.
+
+\bibitem[GHWZ26]{gauthier2026political}
+Germain Gauthier, Roland Hodler, Philine Widmer, and Ekaterina Zhuravskaya.
+\newblock The political effects of x's feed algorithm.
+\newblock {\em Nature}, pages 1--8, 2026.
+
+\bibitem[GLF{\etalchar{+}}25]{DBLP:journals/tors/GeLFTLXLXZ25}
+Yingqiang Ge, Shuchang Liu, Zuohui Fu, Juntao Tan, Zelong Li, Shuyuan Xu, Yunqi
+  Li, Yikun Xian, and Yongfeng Zhang.
+\newblock A survey on trustworthy recommender systems.
+\newblock {\em Trans. Recomm. Syst.}, 3(2):13:1--13:68, 2025.
+
+\bibitem[GZL{\etalchar{+}}23]{DBLP:journals/tors/GaoZLLQPQCJHL23}
+Chen Gao, Yu~Zheng, Nian Li, Yinfeng Li, Yingrong Qin, Jinghua Piao, Yuhan
+  Quan, Jianxin Chang, Depeng Jin, Xiangnan He, and Yong Li.
+\newblock A survey of graph neural networks for recommender systems:
+  Challenges, methods, and directions.
+\newblock {\em Trans. Recomm. Syst.}, 1(1):1--51, 2023.
+
+\bibitem[HBC{\etalchar{+}}22]{hoang2022solidago}
+L{\^e}~Nguy{\^e}n Hoang, Romain Beylerian, B{\'e}rang{\`e}re Colbois, Julien
+  Fageot, Louis Faucon, Aidan Jungo, Alain~Le Noac'h, Adrien Matissart, and
+  Oscar Villemaud.
+\newblock Solidago: A modular collaborative scoring pipeline.
+\newblock {\em arXiv preprint arXiv:2211.01179}, 2022.
+
+\bibitem[HBF{\etalchar{+}}25]{hoang2025tournesol}
+L{\^e}-Nguy{\^e}n Hoang, Romain Beylerian, Julien Fageot, Louis Faucon, Aidan
+  Jungo, Adrien Matissart, and Natha{\"e}l Nogu{\`e}s.
+\newblock The tournesol dataset: Which videos should be more largely
+  recommended?
+\newblock 2025.
+
+\bibitem[Hoa19]{DBLP:conf/aaai/Hoang19}
+L{\^{e}}~Nguy{\^{e}}n Hoang.
+\newblock Towards robust end-to-end alignment.
+\newblock In Hu{\'{a}}scar Espinoza, Se{\'{a}}n~{\'{O}} h{\'{E}}igeartaigh,
+  Xiaowei Huang, Jos{\'{e}} Hern{\'{a}}ndez{-}Orallo, and Mauricio
+  Castillo{-}Effen, editors, {\em Workshop on Artificial Intelligence Safety
+  2019 co-located with the Thirty-Third {AAAI} Conference on Artificial
+  Intelligence 2019 (AAAI-19), Honolulu, Hawaii, January 27, 2019}, {CEUR}
+  Workshop Proceedings. CEUR-WS.org, 2019.
+
+\bibitem[Kah11]{kahneman2011thinking}
+Daniel Kahneman.
+\newblock Thinking, fast and slow.
+\newblock {\em Farrar, Straus and Giroux}, 2011.
+
+\bibitem[KFG{\etalchar{+}}24]{kleppmann2024bluesky}
+Martin Kleppmann, Paul Frazee, Jake Gold, Jay Graber, Daniel Holmgren, Devin
+  Ivy, Jeromy Johnson, Bryan Newbold, and Jaz Volpert.
+\newblock Bluesky and the at protocol: Usable decentralized social media.
+\newblock In {\em Proceedings of the ACM Conext-2024 Workshop on the
+  Decentralization of the Internet}, pages 1--7, 2024.
+
+\bibitem[LKK{\etalchar{+}}19]{DBLP:journals/pacmhci/LeeKKKYCSNLPP19}
+Min~Kyung Lee, Daniel Kusbit, Anson Kahng, Ji~Tae Kim, Xinran Yuan, Allissa
+  Chan, Daniel See, Ritesh Noothigattu, Siheon Lee, Alexandros Psomas, and
+  Ariel~D. Procaccia.
+\newblock Webuildai: Participatory framework for algorithmic governance.
+\newblock {\em Proc. {ACM} Hum. Comput. Interact.}, 3({CSCW}):181:1--181:35,
+  2019.
+
+\bibitem[LM23]{DBLP:conf/hci/LechiakhM23}
+Mohamed Lechiakh and Alexandre Maurer.
+\newblock Volition learning: What would you prefer to prefer?
+\newblock In Helmut Degen and Stavroula Ntoa, editors, {\em Artificial
+  Intelligence in {HCI} - 4th International Conference, {AI-HCI} 2023, Held as
+  Part of the 25th {HCI} International Conference, {HCII} 2023, Copenhagen,
+  Denmark, July 23-28, 2023, Proceedings, Part {I}}, Lecture Notes in Computer
+  Science, pages 555--574. Springer, 2023.
+
+\bibitem[LU12]{DBLP:journals/ejis/LiU12}
+Ting Li and Till Unger.
+\newblock Willing to pay for quality personalization? trade-off between quality
+  and privacy.
+\newblock {\em Eur. J. Inf. Syst.}, 21(6):621--642, 2012.
+
+\bibitem[LW18]{lalley2018quadratic}
+Steven~P Lalley and E~Glen Weyl.
+\newblock Quadratic voting: How mechanism design can radicalize democracy.
+\newblock In {\em AEA Papers and Proceedings}, volume 108, pages 33--37.
+  American Economic Association 2014 Broadway, Suite 305, Nashville, TN 37203,
+  2018.
+
+\bibitem[NGA{\etalchar{+}}18]{DBLP:conf/aaai/NoothigattuGADR18}
+Ritesh Noothigattu, Snehalkumar (Neil)~S. Gaikwad, Edmond Awad, Sohan Dsouza,
+  Iyad Rahwan, Pradeep Ravikumar, and Ariel~D. Procaccia.
+\newblock A voting-based system for ethical decision making.
+\newblock In Sheila~A. McIlraith and Kilian~Q. Weinberger, editors, {\em
+  Proceedings of the Thirty-Second {AAAI} Conference on Artificial
+  Intelligence, (AAAI-18), the 30th innovative Applications of Artificial
+  Intelligence (IAAI-18), and the 8th {AAAI} Symposium on Educational Advances
+  in Artificial Intelligence (EAAI-18), New Orleans, Louisiana, USA, February
+  2-7, 2018}, pages 1587--1594. {AAAI} Press, 2018.
+
+\bibitem[PPCC26]{DBLP:journals/inffus/PanPCC26}
+Lin Pan, Zhiqiang Pan, Fei Cai, and Honghui Chen.
+\newblock Multimodal recommender systems: {A} survey of representation,
+  modeling, and optimization.
+\newblock {\em Inf. Fusion}, 128:103991, 2026.
+
+\bibitem[RAD{\etalchar{+}}78]{rivest1978data}
+Ronald~L Rivest, Len Adleman, Michael~L Dertouzos, et~al.
+\newblock On data banks and privacy homomorphisms.
+\newblock {\em Foundations of secure computation}, 4(11):169--180, 1978.
+
+\bibitem[Reu26]{reuters-dutch-meta}
+Reuters.
+\newblock Dutch court upholds ruling forcing meta to offer chronological feeds.
+\newblock {\em Reuters}, 2026.
+
+\bibitem[SL26]{instagram-youtube-landmark}
+Elizabeth Schulze and Mason Leib.
+\newblock Jury decides youtube, meta should pay \$6 million in damages after
+  finding them negligent in landmark trial.
+\newblock {\em ABC News}, 2026.
+
+\bibitem[SMH24]{DBLP:journals/csur/SilvaMH24}
+Miguel~G. Silva, Sara~C. Madeira, and Rui Henriques.
+\newblock A comprehensive survey on biclustering-based collaborative filtering.
+\newblock {\em {ACM} Comput. Surv.}, 56(12):313:1--313:32, 2024.
+
+\bibitem[T{\"o}r22]{tornberg2022digital}
+Petter T{\"o}rnberg.
+\newblock How digital media drive affective polarization through partisan
+  sorting.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  119(42):e2207159119, 2022.
+
+\bibitem[WMZ{\etalchar{+}}23]{DBLP:journals/tois/WangM00M23}
+Yifan Wang, Weizhi Ma, Min Zhang, Yiqun Liu, and Shaoping Ma.
+\newblock A survey on the fairness of recommender systems.
+\newblock {\em {ACM} Trans. Inf. Syst.}, 41(3):52:1--52:43, 2023.
+
+\bibitem[WZM{\etalchar{+}}24]{wu2024result}
+Haolun Wu, Yansen Zhang, Chen Ma, Fuyuan Lyu, Bowei He, Bhaskar Mitra, and Xue
+  Liu.
+\newblock Result diversification in search and recommendation: A survey.
+\newblock {\em IEEE Transactions on Knowledge and Data Engineering},
+  36(10):5354--5373, 2024.
+
+\bibitem[ZB23]{DBLP:journals/csur/ZangerleB23}
+Eva Zangerle and Christine Bauer.
+\newblock Evaluating recommender systems: Survey and framework.
+\newblock {\em {ACM} Comput. Surv.}, 55(8):170:1--170:38, 2023.
+
+\bibitem[ZC20]{DBLP:journals/ftir/ZhangC20}
+Yongfeng Zhang and Xu~Chen.
+\newblock Explainable recommendation: {A} survey and new perspectives.
+\newblock {\em Found. Trends Inf. Retr.}, 14(1):1--101, 2020.
+
+\bibitem[ZCS{\etalchar{+}}26]{DBLP:journals/csur/ZhangCSWTSC26}
+Kaike Zhang, Qi~Cao, Fei Sun, Yunfan Wu, Shuchang Tao, Huawei Shen, and Xueqi
+  Cheng.
+\newblock Robust recommender system: {A} survey and future directions.
+\newblock {\em {ACM} Comput. Surv.}, 58(1):10:1--10:38, 2026.
+
+\end{thebibliography}

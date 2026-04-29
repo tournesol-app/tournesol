@@ -158,6 +158,23 @@ class NamedObjects(Generic[Object]):
             return type(self)(self.df[self.df[key].isin(value)]).filters(None, **kwargs)
         return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
     
+    def excludes(self,
+        names: Iterable[str | Hashable] | NDArray[np.int64] | pd.Index | None = None,
+        **kwargs: str | tuple | Iterable | Hashable
+    ) -> Self:
+        if names is not None:
+            remaining_names = [n for n in self.names() if n not in names]
+            return type(self)(self.df.loc[remaining_names]).excludes(None, **kwargs)
+        if not kwargs:
+            return self
+        key, value = next(iter(kwargs.items()))
+        del kwargs[key]
+        if isinstance(value, (str, tuple)):
+            return type(self)(self.df[self.df[key] != value]).filters(None, **kwargs)
+        if isinstance(value, Iterable):
+            return type(self)(self.df[~self.df[key].isin(value)]).filters(None, **kwargs)
+        return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
+
     def __setitem__(self, key: tuple[str, str], value: Any):
         self.df.loc[key[0], key[1]] = value
     

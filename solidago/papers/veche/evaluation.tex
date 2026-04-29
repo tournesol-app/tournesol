@@ -1,0 +1,65 @@
+\section{Evaluating \Veche{} on four pillars}
+\label{sec:evaluation}
+
+The Tournesol association proposed to evaluate digital democracy solutions
+based on 4 digital democracy pillars.
+According to these pillars, solutions must be:
+\begin{description}
+    \item[Transparent:] The solutions must be free and open-source,
+    but also explainable and verifiable.
+    \item[Secure:] The solutions must be resilient to coordinated attacks,
+    especially through fake accounts. 
+    When relevant, they should also allow for private weighing in
+    (like voting in democracy).
+    \item[Thoughtful:] The solutions must value informed and thoughtful judgments,
+    as opposed to rushed, emotional and instinctive actions.
+    \item[Uniting:] The solutions must unite people,
+    by being inclusive and by contributing to a shared reality.
+\end{description}
+We refer to \url{tournesol.app/manifesto} for more justifications of the pillars.
+We added a fifth evaluation based on user experience.
+In this section, 
+we evaluate the leading recommendation algorithms along the four pillars,
+as well as \SimpleVeche{}, Tournesol-\Veche{} and BlueSky-\Veche{}.
+The latter two include the generalizations discussed in Section~\ref{sec:generalizations},
+with the hyperparameters provided in the various tables of the Section.
+In particular, both leverage diversification
+(which allows to be more uniting, 
+as it values diverging viewpoints within the community of followed users).
+Table~\ref{table:pillars} summarizes our analysis.
+Its last line corresponds to the inclusion of common-ground recommendations,
+as discussed in the following paragraph.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        & Transparent & Secure & Thoughtful & Uniting & UX \\ \hline
+        Proprietary engagement maximization  & E & E & E & E & D \\ \hline
+        Matrix factorization   & C & E & D & E & C \\ \hline
+        Reverse chronological  & A & D & D & E & E \\ \hline
+        \SimpleVeche{}         & A & C & D & E & D \\ \hline
+        Tournesol-\Veche{}     & B & C & D & D & C \\ \hline
+        BlueSky-\Veche{}       & B & C & D & D & C \\ \hline
+        \Veche{} + Common*     & B & B & B & B & C \\ \hline
+    \end{tabular}
+    \caption{Evaluating Veche on Tournesol's four digital democracy pillars}
+    \label{table:pillars}
+\end{table}
+
+\paragraph{Reinforcing unity.}
+Given this analysis, we actually do not believe that \Veche{},
+nor any follow-based algorithms,
+should be viewed as a societally satisfactory solution.
+In particular, such algorithms are inherently facilitating filter bubbles,
+which may divide societies and harm democracies.
+This will be even more the case if algorithmic representatives customize their ballots
+based on the users they target.
+To construct a common information ground that better unites citizens,
+we believe that a fraction of the recommendations, say 30\%,
+should instead result from a social choice mechanism that involves all citizens
+(not only followed accounts),
+and that yields non-personalized recommendations.
+Our algorithms may in fact be instrumental
+to both provide to the remaining 70\% of personalized recommendations
+and to inspire mechanisms that respond to the need for common ground.

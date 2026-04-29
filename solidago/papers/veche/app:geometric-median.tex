@@ -1,0 +1,31 @@
+\section{Geometric median as an aggregation rule}
+\label{app:geometric-median}
+
+The way we aggregated users' votes was a simple averaging.
+While this has the great advantage of being a simple mechanism,
+and while it already provides great guarantees,
+it could be argued to be incompletely satisfactory.
+For instance, one issue is that a user may view 
+an already widely reposted entity as worth recommending,
+but they may not want to ``waste'' their vote to promote it;
+they may prefer to promote another insufficiently reposted entity.
+
+Perhaps a more satisfactory aggregation rule could be the geometric median.
+Namely, denote $\bE_u \subset [E]$ the subset of entities 
+that user $u$ posted, reposted, evaluated or reported.
+Let $c_u \triangleq (b_{ue}^+)_{e \in \bE_u} \in \setR_{\geq 0}^{\bE_u}$ 
+the nonnegative part of the ballots 
+for entities on which an action was taken.
+Then $\tilde c_u \triangleq c_u / \norm{c_u}{1}$ its $\ell_1$ normalization,
+which can be viewed as a preferred probability distribution,
+if only one evaluated entity had to be recommended.
+The geometric median would consist of selecting a weight vector that minimizes its distance 
+to the user's preferred distribution (here, we also ignore non-evaluated entities), yielding
+\begin{align}
+    w \triangleq \argmin_{\omega \in \setR^E} 
+        \sum_{u \in [U]} v_u \norm{ P_{\bE_u} \omega - \tilde c_u }{2},
+\end{align}
+where $P_{\bE_u}$ is the orthogonal projection on $\bE_u$.
+This corresponds to the geometric median 
+with skewed preferences defined in~\cite{DBLP:conf/aistats/El-MhamdiFGH23}.
+

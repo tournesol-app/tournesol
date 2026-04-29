@@ -1,0 +1,88 @@
+\section{Proof of guarantees using Tillé's pivot (Theorem~\ref{th:tille})}
+\label{app:tille}
+
+\begin{lemma} \label{lemma:top_tille}
+    The top recommendation of Tillé's algorithm matches that of \SimpleVeche{},
+    i.e. $\TilleVeche_{1} (b) = \SimpleVeche_{1} (b)$ 
+    for all ballots $b \in \setR^{U \times E}$.
+\end{lemma}
+
+\begin{proof}
+    We prove this by induction over the number $E$ of entities.
+    If $E = 2$, then it is trivial.
+
+    Assume it holds for $E$ entities.
+    Consider $E + 1$ entities,
+    and let $b \in \setR^{U \times E}$ and denote $w = \Weights(b)$.
+    Let $e^* = \TilleVeche_1 (b)$ be the random top entity,
+    Let $(e_1, e_2) \in [E + 1]^2$ be the random first pair of entities 
+    to be opposed in the first round, with $e_1 \neq e_2$,
+    and $x \in \set{1, 2}$ be the result of their opposition 
+    (with $x = 1$ if $e_1$ wins).
+    By the law of total probability, we have
+    \begin{align}
+        \pb{e^* = e|b}
+        &= \bbE_{e_1,e_2} \left[
+            \bbE_x \left[ \pb{e^* = e|w, e_1, e_2, x} \right]
+        \right] \\
+        &= \bbE_{e_1,e_2} \left[
+            \frac{
+                w_{e_1} \pb{e^* = e | w^{e_1 > e_2}}
+                + w_{e_2} \pb{e^* = e | w^{e_2 > e_1}}
+            }{w_{e_1} + w_{e_2}}
+        \right], \label{eq:total_law}
+    \end{align}
+    where $w^{e_1 > e_2}$ is the resulting weight vector
+    after $e_1$ stealing the weights of $e_2$.
+    By the induction assumption,
+    the distribution of $e^*$ given $w^{e_1 > e_2}$
+    matches sampling without replacement,
+    which leads to
+    \begin{align}
+        \pb{e^* = e | w^{e_1 > e_2}}
+        = \frac{w^{e_1 > e_2}_{e}}{\norm{w^{e_1 > e_2}}{1}}
+        = \frac{w^{e_1 > e_2}_{e}}{\norm{w}{1}},
+    \end{align}
+    using the fact that the weights have been transfered but not ``lost''.
+    For all $e \notin \set{e_1, e_2}$,
+    we then have $\pb{e^* = e | w^{e_1 > e_2}} = w_e / \norm{w}{1}$.
+    Moreover, $\pb{e^* = e_1 | w^{e_1 > e_2}} = (w_{e_1} + w_{e_2}) / \norm{w}{1}$
+    and $\pb{e^* = e_2 | w^{e_1 > e_2}} = 0$.
+    Overall, for all $e \in [E+1]$, we thus have
+    \begin{align}
+        \frac{
+            w_{e_1} \pb{e^* = e | w^{e_1 > e_2}}
+            + w_{e_2} \pb{e^* = e | w^{e_2 > e_1}}
+        }{w_{e_1} + w_{e_2}}
+        = \frac{w_e}{\norm{w}{1}}.
+    \end{align}
+    Plugging this into the total law equation~\eqref{eq:total_law}
+    yields the lemma.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{th:tille}]
+    This follows straightforwardly 
+    from Theorem~\ref{th:simpleveche} and Lemma~\ref{lemma:top_tille}.
+\end{proof}
+
+
+% \subsection{Similarity guarantees}
+
+% \begin{proof}
+%     If $e$ and $f$ were posted by the same user $u$,
+%     then $b_{ue}, b_{uf} > 0$.
+%     If no other user interacted with any, then $b_{ve}, b_{vf} = 0$.
+%     Then $b_{\cdot e}$ and $b_{\cdot f}$ are clearly colinear 
+%     and in the same direction (namely that of the $u$-th canonical basis vector),
+%     hence $\rho_{ef} = 1$.
+
+%     If $e$ and $f$ were posted by two different users $u$ and $v$,
+%     and if no other user interacted with any, 
+%     then $b_{\cdot e}$ is colinear with the $u$-th canonical basis vector,
+%     while $b_{\cdot f}$ is colinear with the $v$-th canonical basis vector.
+%     They are orthogonal, hence $\rho_{ef} = 0$.
+
+%     In the last case, $b_{\cdot e}$ and $b_{\cdot f}$ point in opposite direction,
+%     along the vector ${\bf e}_u - {\bf e}_v$ 
+%     (where these correspond to canonical basis vector).
+% \end{proof}

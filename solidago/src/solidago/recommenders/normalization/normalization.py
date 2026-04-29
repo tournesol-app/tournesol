@@ -1,2 +1,8 @@
+from abc import abstractmethod
+from solidago.poll import *
+
+
 class Normalization:
-    pass
+    @abstractmethod
+    def __call__(self, ballots: Scores) -> Scores:
+        raise NotImplemented

@@ -1,0 +1,124 @@
+\section{Proofs of time decay bias properties}
+\label{app:decay}
+
+\paragraph{Proof of Proposition~\ref{prop:decay_half}.}
+
+\begin{proof}
+    This is a straightforward computation.
+\end{proof}
+
+\paragraph{Proof of Proposition~\ref{prop:asymptotic_weight_ratio}.}
+
+\begin{proof}
+    Denote $\varepsilon \triangleq (t_{uf} - t_{ue}) / (t - t_{uf})$,
+    $\eta \triangleq \tau / (t - t_{uf})$
+    and $R \triangleq \frac{
+        b_{ue} \ln (1+\tau_{ue} / \tau_0)^{\gamma_\tau}
+    }{
+        b_{uf} \ln (1+\tau_{uf} / \tau_0)^{\gamma_\tau}
+    }$.
+    We have
+    \begin{align}
+        \frac{1}{R} \frac{\Bias^{time}_e (b_u)}{\Bias^{time}_f (b_u)}
+        &= \frac{
+            \tau^2 + (t-t_{ue})^2
+        }{
+            \tau^2 + (t-t_{uf})^2
+        } 
+        = 1 + \frac{
+            (t-t_{uf} + t_{uf} - t_{ue})^2 - (t-t_{uf})^2
+        }{
+            \tau^2 + (t-t_{uf})^2
+        } \\
+        &= 1 + \frac{
+            (1 + \varepsilon)^2 - 1
+        }{
+            \eta^2 + 1
+        }
+        = 1 + 2 \varepsilon 
+            \left( 1 + \frac{\varepsilon}{2} \right) 
+            \left( 1 + \eta^2 \right)^{-1} \\
+        &= 1 + 2 \varepsilon 
+            + O(\varepsilon^2) + O(\varepsilon \eta^2),
+    \end{align}
+    which concludes the proof.
+\end{proof}
+
+
+\paragraph{Proof of Proposition~\ref{prop:sum_past_weights}.}
+The proof leverages a classical result.
+
+\begin{lemma}
+    \label{lemma:integral}
+    $\int_0^\infty (1+x^2)^{-1} dx = \pi / 2$.
+\end{lemma}
+
+\begin{proof}
+    This is a classical integral, 
+    which can be performed using the change of variable
+    $x = \tan \theta$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sum_past_weights}]
+    Assume without loss of generality that user $u$ started acting at time $0$,
+    Fix $t \in \setR_{\geq 0}$ and denote $I$ a number of time subdivisions.
+    Denote $B_i^I$ the number of actions taken in interval 
+    $\left[\frac{i}{I} t, \frac{i+1}{I} t \right]$.
+    Given that the actions follow a Poisson point process, 
+    $B_i$ follows a Poisson distribution of parameter $\lambda t / I$.
+    Denote $b_u (t) \triangleq \Bias (b_u | t, t_u, \tau_u, \tau_0, \gamma_\tau)$.
+    Since
+    \begin{align}
+        \norm{b_u (t)}{1} 
+        \leq \sum_{i = 0}^{I - 1} \frac{B_i \tau^2}{\tau^2 + i^2 t^2 / I^2},
+    \end{align}
+    it follows that 
+    \begin{align}
+        \bbE \norm{b_u (t)}{1} 
+        \leq \sum_{i = 0}^{I - 1} 
+            \frac{\lambda t}{I} \frac{\tau^2}{\tau^2 + i^2 t^2 / I^2}.
+    \end{align}
+    Taking the limit $I \to \infty$ yields
+    \begin{align*}
+        \bbE \norm{b_u (t)}{1}
+        \leq \lambda \int_0^t \frac{\tau^2 ds}{\tau^2 + s^2} 
+        \leq \lambda \int_0^\infty \frac{ds}{1 + (s/\tau)^2}
+        \overset{r = s/\tau}{=} \lambda \int_0^\infty \frac{\tau dr}{1 + r^2} 
+        = \lambda \pi / 2,
+    \end{align*}
+    using Lemma~\ref{lemma:integral}.
+    This concludes the proof.
+\end{proof}
+
+
+\paragraph{Proof of Proposition~\ref{prop:cumulative_weight}.}
+
+\begin{proof}
+    Indeed we have
+    \begin{align}
+        \int_{t_{ue}}^\infty \Bias^{time}_e &(
+            b_u | t, t_{ue}, \tau_{ue}, \tau_0, \gamma_\tau
+        ) dt
+        = \int_0^\infty b_{ue} \cdot \frac{
+            \tau_{ue} \ln (1+\tau_{ue} / \tau_0)^{\gamma_\tau}
+        }{
+            (t-t_{ue})^2 + \tau_{ue}^2
+        } dt \\
+        &= \frac{b_{ue}}{\tau_{ue}} \ln (1+\tau_{ue} / \tau_0)^{\gamma_\tau} 
+        \int_0^\infty \frac{
+            dt
+        }{
+            1 + \left( \frac{t-t_{ue}}{\tau_{ue}} \right)^2
+        } \\
+        &\overset{r = (t-t_{ue} / \tau_{ue})}{=} 
+        \frac{b_{ue}}{\tau_{ue}} \ln (1+\tau_{ue} / \tau_0)^{\gamma_\tau} 
+        \int_0^\infty \frac{
+            \tau_{ue} dr
+        }{
+            1 + r^2
+        }
+        = b_{ue} \cdot \frac{\pi}{2} \cdot \ln (1+\tau_{ue} / \tau_0)^{\gamma_\tau},
+    \end{align}
+    using Lemma~\ref{lemma:integral}.
+    This concludes the proof.
+\end{proof}
