@@ -104,8 +104,8 @@ class Multinomial(Distribution):
 
 class Add(Distribution):
     def __init__(self, subdistributions: list[Distribution | tuple[str, dict[str, Any]]]):
-        import solidago
-        self.subdistributions = [solidago.load(d, solidago.random) for d in subdistributions]
+        from solidago import load, random
+        self.subdistributions = [load(d, random, Distribution) for d in subdistributions]
     
     def sample(self, n_samples: int = 1) -> NDArray[Any] | list[Any]:
         if not self.subdistributions:

@@ -29,9 +29,38 @@ poll = Poll(
 )
 
 
-def test_chronological():
-    entities = Chronological()(poll, "user_0", 3)
-    assert list(entities.names()) == ["entity_5", "entity_2", "entity_3"]
-    entities = Chronological()(poll, "user_0", 2)
-    assert list(entities.names()) == ["entity_5", "entity_2"]
+def test_detailed_chronological():
+    import numpy as np
+
+    follow_kind, rating_criteria = "follow", ["repost"]
+    username, limit, cursor = "user_0", 4, None
+
+    followings = poll.socials.filters(by=username, kind=follow_kind).get_column("to")
+    reposts = poll.ratings.filters(username=list(followings), criterion=rating_criteria)
+    entity_names = set(poll.entities.filters(author=followings).names()) \
+        | reposts.keys("entity_name")
+    entities = poll.entities.filters(entity_names)
+    entities = entities.assign(last_date=entities.get_column("date"))
+    
+    for repost in reposts:
+        name = repost["entity_name"]
+        if poll.entities[name]["author"] != username:
+            last_date = max(repost["timestamp"], entities[name]["last_date"])
+            entities[name, "last_date"] = last_date
+    
+    try:
+        offset = 0 if cursor is None else int(cursor)
+    except ValueError:
+        offset = 0
+    
+    entities = entities.sort_by("last_date", ascending=False)
+    entities = entities.tail(len(entities) - offset).head(limit)
+    
+    assert list(entities.names()) == ["entity_5", "entity_4", "entity_2", "entity_3"]
+    
+def test_chronological():    
+    entities = Chronological()(poll, "user_0", 2, "0")
+    assert list(entities.names()) == ["entity_5", "entity_4"]
+    entities = Chronological()(poll, "user_0", 3, "1")
+    assert list(entities.names()) == ["entity_4", "entity_2", "entity_3"]
     

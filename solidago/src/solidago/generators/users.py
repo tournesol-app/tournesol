@@ -7,17 +7,19 @@ from solidago import poll
 
 
 class New(PollFunction):
-    def __init__(self, n_users: int = 30, distribution: Distribution | tuple[str, dict[str, Any]] | None = None):
+    def __init__(self, 
+        n_users: int = 30, 
+        distribution: Distribution | tuple[str, dict[str, Any]] | None = None
+    ):
         self.n_users = n_users
-        if distribution:
-            import solidago
-            distribution = solidago.load(distribution, solidago.random)
-            assert isinstance(distribution, Distribution)
-            self.distribution = distribution
+        import solidago
+        self.distribution = None if distribution is None else solidago.load(
+            distribution, solidago.random, Distribution)
     
     def sample_user(self, user_index: int) -> poll.User:
-        vector = self.distribution.sample() if hasattr(self, "distribution") else None
-        return poll.User(f"user_{user_index}", vector=vector)
+        if self.distribution is None:
+            return poll.User(f"user_{user_index}")
+        return poll.User(f"user_{user_index}", vector=self.distribution.sample())
 
     def fn(self) -> poll.Users:
         return poll.Users([self.sample_user(user_index).series for user_index in range(self.n_users)])
@@ -26,9 +28,7 @@ class AddColumn(PollFunction):
     def __init__(self, column: str, distribution: Distribution | tuple[str, dict[str, Any]]):
         self.column = column
         import solidago
-        distribution = solidago.load(distribution, solidago.random)
-        assert isinstance(distribution, Distribution)
-        self.distribution = distribution
+        self.distribution = solidago.load(distribution, solidago.random, Distribution)
     
     def fn(self, users: poll.Users) -> poll.Users:
         return users.assign(**{self.column: self.distribution.sample(len(users))})
@@ -42,5 +42,6 @@ class BernoulliPretrust(PollFunction):
     
     def fn(self, users: poll.Users) -> poll.Users:
         trustworthy = users.get_column("trustworthy")
-        pretrust = np.random.random(len(users)) < np.where(trustworthy, self.p_if_trustworthy, self.p_if_untrustworthy)
+        args = self.p_if_trustworthy, self.p_if_untrustworthy
+        pretrust = np.random.random(len(users)) < np.where(trustworthy, *args)
         return users.assign(pretrust=pretrust)

@@ -132,43 +132,37 @@ class NamedObjects(Generic[Object]):
     def names(self) -> pd.Index:
         return self.df.index
     
-    def __getitem__(self, 
-        name: int | np.integer | Hashable | Object | list[str] | list[Hashable] | NDArray[np.int64] | "NamedObjects" | pd.Index
-    ) -> Object | Self:
+    def __getitem__(self, name: int | np.integer | Hashable | Object) -> Object:
         if isinstance(name, (int, np.integer)):
             return self.row2object(self.df.iloc[name])
-        if isinstance(name, np.ndarray) and np.issubdtype(name.dtype, np.integer):
-            return type(self)(self.df.iloc[name])
-        if isinstance(name, NamedObjects):
-            name = name.names()
-        elif not isinstance(name, (str, list)):
-            assert hasattr(name, "name")
-            name = str(name.name) # type: ignore - previous line guaranteed hasattr name
-        rows = self.df.loc[name]
-        if isinstance(rows, pd.Series):
-            return self.row2object(rows)
-        return type(self)(rows)
+        elif hasattr(name, "name"):
+            name = getattr(name, "name")
+        rows = self.df.loc[str(name)]
+        assert isinstance(rows, pd.Series)
+        return self.row2object(rows)
 
     def filters(self, 
-        names: list[str] | NDArray[np.int64] | pd.Index | None = None,
-        **kwargs: Any
+        names: Iterable[str | Hashable] | NDArray[np.int64] | pd.Index | None = None,
+        **kwargs: str | tuple | Iterable | Hashable
     ) -> Self:
         if names is not None:
-            return type(self)(self.df.loc[names]).filters(**kwargs)
+            names = names if isinstance(names, pd.Index) else list(names)
+            return type(self)(self.df.loc[names]).filters(None, **kwargs)
         if not kwargs:
             return self
         key, value = next(iter(kwargs.items()))
         del kwargs[key]
         if isinstance(value, (str, tuple)):
-            return type(self)(self.df[self.df[key] == value]).filters(**kwargs)
+            return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
         if isinstance(value, Iterable):
-            return type(self)(self.df[self.df[key].isin(value)]).filters(**kwargs)
-        return type(self)(self.df[self.df[key] == value]).filters(**kwargs)
+            return type(self)(self.df[self.df[key].isin(value)]).filters(None, **kwargs)
+        return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
     
     def __setitem__(self, key: tuple[str, str], value: Any):
         self.df.loc[key[0], key[1]] = value
     
     def sample(self, n_items: int | None = None) -> Self:
+        """ If n_items is None, returns deepcopy """
         if n_items is None or len(self) < n_items:
             return deepcopy(self)
         indices = np.random.choice(len(self), n_items, False)
@@ -217,7 +211,18 @@ class NamedObjects(Generic[Object]):
         return type(self)(self.df.drop(names))
     
     def shuffle(self, shuffle: bool = True) -> Self:
+        if not shuffle:
+            return self
         return type(self)(self.df.sample(frac=1))
+
+    def sort_by(self, column: str, ascending: bool = True) -> Self:
+        return type(self)(self.df.sort_values(by=column, ascending=ascending))
+    
+    def tail(self, n_rows: int) -> Self:
+        return type(self)(self.df.tail(n_rows))
+    
+    def head(self, n_rows: int) -> Self:
+        return type(self)(self.df.head(n_rows))
 
     @classmethod
     def load(cls, directory: str | Path, source: str | None = None, **kwargs: Any) -> Self:

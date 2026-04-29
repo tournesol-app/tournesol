@@ -27,15 +27,13 @@ class Uniform(SelectEntities):
         if n_evaluated_entities > len(entities):
             return entities
         choice = np.random.choice(len(entities), n_evaluated_entities, False)
-        result = entities[[entities.index2name(i) for i in choice]]
-        assert isinstance(result, Entities)
-        return result
+        return entities.filters(entities.index2name(i) for i in choice)
 
 class BiasedByScore(SelectEntities):
     """ Requires user.n_evaluated_entities and user.engagement_bias """
     def __init__(self, noise: Distribution | tuple[str, dict[str, Any]]):
         import solidago
-        self.noise = solidago.load(noise, solidago.random)
+        self.noise = solidago.load(noise, solidago.random, Distribution)
 
     def __call__(self, user: User, entities: Entities) -> Entities:
         assert "n_evaluated_entities" in user, user
@@ -53,6 +51,4 @@ class BiasedByScore(SelectEntities):
         assert argsort.size == len(entities), argsort
         assert all(isinstance(argsort[i], (int, np.integer)) for i in range(len(entities))), argsort
         
-        result = entities[[entities.index2name(argsort[i]) for i in range(n_eval_entities)]]
-        assert isinstance(result, Entities)
-        return result
+        return entities.filters(entities.index2name(argsort[i]) for i in range(n_eval_entities))

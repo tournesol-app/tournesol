@@ -16,4 +16,4 @@ def test_users():
     ], columns=["name", "n_comparisons", "v0", "v1", "v2"])
     assert len(users) == 2
     assert users["aidjango"]["n_comparisons"] == 12521
-    assert len(users[["aidjango", "le_science4all"]]) == 2 # type: ignore
+    assert len(users.filters(["aidjango", "le_science4all"])) == 2

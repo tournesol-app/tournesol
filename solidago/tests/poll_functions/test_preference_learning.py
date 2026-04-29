@@ -91,7 +91,8 @@ def test_numba():
     _, criterion = poll.users["user_4"], "default"
     init_model = ScoringModel()
     comparisons = poll.comparisons.filters(criterion=criterion)
-    entities = poll.entities[list(comparisons.keys("left_name") | comparisons.keys("right_name"))]
+    entity_names = comparisons.keys("left_name") | comparisons.keys("right_name")
+    entities = poll.entities.filters(list(entity_names))
     assert "entity_4" in entities
     assert isinstance(entities, Entities)
     init = init_model(entities, criterion)

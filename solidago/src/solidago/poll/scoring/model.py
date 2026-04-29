@@ -156,11 +156,10 @@ class ScoringModel:
     ) -> Entities:
         if isinstance(entity, Entity):
             return Entities([entity.series])
-        evaluated_entity_names = self.evaluated_entity_names(criteria)
+        names = self.evaluated_entity_names(criteria)
         if entity is None:
-            return Entities(list(evaluated_entity_names))
-        entities = entity[list(evaluated_entity_names & set(entity.names()))]
-        assert isinstance(entities, Entities)
+            return Entities(list(names))
+        entities = entity.filters(names & set(entity.names()))
         return entities.sample(n_sampled_entities)
 
     def scale(self, 

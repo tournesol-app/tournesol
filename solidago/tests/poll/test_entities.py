@@ -15,5 +15,5 @@ def test_entities():
     ], columns=["name", "n_views", "v0", "v1", "v2"])
     assert len(entities) == 2
     assert entities["video_a"]["n_views"] == 155
-    assert len(entities[["video_a"]]) == 1 # type: ignore
-    assert all(entities["video_b"].vector == entities.vectors[1]) # type: ignore
+    assert len(entities.filters(["video_a"])) == 1
+    assert all(entities["video_b"].vector == entities.vectors[1])

@@ -58,12 +58,10 @@ class AffineOvertrust(ParallelizedPollFunction):
         """ Returns a list of evaluators, for each variable """
         users_list: list[Users] = list()
         for entity, criterion in variables:
-            usernames = ratings.filters(entity_name=entity.name, criterion=criterion).keys("username")
-            usernames |= comparisons.filters(left_name=entity.name, criterion=criterion).keys("username")
-            usernames |= comparisons.filters(right_name=entity.name, criterion=criterion).keys("username")
-            users_subset = users[list(usernames)]
-            assert isinstance(users_subset, Users)
-            users_list.append(users_subset)
+            usernames = ratings.filters(entity_name=entity.name, criterion=criterion).keys("username") \
+                | comparisons.filters(left_name=entity.name, criterion=criterion).keys("username") \
+                | comparisons.filters(right_name=entity.name, criterion=criterion).keys("username")
+            users_list.append(users.filters(usernames))
         return users_list
     
     def _args(self, # type: ignore

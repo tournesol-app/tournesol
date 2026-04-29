@@ -8,7 +8,11 @@ from solidago.primitives.datastructure.named_objects import NamedObject, NamedOb
 
 
 class User(NamedObject):
-    default: dict[str, bool | int | float | str] = dict(pretrust=False, trust=0.0)
+    default: dict[str, bool | int | float | str] = dict(
+        pretrust=False, 
+        trust=0.0,
+        representative="default",
+    )
 
 class Users(NamedObjects[User]):
     name: str = "users"

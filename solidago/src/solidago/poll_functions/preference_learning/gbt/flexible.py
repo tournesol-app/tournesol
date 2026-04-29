@@ -63,10 +63,14 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         for key in ("directs", "thresholds", "categories", "parameters"):
             if not key in self.prior_stds:
                 self.prior_stds[key] = 7.0
-        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
-        self.entity_similarity = None if entity_similarity is None else solidago.load(entity_similarity, solidago.similarity)
-        self.rating_root_law = (rating_root_law, ()) if isinstance(rating_root_law, str) else rating_root_law
-        self.comparison_root_law = (comparison_root_law, ()) if isinstance(comparison_root_law, str) else comparison_root_law
+        import solidago
+        self.entity_similarity = None
+        if entity_similarity is not None:
+            self.entity_similarity = solidago.load(entity_similarity, solidago.similarity, Similarity)
+        def to_tuple(x: str | tuple) -> tuple: 
+            return (x, ()) if isinstance(x, str) else x
+        self.rating_root_law = to_tuple(rating_root_law)
+        self.comparison_root_law = to_tuple(comparison_root_law)
         self.discard_ratings = discard_ratings
 
     #######################
@@ -107,7 +111,7 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         default_root_law_name: str | None = None, 
         default_arg: tuple = (),
     ) -> tuple[list[RootLaw], list[int], list[Any]]: # root_law_indices, root_law_args
-        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as root_law_module
+        import solidago, solidago.poll_functions.preference_learning.gbt.root_law as m
         root_laws, indices, args = list(), list(), list()
         default_index = None if default_root_law_name is None else self.root_law_names.index(default_root_law_name)
         for row in table:
@@ -120,7 +124,8 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
             indices.append(index)
             args.append(arg)
             root_law_arg = arg if isinstance(arg, tuple) else (arg,)
-            root_laws.append(solidago.load(self.root_law_names[index], root_law_module, *root_law_arg))
+            root_law = solidago.load(self.root_law_names[index], m, RootLaw, None, *root_law_arg)
+            root_laws.append(root_law)
         return root_laws, indices, args
 
     def _args(self,  # type: ignore

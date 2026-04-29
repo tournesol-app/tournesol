@@ -20,8 +20,8 @@ class Sequential(PollFunction):
         self.seed = seed
         self.subfunctions: list[PollFunction] = list()
         for sub in subfunctions or list():
-            import solidago
-            subfunction = solidago.load(sub, solidago.poll_functions, max_workers=max_workers) 
+            import solidago, solidago.poll_functions as m
+            subfunction = solidago.load(sub, m, PollFunction, max_workers=max_workers) 
             assert isinstance(subfunction, PollFunction)
             self.subfunctions.append(subfunction)
             

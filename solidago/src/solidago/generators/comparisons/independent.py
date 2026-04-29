@@ -15,10 +15,9 @@ class Independent(PollFunction):
         honest: Union["Compare", list, tuple] | None = None, 
         malicious: Union["Compare", list, tuple] | None = None,
     ):
-        from solidago.generators.comparisons.compare import Deterministic, Negate
-        import solidago, solidago.generators.comparisons as comparisons_module
-        self.honest = solidago.load(honest, comparisons_module) if honest else Deterministic()
-        self.malicious = solidago.load(malicious, comparisons_module, honest=honest) if malicious else Negate(self.honest)
+        import solidago, solidago.generators.comparisons as m
+        self.honest = solidago.load(honest, m, m.Compare, m.Deterministic())
+        self.malicious = solidago.load(malicious, m, m.Compare, m.Negate(self.honest), honest=honest)
         
     def fn(self, 
         users: Users, 

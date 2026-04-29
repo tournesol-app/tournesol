@@ -36,19 +36,11 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         self.keep_user_model_score_processing = keep_user_model_score_processing
         
         import solidago
-        if not isinstance(minimizer, Minimizer):
-            minimizer_cls, minimizer_kwargs = ("SciPyMinimizer", dict()) if minimizer is None else minimizer
-            _minimizer = solidago.load(minimizer_cls, solidago.primitives.minimizer, **minimizer_kwargs)
-            assert isinstance(_minimizer, Minimizer)
-            minimizer = _minimizer
-        self.minimizer = minimizer
+        self.minimizer = solidago.load(minimizer, solidago.primitives.minimizer, 
+            Minimizer, ("SciPyMinimizer", dict()))
+        self.uncertainty = solidago.load(uncertainty, solidago.primitives.uncertainty, 
+            UncertaintyEvaluator, ("NLLIncrease", dict()))
 
-        if not isinstance(uncertainty, UncertaintyEvaluator):
-            uncertainty_cls, uncertainty_kwargs = ("NLLIncrease", dict()) if uncertainty is None else uncertainty
-            _uncertainty = solidago.load(uncertainty_cls, solidago.primitives.uncertainty, **uncertainty_kwargs)
-            assert isinstance(_uncertainty, UncertaintyEvaluator)
-            uncertainty = _uncertainty
-        self.uncertainty = uncertainty
 
     #############################################
     ##  Methods to be specified in subclasses  ##
@@ -100,10 +92,10 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         user, criterion = variable
         filtered_ratings = ratings.filters(username=user.name, criterion=criterion)
         filtered_comparisons = comparisons.filters(username=user.name, criterion=criterion)
-        evaluated_entity_names = ratings.filters(username=user.name, criterion=criterion).keys("entity_name")
-        evaluated_entity_names |= filtered_comparisons.keys("left_name")
-        evaluated_entity_names |= filtered_comparisons.keys("right_name")
-        evaluated_entities = entities[list(evaluated_entity_names)]
+        names = ratings.filters(username=user.name, criterion=criterion).keys("entity_name") \
+            | filtered_comparisons.keys("left_name") \
+            | filtered_comparisons.keys("right_name")
+        evaluated_entities = entities.filters(names)
         assert isinstance(evaluated_entities, Entities)
         rating_contexts = list({r["context"] for r in filtered_ratings})
         category_groups = [(c, list(evaluated_entities.get_column(str(c)))) for c in self.categories]

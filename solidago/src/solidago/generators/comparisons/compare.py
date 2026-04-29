@@ -38,7 +38,7 @@ class Deterministic(Compare):
 class Negate(Compare):
     def __init__(self, honest: Union["Compare", list, tuple]):
         import solidago
-        self.honest = solidago.load(honest, solidago.generators.comparisons)
+        self.honest = solidago.load(honest, solidago.generators.comparisons, Compare)
 
     def __call__(self, 
         comparison: Comparison, 

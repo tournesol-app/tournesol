@@ -51,10 +51,8 @@ class Deterministic(Rate):
 class Negate(Rate):
     def __init__(self, honest: Union["Rate", list, tuple]):
         import solidago
-        honest = solidago.load(honest, solidago.generators.ratings)
-        assert isinstance(honest, Rate)
-        super().__init__(honest.root_law_name, honest.root_law_arg)
-        self.honest = honest
+        self.honest = solidago.load(honest, solidago.generators.ratings, Rate)
+        super().__init__(self.honest.root_law_name, self.honest.root_law_arg)
 
     def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         return - self.honest.sample_value(rating, user, entity, public, criterion)
@@ -64,9 +62,7 @@ class Noisy(Rate):
     def __init__(self, distribution: Distribution | tuple[str, dict[str, Any]], *args, **kwargs):
         import solidago
         super().__init__(*args, **kwargs)
-        distribution = solidago.load(distribution, solidago.random)
-        assert isinstance(distribution, Distribution)
-        self.distribution = distribution
+        self.distribution = solidago.load(distribution, solidago.random, Distribution)
 
     def sample_value(self, rating: Rating, user: User, entity: Entity, public: bool, criterion: str) -> float:
         value = Deterministic().sample_value(rating, user, entity, public, criterion)

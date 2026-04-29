@@ -1,0 +1,2 @@
+class Representative:
+    pass

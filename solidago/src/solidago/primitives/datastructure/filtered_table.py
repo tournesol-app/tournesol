@@ -223,13 +223,13 @@ class _Table:
         self.cache(keyname)
         return self._cache.indices(keyname, key)
 
-    def get_filter(self, **keys: Hashable | list[Hashable]) -> Filter:
+    def get_filter(self, **keys: str | tuple | Iterable | Hashable) -> Filter:
         """ Filtered tables only have a changed filter """
         assert all(name in self.df.columns for name in keys), (keys, self.df.columns)
         self.cache(*keys.keys())
         filter = Filter()
         for name, key in keys.items():
-            if isinstance(key, list):
+            if isinstance(key, Iterable) and not isinstance(key, (str, tuple)):
                 indices = np.concatenate([
                     self._cache.indices(name, k) for k in key
                 ], dtype=np.int64)
@@ -423,10 +423,10 @@ class FilteredTable(Generic[TableRow]):
         df.index = list(range(len(df)))
         return df
 
-    def _get_filter(self, **keys: Hashable | list[Hashable]) -> Filter:
+    def _get_filter(self, **keys: str | tuple | Iterable | Hashable) -> Filter:
         return self.filter & self.table.get_filter(**keys)
     
-    def filters(self, **keys: Hashable | list[Hashable]) -> Self:
+    def filters(self, **keys: str | tuple | Iterable | Hashable) -> Self:
         keynames = [
             name for name in self.keynames 
             if name not in keys or isinstance(keys[name], list)

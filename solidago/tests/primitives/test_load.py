@@ -127,7 +127,7 @@ def test_poll_functions():
         solidago.poll_functions.AffineOvertrust
     )
     assert isinstance(
-        solidago.load(solidago.poll_functions.Squash(score_max=100.), solidago.poll_functions),
+        solidago.load(solidago.poll_functions.Squash(score_max=100.), solidago.poll_functions, solidago.PollFunction),
         solidago.poll_functions.Squash
     )
     

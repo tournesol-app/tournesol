@@ -25,6 +25,7 @@ class Instructions:
         if isinstance(value, str) and value.startswith("range("):
             value = Instructions._parse_range(value)
         self.value = value
+
     @classmethod
     def load(cls, filename: str) -> "Instructions":
         with open(filename) as f:

@@ -53,11 +53,10 @@ class KeySquashed(WeightsCompute):
         timeless_utilities = poll.entities.get_column("timeless_utility").to_numpy(np.float64)
         entities.set_column("utility", time_utilities * shifted_squash(timeless_utilities, self.ratio_utility))
         for _, indices in entities.df.groupby(self.key).indices.items():
-            index_list = list(indices)
-            group = entities[index_list]
+            group = entities.filters(indices)
             assert isinstance(group, Entities), group
             group_utility_sum = group.get_column("utility").sum()
-            for index in index_list:
+            for index in indices:
                 e = entities.index2name(index)
                 entities[e, column_name] = group[e]["utility"] / group_utility_sum
         return entities

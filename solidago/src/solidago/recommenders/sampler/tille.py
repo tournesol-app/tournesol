@@ -1,10 +1,10 @@
 import numpy as np
 from solidago.poll import *
 from solidago.recommenders.representatives.weights_compute import WeightsCompute
-from src.solidago.recommenders.sampler.pivot_scheduler.pivot_scheduler import PivotScheduler
+from solidago.recommenders.sampler.pivot_scheduler.pivot_scheduler import PivotScheduler
 
 
-class Pivot:
+class Tille:
     def __init__(self,
         weights_compute: WeightsCompute | tuple[str, dict],
         pivot_scheduler: PivotScheduler | tuple[str, dict],

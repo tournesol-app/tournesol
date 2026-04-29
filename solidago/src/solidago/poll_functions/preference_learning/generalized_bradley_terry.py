@@ -119,8 +119,7 @@ class GeneralizedBradleyTerry(PreferenceLearning):
         for criterion in comparisons.keys("criterion"):
             evaluated_entity_names = comparisons.filters(criterion=criterion).keys("left_name") \
                 | comparisons.filters(criterion=criterion).keys("right_name")
-            criterion_entities = entities[list(evaluated_entity_names)]
-            assert isinstance(criterion_entities, Entities)
+            criterion_entities = entities.filters(evaluated_entity_names)
             if len(criterion_entities) <= 1:
                 continue
             init = init_model(criterion_entities, str(criterion))
