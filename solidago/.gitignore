@@ -9,3 +9,12 @@
 experiments/**
 tests/**.parquet
 file.log
+
+papers/**.aux
+papers/**.lof
+papers/**.log
+papers/**.out
+papers/**.toc
+papers/**.fmt
+papers/**.bbl
+papers/**.blg
