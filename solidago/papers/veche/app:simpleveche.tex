@@ -32,8 +32,8 @@
 \label{app:simpleveche}
 
 This section provides a proof of a generalization of Theorem~\ref{th:simpleveche},
-which bounds the maximal impact of a followed user.
-More precisely, we consider a slightly generalized setting with user volumes.
+which bounds the maximal impact of a councillor.
+More precisely, we consider a slightly generalized setting with councillor volumes.
 Define the weights as
 \begin{align}
     \Weights(v, b) 
@@ -72,7 +72,7 @@ Theorem~\ref{th:simpleveche} is easily derived
 from Theorem~\ref{th:lipschitz_simpleveche} as the special case
 where $v \triangleq (1)_{u \in [U]} \in \setR_{\geq 0}^U$,
 and $v'_{x} \triangleq v_x \indicator{x \neq u}$ for all $x \in [U]$,
-i.e. $v'$ removes user $u$'s voting right.
+i.e. $v'$ removes councillor $u$'s voting right.
 \end{proof}
 
 
@@ -99,9 +99,9 @@ Theorem~\ref{th:lipschitz_simpleveche} looks similar
 to Lipschitz resilience~\cite{DBLP:conf/aistats/AllouahGHV24}.
 Lipschitz resilience demands that 
 the social mechanism $\setR_{\geq 0}^U \times \bbX^U \to \bbY$ 
-be Lipschitz continuous as a function of users' voting rights
+be Lipschitz continuous as a function of councillors' voting rights
 (using the $\ell_1$ norm as a metric for voting rights).
-In our context, we would have $\bbX \triangleq \setR^E$ (user ballots)
+In our context, we would have $\bbX \triangleq \setR^E$ (councillor ballots)
 and $\bbY \triangleq \Delta(\cF^E)$ with the $\TotalVariationDistance$ metric.
 Theorem~\ref{th:lipschitz_simpleveche} does not guarantee Lipschitz resilience,
 because our right-hand side is a function of $\norm{\Weights(v, b)}{1,i}$
@@ -117,8 +117,8 @@ This could be mitigated
 by the prior identification of definitely safe entities to recommend.
 
 Second, the dependence on $v$ simply highlights the fact 
-that if Alice only follows a single user,
-then her recommendations will be heavily influenced by this single user.
+that if Alice only follows a single councillor,
+then her recommendations will be heavily influenced by this single councillor.
 This dependency risk can be mitigated by encouraging Alice 
 to multiply and diversify her list of followed accounts.
 It could also be mitigated once again by a fallback to safe entities to recommend,

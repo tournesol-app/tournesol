@@ -4,8 +4,8 @@ from solidago.poll import *
 class Recommender:
     def __call__(self, 
         poll: Poll, 
-        username: str, 
         limit: int, 
+        receiver_name: str | None = None, 
         cursor: str | None = None
     ) -> Entities:
         """

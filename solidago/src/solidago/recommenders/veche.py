@@ -1,3 +1,4 @@
+from datetime import datetime
 from solidago.poll import *
 from .recommender import Recommender
 
@@ -14,11 +15,11 @@ class Veche(Recommender):
         sampler: Sampler | tuple[str, dict] | None = None,
         follow_kind: str = "follow", 
         default_representative: tuple[str, dict] | None = None,
-        n_sampled_voters: int | None = None,
+        n_sampled_councillors: int | None = None,
     ):
         self.follow_kind = follow_kind
-        self.default_representative = default_representative or ("ChronoRepresentative", dict())
-        self.n_sampled_voters = n_sampled_voters
+        self.default_representative = default_representative or ("Representative", dict())
+        self.n_sampled_councillors = n_sampled_councillors
         
         import solidago
         from solidago.recommenders import normalization as n, aggregator as a, sampler as s
@@ -28,26 +29,26 @@ class Veche(Recommender):
 
     def __call__(self, 
         poll: Poll, 
-        username: str, 
         limit: int, 
+        receiver_name: str | None = None, 
         cursor: str | None = None
     ) -> Entities:
-        user = poll.users[username]
-        follows = poll.socials.filters(by=username, kind=self.follow_kind)
-        voter_names = follows.get_column("to")
-        voters = poll.users.filters(voter_names)
-        voters = voters.assign(volume=follows.get_column("weight"))
-        voters = voters.sample(self.n_sampled_voters)
-        representative_names = voters.get_column("representative")\
+        receiver = poll.users[receiver_name]
+        follows = poll.socials.filters(by=receiver_name, kind=self.follow_kind)
+        councillors = poll.users.filters(follows.get_column("to"))
+        councillors = councillors.assign(volume=follows.get_column("weight"))
+        councillors = councillors.sample(self.n_sampled_councillors)
+        representative_names = councillors.get_column("representative")\
             .map(lambda x: self.default_representative if x == "default" else x)
-        voters = voters.assign(representative=representative_names)
+        councillors = councillors.assign(representative=representative_names)
 
-        ballots = Scores(keynames=("username", "entity_name"))
-        for voter in voters:
-            import solidago, solidago.recommenders.representatives as m
-            r = solidago.load(voter["representative"], m, Representative, 
-                self.default_representative, user=voter)
-            ballots = ballots | self.normalization(r(user))
-        weights = self.aggregator(voters, poll.entities, ballots)
+        ballots = Scores(keynames=("councillor_name", "entity_name"))
+        import solidago
+        args = solidago.recommenders.representatives, Representative, self.default_representative
+        for c in councillors:
+            representative = solidago.load(c["representative"], *args, councillor=c)
+            ballot = representative(receiver, datetime.now())
+            ballots = ballots | self.normalization(ballot)
+        weights = self.aggregator(councillors, poll.entities, ballots)
         return self.sampler(weights, limit)
     

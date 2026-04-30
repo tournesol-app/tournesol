@@ -11,20 +11,20 @@ class Chronological(Recommender):
 
     def __call__(self, 
         poll: Poll, 
-        username: str, 
         limit: int, 
+        receiver_name: str | None = None, 
         cursor: str | None = None
     ) -> Entities:
-        followings = poll.socials.filters(by=username, kind=self.follow_kind).get_column("to")
+        followings = poll.socials.filters(by=receiver_name, kind=self.follow_kind).get_column("to")
         reposts = poll.ratings.filters(username=followings, criterion=self.rating_criteria)
         names = set(poll.entities.filters(author=followings).names()) | reposts.keys("entity_name")
         entities = poll.entities.filters(names)
-        entities = entities.excludes(author=username)
+        entities = entities.excludes(author=receiver_name)
         entities = entities.assign(last_date=entities.get_column("date"))
         
         for repost in reposts:
             name = repost["entity_name"]
-            if poll.entities[name]["author"] != username:
+            if poll.entities[name]["author"] != receiver_name:
                 last_date = max(repost["timestamp"], entities[name]["last_date"])
                 entities[name, "last_date"] = last_date
         

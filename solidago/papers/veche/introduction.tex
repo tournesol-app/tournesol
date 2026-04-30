@@ -31,37 +31,54 @@ grounded in social choice theory principles.
     \emph{A follow is the allocation of a unit voting right of influence.}
 \end{center}
 
-More specifically, \Veche{} considers that, when Alice follows some user $u$,
-the user $u$ is given a unit voting right in a social choice mechanism
-that will then (stochastically) construct Alice's recommendation feed.
-Put differently, the user $u$ then gets to submit a ballot $b_u$.
-A voting system will then aggregate all followed users' ballots,
-and return a feed based on these ballots,
-with the guarantee that each user $u$'s influence is bounded by their unit voting right,
-no matter what ballot $b_u$ is submitted.
+Etymologically, a \Veche{} was a Slavic popular assembly,
+the last of which was held in 1510.
+We propose to select a user's recommendations by emulating such an assembly.
+More specifically, by choosing to follow another user,
+Alice is metaphorically inviting the followed user to act as a \emph{councillor}
+in Alice's personal \Veche{}.
+When Alice wants to be suggested entities (e.g. posts, videos or other kinds of options),
+she asks here councillors to submit entity recommendations.
+Each councillor may even specify the extent to which they want a given entity to be shown to Alice.
+Such weighted entity recommendations thereby form the councillor's \emph{ballot}.
+Alice's personal \Veche{} will then collect her councillors' ballots,
+and construct out of them a personalized feed of entities,
+which will be shared with Alice.
 
-Given that a ballot $b_u$ must be be submitted upon any of Alice's query for a feed,
-and given that she expects to receive a feed within a fraction of a second,
-the construction of $b_u$ will have to be automated, 
-based on user $u$'s past activities (posts, reposts, reports...).
-The ballot-construction mechanism may called an \emph{algorithmic representative},
+% \Veche{} considers that, 
+% when Alice follows some user $u$,
+% the user $u$ is given a unit voting right in a social choice mechanism
+% that will then (stochastically) construct Alice's recommendation feed.
+% Put differently, the user $u$ then gets to submit a ballot $b_u$.
+% The user $u$ thereby gets to be recommendation \emph{councillors} 
+% to the recommendation receiver Alice.
+% A voting system will then aggregate all councillors' ballots,
+% and return a feed based on these ballots,
+% with the guarantee that each councillor $u$'s influence is bounded by their unit voting right,
+% no matter what ballot $b_u$ is submitted.
+
+Given that ballots must be be submitted upon any of Alice's query for a feed,
+and given that she may be expecting to receive a feed of recommendations within a fraction of a second,
+the construction of the councillors' ballots will have to be automated, 
+based on councillors' past activities (posts, reposts, reports...).
+This automated ballot-construction mechanism may called an \emph{algorithmic representative},
 following the principles put forth 
 by~\cite{DBLP:journals/pacmhci/LeeKKKYCSNLPP19,DBLP:conf/aaai/NoothigattuGADR18,DBLP:journals/ai/FreedmanBSDC20}.
-While any user $u$ could construct any algorithm to represent them by submitting ballots $b_u$,
-most users will require a default construction of an algorithmic representative.
-The paper also proposes a default algorithmic representative for all users.
+In principle, a councillor could construct any algorithm to submit a ballot in their name.
+However, in practice, most councelors will require a default construction of an algorithmic representative.
+The paper also proposes such a default algorithmic representative.
 
 More concretely, our contributions are the following.
 
 \begin{itemize}
     \item We introduce \Veche{}, a highly flexible social choice mechanism,
-    through which followed users can vote for the content of Alice's feed,
-    and we provide mathematical guarantees on the maximal impact of a followed user.
+    through which councillors can vote for the content of Alice's feed,
+    and we provide mathematical guarantees on the maximal impact of a councillor.
     \item We show how to leverage \Veche{}'s flexibility and algorithmic representatives
     to propose a general and practical deployment that responds to user needs and constraints,
     such as minimal user experience modifications,
     simple time decay management with desirable mathematical properties,
-    tunable followed users' volumes,
+    tunable councillors' volumes,
     including preferred semantic biases,
     encouraging reposts and reports over posts,
     and feed diversification using Tillé's pivot algorithm~\CITE{}.

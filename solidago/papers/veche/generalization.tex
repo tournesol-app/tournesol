@@ -11,47 +11,24 @@ expressiveness and adaptiveness.
 \subsection{Ballot biasing}
 \label{sec:biasing}
 
-Both Alice and the users she follow could engage in ballot biasing,
+Both Alice and her councillors could engage in ballot biasing,
 to better fit Alice's preferences.
 All below biasing functions are maps $\setR^E \to \setR^E$,
-which could either be used by a recommending user $u \in [U]$ 
+which could either be used by a councillor $u \in [U]$ 
 (or rather, by their algorithmic representative)
 to construct their ballot $b_u$,
 or by Alice, prior to ballot normalization and aggregation.
 
 \subsubsection{Time decay bias}
-% Different entities may have different expected lifetimes.
-% A breaking news may typically only remain relevant for a few hours,
-% while a math class would likely be worth recommending for decades.
-% Users $u \in [U]$ could thus want to set themselves the characteristic time $\tau_{ue}$
-% of entities $e \in [E]$.
-% However, some care is needed to avoid over-recommending entities with short lifetimes.
-% To do so, we introduce the following decay function with characteristic time $\tau$,
-% which is given as
-% \begin{align}
-%     \Decay(t | \tau, \gamma_\tau) \triangleq \frac{\tau \ln (1+\tau/\tau_0)^{\gamma_\tau}}{(t + \tau)^2},
-% \end{align}
-% for some default characteristic time $\tau_0$
-% and some short-term bias $\gamma_\tau \in \setR$.
-% User $u$'s ballot $b_{ue} (t)$ would then be given by
-% \begin{align}
-%     b_{ue} (t) \triangleq b_{ue}^0 \Decay (t - t_{ue} | \tau_{ue}, \gamma_\tau).
-% \end{align}
-% The control function $\ln (1 + \tau/\tau_0)^{\gamma_\tau}$
-% thus allows to control the relative total exposure of an entity of characteristic time $\tau$.
-% We designed it to capture the natural logarithmic scale of charactistic times,
-% and to allow followed users to select her temporality preference.
-% A preference for short-term entities would correspond to $\gamma_\tau < 0$,
-% while $\gamma_\tau > 0$ would express a preference for long-term entities.
 
 We start with arguably the most important bias,
 namely favoring more recent activities.
 Leveraging time biases especially allow us to challenge the chronological feed,
-though, importantly, we still guarantee fairness between followed users.
+though, importantly, we still guarantee fairness between councelors.
 
-Time bias is more reasonably introduced by the recommending user $u \in [U]$.
-Denoting $\tau_{ue}$ the characteristic lifetime of entity $e$ according to user $u$,
-and given $t_{ue}$ the date of user $u$'s action on entity $e$,
+Time bias is more reasonably introduced by the councelor $u \in [U]$.
+Denoting $\tau_{ue}$ the characteristic lifetime of entity $e$ according to councelor $u$,
+and given $t_{ue}$ the date of councelor $u$'s action on entity $e$,
 at time $t \in \setR$, we may then define
 \begin{align}
     \Bias^{time}_e (b_{u} | t, t_{ue}, \tau_{ue}, \tau_0, \gamma_\tau)
@@ -117,11 +94,11 @@ The proofs are postponed to Appendix~\ref{app:decay}.
 
 \begin{proposition}
     \label{prop:sum_past_weights}
-    Suppose user $u$'s action times follow a Poisson point process 
+    Suppose councillor $u$'s action times follow a Poisson point process 
     of parameter $\lambda$ that starts at time $0$,
     and that all entities are given $\tau_{ue} = \tau$.
     Then, at any time $t \geq 0$ 
-    the user's expected sum of ballot weights is bounded as
+    the councillor's expected sum of ballot weights is bounded as
     \begin{align}
         \forall t \in \setR_{\geq 0} \mathsep 
         \bbE \norm{\Bias (b_u | t, t_u, \tau_u, \tau_0, \gamma_\tau)}{1} 
@@ -129,7 +106,7 @@ The proofs are postponed to Appendix~\ref{app:decay}.
     \end{align}
     In particular, any new entity is expected to compete
     with a bounded amount of weights given to other entities,
-    and does not have a vanishing probaility of being pushed by user $u$.
+    and does not have a vanishing probaility of being pushed by councillor $u$.
 \end{proposition}
 
 \begin{proposition}
@@ -153,13 +130,13 @@ We now discuss other useful biases to inject on ballot weights.
 \paragraph{Removing previously recommended entities.}
 While Alice may prefer diverse recommandations,
 she may also want to previously recommended entities to be recommended again,
-especially if they are highly reposted by the users she follows.
+especially if they are highly reposted by her councillors.
 Moreover, we may assume that the more she is recommended an entity,
 the more time she wants to fly before it is recommended again.
 We capture this by denoting $n_e(t)$ the number of times an entity is recommended.
 $t^{last}_e \in \setR \cup \set{\infty}$ the time of the entity was recommended
 and a base delay $\tau_\circlearrowright$ between two recommendations.
-Any user $u$'s ballot $b_u(t)$ at time $t$ is then modified 
+Any councillor $u$'s ballot $b_u(t)$ at time $t$ is then modified 
 by the non-recommendations of recently recommended entities, as
 \begin{align}
     \Bias^{\circlearrowright}_e (b_u | t, t^{last}_e, n_e, \tau_\circlearrowright, k_\circlearrowright) \triangleq
@@ -171,7 +148,7 @@ where $k_\circlearrowright$ is the base of the geometric time delay between two 
 This modified ballot is then the one that will be normalized as described above.
 
 \paragraph{Discoverability bias.}
-Alice and/or followed user $u \in [U]$ may want to favor discoverability,
+Alice and/or councillor $u$ may want to favor discoverability,
 by recommending entities that have had fewer views.
 Let $N^{views}_e$ the number of views of entity $e \in [E]$.
 We model their discoverability bias preferences by
@@ -198,7 +175,7 @@ and $6.8$ times more weights than an entity with 1 million views.
 \paragraph{Semantic bias.}
 Alice's aggregation can be customized based on her semantic preferences.
 There are a myriad of ways to do so, 
-without effect on the principle of unit (or volume-based) influence per followed user.
+without effect on the principle of unit (or volume-based) influence per councillor.
 Here we propose an approach based on vector representations,
 which may be given by a language model.
 First we need to represent Alice's preferences by a vector embedding $x_{Alice} \in \setR^D$.
@@ -217,11 +194,11 @@ Weighting the ballots with this cosine similarity may then yield
     \right)^{\gamma_\measuredangle},
 \end{align}
 where $\gamma_\measuredangle \geq 0$ determines the degree to which 
-user $u$ wants semantic personalization to weigh in.
+councillor $u$ wants semantic personalization to weigh in.
 
 \paragraph{Lifetime bias.}
 Alice may prefer trends and news, or she may prefer long-term information.
-Similarly, a followed user may want to recommend one or another kind of information.
+Similarly, a councillor may want to recommend one or another kind of information.
 We model this as
 \begin{align}
     \textsc{Bias}_e^\looparrowright (
@@ -237,7 +214,7 @@ she could query it as part of a \Veche{} protocol extension,
 or this could be inferred by Alice given a semantic analysis of entity $e$.
 
 \paragraph{Combining all biases.}
-Both Alice and users $u \in [U]$ may combine the above biases and more.
+Both Alice and councillors $u \in [U]$ may combine the above biases and more.
 We denote $\Bias$ and $\Bias_u$ the compositions of the bias functions 
 that they leverage.
 Table~\ref{table:bias_hyperparameters} yields suggested bias hyperparameters.
@@ -262,29 +239,29 @@ Table~\ref{table:bias_hyperparameters} yields suggested bias hyperparameters.
 
 We now present generalizations of Alice's \Veche{}.
 
-\subsubsection{User volumes}
+\subsubsection{Councillor volumes}
 
 Thus far, we assumed that Alice had a binary choice.
-She could either follow or not follow a given user $u \in [U]$.
+She could either follow or not follow a given councillor $u \in [U]$.
 However, our algorithms generalize naturally to 
-the case where she may tune the volume $v_u$ of user $u$.
+the case where she may tune the volume $v_u$ of councillor $u$.
 The weights would then be given by
 \begin{align}
     w \triangleq \max \set{0, \sum_{w \in [U]} v_u \tilde b_u}
 \end{align}
 
 \paragraph{Time-decaying volume.}
-Denote $t_u \in \setR$ the date of Alice's follow of user $u \in [U]$.
+Denote $t_u \in \setR$ the date of Alice's follow of councillor $u \in [U]$.
 To account for the tendency between any two users to drift away through time,
 we propose a decay of the volume $v_u$ as
 \begin{align}
     v_u^{\Rsh} (t) \triangleq \frac{v_u \tau_{\Rsh}^2}{\tau_{\Rsh}^2 + (t - t_u)^2}.
 \end{align}
 Evidently, we could add a follow renewal option, 
-to enable Alice to reinitialize a followed user's volume.
+to enable Alice to reinitialize a councillor's volume.
 
 \paragraph{Updating volumes based on likes.}
-While we could allow Alice to tune by hand the volume of the users she follows,
+While we could allow Alice to tune by hand the volume of the councillors,
 she might prefer to use implicit signals to do this indirectly and effortlessly.
 The \emph{like} and \emph{dislike} signals could arguably be used to do so.
 However, to prevent a ``like-lock-in'',
@@ -295,12 +272,12 @@ Let us denote $l_n \in \setR$ the $n$-th like action
 (e.g., $+1$ for like, $-1$ for dislike),
 $t_n$ the time of the action, 
 $e_n$ the entity the action was made on.
-We may then consider that the like action on a user volume
-refers to the extent to which the user $u$ wanted to add $e_n$
+We may then consider that the like action on a councillor volume
+refers to the extent to which the councillor $u$ wanted to add $e_n$
 to Alice's recommendation feed, 
 which is given by $\tilde b_{nu} \triangleq \tilde b_{u e_n} (t_n)$.
 We may derive the impact of the first $N$ actions 
-on user volumes by accounting for the like intensity $l_n$ 
+on councillor volumes by accounting for the like intensity $l_n$ 
 and for a time discount,
 and by adding all such influences.
 Demanding non-negative volumes then yields
@@ -321,7 +298,7 @@ Demanding non-negative volumes then yields
 where $\tau_\heartsuit$ is the characteristic lifetime of a like action,
 and where $\alpha_\heartsuit$ could be tuned by Alice 
 to select the influence of her likes on volume modifications.
-In practice, relevant user interfaces and notifications could be used
+In practice, relevant councillor interfaces and notifications could be used
 to inform Alice of the impact of her like actions on the volumes,
 and to allow her to adjust the volumes independently from the like actions.
 
@@ -394,8 +371,8 @@ all signals (posts, reposts, reports...) are treated similarly,
 and are normalized by spreading the total ballot weights.
 We highlight the limits of this approach, and show extensions.
 
-\paragraph{Limit the voice of decidedly silent users.}
-A user $u \in [U]$ may be so inactive
+\paragraph{Limit the voice of decidedly silent councillors.}
+A councillor $u \in [U]$ may be so inactive
 and they may prefer not recommending anything,
 rather than recommending entities that Alice may not like,
 and which could deteriorate her experience.
@@ -406,12 +383,12 @@ To mitigate this, we simply allow $\tilde b_u$ to be of smaller norm, i.e. we se
     \tilde b_u \triangleq b_u \min \set{ 1, \norm{b_u}{1}^{-1} }.
 \end{align}
 Thereby, by reporting $b_u$ with $\norm{b_u}{1} < 1$,
-user $u$ guarantees $\norm{\tilde b_u}{1} < 1$.
+councillor $u$ guarantees $\norm{\tilde b_u}{1} < 1$.
 
 \paragraph{Ballot $\ell_q$ normalization.}
 Thus far, we used the normalization $\tilde b_u \triangleq b_u / \norm{b_u}{1}$.
 This $\ell_1$-norm has the advantage of viewing $\tilde b_u$
-as a way for user $u$ to allocate their volume $v_u$ across the entities $e \in [E]$.
+as a way for councillor $u$ to allocate their volume $v_u$ across the entities $e \in [E]$.
 However, this approach has been criticized 
 for its efficiency and robustness guarantees~\cite{lalley2018quadratic},
 who instead call for \emph{quadratic voting}.
@@ -421,25 +398,25 @@ we could define the $\ell_q$-normalization
 \begin{align}
     \tilde b_u \triangleq b_u \norm{b_u}{q}^{-1}.
 \end{align}
-Larger values of $q$ also tend to favor users that spread their ballot weights $b_{ue}$
+Larger values of $q$ also tend to favor councillors that spread their ballot weights $b_{ue}$
 across more entities.
 Assuming that ballots are derived directly from actions as has been proposed earlier,
-this would incentivize users' participations on the social media.
+this would incentivize councillors' participations on the social media.
 While it may be desirable to provide such incentives to some extent,
 this could also imply negative impacts,
-such as over-valuing hyperactive users or mental health harm to creators.
+such as over-valuing hyperactive councillors or mental health harm to creators.
 Arguably, $q=2$ could strike a good balance.
 
 \paragraph{Different normalizations for different signals.}
 We believe it to also be interesting, for various reasons,
 to normalized different signals differently.
-The main reason for this is that a user $u$ might want above all to have their posts recommended,
+The main reason for this is that a councillor $u$ might want above all to have their posts recommended,
 which may trigger concerns of mass self-promotion,
 and a lack of effort to evaluate others' posts.
-To avoid the possibility that other signals (reposts, reports) will harm a user $u$'s posts,
+To avoid the possibility that other signals (reposts, reports) will harm a councillor $u$'s posts,
 we may simply normalize each signal differently.
 Namely, denote $\bE_u^{post}, \bE_u^{\uparrow}, \bE_u^{\downarrow}$ the subsets of entities,
-which are respectively posted, evaluated positively or evaluated negatively by user $u$
+which are respectively posted, evaluated positively or evaluated negatively by councillor $u$
 (assuming that entities posted by $u$ cannot be evaluated).
 Define
 \begin{align}
@@ -460,15 +437,15 @@ she could normalize the ballots as
 \end{align}
 with the convention $0 \cdot 0^{-1} = 0$.
 Larger values of both $\alpha_\uparrow$ and $q_\uparrow$ would incentivize
-users' evaluations and promotions of other users' entities,
+councillors' evaluations and promotions of other councillors' entities,
 which could also be viewed as a way to reward content evaluation.
 Meanwhile, larger values of $\alpha_\downarrow$ and $q_\downarrow$ 
-would make it easier for users 
+would make it easier for councillors 
 to prevent harmful entities from being recommended.
 Typically, with $\alpha_\downarrow = 6$ and $\alpha_\uparrow = 2$, 
 an entity would have to be posted or reposted
-by at least two times as many users 
-than the number of users that have reported it.
+by at least two times as many councillors 
+than the number of councillors that have reported it.
 This may be desirable to prevent the spread of divisive entities,
 and to instead favor more consensual entities.
 
@@ -558,8 +535,8 @@ Denoting $\bar b_e \triangleq (\sum_u b_{ue}) / U$, this yields
         \sqrt{\sum_u (b_{uf} - \bar b_f)^2}
     }.
 \end{align}
-The correlation is maximal when two entities are posted by the same user,
-with no interaction from any other users.
+The correlation is maximal when two entities are posted by the same councillor,
+with no interaction from any other councillors.
 The following proposition holds about correlations.
 The proof is given in Appendix~\ref{app:tille}.
 
@@ -600,16 +577,16 @@ The proof is given in Appendix~\ref{app:tille}.
 %     Assuming the simple ballot computation, 
 %     Pearson's correlation guarantees:
 %     \begin{itemize}
-%         \item If $e$ and $f$ were posted by the same user
-%         and if no other user has interacted with any,
+%         \item If $e$ and $f$ were posted by the same councillor
+%         and if no other councillor has interacted with any,
 %         then $\rho_{ef} = 1$.
-%         \item If $e$ and $f$ were posted by two distinct users
-%         and if no other user has interacted with any,
+%         \item If $e$ and $f$ were posted by two distinct councillors
+%         and if no other councillor has interacted with any,
 %         then $\rho_{ef} = 0$.
-%         \item If $e$ and $f$ were posted by two distinct users $u$ and $v$,
+%         \item If $e$ and $f$ were posted by two distinct councillors $u$ and $v$,
 %         respectively,
 %         and if $u$ reports $f$ and $v$ reports $e$,
-%         and if no other user has interacted with any,
+%         and if no other councillor has interacted with any,
 %         then $\rho_{ef} = -1$.
 %     \end{itemize}
 % \end{proposition}
@@ -649,31 +626,31 @@ This would reduce the complexity to $O(ES)$.
 % \Require Like actions $(l_n, t_n, \tilde b_n)_{n \in [N]} \in \left(
 %     \setR \times \setR \times \setR^U \right)^N$.
 % \Require Like discount time $\tau_\heartsuit \in \setR_{\geq 0}$, like volume weight $\alpha_\heartsuit \in \setR_{\geq 0}$. 
-% \Require Non-followed user maximal cumulative volume $\hat v \in \setR_{\geq 0}$.
+% \Require Non-followed councillor maximal cumulative volume $\hat v \in \setR_{\geq 0}$.
 % \Require Normalization parameter $q$. Negative weight $\alpha_-$.
 % \Require Weights $b \in \setR^{([U] \cup \hat \bU) \times E}$ at time $t$.
 %     Current time $t \in \setR$. 
 % \State $\forall u \in [U] \mathsep v_u \gets 1 + \alpha_\heartsuit 
 %     \sum_{n \in [N]} l_b \tilde b_{nu} \left( 1 + (t - t_n) / \tau_\heartsuit \right)^{-2}$
-%     \Comment{Computes followed user volumes}
+%     \Comment{Computes followed councillor volumes}
 % \State $\forall u \in \hat \bU \mathsep v_u \gets \min \set{1, \hat v U / \card{\hat \bU}}$
-%     \Comment{Computes non-followed user volumes}
+%     \Comment{Computes non-followed councillor volumes}
 % \State $\forall u \in [U] \cup \hat \bU \mathsep \hat b_u \gets \Bias(b_u)$
-%     \Comment{Bias users' ballots}
+%     \Comment{Bias councillors' ballots}
 % \State $\forall u \in [U] \cup \hat \bU \mathsep \tilde b_u^{post} \gets 
 %     \hat b_u^{post} \min \set{1, \norm{\hat b_u^{post}}{q_{post}}^{-1}}$
-%     \Comment{Normalization of users' posts}
+%     \Comment{Normalization of councillors' posts}
 % \State $\forall u \in [U] \cup \hat \bU \mathsep \tilde b_u^\uparrow \gets 
 %     \alpha_\uparrow \hat b_u^\uparrow 
 %     \min \set{1, \norm{\hat b_u^\uparrow}{q_\uparrow}^{-1}}$
-%     \Comment{Normalization of users' positive evaluations}
+%     \Comment{Normalization of councillors' positive evaluations}
 % \State $\forall u \in [U] \cup \hat \bU \mathsep \tilde b_u^\downarrow \gets 
 %     \alpha_\downarrow \hat b_u^\downarrow
 %     \min \set{1, \norm{\hat b_u^\downarrow}{q_\downarrow}^{-1}}$
-%     \Comment{Normalization of users' negative evaluations}
+%     \Comment{Normalization of councillors' negative evaluations}
 % \State $\forall u \in [U] \cup \hat \bU \mathsep \tilde b_u 
 %     \gets \tilde b_u^{post} + \tilde b_u^\uparrow + \tilde b_u^\downarrow$
-%     \Comment{Normalized users' ballots}
+%     \Comment{Normalized councillors' ballots}
 % \State $\forall e \in [E] \mathsep w_e \gets 
 %     \max \set{0, \sum_{u \in [U] \cup \hat \bU} v_u \tilde b_u}$.
 %     \Comment{Ballot aggregation}
@@ -718,7 +695,7 @@ through more desirable mathematical guarantees.
 In Appendix~\ref{app:geometric-median}, 
 we discuss a way to use the geometric median and its advantages,
 especially as a way to account for algorithmic representatives' uncertainties
-on what the users they represent would prefer.
+on what the councillors they represent would prefer.
 However, a more thorough investigation of better-behaved ballot aggregations
 is left for future work.
 
@@ -726,29 +703,29 @@ is left for future work.
 \subsection{Algorithmic representative generalizations}
 \label{sec:algorithmic_representative_generalization}
 
-We now discuss generalizations of followed users' algorithmic representatives.
+We now discuss generalizations of councillors' algorithmic representatives.
 
 \paragraph{Liquid democracy.}
-A user $u \in [U]$ could want to relay another user $v$'s posts,
+A councillor $u \in [U]$ could want to relay another councillor $v$'s posts,
 even when $u$ has not explicitly reposted $v$'s posts.
 This allows $u$ to systematically promote $v$, 
 without having to check whether $v$ has a new post that $u$ could repost.
 This approach can be naturally interpreted by liquid democracy.
 By setting a relay volume $r_{uv} (t) \in \setR$ at time $t$, 
-user $u$'s ballot powered by liquid democracy could then be derived as
+councillor $u$'s ballot powered by liquid democracy could then be derived as
 \begin{align}
     b_{ue}^\leadsto (t) \triangleq b_{ue} (t) 
         + \sum_{v \in \bU^\leadsto_u} r_{uv} (t) b_{ve} (t),
 \end{align}
-where $\bU^\leadsto_u$ is the set of users $v$ that user $u$ relays.
+where $\bU^\leadsto_u$ is the set of councillors $v$ that councillor $u$ relays.
 Note that negative values could also be used to vote against the actions of $v$.
-While liquid democracy could thereby provide a new other way for users to support creators,
+While liquid democracy could thereby provide a new other way for councillors to support creators,
 we caution about the risk that this could be marketized,
-as some creators may then pay some users to systematically promote their ballots.
-Additionally, a user $u$ might forget about past relays they set up,
+as some creators may then pay some councillors to systematically promote their ballots.
+Additionally, a councillor $u$ might forget about past relays they set up,
 with which they may no longer agree, especially if $v$'s positions have evolved.
 To account for this risk,
-we would urge for clear monitoring interfaces of a user's relays,
+we would urge for clear monitoring interfaces of a councillor's relays,
 as well as a decay of $r_{uv} (t) \to 0$ as $t \to \infty$ 
 in the absence of new signals that $u$ wants to relay $v$.
 
@@ -772,24 +749,24 @@ in the absence of new signals that $u$ wants to relay $v$.
 \end{figure}
 
 \paragraph{Including additional signals such as ratings and comparisons.}
-A user $u \in [U]$ may also want 
+A councillor $u \in [U]$ may also want 
 to better monitor the ballots $b_u$ sent by their algorithmic representatives,
 as presented in Figure~\ref{fig:veche-recommender-interface},
 and to modify them based on their own preferences.
 This could be done through a better control of the initial values $b_u^0$,
-or through comparison interfaces that allows the user to report
+or through comparison interfaces that allows the councillor to report
 that they prefer recommending $e$ over $f$, i.e. they want $b_{ue} (t) \geq b_{uf} (t)$.
-Finally, a user's preferences could be generalized to entities they have not evaluated or reposted.
+Finally, a councillor's preferences could be generalized to entities they have not evaluated or reposted.
 We refer 
 to \cite{DBLP:conf/aaai/FageotFHV24,DBLP:journals/corr/abs-2602-08033} 
 for ressources on how this could be achieved.
-While such approaches may be valuable to allow users $u$ 
+While such approaches may be valuable to allow councillors $u$ 
 to better control their algorithmic representatives,
 because of the added complexity they imply,
 we keep further considerations out of the scope of this paper.
 
 % \begin{algorithm}
-% \caption{User $u$'s generalized algorithmic representative}\label{alg:ballot}
+% \caption{councillor $u$'s generalized algorithmic representative}\label{alg:ballot}
 % \begin{algorithmic}
 % \Require Post actions $b_{u}^0 \in \setR^E$ at times $t_u \in (\setR \cup \set{\infty})^E$ 
 %     with characteristic time $\tau_u \in \setR^E_{>0}$.
@@ -822,13 +799,13 @@ we keep further considerations out of the scope of this paper.
 % \end{algorithm}
 
 % Algorithm~\ref{alg:ballot} presents the generalized algorithmic representative.
-% We stress that the decay function is used by followed users to construct their ballots.
-% Alice cannot control the users' ballots.
+% We stress that the decay function is used by followed councillors to construct their ballots.
+% Alice cannot control the councillors' ballots.
 % Having said this, if she can collect the values of $t_{ue}$ 
 % (which are partially public in Tournesol, and fully public in the AT protocol),
-% she may use them to reweight the followed users' ballots accordingly to her time preferences.
+% she may use them to reweight the followed councillors' ballots accordingly to her time preferences.
 % Note that all subsequent generalizations will only refer to Alice's ballot aggregation,
-% not to the followed users' ballot construction,
+% not to the followed councillors' ballot construction,
 % and will thus be under the control of Alice.
 
 % \paragraph{Aggregating all algorithmic representative generalizations.}
@@ -860,13 +837,13 @@ and $\Delta_{ue}^{left} = \Delta_{ue}^{right} = \infty$
 if $b_{ue}$ was not specified.
 Finally, as discussed in~\ref{app:geometric-median},
 \Veche{} could consider a hyperparameter $\nu \in \setR^{< E}_{\geq 0}$,
-where $\nu_e$ reports the extent to which user $u$ cares about affecting
+where $\nu_e$ reports the extent to which councillor $u$ cares about affecting
 the weight $w_e$.
 Its default value could be $\nu_e = 1$.
 
 \paragraph{Interoperability.}
 By construction, \Veche{} is highly interoperable.
-Followed user $u \in [U]$ may use any algorithmic representative,
+Councillor $u \in [U]$ may use any algorithmic representative,
 as long as it returns a ballot $b_u \in \setR^E$ 
 at any given time $t \in \setR$.
 Alice could also leverage generalizations or alternatives to \Veche{},
@@ -879,11 +856,11 @@ Alice could host her own \Veche{} server.
 At least in principle, 
 Veche servers have no need to be hosted on the same machine.
 Additionally, in principle,
-all followed users $u \in [U]$ 
+all councillors $u \in [U]$ 
 could have their own algorithmic representative servers.
 Upon Alice's request for a new feed,
 Alice's \Veche{} server would query ballots 
-from the followed users' algorithmic servers.
+from the councillors' algorithmic servers.
 Once ballots are collected, the \Veche{} server would construct a feed,
 which would be sent to Alice.
 
@@ -898,7 +875,7 @@ at the risk of systmatically discriminating
 slow algorithmic representative servers.
 
 To provide better performance guarantees,
-followed users may be asked 
+councillors may be asked 
 to upload their algorithmic representatives 
 to Alice's \Veche{} server.
 This is where the name \Veche{} takes all its meaning.
@@ -918,27 +895,27 @@ upon query at any point.
 In practice, Alice will more likely default 
 to a \Veche{} server she does not administer,
 rather than setting up her own \Veche{} server.
-Similarly, followed users may leverage algorithmic representatives
+Similarly, councillors may leverage algorithmic representatives
 managed by third parties.
 To provide Alice with guarantees that her recommendations
 were indeed obtained by running \Veche{}
-with her followers' algorithmic representatives,
+with her councillors' algorithmic representatives,
 the \Veche{} server could leverage verifiable computing,
 and in particular SNARKs,
 to prove the correctness of its computations.
-Similarly, the \Veche{} server could provide proofs to the followed users
+Similarly, the \Veche{} server could provide proofs to the councillors
 that their algorithmic respresentatives' ballots were correctly accounted for,
 and that their algorithmic representatives ran the correct computations
-to recommend what the followed users intended to recommend.
+to recommend what the councillors intended to recommend.
 
 \paragraph{Privacy.}
-A followed user could prefer to hide their recommendations 
+A councillor could prefer to hide their recommendations 
 from Alice's \Veche{} server, and perhaps even from Alice.
-Typically, the user may want to spread a news,
+Typically, the councillor may want to spread a news,
 without Alice knowing the identity of the person 
 who wanted the news to be shown to her.
 Similarly, Alice could want to hide her feed,
-or the list of her followed users, 
+or the list of her followed councillors, 
 from her \Veche{} server.
 Providing such privacy guarantees is however a nontrivial open problem,
 which we leeave to future work.
@@ -958,7 +935,7 @@ for the selection of the default recommendation system is of the utmost importan
 
 Additionally, as we discuss it in Section~\ref{sec:evaluation},
 \Veche{} is likely to generate heavily biased filter bubbles,
-as any two consumers' lists of followed users may greatly differ.
+as any two consumers' lists of councillors may greatly differ.
 To prevent induced polarization risks,
 we believe that additional coordinated measures should be considered,
 to promote uniting entities of public interest~\cite{hoang2025tournesol}.
@@ -966,7 +943,7 @@ to promote uniting entities of public interest~\cite{hoang2025tournesol}.
 Finally, as proposed in~\cite{hoang2022solidago},
 the recommendation ecosystem should arguably avoid 
 the emergence of \emph{mass influencers},
-i.e. users who can massively bias the diffusion of entities,
+i.e. councillors who can massively bias the diffusion of entities,
 to prevent the massive spread of a dangerously misleading entity.
 This could be done by limiting the cumulative volume of any influencer.
 Better yet, as discussed in~\cite{hoang2022solidago},

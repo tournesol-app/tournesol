@@ -15,32 +15,33 @@ Put differently, a feed $f$ is a ranked subset of $[E]$.
 Denoting $\Image(f) \subset [E]$ the recommended subset,
 $f$ must define an order of $\Image(f)$, 
 i.e. a bijection $\card{\Image(f)} \to \Image(f)$.
-Let $[U]$ be the set of the $U$ users that Alice follows.
+Let $[U]$ be the set of the $U$ users that Alice follows,
+which we call the \emph{councelors}.
 As stated in the introduction, 
 we propose to construct the feed $f$
-by making the $U$ followed users vote 
+by making the $U$ councelors vote 
 for what entities they want to recommend to Alice.
-More precisely, a stochastic feed based on followed users' votes must be a map
+More precisely, a stochastic feed based on councelors' votes must be a map
 \begin{align}
     \textsc{Ballot}^U \to \Delta(\cF^E),
 \end{align}
 where $\textsc{Ballot}$ is a set of allowed ballots
 and where $\Delta(\cF^E)$ is the set of distributions over $\cF^E$.
 
-\Veche{} is a stochastic feed based on followed users' votes,
+\Veche{} is a stochastic feed based on councelors' votes,
 where the set of ballots is $\textsc{Ballots} \triangleq \setR^E$.
-Put differently, in \Veche{}, each user $u$ may submit any ballot $b_u \in \setR^E$,
+Put differently, in \Veche{}, each councelor $u$ may submit any ballot $b_u \in \setR^E$,
 where $b_{ue} \in \setR$ corresponds to the extent to which 
-the user $u$ wants entity $e \in [E]$ to be included into Alice's feed.
+the councelor $u$ wants entity $e \in [E]$ to be included into Alice's feed.
 Furthermore, \Veche{} uses an intermediary ballot aggregation
-that maps the followed users' ballots $b \in \setR^{U \times E}$
+that maps the councelors' ballots $b \in \setR^{U \times E}$
 to a weight vector $w \in \setR^E_{\geq 0}$.
 We then leverage feed algorithms that guarantee
 that the probability of recommending $e \in [E]$ is tightly linked to the weight $w_e$.
 In principle, \Veche{} could include any ballot vector aggregation rule
-$\setR^{U \times E} \to \setR^E_{\geq 0}$ to transform users' ballots into an entity weight vector.
+$\setR^{U \times E} \to \setR^E_{\geq 0}$ to transform councelors' ballots into an entity weight vector.
 It is important, however, that the mechanism be mathematically well-behaved.
-Typically, it should bound the influence of any user $u \in [U]$.
+Typically, it should bound the influence of any councelor $u \in [U]$.
 
 
 \subsection{\SimpleVeche{}: \Veche{} in its simplest form}
@@ -60,7 +61,7 @@ We will complexify it in Section~\ref{sec:vote_generalization}.
     \right.
 \end{align*}
 Then, \SimpleVeche{} simply normalize s
-each user's ballot $b_u$ by the some of its weights, i.e.
+each councelor's ballot $b_u$ by the some of its weights, i.e.
 \begin{align}
     \tilde b_u \triangleq \left\{
     \begin{array}{ll}
@@ -69,7 +70,7 @@ each user's ballot $b_u$ by the some of its weights, i.e.
     \end{array}
     \right.
 \end{align}
-Next, \SimpleVeche{} may simply add up all users' normalized ballots,
+Next, \SimpleVeche{} may simply add up all councelors' normalized ballots,
 while demanding nonnegative weights, yielding
 \begin{align}
     \Weights(b) \triangleq \max \set{0, \sum_{u \in [U]} \tilde{b}_u }.
@@ -82,11 +83,11 @@ where the probability of selecting $e$ is proportional to $w_e$ at each sampling
 \begin{algorithm}
 \caption{\SimpleVeche{}: A simple instantiation of \Veche{}}\label{alg:base_veche}
 \begin{algorithmic}
-\Require Maximal size $S$ of returned recommendation subsets. Users' ballots $b \in \setR^{U \times E}$.
+\Require Maximal size $S$ of returned recommendation subsets. Councelors' ballots $b \in \setR^{U \times E}$.
 \State $\tilde b_{u} \gets b_u / \norm{b_u}{1}$
     \Comment{Normalization (with convention $0 / 0 = 0$)}
 \State $w \gets \max \set{0, \sum_{u \in [U]} \tilde b_{u} }$
-    \Comment{Aggregation of users' votes}
+    \Comment{Aggregation of councelors' votes}
 \State $\bE \gets \set{e \in [E] \st w_e > 0}$
     \Comment{Filters non-recommendable entities}
 \State $f \gets (\perp, \ldots, \perp) \in \set{\perp}^\bE$
@@ -107,7 +108,7 @@ where the probability of selecting $e$ is proportional to $w_e$ at each sampling
 \end{algorithm}
 
 Overall, \SimpleVeche{} defines a map $\setR^{U \times E} \to \Delta (\cF^E)$,
-which inputs followed users' ballots $b \in \setR^{U \times E}$
+which inputs councelors' ballots $b \in \setR^{U \times E}$
 and returns a probability distribution over rankings 
 of a subset of recommendable entities in $[E]$.
 
@@ -115,7 +116,7 @@ of a subset of recommendable entities in $[E]$.
 \subsection{Main gurantee}
 
 Let us formalize the main guarantees of \SimpleVeche{},
-which essentially consist of bounding the maximal impact of a followed user
+which essentially consist of bounding the maximal impact of a councelor
 on Alice's feed.
 As Alice's feed is random, we first need to a metric over probability distribution.
 In this paper, we will use the classical total variation distance.
@@ -134,23 +135,6 @@ In this paper, we will use the classical total variation distance.
     \end{align*}
 \end{definition}
 
-% For any ballots $b \in \setR^{U \times E}$, 
-% denote $b^{-u} \in \setR^{([U] - \set{u}) \times E}$
-% the ballot obtained by removing user $u$'s input to $b$.
-% Denote 
-% \begin{align}
-%     \Weights(b) \triangleq \max \set{0, \sum_{u \in [U]} b_u / \norm{b_u}{1}}
-% \end{align}
-% the map that computes weights $w \in \setR^E_{\geq 0}$ given ballots $b \in \setR^{U \times E}$.
-% Define also $\SimpleVeche_1(b) \in \Delta([E] \cup \set{\perp})$ the distribution
-% of the top recommendation,
-% which may either be an entity $e \in [E]$ or none 
-% if no entity was recommended (i.e. $\bE = \emptyset$).
-% The following theorem guarantees that,
-% for any user $u \in [U]$
-% if other users' ballots yield a weight vector of norm larger than 1,
-% then user $u$'s maximal influence on Alice's top recommendation is bounded 
-% by the inverse of the norm of the weight vector.
 To state our guarantee, 
 we also consider the following indicator,
 which we show to be a seminorm.
@@ -161,7 +145,6 @@ Define the minimal remaining weights at the $k$-th recommendations as
     \norm{w}{1,k}
     \triangleq \inf_{\substack{\bE \subset [E] \\ \card{\bE} = E - k + 1}} 
     \sum_{e \in \bE} \absv{w_e}.
-    % \norm{p_\bE(w)}{1}.
 \end{align}
 Note that the minimal weight after $0$ recommendations matches the $\ell_1$ norm,
 i.e. $\norm{w}{1,1} = \norm{w}{1}$.
@@ -176,110 +159,13 @@ i.e. $\norm{w}{1,1} = \norm{w}{1}$.
     The proof is given in Appendix~\ref{app:seminorm}.
 \end{proof}
 
-% \begin{theorem}
-% \label{th:top_recommendation}
-%     Assume $\norm{\Weights(b^{-u})}{1} > 1$.
-%     Then
-%     \begin{align}
-%         \TotalVariationDistance \left( 
-%             \SimpleVeche_1(b), 
-%             \SimpleVeche_1(b^{-u})
-%         \right) 
-%         \leq \norm{\Weights(b^{-u})}{1}^{-1}.
-%     \end{align}
-% \end{theorem}
-
-% We first prove a lemma.
-
-% \begin{lemma}
-%     \label{lemma:weights_resilience}
-%     For all $b \in \setR^{U \times E}$,
-%     $\norm{\Weights(b) - \Weights(b^{-u})}{1} \leq 1$.
-% \end{lemma}
-
-% \begin{proof}
-%     Now note that, for all entity $e \in [E]$, we can bound
-%     \begin{align}
-%         \absv{w_e - w_e'}
-%         &= \absv{
-%             \max\set{0, \tilde b_{ue} + \sum_{v \neq u} \tilde b_{ve}}
-%             - \max\set{0, \sum_{v \neq u} \tilde b_{ve}}
-%         }.
-%     \end{align}
-%     Using the fact that $z \mapsto \max \set{0, z}$ is clearly 1-Lipschitz continuous,
-%     we derive
-%     \begin{align}
-%         \absv{w_e - w_e'}
-%         &\leq \absv{
-%             \tilde b_{ue} + \sum_{v \neq u} \tilde b_{ve}
-%             - \sum_{v \neq u} \tilde b_{ve}
-%         }
-%         = \absv{\tilde b_{ue}}.
-%     \end{align}
-%     Adding up over $e \in [E]$ then yields
-%     \begin{align}
-%         \norm{w - w'}{1}
-%         = \sum_{e \in [E]} \absv{w_e - w_e'}
-%         \leq \sum_{e \in [E]} \absv{\tilde b_{ue}}
-%         = \norm{\tilde b_u}{1} = 1,
-%     \end{align}
-%     which yields the lemma.
-% \end{proof}
-
-% \begin{proof}[Proof of Theorem~\ref{th:top_recommendation}]
-%     Denote $w \triangleq \Weights(b)$, 
-%     $w' \triangleq \Weights(b^{-u})$,
-%     $\tilde f \triangleq \SimpleVeche(b)$
-%     and $\tilde f' \triangleq \SimpleVeche(b^{-u})$.
-%     For all entities $e \in [E]$,
-%     write $p_e \triangleq \pb{f_1 = e \st f \sim \tilde f}$
-%     and $p_e' \triangleq \pb{f_1 = e \st f \sim \tilde f'}$.
-
-%     Note that
-%     $\norm{w}{1} = \norm{w' - (w' - w))}{1} \geq \norm{w'}{1} - \norm{w - w'}{1}$.
-%     Leveraging the assumption $\norm{w'}{1} > 1$ and Lemma~\cite{lemma:weights_resilience}
-%     implies that $\norm{w}{1} > 0$.
-%     Thus, $\tilde f_1$ and $\tilde f'_1$ are both guaranteed to return an element $e \in [E]$.
-%     It is then well-known that the total variation distance 
-%     for discrete probabilities can also be written
-%     \begin{align}
-%         \TotalVariationDistance (\tilde f_1, \tilde f_1')
-%         &= \frac{1}{2} \sum_{e \in [E]} \absv{p_e - p_e'}.
-%     \end{align}
-%     Given that $p_e$ corresponds to the sampling of an entity proportionally to $w_e$,
-%     we then have
-%     \begin{align}
-%         \TotalVariationDistance (\tilde f_1, \tilde f_1')
-%         &= \frac{1}{2} \sum_{e \in [E]} \absv{
-%             \frac{w_e}{\norm{w}{1}} - \frac{w_e'}{\norm{w'}{1}}
-%         }.
-%     \end{align}
-%     Using the triangle inequality then yields
-%     \begin{align}
-%         \TotalVariationDistance &(\tilde f_1, \tilde f_1')
-%         = \frac{1}{2} \sum_{e \in [E]} \absv{
-%             \frac{w_e}{\norm{w}{1}} - \frac{w_e}{\norm{w'}{1}}
-%             + \frac{w_e}{\norm{w'}{1}} - \frac{w_e'}{\norm{w'}{1}}
-%         } \\
-%         &\leq \frac{\absv{\norm{w}{1}^{-1} - \norm{w'}{1}^{-1}}}{2} \sum_{e \in [E]} \absv{w_e}
-%         + \frac{1}{2 \norm{w'}{1}} \sum_{e \in [E]} \absv{w_e - w_e'} \\
-%         &= \frac{\absv{\norm{w}{1} - \norm{w'}{1}}}{2 \norm{w}{1} \cdot \norm{w'}{1}} \norm{w}{1}
-%         + \frac{1}{2 \norm{w'}{1}} \norm{w - w'}{1} \\
-%         &= \frac{\absv{\norm{w}{1} - \norm{w'}{1}} + \norm{w - w'}{1}}{2 \norm{w'}{1}} 
-%         \leq \frac{\norm{w - w'}{1}}{\norm{w'}{1}}
-%         \leq \norm{w'}{1}^{-1},
-%     \end{align}
-%     by using again the traingle inequality in the last line,
-%     as well as Lemma~\ref{lemma:weights_resilience}.
-% \end{proof}
-
 Denote $\SimpleVeche_{1:k} (b) \in \Delta\left( \left([E] \cup \set{\perp}\right)^k \right)$ 
 the distribution 
 of the subset of entities in the top $k$ recommendations.
 In particular, $e \in \SimpleVeche_{1:k} (b)$ is the binary event that says whether $e$
 was included in the recommendations.
 For $b \in \setR^{U \times E}$ and $u \in [U]$,
-denote $b^{-u}$ the ballot obtained by removing user $u \in [U]$.
+denote $b^{-u}$ the ballot obtained by removing councelor $u \in [U]$.
 Then the following holds.
 
 \begin{theorem}
@@ -295,31 +181,17 @@ Then the following holds.
     \end{align}
 \end{theorem}
 
-% \begin{conjecture}
-%     \label{th:simpleveche}
-%     Let $\bE_{\geq 1} (b) \triangleq \set{e \in [E] \st \Weights_e(b) > 1}$.
-%     Assume $\card{\bE_{\geq 1} (b)} \geq k$ and $e \in \bE_{\geq 1} (b)$.
-%     Then
-%     \begin{align}
-%         \TotalVariationDistance \left( 
-%             e \in \SimpleVeche_{1:k} (b), 
-%             e \in \SimpleVeche_{1:k} (b^{-u})
-%         \right) 
-%         \leq \left( \Weights_e(b^{-u}) - 1 \right)^{-1}.
-%     \end{align}
-% \end{conjecture}
-
 \begin{proof}
     The proof is given in Appendix~\ref{app:simpleveche}.
 \end{proof}
 
 The resilience guarantee may feel underwhelming, 
-as it depends on the cumulative nonnegative weights assigned in the absence of user $u$.
+as it depends on the cumulative nonnegative weights assigned in the absence of councelor $u$.
 In fact, this highlights the fact that the vulnerability of the recommendation system is increased
-if most users spend their ballots to oppose the recommendation of some entities,
+if most councelors spend their ballots to oppose the recommendation of some entities,
 thereby leaving out too few votes in favor of entity recommendation.
 To clarify the role of negative ballot weights on the security guarantees
-with respect to a malicious followed user,
+with respect to a malicious councelor,
 we derive a corollary of the theorem for nonnegative ballot weights.
 
 \begin{corollary}

@@ -1,2 +1,4 @@
 from .representative import Representative
-from .chrono import ChronoRepresentative
+
+import solidago.recommenders.representatives.base as base
+import solidago.recommenders.representatives.bias as bias

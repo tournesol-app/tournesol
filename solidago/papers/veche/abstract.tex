@@ -8,13 +8,14 @@
     Yet, while its transparency and simplicity indeed make it clearly less of a ``dark pattern'',
     this feed has plenty of undesirable properties.
     Namely, it provides a poor user experience, 
-    favors hyperactive users, and incentives massive content creation.
+    favors hyperactive accounts, and incentives massive content creation.
     In this paper, we introduce \Veche{},
     an alternative flexible follow-based recommendation algorithm,
     whose principles are well-grounded in social choice theory.
     Namely, \Veche{} views a follow as an allocation of a unit voting right of influence.
-    Followed users are asked what they want to recommend,
-    and \Veche{} constructs a feed out of their recommendation submissions.
+    Followed accounts then act as \emph{counselors},
+    who are asked to provide content recommendations.
+    \Veche{} then constructs a feed out of the counselors' recommendation submissions.
     \Veche{} thereby provides a rigorous traceability of influence.
     We also present various generalizations that respond to practical needs,
     and implementations that we deployed on Tournesol and on BlueSky.
