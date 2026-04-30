@@ -1,7 +1,7 @@
 from solidago.poll import *
-from .base import BaseBallots
+from .base import BaseBallotConstructor
 
-class Direct(BaseBallots):
+class Direct(BaseBallotConstructor):
     default_criteria_weights: dict = dict(repost=1, report=-1)
 
     def __init__(self, councillor: User, criteria_weights: dict | None = None):

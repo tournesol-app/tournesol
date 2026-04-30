@@ -20,3 +20,16 @@ class Norm(Normalization):
         normalized_ballots = ballots / Score(norm)
         assert isinstance(normalized_ballots, Scores)
         return normalized_ballots
+    
+
+class MaxNorm(Norm):
+    def __init__(self, q: float, max: float = 1.):
+        super().__init__(q)
+        assert max >= 0
+        self.max = max
+
+    def __call__(self, ballots: Scores) -> Scores:
+        norm = self.norm(ballots.get_column("value").to_numpy(np.float64))
+        normalized_ballots = ballots / Score(max(self.max, norm))
+        assert isinstance(normalized_ballots, Scores)
+        return normalized_ballots

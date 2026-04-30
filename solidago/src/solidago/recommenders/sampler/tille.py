@@ -1,6 +1,6 @@
 import numpy as np
 from solidago.poll import *
-from solidago.recommenders.representatives.weights_compute import WeightsCompute
+from solidago.recommenders.representatives.paella.weights_compute import WeightsCompute
 from solidago.recommenders.sampler.pivot_scheduler.pivot_scheduler import PivotScheduler
 
 
@@ -11,7 +11,7 @@ class Tille:
         shuffle: bool = True,
     ):
         import solidago
-        import solidago.recommenders.representatives.weights_compute as weights_compute_module
+        import solidago.recommenders.representatives.paella.weights_compute as weights_compute_module
         weights_compute = solidago.load(weights_compute, weights_compute_module)
         assert isinstance(weights_compute, WeightsCompute)
         self.weights_compute = weights_compute

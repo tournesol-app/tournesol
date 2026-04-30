@@ -3,13 +3,15 @@ from solidago.poll import *
 from .recommender import Recommender
 
 from .representatives import Representative
-from .aggregator import Aggregator
+from .bias import BallotBiasing
 from .normalization import Normalization
+from .aggregator import Aggregator
 from .sampler import Sampler
 
 
 class Veche(Recommender):
     def __init__(self, 
+        biases: list[BallotBiasing | tuple[str, dict]] | None = None,
         normalization: Normalization | tuple[str, dict] | None = None,
         aggregator: Aggregator | tuple[str, dict] | None = None,
         sampler: Sampler | tuple[str, dict] | None = None,
@@ -22,7 +24,9 @@ class Veche(Recommender):
         self.n_sampled_councillors = n_sampled_councillors
         
         import solidago
-        from solidago.recommenders import normalization as n, aggregator as a, sampler as s
+        from solidago.recommenders import bias as b, normalization as n
+        from solidago.recommenders import aggregator as a, sampler as s
+        self.biases = [solidago.load(bias, b, BallotBiasing) for bias in biases or list()]
         self.normalization = solidago.load(normalization, n, Normalization, n.Norm(q=1))
         self.aggregator = solidago.load(aggregator, a, Aggregator, a.Average())
         self.sampler = solidago.load(sampler, s, Sampler,s.SamplingWithoutReplacement())
@@ -48,6 +52,8 @@ class Veche(Recommender):
         for c in councillors:
             representative = solidago.load(c["representative"], *args, councillor=c)
             ballot = representative(receiver, datetime.now())
+            for bias in self.biases:
+                ballot = bias(poll.entities, ballot)
             ballots = ballots | self.normalization(ballot)
         weights = self.aggregator(councillors, poll.entities, ballots)
         return self.sampler(weights, limit)

@@ -59,8 +59,8 @@ def test_detailed_chronological():
     assert list(entities.names()) == ["entity_5", "entity_4", "entity_2", "entity_3"]
     
 def test_chronological():    
-    entities = Chronological()(poll, "user_0", 2, "0")
+    entities = Chronological()(poll, 2, "user_0", "0")
     assert list(entities.names()) == ["entity_5", "entity_4"]
-    entities = Chronological()(poll, "user_0", 3, "1")
+    entities = Chronological()(poll, 3, "user_0", "1")
     assert list(entities.names()) == ["entity_4", "entity_2", "entity_3"]
     
