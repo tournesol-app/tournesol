@@ -224,7 +224,12 @@ class Entity(models.Model):
         there are different weights and configs, and the
         format of the metadata can vary with the entity type.
         """
-        super().save(force_insert, force_update, using, update_fields)
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
         # If "metadata" has changed, the indexed search_vector needs to be updated.
         # This condition also avoids infinite loop when calling .save()

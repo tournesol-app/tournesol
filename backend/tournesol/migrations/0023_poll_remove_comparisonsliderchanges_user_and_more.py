@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='comparison',
-            constraint=models.CheckConstraint(check=models.Q(('entity_1', django.db.models.expressions.F('entity_2')), _negated=True), name='videos_cannot_be_equal'),
+            constraint=models.CheckConstraint(condition=models.Q(('entity_1', django.db.models.expressions.F('entity_2')), _negated=True), name='videos_cannot_be_equal'),
         ),
         migrations.DeleteModel(
             name='ComparisonSliderChanges',

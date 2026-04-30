@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='expertrating',
-            constraint=models.CheckConstraint(check=models.Q(('video_1', django.db.models.expressions.F('video_2')), _negated=True), name='videos_cannot_be_equal'),
+            constraint=models.CheckConstraint(condition=models.Q(('video_1', django.db.models.expressions.F('video_2')), _negated=True), name='videos_cannot_be_equal'),
         ),
         migrations.AlterUniqueTogether(
             name='expertrating',
@@ -678,7 +678,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='comparison',
-            constraint=models.CheckConstraint(check=models.Q(('video_1', django.db.models.expressions.F('video_2')), _negated=True), name='videos_cannot_be_equal'),
+            constraint=models.CheckConstraint(condition=models.Q(('video_1', django.db.models.expressions.F('video_2')), _negated=True), name='videos_cannot_be_equal'),
         ),
         migrations.AlterUniqueTogether(
             name='comparison',
