@@ -51,7 +51,7 @@ def get_email_domain_with_recent_new_users(
 
         GROUP BY e.domain, e.id
         HAVING count(*) >= %(n_account)s
-        ORDER BY cnt DESC;
+        ORDER BY cnt DESC, e.domain COLLATE "POSIX" ASC;
         """,
         {
             "since": since.strftime("%Y-%m-%d %H:%M:%S"),
