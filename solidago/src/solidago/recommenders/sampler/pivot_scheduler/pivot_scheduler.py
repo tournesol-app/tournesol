@@ -2,15 +2,20 @@ from abc import abstractmethod
 import numpy as np
 from solidago.poll import *
 
+
 class PivotScheduler:
     @abstractmethod
-    def __call__(self, entities: Entities) -> tuple[Entity, Entity]:
+    def __call__(self, poll: Poll, entities: Entities, ballots: Scores) -> tuple[Entity, Entity]:
         raise NotImplemented
     
+
 class Uniform:
-    @abstractmethod
-    def __call__(self, entities: Entities) -> tuple[Entity, Entity]:
-        i, j = np.random.choice(len(entities), 2, False)
-        e, f = entities[i], entities[j]
-        assert isinstance(e, Entity) and isinstance(f, Entity)
-        return e, f
+    def __call__(self, poll: Poll, entities: Entities, ballots: Scores) -> tuple[Entity, Entity]:
+        i, j = np.random.choice(entities.names(), 2, False)
+        return entities[i], entities[j]
+
+
+class BallotCorrelation:
+    def __call__(self, poll: Poll, entities: Entities, ballots: Scores) -> tuple[Entity, Entity]:
+        #TODO
+        raise NotImplementedError

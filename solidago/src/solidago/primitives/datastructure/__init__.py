@@ -1,4 +1,8 @@
 from .filtered_table import FilteredTable, RowFilteredTable, Row
-from .named_objects import NamedObject, NamedObjects
+from .named_objects import NamedObject, NamedObjects, Contains, After
 
-__all__ = ["FilteredTable", "RowFilteredTable", "Row", "NamedObject", "NamedObjects"]
+__all__ = [
+    "FilteredTable", "RowFilteredTable", "Row", 
+    "NamedObject", "NamedObjects", 
+    "Contains", "After"
+]

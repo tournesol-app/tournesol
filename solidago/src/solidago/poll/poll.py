@@ -1,7 +1,7 @@
 """ To use Solidago in other systems, this class should be derived to specify result storage """
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
 import yaml
 import logging

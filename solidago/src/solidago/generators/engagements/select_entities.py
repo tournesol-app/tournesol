@@ -18,6 +18,7 @@ class SelectEntities:
         kwargs = ", ".join([f"{k}={v}" for k, v in self.__dict__.items()])
         return f"{t}({kwargs})"
 
+
 class Uniform(SelectEntities):
     """ Requires user.n_evaluated_entities """
     def __call__(self, user: User, entities: Entities) -> Entities:
@@ -26,8 +27,8 @@ class Uniform(SelectEntities):
         assert n_evaluated_entities >= 0, n_evaluated_entities
         if n_evaluated_entities > len(entities):
             return entities
-        choice = np.random.choice(len(entities), n_evaluated_entities, False)
-        return entities.filters(entities.index2name(i) for i in choice)
+        return entities.sample(n_evaluated_entities)
+    
 
 class BiasedByScore(SelectEntities):
     """ Requires user.n_evaluated_entities and user.engagement_bias """

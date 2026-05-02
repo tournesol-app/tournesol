@@ -1,37 +1,40 @@
 import numpy as np
+
 from solidago.poll import *
-from solidago.recommenders.representatives.paella.weights_compute import WeightsCompute
-from solidago.recommenders.sampler.pivot_scheduler.pivot_scheduler import PivotScheduler
+from solidago.recommenders.sampler import Sampler
+from solidago.recommenders.sampler.pivot_scheduler import PivotScheduler
 
 
-class Tille:
-    def __init__(self,
-        weights_compute: WeightsCompute | tuple[str, dict],
-        pivot_scheduler: PivotScheduler | tuple[str, dict],
-        shuffle: bool = True,
-    ):
-        import solidago
-        import solidago.recommenders.representatives.paella.weights_compute as weights_compute_module
-        weights_compute = solidago.load(weights_compute, weights_compute_module)
-        assert isinstance(weights_compute, WeightsCompute)
-        self.weights_compute = weights_compute
-        import src.solidago.recommenders.sampler.pivot_scheduler as pivot_scheduler_module
-        pivot_scheduler = solidago.load(pivot_scheduler, pivot_scheduler_module)
-        assert isinstance(pivot_scheduler, PivotScheduler)
-        self.pivot_scheduler = pivot_scheduler
-        self.shuffle = shuffle
+class Tille(Sampler):
+    def __init__(self, pivot_scheduler: PivotScheduler | tuple[str, dict]):
+        import solidago, solidago.recommenders.sampler.pivot_scheduler as m
+        self.pivot_scheduler = solidago.load(pivot_scheduler, m, PivotScheduler)
 
-    def pivot(self, entities: Entities, limit: int) -> Entities:
-        while len(entities) > limit:
-            e, f = self.pivot_scheduler(entities)
-            total_weight = e["weight"] + f["weight"]
-            e_win_probability = e["weight"] / total_weight
-            win, loss = (e, f) if np.random.random() <= e_win_probability else (f, e)
-            entities[win.name, "weight"] = total_weight
-            entities = entities.drop(loss.name)
-        return entities
+    def eliminate(self, poll: Poll, entities: Entities, ballots: Scores) -> tuple[Entity, Entities]:
+        """ Returns eliminated entity, and weight-updated entities """
+        entities = entities\
+            .assign(candidate=entities.get_column("weight") > 0)\
+            .filters(positive=True)
+        e, f = self.pivot_scheduler(poll, entities, ballots)
+        total_weight = e["weight"] + f["weight"]
+        e_win_probability = e["weight"] / total_weight
+        winner, loser = (e, f) if np.random.random() <= e_win_probability else (f, e)
+        entities[winner.name, "weight"] = total_weight
+        entities[loser.name, "weight"] = 0
+        return loser, entities
 
-    def __call__(self, poll: Poll, username: str, limit: int, cursor: str | None = None) -> Entities:
-        entities = self.weights_compute(poll, username, "weight", cursor)
-        return self.pivot(entities, limit).shuffle(self.shuffle)
+    def __call__(self, 
+        poll: Poll, 
+        weighted_entities: Entities, 
+        ballots: Scores, 
+        limit: int
+    ) -> Entities:
+        entities = weighted_entities\
+            .assign(candidate=weighted_entities.get_column("weight") > 0)\
+            .filters(positive=True)\
+            .assign(rank=1)
+        for i in range(len(entities)):
+            loser, entities = self.eliminate(poll, entities, ballots)
+            entities[loser.name, "rank"] = len(entities) - i
+        return entities.sort_by("rank").head(limit)
     

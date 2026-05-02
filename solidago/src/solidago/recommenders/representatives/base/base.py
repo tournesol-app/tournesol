@@ -3,5 +3,5 @@ from solidago.poll import *
 
 class BaseBallotConstructor:
     @abstractmethod
-    def __call__(self, entities: Entities, ratings: Ratings) -> Scores:
+    def __call__(self, councillor: User, entities: Entities, ratings: Ratings) -> Scores:
         raise NotImplemented

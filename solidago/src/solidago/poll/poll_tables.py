@@ -22,7 +22,11 @@ class Users(NamedObjects[User]):
 
 
 class Entity(NamedObject):
-    default: dict[str, bool | int | float | str] = dict(date=0.)
+    default: dict[str, bool | int | float | str | tuple[str, ...]] = dict(
+        authors=(), 
+        mentions=(),
+        date=0,
+    )
 
 class Entities(NamedObjects[Entity]):
     name: str = "entities"
@@ -32,7 +36,7 @@ class Entities(NamedObjects[Entity]):
 
 
 class Social(Row):
-    default: dict[str, Any] = dict(weight=0.0, priority=-0.0)
+    default: dict[str, Any] = dict(weight=0.0, priority=-0.0, date=0)
 
 class Socials(FilteredTable[Social]):
     TableRowType: type = Social
@@ -65,7 +69,7 @@ class Rating(Row):
     default: dict[str, Any] = dict(
         value=np.nan, min=-np.inf, max=np.inf,
         root_law=None, root_law_arg=None, 
-        context="undefined", timestamp=0,
+        context="undefined", date=0,
     )
 
 class Ratings(FilteredTable[Rating]):
@@ -82,7 +86,7 @@ class Comparison(Row):
     default: dict[str, Any] = dict(
         value=np.nan, max=np.inf,
         root_law=None, root_law_arg=None, 
-        context="undefined", timestamp=0,
+        context="undefined", date=0,
     )
 
 class Comparisons(FilteredTable[Comparison]):
@@ -125,11 +129,11 @@ class VotingRights(FilteredTable[VotingRight]):
 
 
 class PastRecommendation(Row):
-    pass
+    default: dict[str, Any] = dict()
 
 class PastRecommendations(FilteredTable[PastRecommendation]):
     TableRowType: type = PastRecommendation
     name: str = "past_recommendations"
-    default_column_names: list[str] = ["username", "entity_name", "context", "timestamp"]
+    default_column_names: list[str] = ["username", "entity_name", "context", "date"]
     default_keynames: set[str] = {"username", "entity_name", "context"}
-    default_dtypes: dict[str, DTypeLike] = dict(timestamp=np.int64)
+    default_dtypes: dict[str, DTypeLike] = dict(date=np.int64)

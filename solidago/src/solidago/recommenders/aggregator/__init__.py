@@ -1,4 +1,4 @@
 from .aggregator import Aggregator
-from .average import Average
+from .sum import Sum
 
-__all__ = ["Aggregator", "Average"]
+__all__ = ["Aggregator", "Sum"]

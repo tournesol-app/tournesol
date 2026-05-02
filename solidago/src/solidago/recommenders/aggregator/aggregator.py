@@ -1,8 +1,8 @@
 from abc import abstractmethod
-from solidago.poll import Users, Entities, Scores
+from solidago.poll import *
 
 
 class Aggregator:
     @abstractmethod
-    def __call__(self, users: Users, entities: Entities, ballots: Scores) -> Entities:
+    def __call__(self, poll: Poll, councillors: Users, ballots: Scores) -> Entities:
         raise NotImplemented

@@ -1,2 +1,2 @@
 from .bias import BallotBiasing
-from .time import TimeDecay, QuadraticTimeDecay
+from .time import TimeDecay

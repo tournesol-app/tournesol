@@ -13,6 +13,31 @@ import yaml
 Object = TypeVar("Object")
 
 
+class Contains:
+    def __init__(self, value: str | Iterable[str]):
+        self.value = value if isinstance(value, str) else set(value)
+
+    def __call__(self, t: Iterable) -> bool:
+        assert isinstance(t, Iterable)
+        if isinstance(self.value, str):
+            return self.value in t
+        return bool(self.value & set(t))
+
+    def __repr__(self) -> str:
+        return f"Contains({self.value})"
+
+
+class After:
+    def __init__(self, value: int | float):
+        self.value = value
+
+    def __call__(self, t: int | float) -> bool:
+        return t >= self.value
+
+    def __repr__(self) -> str:
+        return f"After({self.value})"
+
+
 class NamedObject:
     default: dict[str, Any] = dict(trust=0.0)
 
@@ -143,7 +168,7 @@ class NamedObjects(Generic[Object]):
 
     def filters(self, 
         names: Iterable[str | Hashable] | NDArray[np.int64] | pd.Index | None = None,
-        **kwargs: str | tuple | Iterable | Hashable
+        **kwargs: str | tuple | Iterable | Hashable | Contains | After
     ) -> Self:
         if names is not None:
             names = names if isinstance(names, pd.Index) else list(names)
@@ -154,13 +179,15 @@ class NamedObjects(Generic[Object]):
         del kwargs[key]
         if isinstance(value, (str, tuple)):
             return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
+        if isinstance(value, (Contains, After)):
+            return type(self)(self.df[self.df[key].map(value)]).filters(None, **kwargs)
         if isinstance(value, Iterable):
             return type(self)(self.df[self.df[key].isin(value)]).filters(None, **kwargs)
         return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
     
     def excludes(self,
         names: Iterable[str | Hashable] | NDArray[np.int64] | pd.Index | None = None,
-        **kwargs: str | tuple | Iterable | Hashable
+        **kwargs: str | tuple | Iterable | Hashable | Contains | After
     ) -> Self:
         if names is not None:
             remaining_names = [n for n in self.names() if n not in names]
@@ -171,6 +198,8 @@ class NamedObjects(Generic[Object]):
         del kwargs[key]
         if isinstance(value, (str, tuple)):
             return type(self)(self.df[self.df[key] != value]).filters(None, **kwargs)
+        if isinstance(value, (Contains, After)):
+            return type(self)(self.df[~self.df[key].map(value)]).filters(None, **kwargs)
         if isinstance(value, Iterable):
             return type(self)(self.df[~self.df[key].isin(value)]).filters(None, **kwargs)
         return type(self)(self.df[self.df[key] == value]).filters(None, **kwargs)
@@ -197,6 +226,9 @@ class NamedObjects(Generic[Object]):
             self._name2index[name] = len(self) - 1
             self._index2name.append(name)
     
+    def __or__(self, other: Self) -> Self:
+        return type(self)(pd.concat([self.df, other.df]))
+
     def set_column(self, name: str, column: pd.Series | list | NDArray):
         self.df[name] = column
         if name.startswith("v") and name[1:].isdigit():
