@@ -1,7 +1,6 @@
 import numpy as np
 
 from solidago.poll.poll import Poll
-from solidago.poll.scoring.score import Scores
 
 from .bias import WeightPreservingBias
 

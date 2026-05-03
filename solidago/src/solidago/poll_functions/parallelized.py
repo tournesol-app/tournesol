@@ -16,7 +16,31 @@ class ParallelizedPollFunction(PollFunction):
 
     def __init__(self, max_workers: int | None = None):
         super().__init__(max_workers)
+    
+    #############################################
+    ##  Methods to be specified in subclasses  ##
+    #############################################
+
+    @abstractmethod
+    def _variables(self, **kwargs) -> list:
+        raise NotImplemented
+    
+    @abstractmethod
+    def _args(self, variable: Any, nonargs, **kwargs) -> list:
+        raise NotImplemented
+    
+    @abstractmethod
+    def thread_function(self, *args, **kwargs) -> Any:
+        raise NotImplemented
+    
+    @abstractmethod
+    def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, **kwargs) -> Any:
+        raise NotImplemented
         
+    ##########################
+    ##  Predefined methods  ##
+    ##########################
+
     def fn(self, *args: Any, **kwargs: Any) -> Any:
         with time(f"{type(self).__name__} - Loading data", logger):
             kwargs, variables, nonargs_list, args_lists = self.precompute(*args, **kwargs)
@@ -85,22 +109,6 @@ class ParallelizedPollFunction(PollFunction):
     
     def _process_kwargs(self, **kwargs) -> dict:
         return dict()
-    
-    @abstractmethod
-    def _variables(self, **kwargs) -> list:
-        raise NotImplemented
-    
-    @abstractmethod
-    def _args(self, variable: Any, nonargs, **kwargs) -> list:
-        raise NotImplemented
-    
-    @abstractmethod
-    def thread_function(self, *args, **kwargs) -> Any:
-        raise NotImplemented
-    
-    @abstractmethod
-    def _process_results(self, variables: list, nonargs_list: list, results: list, args_lists: list, **kwargs) -> Any:
-        raise NotImplemented
     
     def _nonargs_list(self, variables: list, **kwargs) -> list:
         return [self._nonargs(variable, **kwargs) for variable in variables]

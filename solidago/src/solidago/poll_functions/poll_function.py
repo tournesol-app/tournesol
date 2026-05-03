@@ -1,19 +1,22 @@
 from abc import ABC, abstractmethod
 from typing import Any, Self
 from pathlib import Path
+from os import cpu_count
 
 import yaml
-import os
 
 from solidago.poll import *
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class PollFunction(ABC):
     poll_cls: type=Poll
     
     def __init__(self, max_workers: int | None = None):
-        max_workers = ((os.cpu_count() or 2) - 1) if max_workers is None else max_workers
-        self.max_workers = max(1, min(max_workers, os.cpu_count() or 1))
+        max_workers = ((cpu_count() or 2) - 1) if max_workers is None else max_workers
+        self.max_workers = max(1, min(max_workers, cpu_count() or 1))
         assert "return" in self.annotations(), f"{type(self).__name__} must have a return type"
         for key in self.annotations():
             if key not in ("return", "poll", "save_directory", "seed", "skip_steps"):
@@ -66,6 +69,13 @@ class PollFunction(ABC):
             self.assign(result, self.poll2objects_function(poll))
         self.save_result(result, save_directory)
         return result
+
+    def customize(self, user: User, time: int | None = None) -> Self:
+        if hasattr(self, "user"):
+            self.user = user
+        if hasattr(self, "time"):
+            self.time = time
+        return self
     
     def type_check(self, value, annotations):
         assert "return" in annotations, "" \
@@ -90,6 +100,15 @@ class PollFunction(ABC):
                         f"of `{type(self).__name__}.{fn_to_fix}`, whose annotation is currently " \
                         f"{[arg.__name__ for arg in annotations["return"].__args__]}"
                     )
+    
+    def log_info(self, message: str):
+        logger.info(message)
+
+    def log_warning(self, message: str):
+        logger.warning(message)
+    
+    def log_error(self, message: str):
+        logger.error(message)
     
     @classmethod
     def load(cls, *args, **kwargs) -> Self:

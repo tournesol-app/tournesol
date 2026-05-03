@@ -39,7 +39,6 @@ class ScoreProcessing:
         return r
 
 
-
 class ScaleProcessing(ScoreProcessing):
     def __init__(self, 
         multipliers: Multipliers | None = None, 

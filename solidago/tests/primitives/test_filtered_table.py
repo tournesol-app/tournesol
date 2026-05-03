@@ -1,3 +1,6 @@
+from solidago.primitives.datastructure.filtered_table import SelectFirst, SelectLast
+
+
 def test_row():
     import pandas as pd
     from solidago.primitives.datastructure.filtered_table import Row
@@ -26,8 +29,8 @@ def test_filter():
     assert not f
     assert set(f.get_indices(100)) == set(range(100))
     assert f.get_index() == 0
-    assert f.get_index("first") == 0
-    assert f.get_index("last") == -1
+    assert f.get_index(SelectFirst()) == 0
+    assert f.get_index(SelectLast()) == -1
     assert f.must_be_filtered_in(dict(x=1))
     assert not f.must_be_filtered_out(dict(x=1))
 
@@ -38,8 +41,8 @@ def test_filter():
     assert set(g.get_indices(100)) == {0, 4, 2, 1}
     with pytest.raises(NonUniqueError):
         assert g.get_index() == 0
-    assert g.get_index("first") == 0
-    assert g.get_index("last") == 4
+    assert g.get_index(SelectFirst()) == 0
+    assert g.get_index(SelectLast()) == 4
     assert g.must_be_filtered_in(dict(criterion="default"))
     assert not g.must_be_filtered_in(dict(criterion="importance"))
     assert g.must_be_filtered_out(dict(criterion="importance"))
@@ -51,8 +54,8 @@ def test_filter():
     assert set(h.get_indices(100)) == {0, 4, 2, 1}
     with pytest.raises(NonUniqueError):
         assert h.get_index() == 0
-    assert h.get_index("first") == 0
-    assert h.get_index("last") == 4
+    assert h.get_index(SelectFirst()) == 0
+    assert h.get_index(SelectLast()) == 4
     assert h.must_be_filtered_in(dict(criterion="default"))
     assert not h.must_be_filtered_in(dict(criterion="importance"))
     assert h.must_be_filtered_out(dict(criterion="importance"))
@@ -64,8 +67,8 @@ def test_filter():
     assert set(i.get_indices(100)) == {0, 5}
     with pytest.raises(NonUniqueError):
         assert i.get_index() == 0
-    assert i.get_index("first") == 0
-    assert i.get_index("last") == 5
+    assert i.get_index(SelectFirst()) == 0
+    assert i.get_index(SelectLast()) == 5
     assert i.must_be_filtered_in(dict(criterion="default", entity_name="entity_0", username="user_5"))
     assert not i.must_be_filtered_in(dict(criterion="default", entity_name="entity_5", username="user_5"))
     assert i.must_be_filtered_out(dict(criterion="default", entity_name="entity_5", username="user_5"))
@@ -76,8 +79,8 @@ def test_filter():
     assert len(j.get_indices(100)) == 1
     assert set(j.get_indices(100)) == {0}
     assert j.get_index() == 0
-    assert j.get_index("first") == 0
-    assert j.get_index("last") == 0
+    assert j.get_index(SelectFirst()) == 0
+    assert j.get_index(SelectLast()) == 0
     assert j.must_be_filtered_in(dict(criterion="default", entity_name="entity_0", username="user_5"))
     assert not j.must_be_filtered_in(dict(criterion="default", entity_name="entity_5", username="user_5"))
     assert j.must_be_filtered_out(dict(criterion="default", entity_name="entity_5", username="user_5"))
@@ -224,7 +227,7 @@ def test_filtered_table():
     assert not t.filters(username="user_9", entity_name="entity_1")
     with pytest.raises(NonUniqueError):
         t.get(username="user_5", entity_name="entity_3")
-    assert t.get(username="user_5", entity_name="entity_3", select="first")["value"] == 3
+    assert t.get(username="user_5", entity_name="entity_3", select=SelectFirst())["value"] == 3
     assert t.filters(username="user_9").get(entity_name="entity_2")["value"] == 2
     assert len(t.filters(username="user_9")) == 2
     assert "user_9" in t.filters(entity_name="entity_0").keys("username")

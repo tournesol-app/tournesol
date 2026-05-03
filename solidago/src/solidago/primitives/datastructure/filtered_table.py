@@ -11,7 +11,21 @@ import yaml
 
 Scalar = Hashable | float | np.float32 | np.float64 | None
 TableRow = TypeVar('TableRow')
-Select = Literal["unique", "first", "last", "default"]
+
+
+class Select:
+    pass
+
+class SelectUnique(Select):
+    pass
+
+class SelectFirst(Select):
+    def __init__(self, column: str | None = None):
+        self.column = column
+
+class SelectLast(Select):
+    def __init__(self, column: str | None = None):
+        self.column = column
 
 
 class Row:
@@ -113,14 +127,14 @@ class Filter:
     def get_indices(self, n_rows: int | np.int64) -> NDArray[np.int64]:
         return np.arange(n_rows, dtype=np.int64) if self.indices is None else self.indices
     
-    def get_index(self, select: Literal["first", "last", "unique"] = "unique") -> np.int64 | None:
+    def get_index(self, select: Select = SelectUnique()) -> np.int64 | None:
         if self.indices is None:
-            return np.int64(-1 if select == "last" else 0)
+            return np.int64(-1 if isinstance(select, SelectLast) else 0)
         if len(self.indices) == 0:
             return None
-        if select == "unique" and len(self.indices) > 1:
+        if isinstance(select, SelectUnique) and len(self.indices) > 1:
             raise NonUniqueError
-        return max(self.indices) if select == "last" else min(self.indices)
+        return max(self.indices) if isinstance(select, SelectLast) else min(self.indices)
 
     def must_be_filtered_in(self, row: pd.Series | Mapping[str, Scalar]) -> bool:
         return all(row[name] == key for name, key in self.keys.items())
@@ -336,7 +350,7 @@ class FilteredTable(Generic[TableRow]):
     default_column_names: list[str] = list()
     default_keynames: set[str] = set()
     default_dtypes: dict[str, DTypeLike] = dict()
-    default_select: Literal["unique", "first", "last"] = "unique"
+    default_select: Select = SelectUnique()
 
     ########################################
     ## The following methods are standard ##
@@ -484,17 +498,20 @@ class FilteredTable(Generic[TableRow]):
     def multikeys(self, *keynames: str) -> set[tuple[Hashable, ...]]:
         return {tuple(row[name] for name in keynames) for row in self._iter_series()}
 
-    def get_index(self, select: Select = "default", **keys: Hashable) -> np.int64 | None:
-        if select == "default":
-            select = self.default_select
+    def get_index(self, select: Select | None = None, **keys: Hashable) -> np.int64 | None:
+        select = self.default_select if select is None else select
+        filter = self._get_filter(**keys)
+        if isinstance(select, (SelectFirst, SelectLast)) and select.column is not None:
+            df = self.df if filter.indices is None else self.df.iloc[filter.indices]
+            indices = df.sort_values(select.column, ascending=isinstance(select, SelectFirst)).index
+            return None if len(indices) == 0 else indices[0]
         try:
-            if not keys:
-                return self.filter.get_index(select)
-            return self._get_filter(**keys).get_index(select)
+            return filter.get_index(select)
         except NonUniqueError:
             raise NonUniqueError(select, keys, self.filter.keys, self)
 
-    def get(self, select: Select = "default", **keys: Hashable) -> TableRow:
+    def get(self, select: Select | None = None, **keys: Hashable) -> TableRow:
+        select = self.default_select if select is None else select
         index = self.get_index(select, **keys)
         return self._get_row(index, **keys)
     
@@ -636,7 +653,7 @@ class FilteredTable(Generic[TableRow]):
         keynames = self.keynames if keynames is None else keynames
         keys = {name: key for name, key in kwargs.items() if name in keynames}
         
-        index = self.get_index("last", **keys) if self.default_select == "unique" else None
+        index = self.get_index(SelectLast(), **keys) if self.default_select == "unique" else None
         if index is None:
             self.append_series(kwargs)
         else:

@@ -1,11 +1,12 @@
 from copy import deepcopy
 
 import itertools
-from typing import Any, Callable, Hashable, Iterable, Iterator, Self, Union
+from typing import Any, Callable, Hashable, Iterator, Self, Union
 from pandas import Series
 
 from solidago.primitives.datastructure import Row, FilteredTable
 from solidago.poll.poll_tables import *
+from solidago.primitives.datastructure.filtered_table import SelectUnique
 
 
 class Score(Row):
@@ -239,10 +240,10 @@ class Scores(FilteredTable[Score]):
         assert self.keynames == other.keynames, (self.keynames, other.keynames)
         for row in self:
             keys = {keyname: row[keyname] for keyname in self.keynames}
-            assert row == other.get("unique", **keys)
+            assert row == other.get(SelectUnique(), **keys)
         for row in other:
             keys = {keyname: row[keyname] for keyname in self.keynames}
-            assert row == self.get("unique", **keys)
+            assert row == self.get(SelectUnique(), **keys)
         return True
         
     def __neq__(self, other: "Scores") -> bool:

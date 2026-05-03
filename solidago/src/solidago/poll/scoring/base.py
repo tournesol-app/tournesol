@@ -3,6 +3,7 @@ from typing import Iterable
 import numpy as np
 
 from solidago.poll.poll_tables import *
+from solidago.primitives.datastructure.filtered_table import SelectUnique
 from .score import Score, Scores
 from .model import Parameters, CategoryScores
 
@@ -39,7 +40,7 @@ class Linear(BaseScoring):
             scores += self.linear_scoring(entities, criteria)
         assert isinstance(scores, Scores)
         if isinstance(entities, Entity) and isinstance(criteria, str):
-            return scores.get("unique")
+            return scores.get(SelectUnique())
         if isinstance(entities, Entity):
             scores = scores.filters(entity_name=entities.name)
         if isinstance(criteria, str):
@@ -66,7 +67,7 @@ class Linear(BaseScoring):
             for entity in (entities if isinstance(entities, Entities) else [entities]):
                 group = entity[str(category)]
                 for criterion in ([criteria] if isinstance(criteria, str) else criteria):
-                    score = self.categories.get("unique", category=category, group=group, criterion=criterion)
+                    score = self.categories.get(SelectUnique(), category=category, group=group, criterion=criterion)
                     scores.set(score, entity_name=entity.name, criterion=criterion)
         return scores
 

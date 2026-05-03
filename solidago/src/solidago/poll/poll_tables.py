@@ -4,6 +4,7 @@ from numpy.typing import DTypeLike, NDArray
 import numpy as np, pandas as pd
 
 from solidago.primitives.datastructure import Row, FilteredTable
+from solidago.primitives.datastructure.filtered_table import Select, SelectLast
 from solidago.primitives.datastructure.named_objects import NamedObject, NamedObjects
 
 
@@ -41,9 +42,10 @@ class Social(Row):
 class Socials(FilteredTable[Social]):
     TableRowType: type = Social
     name: str = "socials"
-    default_column_names: list[str] = ["by", "to", "kind", "weight", "priority"]
+    default_column_names: list[str] = ["by", "to", "kind", "weight", "priority", "date"]
     default_keynames: set[str] = {"by", "to", "kind"}
     default_dtypes: dict[str, DTypeLike] = dict(weight=np.float64, priority=np.float64)
+    default_select: Select = SelectLast("date")
 
 
 class PublicSetting(Row):
@@ -76,10 +78,10 @@ class Ratings(FilteredTable[Rating]):
     TableRowType: type = Rating
     name: str = "ratings"
     default_column_names: list[str] = ["username", "entity_name", "criterion", "context", 
-        "value", "min", "max", "root_law", "root_law_arg"]
+        "value", "min", "max", "root_law", "root_law_arg", "date"]
     default_keynames: set[str] = {"username", "entity_name", "criterion", "context"}
     default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, min=np.float64, max=np.float64)
-    default_select: Literal['unique', 'first', 'last'] = "last"
+    default_select: Select = SelectLast("date")
 
 
 class Comparison(Row):
@@ -93,10 +95,10 @@ class Comparisons(FilteredTable[Comparison]):
     TableRowType: type = Comparison
     name: str = "comparisons"
     default_column_names: list[str] = ["username", "criterion", "context", "left_name", "right_name",
-        "value", "max", "root_law", "root_law_arg"]
+        "value", "max", "root_law", "root_law_arg", "date"]
     default_keynames: set[str] = {"username", "criterion", "context", "left_name", "right_name"}
     default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, max=np.float64)
-    default_select: Literal['unique', 'first', 'last'] = "last"
+    default_select: Select = SelectLast("date")
 
     def entity_comparisons(self, entities: Entities) -> list[tuple[NDArray[np.int64], NDArray[np.float64], NDArray[np.float64]]]:
         """ Returns other_indices, comparison_values, comparison_maxs """

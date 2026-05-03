@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Hashable, Iterable
-from numpy.typing import NDArray, DTypeLike
+from numpy.typing import NDArray
 from pathlib import Path
 
 import numpy as np
@@ -7,6 +7,7 @@ import yaml
 import logging
 
 from solidago.primitives.criteria import to_criteria
+from solidago.primitives.datastructure.filtered_table import SelectUnique
 logger = logging.getLogger(__name__)
 
 from solidago.poll.poll_tables import *
@@ -48,7 +49,7 @@ class Parameters(Scores):
         coordinates = [int(i) for i in multiscores.keys("coordinate")] # type: ignore
         n_coordinates = max(coordinates) + 1 if coordinates else 0
         for coordinate in range(n_coordinates):
-            values.append(multiscores.get("unique", coordinate=coordinate))
+            values.append(multiscores.get(SelectUnique(), coordinate=coordinate))
         return values
 
     def values(self, **keys: Hashable) -> NDArray:
