@@ -18,8 +18,10 @@ from .parallelized import ParallelizedPreferenceLearning
 from .gbt import FlexibleGeneralizedBradleyTerry
 
 import solidago.poll_functions.preference_learning.gbt as gbt
+from .post_actions import PostActions
 
 __all__ = [
     "PreferenceLearning", "NumbaUniformGBT", "LBFGSUniformGBT",
     "ParallelizedPreferenceLearning", "FlexibleGeneralizedBradleyTerry", "gbt",
+    "PostActions",
 ]

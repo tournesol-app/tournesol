@@ -5,3 +5,4 @@ of yielding more human-readible scores.
 """
 
 from .squash import Squash
+from .sum_criteria import SumCriteria

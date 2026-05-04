@@ -41,7 +41,6 @@ class BernoulliPretrust(PollFunction):
         self.p_if_untrustworthy = p_if_untrustworthy
     
     def fn(self, users: poll.Users) -> poll.Users:
-        trustworthy = users.get_column("trustworthy")
         args = self.p_if_trustworthy, self.p_if_untrustworthy
-        pretrust = np.random.random(len(users)) < np.where(trustworthy, *args)
+        pretrust = np.random.random(len(users)) < np.where(users("trustworthy"), *args)
         return users.assign(pretrust=pretrust)

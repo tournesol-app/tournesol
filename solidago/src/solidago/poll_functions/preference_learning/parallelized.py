@@ -98,7 +98,7 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
         evaluated_entities = entities.filters(names)
         assert isinstance(evaluated_entities, Entities)
         rating_contexts = list({r["context"] for r in filtered_ratings})
-        category_groups = [(c, list(evaluated_entities.get_column(str(c)))) for c in self.categories]
+        category_groups = [(c, list(evaluated_entities(str(c)))) for c in self.categories]
         return evaluated_entities, category_groups, rating_contexts
 
     def _variables(self, users: Users, ratings: Ratings, comparisons: Comparisons) -> list[tuple[User, str]]: # type: ignore

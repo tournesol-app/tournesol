@@ -80,5 +80,5 @@ class SimpleComparisonStats(PollFunction):
         return has_all_criteria_list
     
     def user_trusts(self, users: Users, comparisons: Comparisons) -> NDArray[np.float64]:
-        users = users.filters(comparisons.get_column("username"))
-        return users.get_column("trust").to_numpy(np.float64)
+        users = users.filters(comparisons("username"))
+        return users("trust").to_numpy(np.float64)

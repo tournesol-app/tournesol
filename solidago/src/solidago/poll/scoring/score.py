@@ -217,15 +217,15 @@ class Scores(FilteredTable[Score]):
     
     @property
     def value(self) -> NDArray[np.float64]:
-        return self.get_column("value").to_numpy(np.float64)
+        return self("value").astype(np.float64)
     
     @property
     def left_unc(self) -> NDArray[np.float64]:
-        return self.get_column("left_unc").to_numpy(np.float64) # type: ignore
+        return self("left_unc").astype(np.float64)
     
     @property
     def right_unc(self) -> NDArray[np.float64]:
-        return self.get_column("right_unc").to_numpy(np.float64) # type: ignore
+        return self("right_unc").astype(np.float64)
     
     @property
     def min(self) -> NDArray[np.float64]:

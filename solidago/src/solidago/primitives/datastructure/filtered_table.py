@@ -350,7 +350,7 @@ class FilteredTable(Generic[TableRow]):
     default_column_names: list[str] = list()
     default_keynames: set[str] = set()
     default_dtypes: dict[str, DTypeLike] = dict()
-    default_select: Select = SelectUnique()
+    default_default_select: Select = SelectUnique()
 
     ########################################
     ## The following methods are standard ##
@@ -377,6 +377,7 @@ class FilteredTable(Generic[TableRow]):
         *args: Any, 
         filter: Filter | None = None, 
         keynames: Iterable[str] | None = None, 
+        default_select: Select | None = None,
         **kwargs: Any,
     ):
         """ Either args is simply (table: _Table,) or (*args, **kwargs) are used to construct table """
@@ -400,6 +401,7 @@ class FilteredTable(Generic[TableRow]):
                 self.table.df[keyname] = ""
         assert filter is None or isinstance(filter, Filter)
         self._filter = filter or Filter() # self.filter handles version update
+        self.default_select = self.default_default_select if default_select is None else default_select
 
     def cache(self, *column_names: str):
         self.table.cache(*column_names)
@@ -558,12 +560,12 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
 
-    def get_column(self, column_name: str) -> pd.Series:
+    def __call__(self, column_name: str) -> NDArray:
         if self.filter.indices is not None:
             series = self.table.df.loc[self.filter.indices][column_name]
         else:
             series = self.table.df[column_name]
-        return series
+        return series.to_numpy()
 
     def set_columns(self, 
         dtypes: dict[str, type] | None = None, 
@@ -653,7 +655,9 @@ class FilteredTable(Generic[TableRow]):
         keynames = self.keynames if keynames is None else keynames
         keys = {name: key for name, key in kwargs.items() if name in keynames}
         
-        index = self.get_index(SelectLast(), **keys) if self.default_select == "unique" else None
+        index = None
+        if isinstance(self.default_select, SelectUnique):
+            index = self.get_index(SelectUnique(), **keys)
         if index is None:
             self.append_series(kwargs)
         else:

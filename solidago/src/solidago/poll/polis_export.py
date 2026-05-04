@@ -26,11 +26,8 @@ class PolisExport(Poll):
         entities = entities.join(PolisExport._load_csv(poll_identifier, "comment-groups"))
         entities.index.name = "entity_name"
         
-        ratings = PolisExport._load_csv(poll_identifier, "votes").rename(columns={
-            "voter-id": "username",
-            "comment-id": "entity_name",
-            "vote": "value"
-        })
+        ratings = PolisExport._load_csv(poll_identifier, "votes")\
+            .rename(columns={"voter-id": "username", "comment-id": "entity_name", "vote": "value"})
         ratings[["criterion", "min", "max"]] = ["default", -1, 1]
         
         return summary, users, entities, ratings

@@ -14,4 +14,4 @@ class NoTrustPropagation(PollFunction):
         self.pretrust_value = pretrust_value
 
     def fn(self, users: Users) -> Users:
-        return users.assign(trust=(users.get_column("is_pretrusted") * self.pretrust_value))
+        return users.assign(trust=(users("is_pretrusted") * self.pretrust_value))

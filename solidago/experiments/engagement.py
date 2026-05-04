@@ -19,7 +19,7 @@ with time("Generating data", logger):
 with time("Running pipeline", logger):
     poll = pipeline(poll)
 
-truth = poll.entities.get_column("v0")
+truth = poll.entities("v0")
 estimate = poll.global_model(poll.entities).value
 correlation = np.corrcoef(truth, estimate)[0, 1]
 logger.info(f"Successful run")

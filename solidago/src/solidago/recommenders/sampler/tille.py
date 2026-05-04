@@ -12,9 +12,7 @@ class Tille(Sampler):
 
     def eliminate(self, poll: Poll, entities: Entities) -> tuple[Entity, Entities]:
         """ Returns eliminated entity, and weight-updated entities """
-        entities = entities\
-            .assign(candidate=entities.get_column("weight") > 0)\
-            .filters(positive=True)
+        entities = entities.assign(candidate=entities("weight") > 0).filters(candidate=True)
         e, f = self.pivot_scheduler(poll, entities)
         total_weight = e["weight"] + f["weight"]
         e_win_probability = e["weight"] / total_weight
@@ -25,7 +23,7 @@ class Tille(Sampler):
 
     def __call__(self, poll: Poll, limit: int) -> Entities:
         entities = poll.entities\
-            .assign(candidate=poll.entities.get_column("weight") > 0)\
+            .assign(candidate=poll.entities("weight") > 0)\
             .filters(positive=True)\
             .assign(rank=1)
         for i in range(len(entities)):

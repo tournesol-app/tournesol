@@ -7,6 +7,12 @@ class PostActions(ParallelizedPollFunction):
     default_action_weights: dict = dict(post=1, repost=1, report=-1)
 
     def __init__(self, action_weights: dict | None = None):
+        """ 
+        Parameters
+        ---------
+        criterion: str
+            Name of the criterion associated to the learned scoring model
+        """
         super().__init__()
         self.action_weights = action_weights or self.default_action_weights
 
@@ -23,23 +29,24 @@ class PostActions(ParallelizedPollFunction):
         ratings: Ratings
     ) -> tuple[list[tuple[str, int | float]], list[tuple[str, int | float, str]]]: 
         e = entities.filters(authors=Contains(username))
-        publications = list(zip(e.names(), e.get_column("date")))
+        publications = list(zip(e.names(), e("date")))
         r = ratings.filters(username=username, criterion=self.actions())
-        reactions = list(zip(r.get_column("entity_name"), r.get_column("date"), r.get_column("criterion")))
+        reactions = list(zip(r("entity_name"), r("date"), r("criterion")))
         return publications, reactions
     
     def thread_function(self, 
         publications: list[tuple[str, int | float]], 
-        reactions: list[tuple[str, int | float, str]]
+        reactions: list[tuple[str, int | float, str]],
     ) -> Scores:
-        scores = Scores(keynames=["entity_name"])
+        scores = Scores(keynames=["entity_name", "criterion"])
         
         for name, date in publications:
-            scores.append(Score(1), entity_name=name, date=date)
+            scores.append(Score(1), entity_name=name, criterion="post", date=date)
 
         for name, date, action in reactions:
             if date > scores.get(entity_name=name)["date"]:
-                scores.append(Score(self.action_weights[action]), entity_name=name, date=date)
+                score = Score(self.action_weights[action])
+                scores.append(score, entity_name=name, date=date, criterion=action)
 
         return scores
     
@@ -47,10 +54,10 @@ class PostActions(ParallelizedPollFunction):
         variables: list[str], 
         nonargs_list: list, 
         results: list[Scores],
-        args_lists: list[tuple[list[tuple[str, int | float]], list[tuple[str, int | float, str]]]], 
+        args_lists: list, 
     ) -> UserModels:
         user_models = UserModels()
         for username, scores in zip(variables, results):
-            s = scores.add_columns(username=username, criterion="actions")
+            s = scores.add_columns(username=username)
             user_models.user_directs = user_models.user_directs | s
         return user_models

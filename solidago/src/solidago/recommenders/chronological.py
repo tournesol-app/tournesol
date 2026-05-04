@@ -15,11 +15,11 @@ class Chronological(Recommender):
         cursor: str | None = None,
         time: int | None = None,
     ) -> Entities:
-        followings = poll.socials.filters(by=receiver_name, kind=self.follow_kind).get_column("to")
+        followings = poll.socials.filters(by=receiver_name, kind=self.follow_kind)("to")
         reposts = poll.ratings.filters(username=followings, criterion=self.rating_criteria)
         names = set(poll.entities.filters(authors=Contains(followings)).names())
         entities = poll.entities.filters(names | reposts.keys("entity_name"))
-        entities = entities.assign(last_date=entities.get_column("date"))
+        entities = entities.assign(last_date=entities("date"))
         
         if receiver_name is not None:
             entities = entities.excludes(authors=Contains(receiver_name))

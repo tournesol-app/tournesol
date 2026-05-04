@@ -107,6 +107,10 @@ class NamedObjects(Generic[Object]):
         self._name2index, self._index2name = _name2index, _index2name
         self._get_vector_coordinates()
 
+    @property
+    def columns(self) -> pd.Index[str]:
+        return self.df.columns
+
     @abstractmethod
     def row2object(self, row: pd.Series) -> Object:
         """ Transforms row series into a usable value for applications """
@@ -249,8 +253,10 @@ class NamedObjects(Generic[Object]):
                 pair = (self[i], self[j]) if s else (self[j], self[i])
                 yield pair # type: ignore - Cannot be Self given i, j are int
 
-    def get_column(self, name: str) -> pd.Series:
-        return self.df[name]
+    def __call__(self, name: str, default_value: Any | None = None) -> pd.Series:
+        if name not in self.df.columns and default_value is not None:
+            return pd.Series([default_value] * len(self))
+        return self.df[name] 
     
     def get_columns(self, names: Iterable[str]) -> pd.DataFrame:
         return self.df[list(names)]

@@ -1,9 +1,10 @@
 import numpy as np
 from solidago import *
+from solidago.primitives.datastructure.filtered_table import SelectLast
 
 
 def test_ratings():
-    ratings = Ratings()
+    ratings = Ratings(default_select=SelectLast())
     ratings.set(username="user_0", criterion="default", entity_name="entity_4", value=5)
     ratings.set(username="user_5", criterion="default", entity_name="entity_3", value=5, min=0, max=10)
     ratings.set(username="user_5", criterion="default", entity_name="entity_3", value=2, min=0, max=10)

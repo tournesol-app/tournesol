@@ -220,7 +220,7 @@ def test_filtered_table():
     assert set(s.filter.indices) == {3, 4}
     assert s.filter.keys == dict(username="user_9")
     assert len(s) == 2
-    assert set(s.get_column("value")) == {2}
+    assert set(s("value")) == {2}
     
     assert t.get_index(username="user_9", entity_name="entity_2") == 3
     assert t.get(username="user_9", entity_name="entity_2")["value"] == 2

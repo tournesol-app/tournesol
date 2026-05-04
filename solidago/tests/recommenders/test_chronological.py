@@ -35,12 +35,12 @@ def test_detailed_chronological():
     follow_kind, rating_criteria = "follow", ["repost"]
     username, limit, cursor = "user_0", 4, None
 
-    followings = poll.socials.filters(by=username, kind=follow_kind).get_column("to")
+    followings = poll.socials.filters(by=username, kind=follow_kind)("to")
     reposts = poll.ratings.filters(username=list(followings), criterion=rating_criteria)
     entity_names = set(poll.entities.filters(author=followings).names()) \
         | reposts.keys("entity_name")
     entities = poll.entities.filters(entity_names)
-    entities = entities.assign(last_date=entities.get_column("date"))
+    entities = entities.assign(last_date=entities("date"))
     
     for repost in reposts:
         name = repost["entity_name"]

@@ -19,7 +19,6 @@ class Average(EntityCriterionWise):
         right_uncs: NDArray[np.float64],
     ) -> tuple[float, float, float]:
         assert len(vrights) == len(values) == len(left_uncs) == len(right_uncs)
-        print((vrights, values, left_uncs, right_uncs))
         total_voting_rights = vrights.sum()
         if total_voting_rights == 0:
             return np.nan, np.inf, np.inf

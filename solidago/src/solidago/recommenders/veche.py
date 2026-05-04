@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from solidago.poll import *
-from solidago.poll_functions import PollFunction, Sequential
+from solidago.poll_functions import PollFunction
 from .recommender import Recommender
 from .sampler import Sampler
 
@@ -12,8 +12,19 @@ class Veche(Recommender):
         sampler: Sampler | tuple[str, dict] | None = None,
     ):        
         import solidago, solidago.poll_functions as pf, solidago.recommenders.sampler as s
-        self.preprocess = solidago.load(preprocess, pf, PollFunction, Sequential([
-            
+        self.preprocess = solidago.load(preprocess, pf, PollFunction, pf.Sequential([
+            pf.filtering.RemoveRecommendedEntities(),
+            pf.voting_rights.Follows(),
+            pf.voting_rights.LikesVolumes(),
+            pf.voting_rights.Mentions(),
+            pf.voting_rights.AggregateVolumes(),
+            pf.trust_propagation.Liquid(),
+            pf.filtering.IncludedUsersOnly(),
+            pf.preference_learning.PostActions(),
+            # Add biases,
+            pf.scaling.MaxNorm(),
+            pf.aggregation.Sum(),
+            pf.post_process.SumCriteria(),
         ]))
         self.sampler = solidago.load(sampler, s, Sampler, s.SamplingWithoutReplacement())
 

@@ -71,10 +71,10 @@ class LipschiTrust(PollFunction):
             return users.assign(trust=list())
 
         personhood_vouches = socials.filters(kind="Personhood")
-        bys = personhood_vouches.get_column("by").map(users.name2index).to_numpy(np.int64)
-        tos = personhood_vouches.get_column("to").map(users.name2index).to_numpy(np.int64)
-        weights = personhood_vouches.get_column("weight").to_numpy(np.float64)
-        pretrusts = users.get_column("pretrust").to_numpy(np.float64) * self.pretrust_value
+        bys = np.array(list(map(users.name2index, personhood_vouches("by"))))
+        tos = np.array(list(map(users.name2index, personhood_vouches("to"))))
+        weights = personhood_vouches("weight")
+        pretrusts = users("pretrust").to_numpy(np.float64) * self.pretrust_value
         
         trusts = type(self).main(bys, tos, weights, pretrusts, self.sink_vouch, self.decay, self.error)
         return users.assign(trust=trusts)

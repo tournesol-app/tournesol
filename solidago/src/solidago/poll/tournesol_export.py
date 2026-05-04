@@ -1,6 +1,7 @@
 from typing import BinaryIO
 from urllib.request import urlretrieve
 from pandas import DataFrame
+from datetime import date, datetime, timedelta
 
 import zipfile
 import pandas as pd
@@ -13,8 +14,10 @@ from .poll import *
 
 
 class TournesolExport(Poll):
-    @staticmethod
-    def load_dfs(dataset_zip: str | BinaryIO) -> dict[str, DataFrame]:
+    start_date: datetime = datetime.fromisoformat("2021-01-11")
+
+    @classmethod
+    def load_dfs(cls, dataset_zip: str | BinaryIO) -> dict[str, DataFrame]:
         if isinstance(dataset_zip, str) and (
             dataset_zip.startswith("http://") or dataset_zip.startswith("https://")
         ):
@@ -63,6 +66,7 @@ class TournesolExport(Poll):
         users["pretrust"] = pd.to_numeric(users["trust"]) >= 0.8
         socials["kind"] = "Personhood"
         socials["priority"] = 0
+        socials["date"] = cls.start_date.second
         user_scores["depth"] = 0
         global_scores["depth"] = 0
         unsquash = lambda x: np.clip(x, a_min=-99.9, a_max=99.9) / np.sqrt(100**2 - np.clip(x, a_min=-99.9, a_max=99.9)**2)
@@ -71,8 +75,8 @@ class TournesolExport(Poll):
         user_scores["left_unc"] = unsquash(max_values) - user_scores["value"]
         user_scores["right_unc"] = user_scores["left_unc"]
         global_scores["right_unc"] = global_scores["left_unc"]
-        from solidago.primitives.date import week_date_to_week_number as to_week_number
-        comparisons["week_number"] = [to_week_number(wd) for wd in list(comparisons["week_date"])]
+        comparisons["date"] = [datetime.fromisoformat(wd).second for wd in list(comparisons["week_date"])]
+        comparisons["week_number"] = [cls.week_date_to_week_number(wd) for wd in list(comparisons["week_date"])]
         comparisons["context"] = "tournesol"
                 
         entity_names = set(global_scores["entity_name"]) | set(user_scores["entity_name"]) \
@@ -102,3 +106,14 @@ class TournesolExport(Poll):
     def download(cls) -> "TournesolExport":
         return cls(dataset_zip="https://api.tournesol.app/exports/all")
 
+    @classmethod
+    def week_date_to_week_number(cls, week_date: str) -> int:
+        """ week dates are given as strings in Tournesol's dataset.
+        This simple function turns them into week numbers.
+        """
+        date = datetime.fromisoformat(week_date)
+        return int((date - cls.start_date).days / 7)
+
+    @classmethod
+    def week_number_to_week_date(cls, week_number: int) -> str:
+        return (cls.start_date + timedelta(weeks=week_number)).isoformat()

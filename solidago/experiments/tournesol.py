@@ -38,11 +38,11 @@ for q in quantiles:
         assert isinstance(entity, Entity)
         entity["rank"] = score["rank"]
     t.entities.set_column(f"value_q={q}", p.global_model.directs.value)
-    t.entities.set_column(f"rank_q={q}", p.entities.get_column("rank"))
+    t.entities.set_column(f"rank_q={q}", p.entities("rank"))
     
 t.entities.assign(
-    value_delta = t.entities.get_column("value_q=0.8").to_numpy(np.float64) - t.entities.get_column("value_q=0.2"),
-    rank_delta = t.entities.get_column("rank_q=0.8").to_numpy(np.float64) - t.entities.get_column("rank_q=0.2")
+    value_delta = t.entities("value_q=0.8").to_numpy(np.float64) - t.entities("value_q=0.2"),
+    rank_delta = t.entities("rank_q=0.8").to_numpy(np.float64) - t.entities("rank_q=0.2")
 )
 
 extreme_values = set(t.entities.df.sort_values("value_delta")[:5].video) 

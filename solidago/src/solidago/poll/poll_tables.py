@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any, Hashable, Literal
 from numpy.typing import DTypeLike, NDArray
 
 import numpy as np, pandas as pd
@@ -45,7 +45,7 @@ class Socials(FilteredTable[Social]):
     default_column_names: list[str] = ["by", "to", "kind", "weight", "priority", "date"]
     default_keynames: set[str] = {"by", "to", "kind"}
     default_dtypes: dict[str, DTypeLike] = dict(weight=np.float64, priority=np.float64)
-    default_select: Select = SelectLast("date")
+    default_default_select: Select = SelectLast("date")
 
 
 class PublicSetting(Row):
@@ -59,7 +59,7 @@ class PublicSettings(FilteredTable[PublicSetting]):
     default_dtypes: dict[str, DTypeLike] = dict(public=np.bool_)
 
     def penalties(self, privacy_penalty: float) -> NDArray[np.float64]:
-        return self.get_column("public", np.float64) * privacy_penalty # type: ignore
+        return self("public") * privacy_penalty
 
     def penalty(self, privacy_penalty: float, *args, **kwargs) -> float:
         public_setting = self.get(*args, **kwargs)
@@ -81,7 +81,7 @@ class Ratings(FilteredTable[Rating]):
         "value", "min", "max", "root_law", "root_law_arg", "date"]
     default_keynames: set[str] = {"username", "entity_name", "criterion", "context"}
     default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, min=np.float64, max=np.float64)
-    default_select: Select = SelectLast("date")
+    default_default_select: Select = SelectLast("date")
 
 
 class Comparison(Row):
@@ -98,20 +98,20 @@ class Comparisons(FilteredTable[Comparison]):
         "value", "max", "root_law", "root_law_arg", "date"]
     default_keynames: set[str] = {"username", "criterion", "context", "left_name", "right_name"}
     default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, max=np.float64)
-    default_select: Select = SelectLast("date")
+    default_default_select: Select = SelectLast("date")
 
     def entity_comparisons(self, entities: Entities) -> list[tuple[NDArray[np.int64], NDArray[np.float64], NDArray[np.float64]]]:
         """ Returns other_indices, comparison_values, comparison_maxs """
         result = list()
         for entity in entities:
             as_left = self.filters(left_name=entity.name)
-            as_left_other_indices = [entities.name2index(right_name) for right_name in as_left.get_column("right_name")]
-            as_left_values = as_left.get_column("value").to_numpy(np.float64)
-            as_left_maxs = as_left.get_column("max").to_numpy(np.float64)
+            as_left_other_indices = [entities.name2index(right_name) for right_name in as_left("right_name")]
+            as_left_values = as_left("value").astype(np.float64)
+            as_left_maxs = as_left("max").astype(np.float64)
             as_right = self.filters(right_name=entity.name)
-            as_right_other_indices = [entities.name2index(left_name) for left_name in as_right.get_column("left_name")]
-            as_right_values = - as_right.get_column("value").to_numpy(np.float64)
-            as_right_maxs = as_right.get_column("max").to_numpy(np.float64)
+            as_right_other_indices = [entities.name2index(left_name) for left_name in as_right("left_name")]
+            as_right_values = - as_right("value").astype(np.float64)
+            as_right_maxs = as_right("max").astype(np.float64)
             other_indices = np.array(as_left_other_indices + as_right_other_indices, dtype=np.int64)
             comparison_values = np.concatenate([as_left_values, as_right_values], dtype=np.float64)
             comparison_maxs = np.concatenate([as_left_maxs, as_right_maxs], dtype=np.float64)
@@ -128,6 +128,13 @@ class VotingRights(FilteredTable[VotingRight]):
     default_column_names: list[str] = ["username", "entity_name", "criterion", "voting_right"]
     default_keynames: set[str] = {"username", "entity_name", "criterion"}
     default_dtypes: dict[str, DTypeLike] = dict(voting_right=np.float64)
+
+    def get(self, select: Select | None = None, **keys: Hashable) -> VotingRight:
+        """ For convenience, if VotingRight is the same for all entities,
+        then it may have be set without entity_name as a keyname. """
+        if "entity_name" in keys and "entity_name" not in self.keynames:
+            del keys["entity_name"]
+        return super().get(select, **keys)
 
 
 class PastRecommendation(Row):

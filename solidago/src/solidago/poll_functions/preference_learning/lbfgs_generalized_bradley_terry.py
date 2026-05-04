@@ -103,10 +103,10 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         values = self.init_values(entities, init)
         entity_names = list(entities.names())
         comparisons = comparisons.filters(left_name=entity_names, right_names=entity_names)
-        left_indices = [entities.name2index(name) for name in comparisons.get_column("left_name")]
-        right_indices = [entities.name2index(name) for name in comparisons.get_column("right_name")]
-        comparison_values = comparisons.get_column("value").to_numpy(np.float64)
-        comparison_maxs = comparisons.get_column("max").to_numpy(np.float64)
+        left_indices = [entities.name2index(name) for name in comparisons("left_name")]
+        right_indices = [entities.name2index(name) for name in comparisons("right_name")]
+        comparison_values = comparisons("value").astype(np.float64)
+        comparison_maxs = comparisons("max").astype(np.float64)
         normalized_comparisons = torch.tensor(comparison_values / comparison_maxs)
             
         lbfgs = torch.optim.LBFGS(

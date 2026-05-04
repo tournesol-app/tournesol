@@ -3,7 +3,7 @@
 from .__version__ import __version__
 
 from solidago import primitives, poll_functions, generators, recommenders
-from solidago.primitives import minimizer, uncertainty, similarity, random
+from solidago.primitives import minimizer, uncertainty, similarity, random, datastructure
 
 from solidago.primitives.load import load
 from solidago.poll import *
@@ -15,7 +15,7 @@ from solidago.experiments import Experiment
 __all__ = [
     "load", "__version__",
     "primitives", "poll_functions", "generators", "recommenders",
-    "minimizer", "uncertainty", "similarity", "random",
+    "minimizer", "uncertainty", "similarity", "random", "datastructure",
     "PollFunction", "Sequential", "Identity", "Generator", 
     "User", "Users", "Entity", "Entities",
     "Socials", "PublicSettings",

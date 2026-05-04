@@ -14,10 +14,10 @@ class WeightPreservingBias:
         raise NotImplemented
 
     def __call__(self, poll: Poll, ballot: Scores) -> Scores:
-        values = ballot.get_column("value")
-        ballot_weight = values.abs().sum()
-        multipliers = ballot.get_column("entity_name").map(lambda e: self.multiplier(e, poll))
+        values = ballot("value")
+        ballot_weight = np.abs(values).sum()
+        multipliers = np.array(list(map(lambda e: self.multiplier(e, poll), ballot("entity_name"))))
         biased_values = values * multipliers
-        normalized_biased_values = biased_values * ballot_weight / biased_values.abs().sum()
+        normalized_biased_values = biased_values * ballot_weight / np.abs(biased_values).sum()
         ballot.set_columns(value=list(normalized_biased_values))
         return ballot

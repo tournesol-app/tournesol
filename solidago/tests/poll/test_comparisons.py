@@ -1,14 +1,18 @@
 import numpy as np
+
 from solidago import *
+from solidago.primitives.datastructure import SelectLast
 
 
 def test_comparisons():
-    comparisons = Comparisons()
-    comparisons.set(username="user_0", criterion="default", left_name="entity_4", right_name="entity_2", value=5, max=10)
-    comparisons.set(username="user_0", criterion="default", left_name="entity_4", right_name="entity_2", value=8, max=10)
+    comparisons = Comparisons(default_select=SelectLast())
+    keys = ["username", "criterion", "left_name", "right_name", "value", "max"]
+    comparisons.set(None, None, **dict(zip(keys, ["user_0", "default", "entity_4", "entity_2", 5, 10])))
+    comparisons.set(None, None, **dict(zip(keys, ["user_0", "default", "entity_4", "entity_2", 8, 10])))
     assert len(comparisons) == 2
     assert len(comparisons.filters(username="user_2")) == 0
-    assert comparisons.get(username="user_0", criterion="default", left_name="entity_4", right_name="entity_2")["value"] == 8
+    kwargs = dict(zip(keys[:4], ["user_0", "default", "entity_4", "entity_2"]))
+    assert comparisons.get(None, **kwargs)["value"] == 8
     for comparison in comparisons:
         assert isinstance(comparison, Comparison)
     

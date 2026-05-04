@@ -91,9 +91,13 @@ class Mehestan(PollFunction):
         logger.info("Starting Mehestan's collaborative scaling")
         scores = user_models(entities)
         criteria = list(user_models.criteria())
-        results = [self.scale_criterion(users, entities, public_settings, scores.filters(criterion=c)) for c in criteria]
+        results = [
+            self.scale_criterion(users, entities, public_settings, scores.filters(criterion=c)) 
+            for c in criteria
+        ]
         keynames = ["username", "criterion"]
-        multipliers, translations, kwargs = UserMultipliers(keynames=keynames), UserTranslations(keynames=keynames), dict()
+        multipliers, translations = UserMultipliers(keynames=keynames), UserTranslations(keynames=keynames)
+        kwargs = dict()
         for criterion, (submultipliers, subtranslations, activities, is_scaler) in zip(criteria, results):
             multipliers = multipliers | submultipliers.add_keys(criterion=criterion)
             translations = translations | subtranslations.add_keys(criterion=criterion)
@@ -348,7 +352,7 @@ class Mehestan(PollFunction):
             filtered_scores = full_scores.filters(scalee_name=scalee_name, scaler_name=scaler_name)
             kwargs = common_kwargs | dict(
                 values=filtered_scores.value,
-                voting_rights=filtered_weights.get_column("voting_right").to_numpy(np.float64),
+                voting_rights=filtered_weights("voting_right"),
                 left_unc=filtered_scores.left_unc,
                 right_unc=filtered_scores.right_unc,
             )
@@ -389,7 +393,7 @@ class Mehestan(PollFunction):
         """
         kwargs = dict(
             lipschitz=lipschitz, 
-            voting_rights=voting_rights.get_column("voting_right").to_numpy(np.float64),
+            voting_rights=voting_rights("voting_right"),
             values=scores.value,
             left_unc=scores.left_unc,
             right_unc=scores.right_unc,

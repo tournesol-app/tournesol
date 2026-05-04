@@ -5,4 +5,5 @@ The aggregation may also adjust the user models to the learned global model.
 """
 
 from .average import Average
+from .sum import Sum
 from .entitywise_qr_quantile import EntitywiseQrQuantile
