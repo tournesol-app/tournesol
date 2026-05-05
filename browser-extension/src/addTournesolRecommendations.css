@@ -103,8 +103,8 @@
 }
 
 html[dark] #tournesol_banner {
-  color: var(--yt-spec-text-primary);
-  background-color: var(--yt-spec-button-chip-background-hover);
+  color: var(--yt-sys-color-baseline--text-primary);
+  background-color: var(--yt-sys-color-baseline--button-chip-background-hover);
 }
 
 html[dark] #tournesol_banner_close_icon {
@@ -120,14 +120,14 @@ html[dark] #tournesol_banner_close_icon {
 }
 
 #tournesol_title {
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-sys-color-baseline--text-primary);
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 22px;
   font-weight: normal;
 }
 
 #tournesol_link {
-  color: var(--yt-spec-text-secondary);
+  color: var(--yt-sys-color-baseline--text-secondary);
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 12px;
   margin-right: auto;
@@ -150,11 +150,11 @@ html[dark] #tournesol_banner_close_icon {
 }
 
 .video_channel_link {
-  color: var(--yt-spec-text-secondary);
+  color: var(--yt-sys-color-baseline--text-secondary);
 }
 
 .video_channel_link:hover {
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-sys-color-baseline--text-primary);
 }
 
 .tournesol_score_logo {
@@ -265,12 +265,11 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 
 .video_thumb {
   width: 100%;
-  background: green;
   border-radius: 12px;
 }
 
 .video_title {
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-sys-color-baseline--text-primary);
   margin-bottom: 6px;
   font-family: 'Roboto', 'Arial', sans-serif;
   letter-spacing: var(--yt-link-letter-spacing, normal);
@@ -313,7 +312,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 
 .video_text,
 .video_criteria {
-  color: var(--yt-endpoint-color, var(--yt-spec-text-secondary));
+  color: var(--yt-endpoint-color, var(--yt-sys-color-baseline--text-secondary));
   font-family: 'Roboto', 'Arial', sans-serif;
   word-break: break-word;
   font-size: 1.4rem;
@@ -341,7 +340,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
   border-radius: 2px;
 
   color: white;
-  background-color: var(--yt-spec-static-overlay-background-heavy);
+  background-color: var(--yt-sys-color-baseline--overlay-background-heavy);
 
   cursor: pointer;
   font-size: var(--yt-badge-font-size, 1.2rem);
@@ -370,7 +369,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 }
 
 #tournesol_container.search h2 {
-  min-height: auto;
+  min-height: initial;
   font-size: 1.8rem;
 }
 
@@ -378,11 +377,8 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
   width: 32px;
 }
 
-#tournesol_container.search .thumb_div,
-#tournesol_container.search .thumb_div img {
-  width: 100%;
-  min-width: 240px;
-  max-width: 360px;
+#tournesol_container.search .thumb_div {
+  max-width: min(360px, 50%);
   aspect-ratio: 16/9;
   height: 100%;
   margin: 0;
@@ -416,7 +412,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 #tournesol_container.search .video_card .details_div strong {
   font-weight: 400;
   font-size: 2.4em;
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-sys-color-baseline--text-primary);
   margin-right: 8px;
   font-style: normal;
 }

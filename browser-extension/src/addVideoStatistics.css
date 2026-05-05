@@ -6,12 +6,12 @@
   padding: 0 8px;
   border-radius: 12px;
   background-color: #f3bd0020;
-  color: var(--yt-spec-text-secondary);
+  color: var(--yt-sys-color-baseline--text-secondary);
   min-height: 36px;
 }
 
 .tournesol-statistics-info span {
-  color: var(--yt-spec-text-primary);
+  color: var(--yt-sys-color-baseline--text-primary);
 }
 
 .tournesol-statistics-score {
