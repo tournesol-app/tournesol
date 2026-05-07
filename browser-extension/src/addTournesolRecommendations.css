@@ -4,6 +4,9 @@
   --ts-palette-primary-main: #ffc800;
   --ts-palette-primary-main-hover: #b28c00;
   --ts-palette-text-primary: #1d1a14;
+
+  --ts-yt-text-primary: var(--yt-sys-color-baseline--text-primary);
+  --ts-yt-text-secondary: var(--yt-sys-color-baseline--text-secondary);
 }
 
 #tournesol_container {
@@ -103,7 +106,7 @@
 }
 
 html[dark] #tournesol_banner {
-  color: var(--yt-sys-color-baseline--text-primary);
+  color: var(--ts-yt-text-primary);
   background-color: var(--yt-sys-color-baseline--button-chip-background-hover);
 }
 
@@ -120,14 +123,14 @@ html[dark] #tournesol_banner_close_icon {
 }
 
 #tournesol_title {
-  color: var(--yt-sys-color-baseline--text-primary);
+  color: var(--ts-yt-text-primary);
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 22px;
   font-weight: normal;
 }
 
 #tournesol_link {
-  color: var(--yt-sys-color-baseline--text-secondary);
+  color: var(--ts-yt-text-secondary);
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 12px;
   margin-right: auto;
@@ -150,11 +153,11 @@ html[dark] #tournesol_banner_close_icon {
 }
 
 .video_channel_link {
-  color: var(--yt-sys-color-baseline--text-secondary);
+  color: var(--ts-yt-text-secondary);
 }
 
 .video_channel_link:hover {
-  color: var(--yt-sys-color-baseline--text-primary);
+  color: var(--ts-yt-text-primary);
 }
 
 .tournesol_score_logo {
@@ -269,7 +272,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 }
 
 .video_title {
-  color: var(--yt-sys-color-baseline--text-primary);
+  color: var(--ts-yt-text-primary);
   margin-bottom: 6px;
   font-family: 'Roboto', 'Arial', sans-serif;
   letter-spacing: var(--yt-link-letter-spacing, normal);
@@ -312,7 +315,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 
 .video_text,
 .video_criteria {
-  color: var(--yt-endpoint-color, var(--yt-sys-color-baseline--text-secondary));
+  color: var(--yt-endpoint-color, var(--ts-yt-text-secondary));
   font-family: 'Roboto', 'Arial', sans-serif;
   word-break: break-word;
   font-size: 1.4rem;
@@ -412,7 +415,7 @@ html[darker-dark-theme][dark] .tournesol_simple_button:disabled img {
 #tournesol_container.search .video_card .details_div strong {
   font-weight: 400;
   font-size: 2.4em;
-  color: var(--yt-sys-color-baseline--text-primary);
+  color: var(--ts-yt-text-primary);
   margin-right: 8px;
   font-style: normal;
 }
