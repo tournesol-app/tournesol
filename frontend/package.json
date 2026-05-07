@@ -69,7 +69,7 @@
     "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.3.2",
     "redux-mock-store": "^1.5.4",
-    "vite": "^5.4.21",
+    "vite": "^6.4.2",
     "vitest": "^1",
     "vitest-fetch-mock": "^0.2.2"
   },
