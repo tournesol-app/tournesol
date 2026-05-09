@@ -1,4 +1,4 @@
-FROM postgres:13-bullseye
+FROM postgres:17-trixie
 
 ARG DUMP_FILE
 

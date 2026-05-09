@@ -96,7 +96,7 @@ function dev_env_init() {
 
   if [ "$DOWNLOAD_PUBLIC_DATASET" = true ] ; then
     # The database should be initialized as empty
-    export DB_IMAGE="postgres:13-bullseye"
+    export DB_IMAGE="postgres:17-trixie"
   fi
 
   compose_up_recreate db
