@@ -3,17 +3,44 @@
     name: en_US.UTF-8
     state: present
 
-- name: Install Postgresql
+# PostgreSQL versions:
+#   Debian 11 (bullseye) → PG13 from the Debian repository
+#   Debian 13 (trixie)   → PG17 from the Debian repository
+# The default 'postgresql' meta-package resolves to the distro-provided version.
+- name: Install PostgreSQL (distro-provided version)
   apt:
     name: postgresql
     install_recommends: no
     update_cache: yes
 
-- name: Install Ansible DB client helper
+# On Debian 11, PG17 is not available in the Debian repository.
+# The PGDG repository is added to install it alongside PG13,
+# in preparation for migration.
+# On Debian 13, PG17 is the distro-provided version (installed above),
+# so neither the PGDG repository nor this extra install task are needed.
+- name: Add PostgreSQL PGDG repository
+  deb822_repository:
+    name: pgdg
+    types: deb
+    uris: https://apt.postgresql.org/pub/repos/apt
+    suites: "{{ ansible_distribution_release }}-pgdg"
+    components: main
+    signed_by: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version == "11"
+
+- name: Install PostgreSQL 17 (PGDG, migration target)
   apt:
-    name: python3-psycopg2
+    name:
+      - postgresql-17
+      - postgresql-client-17
     install_recommends: no
     update_cache: yes
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version == "11"
 
 - name: Create Postgresql backups directory
   file:

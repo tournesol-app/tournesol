@@ -10,20 +10,6 @@
     state: reloaded
     daemon_reload: true
 
-- name: Copy Postgresql exporter database user creation script
-  copy:
-    src: postgres-exporter.sql
-    dest: /tmp/postgres-exporter.sql
-    owner: postgres
-
-- name: Create Postgresql exporter database user
-  postgresql_db:
-    name: postgres
-    state: restore
-    target: /tmp/postgres-exporter.sql
-  become: yes
-  become_user: postgres
-
 - name: Restart Prometheus Postgresql exporter
   systemd:
     name: prometheus-postgres-exporter
