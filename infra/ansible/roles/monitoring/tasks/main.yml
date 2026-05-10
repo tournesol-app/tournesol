@@ -87,15 +87,24 @@
             - targets: ['localhost:9113']
   notify: Reload Prometheus
 
-- name: Connect to test database and remove an existing user's password
+- name: Create prometheus PostgreSQL user
   postgresql_user:
-    db: postgres
+    login_db: postgres
     user: prometheus
   become: yes
   become_user: postgres
   notify:
-    - Copy Postgresql exporter database user creation script
-    - Create Postgresql exporter database user
+    - Restart Prometheus Postgresql exporter
+
+- name: Grant pg_monitor role to prometheus
+  postgresql_membership:
+    group: pg_monitor
+    target_roles:
+      - prometheus
+    state: present
+  become: yes
+  become_user: postgres
+  notify:
     - Restart Prometheus Postgresql exporter
 
 - meta: flush_handlers

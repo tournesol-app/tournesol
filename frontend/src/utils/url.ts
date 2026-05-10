@@ -33,7 +33,7 @@ export const linkedInTournesolUrl =
   'https://www.linkedin.com/company/tournesol-app';
 
 // YouTube
-export const youtubeTournesolUrl = 'https://www.youtube.com/@TournesolApp';
+export const youtubeTournesolUrl = 'https://www.youtube.com/@TournesolOrg';
 export const youtubePlaylistEnUrl =
   'https://youtube.com/playlist?list=PLXX93NlSmUpayYeaNvKaeftX_QwEei3fU';
 export const youtubePlaylistFrUrl =

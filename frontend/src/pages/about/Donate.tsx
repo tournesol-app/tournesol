@@ -234,12 +234,16 @@ const DonatePage = () => {
                 <Typography variant="h5" sx={{ marginBottom: 1 }}>
                   {t('about.donateByDirectTransferEUR')}
                 </Typography>
-                <pre className={classes.bankingInfo}>Association Tournesol</pre>
-                <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
+                <pre className={classes.bankingInfo}>Tournesol France</pre>
                 <pre className={classes.bankingInfo}>
-                  IBAN: CH75 0900 0000 1570 7623 1
+                  13016 Marseille, France
                 </pre>
-                <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+                <pre className={classes.bankingInfo}>
+                  <strong>IBAN:</strong> FR76 1695 8000 0138 2403 2375 697
+                </pre>
+                <pre className={classes.bankingInfo}>
+                  <strong>BIC:</strong> QNTOFRP1XXX
+                </pre>
               </Box>
               <Divider sx={{ my: 2 }} />
               <Box>
@@ -247,11 +251,15 @@ const DonatePage = () => {
                   {t('about.donateByDirectTransferCHF')}
                 </Typography>
                 <pre className={classes.bankingInfo}>Association Tournesol</pre>
-                <pre className={classes.bankingInfo}>Lausanne, Switzerland</pre>
                 <pre className={classes.bankingInfo}>
-                  IBAN: CH42 0900 0000 1569 4102 5
+                  1000 Lausanne, Switzerland
                 </pre>
-                <pre className={classes.bankingInfo}>BIC: POFICHBEXXX</pre>
+                <pre className={classes.bankingInfo}>
+                  <strong>IBAN:</strong> CH42 0900 0000 1569 4102 5
+                </pre>
+                <pre className={classes.bankingInfo}>
+                  <strong>BIC:</strong> POFICHBEXXX
+                </pre>
               </Box>
             </TitledPaper>
           </Grid2>

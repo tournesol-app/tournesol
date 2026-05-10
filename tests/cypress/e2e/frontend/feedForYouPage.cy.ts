@@ -40,18 +40,13 @@ describe('Page - For you', () => {
     });
 
     describe('Pagination', () => {
-      it("doesn't display pagination when there is no items", () => {
+      it("doesn't display pagination when there is less than 20 items", () => {
         cy.visit('/feed/foryou');
         login();
         cy.contains('button', '< -10', {matchCase: false}).should('not.exist');
         cy.contains('button', '< -1', {matchCase: false}).should('not.exist');
         cy.contains('button', '+1 >', {matchCase: false}).should('not.exist');
         cy.contains('button', '+10 >', {matchCase: false}).should('not.exist');
-
-        cy.contains(
-          "There doesn't seem to be anything to display at the moment.",
-          {matchCase: false}
-        ).should('be.visible');
       });
     });
 
