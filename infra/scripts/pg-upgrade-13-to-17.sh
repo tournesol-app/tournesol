@@ -23,4 +23,6 @@ sudo -u postgres psql -d postgres -c 'DROP VIEW IF EXISTS prometheus.pg_stat_rep
 
 sudo -u postgres pg_upgradecluster --method upgrade -v "$NEW_VER" "$OLD_VER" "$CLUSTER"
 
-sudo systemctl start postgresql@$NEW_VER-$CLUSTER
+# Make sure systemd can see the new cluster as started
+sudo pg_ctlcluster $NEW_VER $CLUSTER stop
+sudo systemctl start postgresql@$NEW_VER-$CLUSTER.service
