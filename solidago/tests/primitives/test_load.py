@@ -59,20 +59,20 @@ def test_uncertainty():
 def test_root_law():
     import solidago
     assert isinstance(
-        solidago.load("BradleyTerry", solidago.poll_functions.preference_learning.gbt.root_law),
-        solidago.poll_functions.preference_learning.gbt.root_law.BradleyTerry
+        solidago.load("BradleyTerry", solidago.functions.preference_learning.gbt.root_law),
+        solidago.functions.preference_learning.gbt.root_law.BradleyTerry
     )
     assert isinstance(
-        solidago.load("Uniform", solidago.poll_functions.preference_learning.gbt.root_law),
-        solidago.poll_functions.preference_learning.gbt.root_law.Uniform
+        solidago.load("Uniform", solidago.functions.preference_learning.gbt.root_law),
+        solidago.functions.preference_learning.gbt.root_law.Uniform
     )
     assert isinstance(
-        solidago.load("Gaussian", solidago.poll_functions.preference_learning.gbt.root_law, std=2.),
-        solidago.poll_functions.preference_learning.gbt.root_law.Gaussian
+        solidago.load("Gaussian", solidago.functions.preference_learning.gbt.root_law, std=2.),
+        solidago.functions.preference_learning.gbt.root_law.Gaussian
     )
     assert isinstance(
-        solidago.load("Discrete", solidago.poll_functions.preference_learning.gbt.root_law, n_values=21),
-        solidago.poll_functions.preference_learning.gbt.root_law.Discrete
+        solidago.load("Discrete", solidago.functions.preference_learning.gbt.root_law, n_values=21),
+        solidago.functions.preference_learning.gbt.root_law.Discrete
     )
 
 def test_generators_ratings():
@@ -104,31 +104,31 @@ def test_poll_functions():
     import solidago
     assert isinstance(
         solidago.load(
-            "LipschiTrust", solidago.poll_functions, 
+            "trust_propagations.LipschiTrust", solidago.functions, 
             pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1.0e-8
         ), 
-        solidago.poll_functions.LipschiTrust
+        solidago.functions.trust_propagations.LipschiTrust
     )
     assert isinstance(
         solidago.load(
-            "Mehestan", solidago.poll_functions, 
+            "scaling.Mehestan", solidago.functions, 
             lipschitz=1.0, min_scaler_activity=1.0, n_scalers_max=100, privacy_penalty=0.5,
             user_comparison_lipschitz=10.0, p_norm_for_multiplicative_resilience=4.0,
             n_entity_to_fully_compare_max=100, n_diffs_sample_max=1000,
             default_multiplier_dev=0.5, default_translation_dev=1.0, error=1.0e-2,
         ), 
-        solidago.poll_functions.Mehestan
+        solidago.functions.scaling.Mehestan
     )
     assert isinstance(
         solidago.load(
-            ("AffineOvertrust", dict(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)), 
-            solidago.poll_functions
+            ("voting_rights.AffineOvertrust", dict(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1)), 
+            solidago.functions
         ),
-        solidago.poll_functions.AffineOvertrust
+        solidago.functions.voting_rights.AffineOvertrust
     )
     assert isinstance(
-        solidago.load(solidago.poll_functions.Squash(score_max=100.), solidago.poll_functions, solidago.PollFunction),
-        solidago.poll_functions.Squash
+        solidago.load(solidago.functions.post_process.Squash(score_max=100.), solidago.functions, solidago.PollFunction),
+        solidago.functions.post_process.Squash
     )
     
 def test_generators():
@@ -157,6 +157,6 @@ def test_generators():
 def test_pipeline():
     import solidago
     assert isinstance(
-        solidago.load("tests/save_load/pipeline.yaml", solidago.poll_functions),
-        solidago.poll_functions.Sequential
+        solidago.load("tests/save_load/pipeline.yaml", solidago.functions),
+        solidago.functions.Sequential
     )

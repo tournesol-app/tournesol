@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 import numpy as np
 
 from solidago.poll import *
-from solidago.poll_functions.poll_function import PollFunction
+from solidago.functions.poll_function import PollFunction
 
 if TYPE_CHECKING:
     from .select_entities import SelectEntities

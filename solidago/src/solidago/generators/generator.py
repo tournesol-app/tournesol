@@ -1,5 +1,5 @@
 from solidago.poll import Poll
-from solidago.poll_functions import Sequential, PollFunction
+from solidago.functions import Sequential, PollFunction
 
 
 class Generator(Sequential):

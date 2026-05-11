@@ -1,13 +1,13 @@
 - Sequential
 - name: TestPipeline
   subfunctions:
-  - [SimpleUserStats, {}]
-  - - LipschiTrust
+  - [simple_stats.SimpleUserStats, {}]
+  - - trust_propagations.LipschiTrust
     - pretrust_value: 0.8
       decay: 0.8
       sink_vouch: 5.0
       error: 1.0e-8
-  - - FlexibleGeneralizedBradleyTerry
+  - - preference_learning.FlexibleGeneralizedBradleyTerry
     - direct: true
       categories: ["author", "journalism"]
       n_parameters: 4
@@ -17,11 +17,11 @@
       rating_root_law: [Gaussian, 1.0]
       comparison_root_law: Uniform
       discard_ratings: false
-  - - AffineOvertrust
+  - - voting_rights.AffineOvertrust
     - privacy_penalty: 0.5
       min_overtrust: 2.0
       overtrust_ratio: 0.1
-  - - Mehestan
+  - - scaling.Mehestan
     - lipschitz: 1.0
       min_scaler_activity: 1.0
       n_scalers_max: 100
@@ -33,20 +33,20 @@
       default_multiplier_dev: 0.5
       default_translation_dev: 1.0
       error: 1.0e-2
-  - - LipschitzStandardize
+  - - scaling.LipschitzStandardize
     - dev_quantile: 0.9
       lipschitz: 10.0
       error: 1.0e-2
       n_sampled_entities_per_user: 100
-  - - LipschitzQuantileShift
+  - - scaling.LipschitzQuantileShift
     - quantile: 0.15
       lipschitz: 10.0
       error: 1.0e-2
       target_score: 0.21
       n_sampled_entities_per_user: 100
-  - - EntitywiseQrQuantile
+  - - aggregation.EntitywiseQrQuantile
     - quantile: 0.2
       lipschitz: 0.1
       error: 1.0e-5
-  - - Squash
+  - - post_process.Squash
     - score_max: 100

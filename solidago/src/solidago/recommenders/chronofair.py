@@ -2,4 +2,5 @@ from .veche import Veche
 
 
 class ChronoFair(Veche):
-    pass
+    def __init__(self):
+        import solidago, solidago.functions as pf, solidago.recommenders.sampler as s

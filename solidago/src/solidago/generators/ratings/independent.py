@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import Any, Union, TYPE_CHECKING
 
 from solidago.poll import *
-from solidago.poll_functions.poll_function import PollFunction
+from solidago.functions.poll_function import PollFunction
 
 if TYPE_CHECKING:
     from solidago.generators.ratings import Rate

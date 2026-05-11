@@ -1,7 +1,7 @@
 import numpy as np
 from solidago import *
 from solidago.primitives.timer import time
-from solidago.poll_functions.parallelized import ParallelizedPollFunction
+from solidago.functions.parallelized import ParallelizedPollFunction
 
 import logging.config
 
@@ -82,7 +82,7 @@ def gbt():
     poll = generator.fn()
     for max_workers in (1, 2, 6, 15):
         with time(f"Preference learning with max_workers={max_workers}"):
-            preference_learning = poll_functions.preference_learning.numba_generalized_bradley_terry.NumbaUniformGBT(max_workers=max_workers)
+            preference_learning = functions.preference_learning.numba_generalized_bradley_terry.NumbaUniformGBT(max_workers=max_workers)
             preference_learning.poll2objects_function(poll)
 
 def scoring():

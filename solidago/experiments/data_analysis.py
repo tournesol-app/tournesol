@@ -6,9 +6,9 @@ import scipy
 
 t = TournesolExport.download()
 criteria = t.criteria()
-t = poll_functions.SimpleUserStats()(t)
-t = poll_functions.SimpleEntityStats()(t)
-t = poll_functions.SimpleComparisonStats("largely_recommended", criteria)(t)
+t = functions.simple_stats.SimpleUserStats()(t)
+t = functions.simple_stats.SimpleEntityStats()(t)
+t = functions.simple_stats.SimpleComparisonStats("largely_recommended", criteria)(t)
 
 
 def _unsquash(values: NDArray[np.float64]):

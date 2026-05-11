@@ -31,16 +31,16 @@ def test_pipeline_generated_data():
 @pytest.mark.parametrize( "seed", list(range(N_SEEDS)) )
 def test_average(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    _ = poll_functions.Average(max_workers=1).poll2objects_function(poll)
+    _ = functions.aggregation.Average(max_workers=1).poll2objects_function(poll)
 
 @pytest.mark.parametrize( "seed", list(range(N_SEEDS)) )
 def test_aggregation(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    aggregator = poll_functions.EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5, max_workers=1)
+    aggregator = functions.aggregation.EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5, max_workers=1)
     _ = aggregator.poll2objects_function(poll)
 
 def test_uncertainty_comparison_only():
-    fgbt = poll_functions.FlexibleGeneralizedBradleyTerry(
+    fgbt = functions.preference_learning.FlexibleGeneralizedBradleyTerry(
         discard_ratings=True,
         rating_root_law=("Gaussian", 1.),
         comparison_root_law="Uniform",
@@ -69,7 +69,7 @@ def test_uncertainty_comparison_only():
 def test_uncertainty():
     n_parameters = 4
     categories = ["author", "journalism"]
-    fgbt = poll_functions.FlexibleGeneralizedBradleyTerry(
+    fgbt = functions.preference_learning.FlexibleGeneralizedBradleyTerry(
         n_parameters=n_parameters,
         categories=categories,
         rating_root_law=("Gaussian", 1.0),
@@ -99,7 +99,7 @@ def test_uncertainty():
 def test_learned_models(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
     base_models = UserModels(user_directs=poll.user_models.user_directs)
-    scaled_users, scaled = poll_functions.Mehestan(max_workers=1).fn(poll.users, poll.entities, poll.public_settings, base_models)
+    scaled_users, scaled = functions.scaling.Mehestan(max_workers=1).fn(poll.users, poll.entities, poll.public_settings, base_models)
     assert len(scaled_users) == len(poll.users)
     assert len(base_models) == len(scaled)
 
@@ -107,7 +107,7 @@ def test_learned_models(seed):
 def test_standardize(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
     base_models = UserModels(user_directs=poll.user_models.user_directs)
-    standardized_models = poll_functions.LipschitzStandardize(lipschitz=1000, max_workers=1).fn(poll.entities, base_models)
+    standardized_models = functions.scaling.LipschitzStandardize(lipschitz=1000, max_workers=1).fn(poll.entities, base_models)
     values = standardized_models().value
     deviations = np.abs(values - np.median(values))
     quantile = int(0.9 * len(deviations))
@@ -117,7 +117,7 @@ def test_standardize(seed):
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_quantile_shift(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    quantile_shift = poll_functions.LipschitzQuantileShift(lipschitz=1000, max_workers=1)
+    quantile_shift = functions.scaling.LipschitzQuantileShift(lipschitz=1000, max_workers=1)
     base_models = UserModels(user_directs=poll.user_models.user_directs)
     shifted_models = quantile_shift.fn(poll.entities, base_models)
     assert np.median(shifted_models().value) > 0
@@ -125,7 +125,7 @@ def test_quantile_shift(seed):
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_generative(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    trust_propagator = poll_functions.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
+    trust_propagator = functions.trust_propagations.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
     users = trust_propagator.fn(poll.users, poll.socials)
     for user in users:
         assert user["trustworthy"] or (user["trust"] == 0)
@@ -141,7 +141,7 @@ def test_lipschitrust_test_data(seed):
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_is_trust(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    voting_rights = poll_functions.Trust2VotingRights().poll2objects_function(poll)
+    voting_rights = functions.voting_rights.Trust2VotingRights().poll2objects_function(poll)
     for vr in voting_rights:
         if poll.public_settings.get(username=vr["username"], entity_name=vr["entity_name"]):
             assert vr["voting_right"] == poll.users[vr["username"]]["trust"]
@@ -151,7 +151,7 @@ def test_is_trust(seed):
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_affine_overtrust_test_data(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    ao = poll_functions.AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=1)
+    ao = functions.voting_rights.AffineOvertrust(privacy_penalty=0.5, min_overtrust=2.0, overtrust_ratio=0.1, max_workers=1)
     _, voting_rights = ao.poll2objects_function(poll)
     for voting_right in voting_rights:
         assert voting_right["voting_right"] >= 0

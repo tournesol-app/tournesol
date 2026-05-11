@@ -1,5 +1,5 @@
 import pytest
-from solidago import load, Generator, Poll
+from solidago import Generator, Poll
 
 N_SEEDS = 3
 

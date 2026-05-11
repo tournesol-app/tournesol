@@ -1,7 +1,7 @@
 from typing import Any
 import numpy as np
 
-from solidago.poll_functions.poll_function import PollFunction
+from solidago.functions.poll_function import PollFunction
 from solidago.primitives.random import Distribution
 from solidago import poll
 

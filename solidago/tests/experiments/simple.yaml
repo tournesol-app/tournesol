@@ -22,5 +22,5 @@ functions:
       convergence_error: 1.0e-5
       uncertainty_nll_increase: 1.0
       max_uncertainty: 1.0e+3
-  - [Average, {}]
-  - [Squash, {score_max: 100}]
+  - [aggregation.Average, {}]
+  - [post_process.Squash, {score_max: 100}]

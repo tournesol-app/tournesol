@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 from solidago.primitives.instructions import Instructions
 from solidago.poll import Poll
-from solidago.poll_functions import PollFunction, Sequential
+from solidago.functions import PollFunction, Sequential
 from solidago.generators import Generator
 
 

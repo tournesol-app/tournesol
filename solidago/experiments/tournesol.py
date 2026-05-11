@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 with time("Retrieve public dataset", logger):
     t = TournesolExport.download()
 
-t = poll_functions.Filtering(criteria="largely_recommended")(t)
+t = functions.filtering.Filtering(criteria="largely_recommended")(t)
 criteria = t.criteria()
-pipeline = poll_functions.TournesolFull()
-assert isinstance(pipeline.aggregate, poll_functions.EntitywiseQrQuantile)
+pipeline = functions.TournesolFull()
+assert isinstance(pipeline.aggregate, functions.aggregation.EntitywiseQrQuantile)
 
 with time("Full Tournesol pipeline", logger):
     t = pipeline(t)

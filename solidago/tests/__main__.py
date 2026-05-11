@@ -1,9 +1,9 @@
 from typing import Callable
 from solidago import *
 from solidago.primitives.timer import time
-from solidago.poll_functions.parallelized import ParallelizedPollFunction
-from solidago.poll_functions.preference_learning import FlexibleGeneralizedBradleyTerry
-from solidago.poll_functions.preference_learning.gbt.root_law import *
+from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.preference_learning import FlexibleGeneralizedBradleyTerry
+from solidago.functions.preference_learning.gbt.root_law import *
 
 import logging.config
 
@@ -22,7 +22,7 @@ def simple():
     return source, experiment, poll, poll2, generator, poll_functions
 
 def gbt_poll0():
-    from solidago.poll_functions.preference_learning.numba_generalized_bradley_terry import NumbaUniformGBT
+    from solidago.functions.preference_learning.numba_generalized_bradley_terry import NumbaUniformGBT
     poll = Poll.load(f"tests/saved/0")
     f = NumbaUniformGBT(
         prior_std=7.0, 
