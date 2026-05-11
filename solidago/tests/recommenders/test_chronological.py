@@ -1,16 +1,17 @@
 from solidago import *
+from solidago.primitives.datastructure.named_objects import Contains
 from solidago.recommenders import Chronological
 
 poll = Poll(
     users = Users(["user_0", "user_1", "user_2", "user_3"]),
     entities = Entities([
-        ("entity_0", "user_0", 2), 
-        ("entity_1", "user_0", 5), 
-        ("entity_2", "user_1", 13), 
-        ("entity_3", "user_2", 20),
-        ("entity_4", "user_1", 25),
-        ("entity_5", "user_3", 30),
-    ], columns=["name", "author", "date"]),
+        ("entity_0", ("user_0",), 2), 
+        ("entity_1", ("user_0",), 5), 
+        ("entity_2", ("user_1",), 13), 
+        ("entity_3", ("user_2",), 20),
+        ("entity_4", ("user_1",), 25),
+        ("entity_5", ("user_3",), 30),
+    ], columns=["name", "authors", "date"]),
     socials = Socials([
         ("user_0", "user_1", "follow", 1.0, 0),
         ("user_0", "user_2", "follow", 1.2, 0),
@@ -25,29 +26,29 @@ poll = Poll(
         ("user_2", "entity_2", "repost", "atproto", 23),
         ("user_2", "entity_1", "repost", "atproto", 33),
         ("user_2", "entity_5", "repost", "atproto", 37),
-    ], columns=["username", "entity_name", "criterion", "context", "timestamp"])
+    ], columns=["username", "entity_name", "criterion", "context", "date"])
 )
 
 
 def test_detailed_chronological():
-    import numpy as np
-
     follow_kind, rating_criteria = "follow", ["repost"]
-    username, limit, cursor = "user_0", 4, None
+    receiver_name, limit, cursor = "user_0", 4, None
 
-    followings = poll.socials.filters(by=username, kind=follow_kind)("to")
-    reposts = poll.ratings.filters(username=list(followings), criterion=rating_criteria)
-    entity_names = set(poll.entities.filters(author=followings).names()) \
-        | reposts.keys("entity_name")
-    entities = poll.entities.filters(entity_names)
+    followings = poll.socials.filters(by=receiver_name, kind=follow_kind)("to")
+    reposts = poll.ratings.filters(username=followings, criterion=rating_criteria)
+    names = set(poll.entities.filters(authors=Contains(followings)).names())
+    entities = poll.entities.filters(names | reposts.keys("entity_name"))
     entities = entities.assign(last_date=entities("date"))
     
+    if receiver_name is not None:
+        entities = entities.excludes(authors=Contains(receiver_name))
+
     for repost in reposts:
-        name = repost["entity_name"]
-        if poll.entities[name]["author"] != username:
-            last_date = max(repost["timestamp"], entities[name]["last_date"])
-            entities[name, "last_date"] = last_date
-    
+            name = repost["entity_name"]
+            if receiver_name not in poll.entities[name]["authors"]:
+                last_date = max(repost["date"], entities[name]["last_date"])
+                entities[name, "last_date"] = last_date
+        
     try:
         offset = 0 if cursor is None else int(cursor)
     except ValueError:

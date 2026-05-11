@@ -26,7 +26,7 @@ class Chronological(Recommender):
         
         for repost in reposts:
             name = repost["entity_name"]
-            if receiver_name not in poll.entities[name]["authors"].split(","):
+            if receiver_name not in poll.entities[name]["authors"]:
                 last_date = max(repost["date"], entities[name]["last_date"])
                 entities[name, "last_date"] = last_date
         

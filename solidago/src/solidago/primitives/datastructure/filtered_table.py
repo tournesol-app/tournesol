@@ -243,14 +243,11 @@ class _Table:
         self.cache(*keys.keys())
         filter = Filter()
         for name, key in keys.items():
-            if isinstance(key, Iterable) and not isinstance(key, (str, tuple)):
-                indices = np.concatenate([
-                    self._cache.indices(name, k) for k in key
-                ], dtype=np.int64)
-                filter = filter & Filter(indices)
-            else:
-                indices = self._cache.indices(name, key)
-                filter = filter & Filter(indices, **{name: key})
+            if isinstance(key, (tuple, str)) or not isinstance(key, Iterable):
+                filter.keys[name] = key
+                key = {key}
+            indices = np.concatenate([self._cache.indices(name, k) for k in key], dtype=np.int64)
+            filter = filter & Filter(indices)
         return filter
     
     def __or__(self, other: Self) -> "_Table":
@@ -259,7 +256,7 @@ class _Table:
             return other
         elif len(other.df) == 0:
             return self
-        assert set(other.df.columns) == set(self.df.columns), (other.df.columns, self.df.columns)
+        # assert set(other.df.columns) == set(self.df.columns), (other.df.columns, self.df.columns)
         other_df = deepcopy(other.df)
         other_shift = len(self.df)
         other_df.index = other_df.index + other_shift

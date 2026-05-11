@@ -27,26 +27,29 @@ class PostActions(ParallelizedPollFunction):
         nonargs, # not used
         entities: Entities, 
         ratings: Ratings
-    ) -> tuple[list[tuple[str, int | float]], list[tuple[str, int | float, str]]]: 
+    ) -> tuple[
+        list[tuple[str, int | float, int | float]], # publications, with name, date, lifetime
+        list[tuple[str, int | float, int | float, str]] # reactions, with name, date, lifetime, criterion
+    ]: 
         e = entities.filters(authors=Contains(username))
-        publications = list(zip(e.names(), e("date")))
+        publications = list(zip(e.names(), e("date"), e("lifetime")))
         r = ratings.filters(username=username, criterion=self.actions())
-        reactions = list(zip(r("entity_name"), r("date"), r("criterion")))
+        reactions = list(zip(r("entity_name"), r("date"), r("lifetime"), r("criterion")))
         return publications, reactions
     
     def thread_function(self, 
-        publications: list[tuple[str, int | float]], 
-        reactions: list[tuple[str, int | float, str]],
+        publications: list[tuple[str, int | float, int | float]], 
+        reactions: list[tuple[str, int | float, int | float, str]],
     ) -> Scores:
         scores = Scores(keynames=["entity_name", "criterion"])
         
-        for name, date in publications:
-            scores.append(Score(1), entity_name=name, criterion="post", date=date)
+        for name, date, lifetime in publications:
+            scores.append(Score(1), entity_name=name, criterion="post", date=date, lifetime=lifetime)
 
-        for name, date, action in reactions:
+        for name, date, lifetime, action in reactions:
             if date > scores.get(entity_name=name)["date"]:
                 score = Score(self.action_weights[action])
-                scores.append(score, entity_name=name, date=date, criterion=action)
+                scores.append(score, entity_name=name, date=date, lifetime=lifetime, criterion=action)
 
         return scores
     

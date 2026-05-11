@@ -108,7 +108,7 @@ class NamedObjects(Generic[Object]):
         self._get_vector_coordinates()
 
     @property
-    def columns(self) -> pd.Index[str]:
+    def columns(self) -> pd.Index:
         return self.df.columns
 
     @abstractmethod
