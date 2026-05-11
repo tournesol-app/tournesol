@@ -7,7 +7,9 @@
 .pytest_cache/
 .python-version
 experiments/**
+
 tests/**.parquet
+tests/**/*.parquet
 file.log
 
 papers/**.aux
