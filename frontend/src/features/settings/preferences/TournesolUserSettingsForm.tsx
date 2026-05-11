@@ -21,6 +21,7 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Extension_onVideoWatchedEnum,
   FeedForyou_dateEnum,
   Notifications_langEnum,
   TournesolUserSettings,
@@ -90,6 +91,13 @@ const TournesolUserSettingsForm = () => {
   // Browser extension
   const [extSearchRecommendation, setExtSearchRecommendation] = useState(
     pollSettings?.extension__search_reco ?? false
+  );
+
+  const [extOnVideoWatched, setExtOnVideoWatched] = useState<
+    Extension_onVideoWatchedEnum | BlankEnum
+  >(
+    pollSettings?.extension__on_video_watched ??
+      Extension_onVideoWatchedEnum.DO_NOTHING
   );
 
   // Comparison
@@ -195,6 +203,10 @@ const TournesolUserSettingsForm = () => {
       setExtSearchRecommendation(pollSettings.extension__search_reco);
     }
 
+    if (pollSettings?.extension__on_video_watched != undefined) {
+      setExtOnVideoWatched(pollSettings.extension__on_video_watched);
+    }
+
     if (pollSettings?.rate_later__auto_remove != undefined) {
       setRateLaterAutoRemoval(pollSettings.rate_later__auto_remove);
     }
@@ -256,6 +268,7 @@ const TournesolUserSettingsForm = () => {
             comparison_ui__weekly_collective_goal_mobile:
               compUiWeeklyColGoalMobile,
             extension__search_reco: extSearchRecommendation,
+            extension__on_video_watched: extOnVideoWatched,
             rate_later__auto_remove: rateLaterAutoRemoval,
             feed_foryou__languages: forYouLanguages,
             feed_foryou__date: forYouUploadDate,
@@ -313,6 +326,8 @@ const TournesolUserSettingsForm = () => {
           <VideosPollUserSettingsForm
             extSearchRecommendation={extSearchRecommendation}
             setExtSearchRecommendation={setExtSearchRecommendation}
+            extOnVideoWatched={extOnVideoWatched}
+            setExtOnVideoWatched={setExtOnVideoWatched}
             compAutoSelectEntities={autoSelectEntities}
             setCompAutoSelectEntities={setAutoSelectEntities}
             compUiWeeklyColGoalDisplay={compUiWeeklyColGoalDisplay}

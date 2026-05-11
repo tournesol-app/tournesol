@@ -33,13 +33,20 @@ function onNavigateFinish() {
   chrome.storage.local.get(['access_token'], (items) => {
     if (!items.access_token) return;
 
-    cleanupWatchProgressTracking = startWatchProgressTracking(() => {
-      chrome.runtime.sendMessage({
-        message: 'updateContributorRatingEntitySeen',
-        videoId: videoId,
-        entitySeen: true,
-      });
-    });
+    chrome.runtime.sendMessage(
+      { message: 'get:setting:extension__on_video_watched' },
+      (setting) => {
+        if (setting?.value !== 'MARK_AS_WATCHED') return;
+
+        cleanupWatchProgressTracking = startWatchProgressTracking(() => {
+          chrome.runtime.sendMessage({
+            message: 'updateContributorRatingEntitySeen',
+            videoId: videoId,
+            entitySeen: true,
+          });
+        });
+      }
+    );
   });
 }
 

@@ -7,12 +7,14 @@ import {
   ApiError,
   BlankEnum,
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Extension_onVideoWatchedEnum,
   FeedForyou_dateEnum,
 } from 'src/services/openapi';
 import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
 
 import BooleanField from './fields/generics/BooleanField';
 import ComparisonOptionalCriteriaDisplayed from './fields/ComparisonOptionalCriteriaDisplayed';
+import ExtOnVideoWatched from './fields/ExtOnVideoWatched';
 import ExtSearchRecommendation from './fields/ExtSearchRecommendation';
 import RateLaterAutoRemoveField from './fields/RateLaterAutoRemove';
 import WeeklyCollectiveGoalDisplayField from './fields/WeeklyCollectiveGoalDisplay';
@@ -23,6 +25,10 @@ import FeedTopItems from './fieldsets/FeedTopItems';
 interface VideosPollUserSettingsFormProps {
   extSearchRecommendation: boolean;
   setExtSearchRecommendation: (target: boolean) => void;
+  extOnVideoWatched: Extension_onVideoWatchedEnum | BlankEnum;
+  setExtOnVideoWatched: (
+    target: Extension_onVideoWatchedEnum | BlankEnum
+  ) => void;
   compAutoSelectEntities: boolean;
   setCompAutoSelectEntities: (target: boolean) => void;
   compUiWeeklyColGoalDisplay:
@@ -56,6 +62,8 @@ interface VideosPollUserSettingsFormProps {
 const VideosPollUserSettingsForm = ({
   extSearchRecommendation,
   setExtSearchRecommendation,
+  extOnVideoWatched,
+  setExtOnVideoWatched,
   compAutoSelectEntities,
   setCompAutoSelectEntities,
   compUiWeeklyColGoalDisplay,
@@ -171,6 +179,13 @@ const VideosPollUserSettingsForm = ({
           <ExtSearchRecommendation
             value={extSearchRecommendation}
             onChange={setExtSearchRecommendation}
+            pollName={pollName}
+          />
+        </Grid2>
+        <Grid2>
+          <ExtOnVideoWatched
+            value={extOnVideoWatched}
+            onChange={setExtOnVideoWatched}
             pollName={pollName}
           />
         </Grid2>
