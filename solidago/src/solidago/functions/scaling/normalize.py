@@ -6,12 +6,10 @@ from solidago.functions.poll_function import PollFunction
 
 
 class Normalize(PollFunction):
-    default_qs: dict[str, float] = dict(post=1., repost=2., report=2.)
-
-    def __init__(self, q: float = float("inf"), qs: dict[str, float] | None = None):
-        assert q >= 1
-        self.q = q
-        self.qs = qs or self.default_qs
+    def __init__(self, qs: dict[str, float] | None = None, default_q: float = float("inf")):
+        assert default_q >= 1
+        self.default_q = default_q
+        self.qs = qs or dict()
 
     def norm(self, x: NDArray[np.float64], q: float) -> float:
         return x.max() if np.isinf(q) else np.power(np.power(np.abs(x), q).sum(), 1./q)
@@ -25,16 +23,16 @@ class Normalize(PollFunction):
         multipliers = UserMultipliers(keynames=["username", "criterion"])
         for (username, criterion), subscores in scores.iter("username", "criterion"):
             assert isinstance(subscores, Scores)
-            q = self.qs[str(criterion)] if criterion in self.qs else self.q
+            q = self.qs[str(criterion)] if criterion in self.qs else self.default_q
             multiplier = self.multiplier(subscores("value"), q)
             multipliers.append(multiplier, username=username, criterion=criterion)
         return user_models.user_scale(multipliers, note=type(self).__name__)
     
 
 class MaxNorm(Normalize):
-    def __init__(self, q: float = float("inf"), qs: dict[str, float] | None = None, max: float = 1.):
-        super().__init__(q)
-        assert max >= 0
+    def __init__(self, qs: dict[str, float] | None = None, default_q: float = float("inf"), max: float = 1.):
+        super().__init__(qs, default_q)
+        assert max > 0
         self.max = max
     
     def multiplier(self, x: NDArray[np.float64], q: float) -> Score:

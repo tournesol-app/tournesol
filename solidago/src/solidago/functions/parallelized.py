@@ -2,10 +2,6 @@ from abc import abstractmethod
 from copy import deepcopy
 from typing import Any, Callable
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 from solidago.poll import *
 from solidago.primitives.timer import time
 from .poll_function import PollFunction
@@ -42,11 +38,11 @@ class ParallelizedPollFunction(PollFunction):
     ##########################
 
     def fn(self, *args: Any, **kwargs: Any) -> Any:
-        with time(f"{type(self).__name__} - Loading data", logger):
+        with self.timeit(f"{type(self).__name__} - Loading data"):
             kwargs, variables, nonargs_list, args_lists = self.precompute(*args, **kwargs)
-        with time(f"{type(self).__name__} - Parallelized computing", logger):
+        with self.timeit(f"{type(self).__name__} - Parallelized computing"):
             results = ParallelizedPollFunction.threading(self.max_workers, self.thread_function, *args_lists)
-        with time(f"{type(self).__name__} - Processing results", logger):
+        with self.timeit(f"{type(self).__name__} - Processing results"):
             process_kwargs = self._extract(kwargs, "_process_results")
             return self._process_results(variables, nonargs_list, results, args_lists, **process_kwargs)
         

@@ -5,7 +5,12 @@ import logging
 
 
 @contextmanager
-def time(log: str, logger: logging.Logger | type | None = None, log_start: bool = False, unit: str="seconds"):
+def time(
+    log: str, 
+    logger: logging.Logger | type | None = None, 
+    log_start: bool = False, 
+    unit: str="seconds"
+):
     start = timeit.default_timer()
     logger = logging if logger is None else logger
     if log_start:

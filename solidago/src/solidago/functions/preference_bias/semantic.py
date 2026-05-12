@@ -8,18 +8,18 @@ from .bias import PreferenceBias, WeightPreservingBias
 
 
 class SemanticBias(PreferenceBias):
-    def __init__(self, vector: NDArray, bias: float = 1.):
-        self.vector = vector
+    def __init__(self, receiver: User | None = None, bias: float = 1.):
+        self.receiver = receiver
         self.bias = bias
     
     def customize(self, user: User, time: int | None = None) -> Self:
-        self.vector = user.vector
+        self.receiver = user
         return self 
 
-    def multiplier(self, poll: Poll, scores: Scores) -> Scores:
+    def multipliers(self, poll: Poll, scores: Scores) -> Scores:
+        assert self.receiver is not None, f"Ran {type(self).__name__} with receiver"
         entities = poll.entities.filters(scores("entity_names"))
-        assert isinstance(entities, Entities)
-        unit = self.vector / np.sqrt((self.vector**2).sum())
+        unit = self.receiver.vector / np.sqrt((self.receiver.vector**2).sum())
         unit_embeddings = entities.vectors / np.sqrt((entities.vectors**2).sum(axis=0))
         multipliers = np.power(1 + unit @ unit_embeddings, self.bias)
         return Scores(value=multipliers)

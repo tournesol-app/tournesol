@@ -1,4 +1,5 @@
 from typing import Self
+from datetime import timedelta
 
 import numpy as np
 
@@ -7,7 +8,10 @@ from .bias import WeightPreservingBias
 
 
 class LifetimeBias(WeightPreservingBias):
-    def __init__(self, lifetime: int, bias: float):
+    def __init__(self, lifetime: int | dict[str, int] | None = None, bias: float = 1.):
+        if not isinstance(lifetime, int):
+            lifetime = dict(weeks=1) if lifetime is None else lifetime
+            lifetime = timedelta(**lifetime).seconds
         assert lifetime >= 1 and bias >= 0
         self.lifetime = lifetime
         self.bias = bias
@@ -16,9 +20,8 @@ class LifetimeBias(WeightPreservingBias):
         self.lifetime, self.bias = user["lifetime_preference"], user["lifetime_bias"]
         return self 
 
-    def multiplier(self, poll: Poll, scores: Scores) -> Scores:
+    def multipliers(self, poll: Poll, scores: Scores) -> Scores:
         entities = poll.entities.filters(scores("entity_names"))
-        assert isinstance(entities, Entities)
         lifetimes = entities("lifetime")
         discrepancy = np.power(np.log(lifetimes / self.lifetime), 2)
         multipliers = np.power(1 + discrepancy, - self.bias)

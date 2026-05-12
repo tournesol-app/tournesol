@@ -11,15 +11,15 @@ if TYPE_CHECKING:
 
 class TournesolFull(Sequential):
     def __init__(self, max_workers: int = 1, seed: int | None = None):
-        import solidago.functions as pf
+        import solidago.functions as f
         subfunctions = [
-            pf.simple_stats.SimpleUserStats(max_workers=max_workers),
-            pf.simple_stats.SimpleEntityStats(max_workers=max_workers),
-            pf.trust_propagations.LipschiTrust(
+            f.simple_stats.SimpleUserStats(max_workers=max_workers),
+            f.simple_stats.SimpleEntityStats(max_workers=max_workers),
+            f.trust_propagation.LipschiTrust(
                 pretrust_value=0.8, decay=0.8, sink_vouch=5.0, 
                 error=1.0e-8, max_workers=max_workers
             ),
-            pf.preference_learning.FlexibleGeneralizedBradleyTerry(
+            f.preference_learning.FlexibleGeneralizedBradleyTerry(
                 prior_stds=dict(directs=7., thresholds=7., categories=7., parameters=7.),
                 minimizer=SciPyMinimizer(method="L-BFGS-B", convergence_error=1e-5),
                 uncertainty=NLLIncrease(nll_increase=1., error=1e-1, max=1e3),
@@ -27,11 +27,11 @@ class TournesolFull(Sequential):
                 discard_ratings=True,
                 max_workers=max_workers,
             ),
-            pf.voting_rights.AffineOvertrust(
+            f.voting_rights.AffineOvertrust(
                 privacy_penalty=0.5, min_overtrust=2., overtrust_ratio=.1, 
                 max_workers=max_workers
             ),
-            pf.scaling.Mehestan(
+            f.scaling.Mehestan(
                 lipschitz=1., min_scaler_activity=1., n_scalers_max=100, 
                 privacy_penalty=.5, user_comparison_lipschitz=10., 
                 p_norm_for_multiplicative_resilience=4., 
@@ -39,18 +39,18 @@ class TournesolFull(Sequential):
                 default_multiplier_dev=.5, default_translation_dev=1., 
                 error=1e-2, max_workers=max_workers
             ),
-            pf.scaling.LipschitzStandardize(
+            f.scaling.LipschitzStandardize(
                 dev_quantile=.9, lipschitz=10., error=1e-2, 
                 n_sampled_entities_per_user=100, max_workers=max_workers
             ),
-            pf.scaling.LipschitzQuantileShift(
+            f.scaling.LipschitzQuantileShift(
                 quantile=.15, lipschitz=10., error=1e-2, target_score=.21, 
                 n_sampled_entities_per_user=100, max_workers=max_workers
             ),
-            pf.aggregation.EntitywiseQrQuantile(
+            f.aggregation.EntitywiseQrQuantile(
                 quantile=.2, lipschitz=.1, error=1e-5, max_workers=max_workers
             ),
-            pf.post_process.Squash(score_max=100, max_workers=max_workers)
+            f.post_process.Squash(score_max=100, max_workers=max_workers)
         ]
         super().__init__(subfunctions, "TournesolFull", max_workers, seed)
 

@@ -2,7 +2,7 @@
 - name: TestPipeline
   subfunctions:
   - [simple_stats.SimpleUserStats, {}]
-  - - trust_propagations.LipschiTrust
+  - - trust_propagation.LipschiTrust
     - pretrust_value: 0.8
       decay: 0.8
       sink_vouch: 5.0

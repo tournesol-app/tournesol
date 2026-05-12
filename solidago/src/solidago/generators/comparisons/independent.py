@@ -29,9 +29,6 @@ class Independent(PollFunction):
         for comparison in comparisons:
             user, criterion = users[comparison["username"]], comparison["criterion"]
             left, right = entities[comparison["left_name"]], entities[comparison["right_name"]]
-            assert isinstance(user, User), (user, comparison["username"])
-            assert isinstance(left, Entity), (left, comparison["left_name"])
-            assert isinstance(right, Entity), (right, comparison["right_name"])
             left_public = public_settings.get(username=user.name, entity_name=left.name)["public"]
             right_public = public_settings.get(username=user.name, entity_name=right.name)["public"]
             kwargs = self.compare(comparison, user, left, right, left_public, right_public, criterion)

@@ -4,11 +4,9 @@ from pathlib import Path
 
 import numpy as np
 import yaml
-import logging
 
 from solidago.primitives.criteria import to_criteria
 from solidago.primitives.datastructure.filtered_table import SelectUnique
-logger = logging.getLogger(__name__)
 
 from solidago.poll.poll_tables import *
 

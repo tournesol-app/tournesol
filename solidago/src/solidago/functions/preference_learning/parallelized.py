@@ -5,12 +5,10 @@ from typing import Any, Callable
 from numpy.typing import NDArray
 
 import numpy as np
-import logging
 
 from solidago.primitives.minimizer.minimizer import Minimizer
 from solidago.primitives.timer import time
 from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator
-logger = logging.getLogger(__name__)
 
 from solidago.poll import *
 from solidago.functions.parallelized import ParallelizedPollFunction
@@ -272,9 +270,9 @@ class ParallelizedPreferenceLearning(ParallelizedPollFunction):
 
     def thread_function(self, init: NDArray, *args) -> tuple[NDArray, NDArray, NDArray]:
         """ Must return parameters and left/right uncertainties """
-        with time("Learning values", logger):
+        with self.timeit("Learning values"):
             values = self.compute_values(init, *args)
-        with time("Learning uncertainties", logger):
+        with self.timeit("Learning uncertainties"):
             left_uncertainties, right_uncertainties = self.compute_uncertainties(values, *args)
         return values, left_uncertainties, right_uncertainties
     

@@ -21,18 +21,26 @@ user_models = UserModels(
     ], columns=["username", "entity_name", "criterion", "value", "left_unc", "right_unc"])
 )
 
-def test_average_simple_instance():
+def test_average():
     global_model = functions.aggregation.Average(max_workers=1).fn(entities, voting_rights, user_models)
     assert global_model(entities["entity_0"], "default").value == 0.4
     assert global_model(entities["entity_1"]).get(criterion="default").value == 1
     assert global_model(entities["entity_2"]).get(criterion="default").value == -.3
     assert global_model(entities["entity_3"], "default").to_triplet() == pytest.approx((0.3, .4, .3), abs=1e-2)
 
-def test_qr_quantile_simple_instance():
+def test_qr_quantile():
     aggregator = functions.aggregation.EntitywiseQrQuantile(quantile=0.2, lipschitz=100, error=1e-5, max_workers=1)
     global_model = aggregator.fn(entities, voting_rights, user_models)
     assert global_model(entities["entity_0"], "default").value < -1
     assert global_model(entities["entity_1"], "default").value == pytest.approx(1., abs=1e-2)
     assert global_model(entities["entity_2"], "default").value == pytest.approx(-.3, abs=1e-2)
     assert global_model(entities["entity_3"], "default").value > 0.2
+
+def test_sum():
+    global_model = functions.aggregation.Sum(max_workers=1).fn(entities, voting_rights, user_models)
+    assert global_model(entities["entity_0"], "default").value == 0.8
+    assert global_model(entities["entity_1"]).get(criterion="default").value == 1
+    assert global_model(entities["entity_2"]).get(criterion="default").value == -.3
+    assert global_model(entities["entity_3"], "default").to_triplet() == pytest.approx((0.6, .8, .6), abs=1e-2)
+
 

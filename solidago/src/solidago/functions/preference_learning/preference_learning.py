@@ -1,10 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 from solidago.poll import *
 from solidago.functions.poll_function import PollFunction
 
@@ -72,7 +68,7 @@ class PreferenceLearning(PollFunction, ABC):
 
     def save_result(self, poll: Poll, directory: Optional[str]=None) -> tuple[str, dict]:
         if directory is not None:
-            logger.info("Saving user base model")
+            self.log_info("Saving user base model")
             poll.user_models.save_table(directory, "user_directs")
-        logger.info("Saving poll.yaml")
+        self.log_info("Saving poll.yaml")
         return poll.save_instructions(directory)

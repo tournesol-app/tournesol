@@ -1,17 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from numpy.typing import NDArray
-
-import numpy as np
-import logging
-
-logger = logging.getLogger(__name__)
 
 from solidago.poll import *
 from solidago.poll.scoring import *
 from solidago.functions.poll_function import PollFunction
 
 
-class CollaborativeFiltering(PollFunction, ABC):
+class CollaborativeFiltering(PollFunction):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
@@ -51,6 +46,6 @@ class CollaborativeFiltering(PollFunction, ABC):
 
     def save_result(self, poll: Poll, directory: str | None=None) -> tuple[str, dict]:
         if directory is not None:
-            logger.info("Saving user base model")
+            self.log_info("Saving user base model")
             poll.user_models.save_table(directory, "user_directs")
         return poll.save_instructions(directory)

@@ -305,7 +305,7 @@ class UniformGBT(GeneralizedBradleyTerry):
                     np.log(np.sinh(value_diffs) / value_diffs),
                     value_diffs_abs - np.log(2) - np.log(value_diffs_abs),
                 ),
-                value_diffs_abs ** 2 / 6 - value_diffs_abs ** 4 / 180,
+                np.power(value_diffs_abs, 2) / 6 - np.power(value_diffs_abs, 4) / 180,
             )
 
     def cumulant_generating_function_derivative(self, value_diffs: NDArray) -> NDArray:

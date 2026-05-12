@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 from typing import Any, Self
 from pathlib import Path
 from os import cpu_count
 
+import timeit
 import yaml
 
 from solidago.poll import *
@@ -100,6 +102,21 @@ class PollFunction(ABC):
                         f"of `{type(self).__name__}.{fn_to_fix}`, whose annotation is currently " \
                         f"{[arg.__name__ for arg in annotations["return"].__args__]}"
                     )
+    
+    @contextmanager
+    def timeit(self, log: str, log_start: bool = False, unit: str="seconds"):
+        start = timeit.default_timer()
+        if log_start:
+            logger.info(log)
+        try:
+            yield None
+        finally:
+            if unit == "seconds":
+                logger.info(f"{log} in {int(timeit.default_timer() - start)} seconds")
+            elif unit == "ms":
+                logger.info(f"{log} in {int(1000*(timeit.default_timer() - start))} ms")
+
+
     
     def log_info(self, message: str):
         logger.info(message)

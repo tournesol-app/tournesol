@@ -1,8 +1,8 @@
 from copy import deepcopy
+from typing import Any, Callable, Hashable, Iterator, Self, Union, overload
+from pandas import Series
 
 import itertools
-from typing import Any, Callable, Hashable, Iterator, Self, Union
-from pandas import Series
 
 from solidago.primitives.datastructure import Row, FilteredTable
 from solidago.poll.poll_tables import *
@@ -46,15 +46,15 @@ class Score(Row):
     
     @property
     def value(self) -> float:
-        return self.series["value"] # type: ignore
+        return float(self.series["value"])
     
     @property
     def left_unc(self) -> float:
-        return self.series["left_unc"] # type: ignore
+        return float(self.series["left_unc"])
     
     @property
     def right_unc(self) -> float:
-        return self.series["right_unc"] # type: ignore
+        return float(self.series["right_unc"])
 
     @property
     def min(self) -> float:
@@ -110,7 +110,11 @@ class Score(Row):
             score = Score(score)
         return self.max >= score.min
     
-    def set_score(self, value: float | None = None, left_unc: float | None = None, right_unc: float | None = None):
+    def set_score(self, 
+        value: float | None = None, 
+        left_unc: float | None = None, 
+        right_unc: float | None = None
+    ):
         if value is not None:
             self["value"] = value
         if left_unc is not None:
@@ -118,20 +122,32 @@ class Score(Row):
         if right_unc is not None:
             self["right_unc"] = right_unc
 
-    def __neg__(self) -> "Score":
+    def __neg__(self) -> Self:
         result = deepcopy(self)
         result.set_score(-self.value, self.right_unc, self.left_unc)
         return result
     
-    def __add__(self, score: Union[int, float, "Score", "Scores"]) -> Union["Score", "Scores"]:
+    @overload
+    def __add__(self, score: Union[int, float, Self]) -> Self: ...
+    @overload
+    def __add__(self, score: "Scores") -> "Scores": ...
+    def __add__(self, score):
         if isinstance(score, Scores):
             return score + self
         score = score if isinstance(score, Score) else Score(score)
         result = deepcopy(self)
-        result.set_score(self.value + score.value, self.left_unc + score.left_unc, self.right_unc + score.right_unc)
+        result.set_score(
+            self.value + score.value, 
+            self.left_unc + score.left_unc, 
+            self.right_unc + score.right_unc
+        )
         return result
     
-    def __sub__(self, score: Union[int, float, "Score", "Scores"]) -> Union["Score", "Scores"]:
+    @overload
+    def __sub__(self, score: Union[int, float, Self]) -> Self: ...
+    @overload
+    def __sub__(self, score: "Scores") -> "Scores": ...
+    def __sub__(self, score):
         if isinstance(score, Scores):
             return score * self
         score = score if isinstance(score, Score) else Score(score)
@@ -139,18 +155,22 @@ class Score(Row):
         result.set_score(self.value - score.value, self.left_unc + score.right_unc, self.right_unc + score.left_unc)
         return result
         
-    def __mul__(self, s: Union[int, float, "Score", "Scores"]) -> Union["Score", "Scores"]:
-        if isinstance(s, Scores):
-            return s * self
-        s = s if isinstance(s, Score) else Score(s)
+    @overload
+    def __mul__(self, score: Union[int, float, Self]) -> Self: ...
+    @overload
+    def __mul__(self, score: "Scores") -> "Scores": ...
+    def __mul__(self, score):
+        if isinstance(score, Scores):
+            return score * self
+        s = score if isinstance(score, Score) else Score(score)
         value = self.value * s.value
         extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         result = deepcopy(self)
         result.set_score(value, value - min(extremes), max(extremes) - value)
         return result
-
-    def __truediv__(self, s: Union[int, float, "Score"]) -> "Score":
-        s = s if isinstance(s, Score) else Score(s)
+        
+    def __truediv__(self, s: Union[int, float, Self]) -> Self:
+        s = s if isinstance(s, Score) else type(self)(s)
         result = deepcopy(self)
         if s.contains(0):
             result.set_score(np.nan)
@@ -246,15 +266,18 @@ class Scores(FilteredTable[Score]):
             assert row == self.get(SelectUnique(), **keys)
         return True
         
-    def __neq__(self, other: "Scores") -> bool:
+    def __neq__(self, other: Self) -> bool:
         return not (self == other)
 
-    def __neg__(self) -> "Scores":
+    def __neg__(self) -> Self:
         result = deepcopy(self)
         result.set_columns(value=self.value, left_unc=self.left_unc, right_unc=self.right_unc)
         return result
     
-    def cw_operation(self, other: Union[Score, "Scores"], op: Callable[[Score, Score], Union[Score, "Scores"]]) -> Union[Score, "Scores"]:
+    def cw_operation(self, 
+        other: Union[Score, Self], 
+        op: Callable[[Score, Score], Score]
+    ) -> Self:
         
         def default_score_factory(**keys) -> Score:
             score = self.get(**{name: key for name, key in keys.items() if name in self.keynames})
@@ -267,13 +290,13 @@ class Scores(FilteredTable[Score]):
             return score
             
         if isinstance(other, Score):
-            others = Scores(keynames=[])
+            others = type(self)(keynames=[])
             others.set(other)
             return self.cw_operation(others, op)
         
         common_keynames = list(self.keynames & other.keynames)
         result_keynames = self.keynames | other.keynames
-        result = Scores(keynames=result_keynames, default_score_factory=default_score_factory)
+        result = type(self)(keynames=result_keynames, default_score_factory=default_score_factory)
         keys_tuples = {tuple(s[name] for name in common_keynames) for s in itertools.chain(self, other)}
         for keys_tuple in keys_tuples:
             common_keys = dict(zip(common_keynames, keys_tuple))
@@ -297,7 +320,7 @@ class Scores(FilteredTable[Score]):
         
         return result
     
-    def __add__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+    def __add__(self, other: Union[Score, Self]) -> Self:
         if isinstance(other, Score):
             result = deepcopy(self)
             result.set_columns(
@@ -313,10 +336,10 @@ class Scores(FilteredTable[Score]):
             return result
         return self.cw_operation(other, Score.__add__)
         
-    def __sub__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+    def __sub__(self, other: Union[Score, Self]) -> Self:
         return self + (- other)
     
-    def __mul__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+    def __mul__(self, other: Union[Score, Self]) -> Self:
         if isinstance(other, Score):
             result = deepcopy(self)
             extremes = np.stack([self.min * other.min, self.min * other.max, self.max * other.min, self.max * other.max])
@@ -332,7 +355,7 @@ class Scores(FilteredTable[Score]):
             return result
         return self.cw_operation(other, Score.__mul__)
         
-    def __truediv__(self, other: Union[Score, "Scores"]) -> Union[Score, "Scores"]:
+    def __truediv__(self, other: Union[Score, Self]) -> Self:
         if isinstance(other, Score):
             result = deepcopy(self)
             extremes = np.stack([self.min * other.min, self.min * other.max, self.max * other.min, self.max * other.max])
@@ -348,7 +371,7 @@ class Scores(FilteredTable[Score]):
             return result
         return self.cw_operation(other, Score.__truediv__)
 
-    def abs(self) -> "Scores":
+    def abs(self) -> Self:
         value, min, max = self.value, self.min, self.max
         abs_value = np.abs(value)
         left_unc = np.where(min * max < 0, abs_value, np.where(value > 0, self.left_unc, self.right_unc))

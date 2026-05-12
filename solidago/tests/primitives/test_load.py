@@ -104,10 +104,10 @@ def test_poll_functions():
     import solidago
     assert isinstance(
         solidago.load(
-            "trust_propagations.LipschiTrust", solidago.functions, 
+            "trust_propagation.LipschiTrust", solidago.functions, 
             pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1.0e-8
         ), 
-        solidago.functions.trust_propagations.LipschiTrust
+        solidago.functions.trust_propagation.LipschiTrust
     )
     assert isinstance(
         solidago.load(

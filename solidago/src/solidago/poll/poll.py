@@ -1,12 +1,9 @@
 """ To use Solidago in other systems, this class should be derived to specify result storage """
 
 from pathlib import Path
-from typing import Any, Self
+from typing import Any
 
 import yaml
-import logging
-
-logger = logging.getLogger(__name__)
 
 from .poll_tables import *
 from .scoring import ScoringModel, UserModels

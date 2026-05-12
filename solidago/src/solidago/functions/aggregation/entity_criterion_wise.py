@@ -31,7 +31,6 @@ class EntityCriterionWise(ParallelizedPollFunction):
         (entity, criterion), scores = variable, nonargs
         vrights = list()
         for score in scores:
-            assert isinstance(score, Score)
             kwargs = dict(username=score["username"], entity_name=entity.name, criterion=criterion)
             vright = voting_rights.get(**kwargs)["voting_right"]
             vrights.append(vright)

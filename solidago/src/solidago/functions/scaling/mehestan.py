@@ -3,9 +3,6 @@ from typing import Callable, Hashable
 from numpy.typing import NDArray
 
 import numpy as np
-import logging
-
-logger = logging.getLogger(__name__)
 
 from solidago.poll.scoring.user_models import UserMultipliers, UserTranslations
 from solidago.primitives.lipschitz import qr_median, qr_uncertainty
@@ -88,7 +85,7 @@ class Mehestan(PollFunction):
         user_models: ScoringModel
             Scaled user models
         """
-        logger.info("Starting Mehestan's collaborative scaling")
+        self.log_info("Starting Mehestan's collaborative scaling")
         scores = user_models(entities)
         criteria = list(user_models.criteria())
         results = [
@@ -120,7 +117,7 @@ class Mehestan(PollFunction):
     ) -> tuple[UserMultipliers, UserTranslations, NDArray, NDArray]: # scales, activies, is_scaler
         activities, is_scaler = self.compute_activities_and_scalers(users, public_settings, scores)
         if not any(is_scaler):
-            logger.warning("  No user qualifies as a scaler. No scaling performed.")
+            self.log_warning("  No user qualifies as a scaler. No scaling performed.")
             return UserMultipliers(keynames=["username"]), UserTranslations(keynames=["username"]), activities, is_scaler
         scalers, nonscalers = set(), set()
         for index, user in enumerate(users):
@@ -185,9 +182,7 @@ class Mehestan(PollFunction):
         voting_rights, ratios = self.aggregate_scaler_scores(*ratio_args)
         multipliers = self.compute_multipliers(voting_rights, ratios, scalee_model_norms)
         for score in scalee_scores:
-            multiplied_score = score * multipliers.get(username=score["username"])
-            assert isinstance(multiplied_score, Score)
-            scalee_scores.set(multiplied_score)
+            scalee_scores.set(score * multipliers.get(username=score["username"]))
         if scalees_are_scalers:
             scaler_scores = scalee_scores
     
@@ -196,9 +191,7 @@ class Mehestan(PollFunction):
         voting_rights, diffs = self.aggregate_scaler_scores(*diff_args)
         translations = self.compute_translations(voting_rights, diffs)
         for score in scalee_scores:
-            translated_score = score + translations.get(username=score["username"])
-            assert isinstance(translated_score, Score)
-            scalee_scores.set(translated_score)
+            scalee_scores.set(score + translations.get(username=score["username"]))
     
         return multipliers, translations, scalee_scores
 
@@ -515,9 +508,7 @@ class Mehestan(PollFunction):
             if scalee_diff.contains(0): 
                 continue
             scaler_diff = scaler_scores.get(entity_name=e) - scaler_scores.get(entity_name=f)
-            ratio = scaler_diff / scalee_diff
-            assert isinstance(ratio, Score)
-            ratio_list.append(ratio.abs())
+            ratio_list.append((scaler_diff / scalee_diff).abs())
             weight = penalty(e) * penalty(f)
             weight_list.append(voting_right=weight)
         return weight_list, ratio_list
@@ -581,11 +572,9 @@ class Mehestan(PollFunction):
     ) -> tuple[VotingRights, Scores]:
         """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
         weight_list, diff_list = VotingRights(keynames=[]), Scores(keynames=[])
-        penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
         for entity_name in common_entity_names:
             weight_list.append(value=scaler_public.penalty(self.privacy_penalty, entity_name))
             diff = scaler_scores.get(entity_name=entity_name) - scalee_scores.get(entity_name=entity_name)
-            assert isinstance(diff, Score)
             diff_list.append(diff)
         return weight_list, diff_list
 

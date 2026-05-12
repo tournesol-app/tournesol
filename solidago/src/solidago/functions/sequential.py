@@ -1,9 +1,6 @@
-import logging, numpy as np
 from typing import Any, Iterator, Self
+import numpy as np
 
-logger = logging.getLogger(__name__)
-
-from solidago.primitives.timer import time
 from solidago.poll import *
 from .poll_function import PollFunction
 
@@ -45,14 +42,14 @@ class Sequential(PollFunction):
     def fn(self, poll: Poll | None = None, save_directory: str | None = None, skip_steps: set[int] | None = None) -> Poll:
         if self.seed is not None:
             assert isinstance(self.seed, int)
-            logger.info(f"Set random seed = {self.seed}")
+            self.log_info(f"Set random seed = {self.seed}")
             np.random.seed(self.seed)
         result = poll or Poll()
         for step, subfunction in enumerate(self):
             if skip_steps is not None and step in skip_steps:
                 continue
             log = f"{self.name} {step+1}. {type(subfunction).__name__}"
-            with time(log, logger):
+            with self.timeit(log):
                 result = subfunction(result, save_directory)
         return result
     

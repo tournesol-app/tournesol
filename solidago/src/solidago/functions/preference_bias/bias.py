@@ -27,9 +27,7 @@ class PreferenceBias(ParallelizedPollFunction):
         return scores
     
     def thread_function(self, scores: Scores, poll: Poll) -> Scores:
-        biased_scores = scores * self.multipliers(poll, scores)
-        assert isinstance(biased_scores, Scores)
-        return biased_scores
+        return scores * self.multipliers(poll, scores)
     
     def _process_results(self,  # type: ignore
         variables: list[tuple[str, str]], 
@@ -51,7 +49,4 @@ class PreferenceBias(ParallelizedPollFunction):
 class WeightPreservingBias(PreferenceBias):
     def thread_function(self, scores: Scores, poll: Poll) -> Scores:
         biased_scores = scores * self.multipliers(poll, scores)
-        assert isinstance(biased_scores, Scores)
-        s = biased_scores * np.abs(scores.value).sum() / np.abs(biased_scores.value).sum()
-        assert isinstance(s, Scores)
-        return s
+        return biased_scores * np.abs(scores.value).sum() / np.abs(biased_scores.value).sum()

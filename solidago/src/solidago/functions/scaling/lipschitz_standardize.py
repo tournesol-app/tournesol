@@ -2,9 +2,6 @@ from typing import Callable
 from numpy.typing import NDArray
 
 import numpy as np
-import logging
-
-logger = logging.getLogger(__name__)
 
 from solidago.poll.scoring.user_models import CommonMultipliers
 from solidago.primitives import qr_standard_deviation
@@ -74,7 +71,7 @@ class LipschitzStandardize(ParallelizedPollFunction):
     
     def save_result(self, poll: Poll, directory: str | None = None) -> tuple[str, dict]:
         if directory is not None:
-            logger.info("Saving common scales")
+            self.log_info("Saving common scales")
             poll.user_models.save_table(directory, "common_multipliers")
             poll.user_models.save_table(directory, "common_translations")
         return poll.save_instructions(directory)

@@ -8,9 +8,6 @@ from solidago.functions.poll_function import PollFunction
 from solidago.primitives.datastructure.named_objects import After
 from .filtering import Filtering
 
-import logging
-logger = logging.getLogger(__name__)
-
 
 class RemoveRecommendedEntities(PollFunction):
     default_delay: dict[str, int] = dict(weeks=1)

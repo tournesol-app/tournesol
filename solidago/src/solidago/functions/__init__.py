@@ -5,7 +5,7 @@ from .identity import Identity
 
 import solidago.functions.filtering as filtering
 import solidago.functions.simple_stats as simple_stats
-import solidago.functions.trust_propagation as trust_propagations
+import solidago.functions.trust_propagation as trust_propagation
 import solidago.functions.voting_rights as voting_rights
 import solidago.functions.preference_learning as preference_learning
 import solidago.functions.collaborative_filtering as collaborative_filtering
@@ -19,7 +19,7 @@ from .tournesol_full import TournesolFull
 
 __all__ = [
     "PollFunction", "ParallelizedPollFunction", "Sequential", "Identity", "TournesolFull",
-    "filtering", "simple_stats", "trust_propagations", "voting_rights",
+    "filtering", "simple_stats", "trust_propagation", "voting_rights",
     "preference_learning", "collaborative_filtering", "preference_bias",
     "scaling", "aggregation",
     "post_process", "user_clustering",

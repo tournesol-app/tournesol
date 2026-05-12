@@ -5,12 +5,9 @@ from copy import deepcopy
 
 import numpy as np
 import yaml
-import logging
 
 from solidago.poll.poll_tables import *
 from solidago.primitives.criteria import to_criteria
-
-logger = logging.getLogger(__name__)
 
 from .model import CategoryScores, DirectScores, Multipliers, Parameters, ScoringModel, Translations
 from .score import Scores

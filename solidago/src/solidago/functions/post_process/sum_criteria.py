@@ -5,7 +5,7 @@ from solidago.functions.poll_function import PollFunction
 
 
 class SumCriteria(PollFunction):
-    default_weights: dict[str, float] = dict(post=1., repost=2., report=2.)
+    default_weights: dict[str, float] = dict(post=1., repost=1., report=1.)
 
     def __init__(self, weights: dict[str, float] | None = None, aggregated_name: str = "main"):
         self.weights = weights or self.default_weights
@@ -20,6 +20,5 @@ class SumCriteria(PollFunction):
             for criterion, weight in self.default_weights.items():
                 if criterion in criteria:
                     score = score + subscores.get(None, criterion=criterion) * weight
-            assert isinstance(score, Score)
             global_model.directs.append(score, entity_name=entity_name, criterion=self.aggregated_name)
         return global_model 

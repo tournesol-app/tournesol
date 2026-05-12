@@ -5,7 +5,7 @@ from solidago.primitives.uncertainty import NLLIncrease
 
 
 _modules = [
-    pf.trust_propagations.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1.0e-8),
+    pf.trust_propagation.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1.0e-8),
     pf.preference_learning.FlexibleGeneralizedBradleyTerry(
         direct=True, categories=["author", "journalism"], n_parameters=4,
         prior_stds=dict(directs=7., thresholds=7., categories=7., parameters=7.),

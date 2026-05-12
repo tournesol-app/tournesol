@@ -2,9 +2,6 @@ from abc import abstractmethod
 from numpy.typing import NDArray
 
 import numpy as np
-import logging
-
-logger = logging.getLogger(__name__)
 
 try:
     import torch # type: ignore
@@ -126,7 +123,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
 
         n_iter = lbfgs.state_dict()["state"][0]["n_iter"]
         if n_iter >= self.max_iter:
-            logger.warning(f"LBFGS failed to converge in {n_iter} iterations")
+            self.log_warning(f"LBFGS failed to converge in {n_iter} iterations")
 
         values = values.detach()
         if values.isnan().any():

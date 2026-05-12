@@ -11,20 +11,24 @@ class Veche(Recommender):
         preprocess: PollFunction | tuple[str, dict] | None = None,
         sampler: Sampler | tuple[str, dict] | None = None,
     ):        
-        import solidago, solidago.functions as pf, solidago.recommenders.sampler as s
-        self.preprocess = solidago.load(preprocess, pf, PollFunction, pf.Sequential([
-            pf.filtering.RemoveRecommendedEntities(),
-            pf.voting_rights.Follows(),
-            pf.voting_rights.LikesVolumes(),
-            pf.voting_rights.Mentions(),
-            pf.voting_rights.AggregateVolumes(),
-            pf.trust_propagations.Liquid(),
-            pf.filtering.IncludedUsersOnly(),
-            pf.preference_learning.PostActions(),
-            pf.preference_bias,
-            pf.scaling.MaxNorm(),
-            pf.aggregation.Sum(),
-            pf.post_process.SumCriteria(),
+        import solidago, solidago.functions as f, solidago.recommenders.sampler as s
+        self.preprocess = solidago.load(preprocess, f, PollFunction, f.Sequential([
+            f.filtering.RemoveRecommendedEntities(),
+            f.voting_rights.Follows(),
+            f.voting_rights.LikesVolumes(),
+            f.voting_rights.Mentions(),
+            f.voting_rights.AggregateVolumes(),
+            f.trust_propagation.Liquid(),
+            f.filtering.IncludedUsersOnly(),
+            f.preference_learning.PostActions(),
+            f.collaborative_filtering.Liquid(),
+            f.preference_bias.TimeDecay(),
+            f.preference_bias.Discoverability(),
+            f.preference_bias.LifetimeBias(),
+            f.preference_bias.SemanticBias(),
+            f.scaling.MaxNorm(),
+            f.aggregation.Sum(),
+            f.post_process.SumCriteria(),
         ]))
         self.sampler = solidago.load(sampler, s, Sampler, s.SamplingWithoutReplacement())
 

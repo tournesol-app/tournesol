@@ -125,7 +125,7 @@ def test_quantile_shift(seed):
 @pytest.mark.parametrize("seed", range(N_SEEDS))
 def test_lipschitrust_generative(seed):
     poll = Poll.load(f"tests/save_load/saved/{seed}")
-    trust_propagator = functions.trust_propagations.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
+    trust_propagator = functions.trust_propagation.LipschiTrust(pretrust_value=0.8, decay=0.8, sink_vouch=5.0, error=1e-8)
     users = trust_propagator.fn(poll.users, poll.socials)
     for user in users:
         assert user["trustworthy"] or (user["trust"] == 0)
