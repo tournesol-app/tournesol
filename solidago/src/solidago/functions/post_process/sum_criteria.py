@@ -1,4 +1,6 @@
-import numpy as np
+from copy import deepcopy
+from functools import reduce
+from typing import Hashable
 
 from solidago.poll import *
 from solidago.functions.poll_function import PollFunction
@@ -11,14 +13,20 @@ class SumCriteria(PollFunction):
         self.weights = weights or self.default_weights
         self.aggregated_name = aggregated_name
 
-    def fn(self, global_model: ScoringModel) -> ScoringModel:
-        scores = global_model()
-        assert isinstance(scores, Scores)
-        for (entity_name,), subscores in scores.iter("entity_name"):
-            assert isinstance(subscores, Scores)
-            score, criteria = Score(0), subscores.keys("criterion")
-            for criterion, weight in self.default_weights.items():
-                if criterion in criteria:
-                    score = score + subscores.get(None, criterion=criterion) * weight
-            global_model.directs.append(score, entity_name=entity_name, criterion=self.aggregated_name)
-        return global_model 
+    def fn(self, user_models: UserModels, global_model: ScoringModel) -> tuple[UserModels, ScoringModel]:
+        user_models, global_model = deepcopy(user_models), deepcopy(global_model)
+
+        for (username, entity_name), subscores in user_models().iter("username", "entity_name"):
+            kwargs = dict(username=username, entity_name=entity_name, criterion=self.aggregated_name)
+            user_models.user_directs.append(self._add(subscores), **kwargs)
+
+        for (entity_name,), subscores in global_model().iter("entity_name"):
+            kwargs = dict(entity_name=entity_name, criterion=self.aggregated_name)
+            global_model.directs.append(self._add(subscores), **kwargs)
+
+        return user_models, global_model
+
+    def _add(self, subscores: Scores) -> Score:
+        def f(score: Score, criterion: Hashable) -> Score:
+            return score + subscores.get(criterion=criterion) * self.weights[str(criterion)]
+        return reduce(f, subscores.keys("criterion") & self.weights.keys(), Score(0))

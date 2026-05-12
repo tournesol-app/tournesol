@@ -62,9 +62,7 @@ class PublicSettings(FilteredTable[PublicSetting]):
         return self("public") * privacy_penalty
 
     def penalty(self, privacy_penalty: float, *args, **kwargs) -> float:
-        public_setting = self.get(*args, **kwargs)
-        assert isinstance(public_setting, PublicSetting)
-        return 1 if public_setting["public"] else privacy_penalty
+        return 1 if self.get(*args, **kwargs)["public"] else privacy_penalty
     
 
 class Rating(Row):

@@ -42,7 +42,6 @@ class Independent(PollFunction):
         comparisons: Comparisons,
     ) -> tuple[PublicSettings, Ratings, Comparisons]:
         for entity in eval_entities:
-            assert isinstance(entity, Entity)
             public = self.public(user, entity, eval_entities)
             public_settings.set(username=user.name, entity_name=entity.name, public=public)
             if self.rate(user, entity, eval_entities):

@@ -42,9 +42,6 @@ class PreferenceLearning(PollFunction, ABC):
         comparisons: Comparisons, # keynames == ["username", "criterion", "entity_name"]
         user_models: UserModels, # keynames == ["username", "criterion", "entity_name"]
     ) -> dict[str, ScoringModel]:
-        indices = range(batch_number, len(users), self.max_workers)
-        batch_users = users[indices]
-        assert isinstance(batch_users, Users)
         return {
             user.name: self.user_learn(
                 user, 
@@ -52,7 +49,7 @@ class PreferenceLearning(PollFunction, ABC):
                 ratings.filters(username=user.name), 
                 comparisons.filters(username=user.name), 
                 user_models[user].base_model()
-            ) for user in batch_users
+            ) for user in users.filters(range(batch_number, len(users), self.max_workers))
         }
 
     @abstractmethod

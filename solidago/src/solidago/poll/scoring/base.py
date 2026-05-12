@@ -38,7 +38,6 @@ class Linear(BaseScoring):
             scores += self.categories_scoring(entities, criteria)
         if self.parameters:
             scores += self.linear_scoring(entities, criteria)
-        assert isinstance(scores, Scores)
         if isinstance(entities, Entity) and isinstance(criteria, str):
             return scores.get(SelectUnique())
         if isinstance(entities, Entity):

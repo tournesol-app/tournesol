@@ -123,7 +123,6 @@ class GeneralizedBradleyTerry(PreferenceLearning):
             if len(criterion_entities) <= 1:
                 continue
             init = init_model(criterion_entities, str(criterion))
-            assert isinstance(init, Scores)
             scores = self.user_learn_criterion(criterion_entities, comparisons.filters(criterion=criterion), init)
             for score in scores:
                 if not score.isnan():

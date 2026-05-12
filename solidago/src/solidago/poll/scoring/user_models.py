@@ -106,11 +106,9 @@ class UserModels:
         return set(self.to_dict())
 
     def __getitem__(self, user: str | User) -> ScoringModel:
-        username = user.name if isinstance(user, User) else user
+        u = user.name if isinstance(user, User) else user
         d = self.to_dict()
-        model = d[username] if username in d else ScoringModel(self.get_composition(username))
-        assert isinstance(model, ScoringModel)
-        return model
+        return d[u] if u in d else ScoringModel(self.get_composition(u))
     
     def __delitem__(self, user: str | User) -> None:
         username = user.name if isinstance(user, User) else user
@@ -154,7 +152,6 @@ class UserModels:
         criteria = to_criteria(self.criteria() if criterion is None else criterion)
         for username, model in self:
             entities = model.sample_entities(entity, criteria, n_sampled_entities_per_user)
-            assert isinstance(model, ScoringModel)
             for score in model(entities, criteria, n_sampled_entities_per_user):
                 scores.set(score, username=username)
         if isinstance(criterion, str):
@@ -172,7 +169,6 @@ class UserModels:
     
     def __iter__(self) -> Iterator[tuple[str, ScoringModel]]:
         for username, model in self.to_dict().items():
-            assert isinstance(username, str) and isinstance(model, ScoringModel)
             yield username, model
             
     def height(self, user: str | User | None = None) -> int:
@@ -182,6 +178,9 @@ class UserModels:
         return len(self.user_compositions[username])
 
     def to_matrices(self, users: Users, entities: Entities, criterion: str) -> tuple[NDArray, NDArray, NDArray]:
+        """ Returns value_matrix, left_matrix and right_matrix.
+        Each matrix is of shape (len(users), len(entities)), 
+        with nan for unknown values """
         value_matrix = np.full((len(users), len(entities)), np.nan)
         left_matrix = np.full((len(users), len(entities)), np.nan)
         right_matrix = np.full((len(users), len(entities)), np.nan)

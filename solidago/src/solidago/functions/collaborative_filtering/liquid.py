@@ -19,7 +19,6 @@ class Liquid(PollFunction):
             relays = socials.filters(by=username, kind=self.relay_name)
             for delegate_name, weight in zip(relays("to"), relays("weight")):
                 direct_scores = direct_scores + weight * user_models[delegate_name](entities)
-            assert isinstance(direct_scores, Scores)
             user_directs = user_directs | direct_scores.add_columns(username=username)
         return UserModels(user_directs=user_directs)
     

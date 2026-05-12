@@ -22,9 +22,7 @@ class PreferenceBias(ParallelizedPollFunction):
     
     def _args(self, variable: tuple[str, str], nonargs, user_models: UserModels) -> Scores: # type: ignore
         username, criterion = variable
-        scores = user_models[username](criterion=criterion)
-        assert isinstance(scores, Scores)
-        return scores
+        return user_models[username](criterion=criterion)
     
     def thread_function(self, scores: Scores, poll: Poll) -> Scores:
         return scores * self.multipliers(poll, scores)

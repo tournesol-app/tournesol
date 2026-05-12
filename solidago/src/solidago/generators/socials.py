@@ -23,9 +23,7 @@ class ErdosRenyiVouch(PollFunction):
             if len(usernames_subset) <= 1: continue
             
             for by in usernames_subset:
-                user = users[by]
-                assert isinstance(user, User)
-                p_vouch = user["expected_n_vouches"] / (len(usernames_subset) - 1)
+                p_vouch = users[by]["expected_n_vouches"] / (len(usernames_subset) - 1)
                 for to in usernames_subset:
                     if (by != to) and (np.random.random() < p_vouch):
                         value = (1 - np.random.random()**2, 0)
