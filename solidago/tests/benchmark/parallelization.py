@@ -1,6 +1,6 @@
 import numpy as np
 from solidago import *
-from solidago.primitives.timer import time
+from solidago.primitives.time import timeit
 from solidago.functions.parallelized import ParallelizedPollFunction
 
 import logging.config
@@ -15,7 +15,7 @@ def basic_multithread(max_workers):
                 print(f"{i}, {j}: {iter}")
         return i + j
     
-    with time(f"ProcessPool with max_workers={max_workers}"):
+    with timeit(f"ProcessPool with max_workers={max_workers}"):
         with ProcessPoolExecutor(max_workers) as executor:
             results = executor.map(thread, range(10), [200] * 10)
     
@@ -32,7 +32,7 @@ def is_prime(n):
 def primes(base_value: int, n_values: int):
     numbers = range(base_value, base_value + 2 * n_values, 2)
     for max_workers in (1, 2, 6, 15):
-        with time(f"Prime listing with max_workers={max_workers}"):
+        with timeit(f"Prime listing with max_workers={max_workers}"):
             results = ParallelizedPollFunction.threading(max_workers, is_prime, list(numbers))
             primes = [n for n, prime in zip(numbers, results) if prime]
             print(f"Found {len(primes)} primes")
@@ -64,7 +64,7 @@ class PrimeFunction(ParallelizedPollFunction):
 
 def primes2(base_value: int, n_values: int):
     for max_workers in (1, 2, 6, 15):
-        with time(f"Prime listing with max_workers={max_workers}"):
+        with timeit(f"Prime listing with max_workers={max_workers}"):
             PrimeFunction(base_value, n_values, max_workers).fn()
 
 def gbt():
@@ -81,7 +81,7 @@ def gbt():
     ], seed=0)
     poll = generator.fn()
     for max_workers in (1, 2, 6, 15):
-        with time(f"Preference learning with max_workers={max_workers}"):
+        with timeit(f"Preference learning with max_workers={max_workers}"):
             preference_learning = functions.preference_learning.numba_generalized_bradley_terry.NumbaUniformGBT(max_workers=max_workers)
             preference_learning.poll2objects_function(poll)
 
@@ -91,14 +91,14 @@ def scoring():
     poll = Poll.load("experiments/tournesol_processed")
     # poll.comparisons = poll.comparisons.get(criterion={"largely_recommended"}).reorder("username")
     for max_workers in (1, 2, 6, 15):
-        with time(f"User model scores with max_workers={max_workers}"):
+        with timeit(f"User model scores with max_workers={max_workers}"):
             _ = poll.user_models(poll.entities)
 
 def pipeline(step = None, tiny = True):
     for max_workers in (1,):
-        with time(f"Pipeline with n_workers={max_workers}"):
+        with timeit(f"Pipeline with n_workers={max_workers}"):
             poll = TournesolExport(f"tests/{'tiny_tournesol' if tiny else 'tournesol_dataset'}.zip")
-            with time("Filtering"):
+            with timeit("Filtering"):
                 pass
 #                poll = functions.Filtering(criteria={"largely_recommended"})(poll)
             pipeline = load("src/solidago/functions/tournesol_full.yaml", max_workers=max_workers)

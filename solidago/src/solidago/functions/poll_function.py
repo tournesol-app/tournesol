@@ -10,6 +10,8 @@ import yaml
 from solidago.poll import *
 
 import logging
+
+from solidago.primitives.time import Date
 logger = logging.getLogger(__name__)
 
 
@@ -72,12 +74,11 @@ class PollFunction(ABC):
         self.save_result(result, save_directory)
         return result
 
-    def customize(self, user: User, time: int | None = None) -> Self:
+    def customize(self, user: User, date: Date | None = None):
         if hasattr(self, "user"):
             self.user = user
-        if hasattr(self, "time"):
-            self.time = time
-        return self
+        if hasattr(self, "date"):
+            self.date = date
     
     def type_check(self, value, annotations):
         assert "return" in annotations, "" \

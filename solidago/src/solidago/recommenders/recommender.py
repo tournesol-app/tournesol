@@ -1,4 +1,5 @@
 from solidago.poll import *
+from solidago.primitives.time import DateInput
 
 
 class Recommender:
@@ -7,7 +8,7 @@ class Recommender:
         limit: int, 
         receiver_name: str | None = None, 
         cursor: str | None = None,
-        time: int | None = None,
+        date: DateInput | None = None,
     ) -> Entities:
         """
         Parameters
@@ -16,7 +17,7 @@ class Recommender:
             Maximal number of entities returned
         cursor: str | None
             Typically the offset for pagination
-        time: int | float | None 
+        date: datetime | dict | str | int | float | None
             Unix time in seconds. Set to datetime.now() if time is None.
 
         See https://github.com/MarshalX/bluesky-feed-generator/blob/main/server/app.py 

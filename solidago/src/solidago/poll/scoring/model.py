@@ -108,8 +108,8 @@ class ScoringModel:
     @overload
     def __call__(self, 
         entity: Entity,
-        criterion: list[str] | set[str] | None,
-        n_sampled_entities: int | None,
+        criterion: list[str] | set[str] | None = None,
+        n_sampled_entities: int | None = None,
     ) -> Scores: ...
     def __call__(self, entity=None, criterion=None, n_sampled_entities=None):
         """ Assigns a score to an entity, or to multiple entities. Handles sampling. """

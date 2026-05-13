@@ -7,7 +7,6 @@ from numpy.typing import NDArray
 import numpy as np
 
 from solidago.primitives.minimizer.minimizer import Minimizer
-from solidago.primitives.timer import time
 from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator
 
 from solidago.poll import *

@@ -79,36 +79,25 @@ class UserModels:
             return self.user_compositions[username]
         return deepcopy(self.default_composition)
     
-    def cache_models(self):
-        if self._cache_users is None:
-            self._cache_users = dict()
-            usernames = set(self.user_compositions.keys())
-            for table_name in self.table_names:
-                if table_name.startswith("user_"):
-                    usernames |= getattr(self, table_name).keys("username")
-            for username in usernames:
-                self._cache_users[username] = ScoringModel(
-                    self.get_composition(username),
-                    self.user_directs.filters(username=username),
-                    self.user_categories.filters(username=username),
-                    self.user_parameters.filters(username=username),
-                    self.user_multipliers.filters(username=username) | self.common_multipliers.add_columns(username=username),
-                    self.user_translations.filters(username=username) | self.common_translations.add_columns(username=username),
-                )
-
-    def to_dict(self) -> dict[str, ScoringModel]:
-        if self._cache_users is None:
-            self.cache_models()
-        assert self._cache_users is not None
-        return self._cache_users
-
     def usernames(self) -> set[str]:
-        return set(self.to_dict())
+        usernames = set(self.user_compositions.keys())
+        for table_name in self.table_names:
+            if table_name.startswith("user_"):
+                usernames |= getattr(self, table_name).keys("username")
+        return usernames
 
     def __getitem__(self, user: str | User) -> ScoringModel:
-        u = user.name if isinstance(user, User) else user
-        d = self.to_dict()
-        return d[u] if u in d else ScoringModel(self.get_composition(u))
+        username = user.name if isinstance(user, User) else user
+        return ScoringModel(
+            self.get_composition(username),
+            self.user_directs.filters(username=username),
+            self.user_categories.filters(username=username),
+            self.user_parameters.filters(username=username),
+            self.user_multipliers.filters(username=username) \
+                | self.common_multipliers.add_columns(username=username),
+            self.user_translations.filters(username=username) \
+                | self.common_translations.add_columns(username=username),
+        )
     
     def __delitem__(self, user: str | User) -> None:
         username = user.name if isinstance(user, User) else user
@@ -161,15 +150,15 @@ class UserModels:
         return scores
     
     def __len__(self) -> int:
-        return len(self.to_dict())
+        return len(self.usernames())
     
     def __contains__(self, user: str | User) -> bool:
         username = user.name if isinstance(user, User) else user
-        return username in self.to_dict()
+        return username in self.usernames()
     
     def __iter__(self) -> Iterator[tuple[str, ScoringModel]]:
-        for username, model in self.to_dict().items():
-            yield username, model
+        for username in self.usernames():
+            yield username, self[username]
             
     def height(self, user: str | User | None = None) -> int:
         username = user.name if isinstance(user, User) else user

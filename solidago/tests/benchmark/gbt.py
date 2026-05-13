@@ -2,7 +2,7 @@ from solidago import *
 
 import logging.config
 
-from solidago.primitives.timer import time
+from solidago.primitives.time import timeit
 
 logging.config.fileConfig("tests/info.conf")
 
@@ -17,10 +17,10 @@ def preference_learning(tiny = True):
     for gbt in gbts:
         poll = TournesolExport(f"tests/{'tiny_tournesol' if tiny else 'tournesol_dataset'}.zip")
         kwargs = dict(usernames={"lpfaucon"}, criteria={"largely_recommended"})
-        with time("Filtering"):
+        with timeit("Filtering"):
             poll = functions.filtering.Filtering(**kwargs).fn(poll)
         assert isinstance(gbt, (functions.PollFunction)), gbt
-        with time(f"Preference learning with {type(gbt).__name__}"):
+        with timeit(f"Preference learning with {type(gbt).__name__}"):
             gbt(poll)
 
 

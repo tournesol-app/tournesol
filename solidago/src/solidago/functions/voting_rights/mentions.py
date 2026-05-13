@@ -1,20 +1,20 @@
 from functools import reduce
-from datetime import timedelta, datetime
-
-import numpy as np
 
 from solidago.poll import *
-from solidago.functions.poll_function import PollFunction
+from solidago.functions.customizable import CustomizablePollFunction
 from solidago.primitives.datastructure import Contains, After
+from solidago.primitives.time import Date, DateInput, Duration, DurationInput
 
 
-class Mentions(PollFunction):
+class Mentions(CustomizablePollFunction):
+    default_age_cutoff: Duration = Duration(weeks=52)
+
     def __init__(self, 
         mention_volume: float = .5,
         relative_max_volume: float = .2,
-        age_cutoff: dict[str, int] | int | None = None,
+        age_cutoff: DurationInput | None = None,
         receiver: User | None = None,
-        time: int | None = None,
+        date: DateInput | None = None,
     ):
         """
         Parameters
@@ -32,14 +32,12 @@ class Mentions(PollFunction):
             Mentions that are older than age_cutoff will be discarded
             Default value is 52 weeks
         """
+        super().__init__(receiver, date)
         self.mention_volume = mention_volume
         self.relative_max_volume = relative_max_volume
-        if isinstance(age_cutoff, int):
-            self.age_cutoff = age_cutoff
-        else:
-            self.age_cutoff = timedelta(**age_cutoff or dict(weeks=52)).seconds
-        self.receiver = receiver
-        self.time = time
+        self.age_cutoff = self.default_age_cutoff
+        if age_cutoff is not None:
+            self.age_cutoff = Duration(age_cutoff)
 
     def fn(self, users: Users, entities: Entities) -> Users:        
         if self.receiver is None:
@@ -47,7 +45,7 @@ class Mentions(PollFunction):
             return users
         
         follow_volumes = users("follow_volume", 0)        
-        min_date = (self.time or datetime.now().second) - self.age_cutoff
+        min_date = (self.date or Date.now()).seconds - self.age_cutoff.seconds
         entities = entities.filters(mentions=Contains(self.receiver.name), date=After(min_date))
         mentioners = reduce(lambda acc, e: acc | set(e["authors"]), entities, set())
         is_mentioner = users.names().isin(mentioners)

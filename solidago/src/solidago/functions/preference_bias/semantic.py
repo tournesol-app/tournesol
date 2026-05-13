@@ -10,10 +10,6 @@ class SemanticBias(PreferenceBias):
     def __init__(self, receiver: User | None = None, bias: float = 1.):
         self.receiver = receiver
         self.bias = bias
-    
-    def customize(self, user: User, time: int | None = None) -> Self:
-        self.receiver = user
-        return self 
 
     def multipliers(self, poll: Poll, scores: Scores) -> Scores:
         assert self.receiver is not None, f"Ran {type(self).__name__} with receiver"

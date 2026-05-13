@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from solidago.poll import *
 from solidago.functions import PollFunction
+from solidago.primitives.time import Date, DateInput
 from .recommender import Recommender
 from .sampler import Sampler
 
@@ -37,10 +36,11 @@ class Veche(Recommender):
         limit: int, 
         receiver_name: str | None = None, 
         cursor: str | None = None,
-        time: int | None = None,
+        date: DateInput | None = None,
     ) -> Entities:
         receiver = poll.users[receiver_name]
-        time = datetime.now().second if time is None else time
-        poll = self.preprocess.customize(receiver, time)(poll)
+        d = Date.now() if date is None else Date(date)
+        self.preprocess.customize(receiver, d)
+        poll = self.preprocess(poll)
         return self.sampler(poll, limit)
     

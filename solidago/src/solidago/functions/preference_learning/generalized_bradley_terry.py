@@ -1,5 +1,4 @@
 from abc import abstractmethod
-import logging
 from typing import Any, Optional
 from numpy.typing import NDArray
 
@@ -8,7 +7,6 @@ import numpy as np
 import solidago.primitives.dichotomy as dichotomy
 
 from solidago.poll import *
-from solidago.primitives.timer import time
 from .preference_learning import PreferenceLearning
 
 

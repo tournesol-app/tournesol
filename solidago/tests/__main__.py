@@ -1,8 +1,5 @@
-from typing import Callable
 from solidago import *
-from solidago.primitives.timer import time
-from solidago.functions.parallelized import ParallelizedPollFunction
-from solidago.functions.preference_learning import FlexibleGeneralizedBradleyTerry
+from solidago.primitives.time import timeit
 from solidago.functions.preference_learning.gbt.root_law import *
 
 import logging.config
@@ -16,7 +13,7 @@ def simple():
     poll, generator, poll_functions = experiment.extract_poll_generator_functions([0])
     poll = generator.fn(poll)
 
-    with time("SimpleExperiment"):
+    with timeit("SimpleExperiment"):
         poll2 = poll_functions(poll)
     
     return source, experiment, poll, poll2, generator, poll_functions

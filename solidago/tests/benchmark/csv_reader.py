@@ -1,11 +1,11 @@
 import csv
 
-from solidago.primitives.timer import time
+from solidago.primitives.time import timeit
 
 
 def load_csv():
     rows = list()
-    with time("Load csv"):
+    with timeit("Load csv"):
         with open("tests/comparisons.csv") as csvfile:
             reader = csv.reader(csvfile)
             column_names = next(reader)
@@ -15,7 +15,7 @@ def load_csv():
 
 def load_no_csv():
     rows = list()
-    with time("Load csv"):
+    with timeit("Load csv"):
         with open("tests/comparisons.csv") as csvfile:
             line = csvfile.readline()
             column_names = line.split(",")
@@ -26,15 +26,14 @@ def load_no_csv():
     return column_names, rows
 
 def load_csv_dict():
-    rows = list()
-    with time("Load csv"):
+    with timeit("Load csv"):
         with open("tests/comparisons.csv") as csvfile:
             d = csv.DictReader(csvfile)
     return d
 
 def load_pandas():
     import pandas as pd
-    with time("Load csv"):
+    with timeit("Load csv"):
         return pd.read_csv("tests/comparisons.csv")
     
 

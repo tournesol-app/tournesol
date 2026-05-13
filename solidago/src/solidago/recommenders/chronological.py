@@ -1,5 +1,6 @@
 from solidago.primitives.datastructure import Contains
 from solidago.poll import *
+from solidago.primitives.time import DateInput
 from .recommender import Recommender
 
 
@@ -13,7 +14,7 @@ class Chronological(Recommender):
         limit: int, 
         receiver_name: str | None = None, 
         cursor: str | None = None,
-        time: int | None = None,
+        date: DateInput | None = None,
     ) -> Entities:
         followings = poll.socials.filters(by=receiver_name, kind=self.follow_kind)("to")
         reposts = poll.ratings.filters(username=followings, criterion=self.rating_criteria)

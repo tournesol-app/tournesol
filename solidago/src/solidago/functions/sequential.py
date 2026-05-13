@@ -1,7 +1,8 @@
-from typing import Any, Iterator, Self
+from typing import Any, Iterator
 import numpy as np
 
 from solidago.poll import *
+from solidago.primitives.time import Date
 from .poll_function import PollFunction
 
 
@@ -25,9 +26,9 @@ class Sequential(PollFunction):
     def __call__(self, poll: Poll, save_directory: str | None = None) -> Poll:
         return self.fn(poll, save_directory)
 
-    def customize(self, user: User, time: int | None = None) -> Self:
-        subfunctions = [f.customize(user, time) for f in self.subfunctions]
-        return type(self)(subfunctions, self.name, self.max_workers, self.seed)
+    def customize(self, user: User, date: Date | None = None):
+        for f in self.subfunctions:
+            f.customize(user, date)
     
     def __getitem__(self, index: int) -> PollFunction:
         return self.subfunctions[index]

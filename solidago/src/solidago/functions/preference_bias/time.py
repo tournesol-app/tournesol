@@ -1,20 +1,23 @@
-from datetime import datetime
+import numpy as np
 
 from solidago.functions.preference_bias.bias import PreferenceBias
 from solidago.primitives.decay import Decay
 from solidago.poll import *
+from solidago.primitives.time import Date, DateInput, Duration
 
 
 class TimeDecay(PreferenceBias):
     def __init__(self,
         decay: Decay | tuple[str, dict] | None = None,
-        time: datetime | str | None = None,
+        date: DateInput | None = None,
     ):
-        super().__init__(time)
+        super().__init__(date)
         import solidago, solidago.primitives.decay as d
         self.decay = solidago.load(decay, d, Decay, d.QuadraticDecay())
 
     def multipliers(self, poll: Poll, scores: Scores) -> Scores:
-        time = (datetime.now() if self.time is None else self.time).second
-        decay = self.decay(time - scores("date"), scores("lifetime"))
+        date = Date.now() if self.date is None else self.date
+        scores_dates = np.array(Date(d).seconds for d in scores("date"))
+        lifetimes = np.array(Duration(d).seconds for d in scores("lifetime"))
+        decay = self.decay(date.seconds - scores_dates, lifetimes)
         return Scores(value=decay)

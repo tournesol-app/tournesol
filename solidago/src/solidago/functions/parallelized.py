@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Any, Callable
 
 from solidago.poll import *
-from solidago.primitives.timer import time
+from solidago.primitives.time import timeit
 from .poll_function import PollFunction
 
 

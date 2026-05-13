@@ -1,17 +1,17 @@
 from abc import abstractmethod
-from datetime import datetime
 
 import numpy as np
 
 from solidago.poll import *
 from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.primitives.time import Date, DateInput
 
 
 class PreferenceBias(ParallelizedPollFunction):
     block_parallelization = False
 
-    def __init__(self, time: datetime | str | None = None):
-        self.time = datetime.fromisoformat(time) if isinstance(time, str) else time
+    def __init__(self, date: DateInput | None = None):
+        self.date = None if date is None else Date(date)
 
     def _variables(self, user_models: UserModels) -> list[tuple[str, str]]: # type: ignore
         return [
