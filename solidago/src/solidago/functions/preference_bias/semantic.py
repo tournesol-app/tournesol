@@ -1,10 +1,9 @@
 from typing import Self
-from numpy.typing import NDArray
 
 import numpy as np
 
 from solidago.poll import *
-from .bias import PreferenceBias, WeightPreservingBias
+from .bias import PreferenceBias
 
 
 class SemanticBias(PreferenceBias):

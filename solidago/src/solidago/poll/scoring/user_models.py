@@ -1,4 +1,4 @@
-from typing import Hashable, Iterable, Iterator
+from typing import Iterable, Iterator
 from numpy.typing import NDArray
 from pathlib import Path
 from copy import deepcopy
