@@ -29,7 +29,6 @@ class Independent(PollFunction):
         for rating in ratings:
             user, entity = users[rating["username"]], entities[rating["entity_name"]]
             public = public_settings.get(username=user.name, entity_name=entity.name)["public"]
-            assert isinstance(user, User) and isinstance(entity, Entity)
             kwargs = self.rate(rating, user, entity, public, rating["criterion"])
             result.append(deepcopy(rating), **kwargs)
         return result

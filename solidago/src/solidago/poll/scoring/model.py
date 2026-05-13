@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Hashable, Iterable
+from typing import TYPE_CHECKING, Hashable, Iterable, overload
 from numpy.typing import NDArray
 from pathlib import Path
 
@@ -51,19 +51,19 @@ class Parameters(Scores):
         return values
 
     def values(self, **keys: Hashable) -> NDArray:
-        return np.array([score.value for score in self.scores_list(**keys)])
+        return np.array([score.value for score in self.scores_list(**keys)], dtype=np.float64)
     
     def lefts(self, **keys: Hashable) -> NDArray:
-        return np.array([score.left_unc for score in self.scores_list(**keys)])
+        return np.array([score.left_unc for score in self.scores_list(**keys)], dtype=np.float64)
     
     def rights(self, **keys: Hashable) -> NDArray:
-        return np.array([score.right_unc for score in self.scores_list(**keys)])
+        return np.array([score.right_unc for score in self.scores_list(**keys)], dtype=np.float64)
     
     def maxima(self, **keys: Hashable) -> NDArray:
-        return np.array([score.max for score in self.scores_list(**keys)])
+        return np.array([score.max for score in self.scores_list(**keys)], dtype=np.float64)
     
     def minima(self, **keys: Hashable) -> NDArray:
-        return np.array([score.min for score in self.scores_list(**keys)])
+        return np.array([score.min for score in self.scores_list(**keys)], dtype=np.float64)
 
 class Multipliers(Scores):
     name: str="multipliers"
@@ -97,11 +97,21 @@ class ScoringModel:
         self.multipliers = multipliers or Multipliers()
         self.translations = translations or Translations()
 
+    @overload
+    def __call__(self, entity: Entity, criterion: str, n_sampled_entities: None = None) -> Score: ...
+    @overload
     def __call__(self, 
-        entity: Entity | Entities | None = None,
-        criterion: str | Iterable[str] | None = None,
+        entity: Entities | None = None,
+        criterion: str | list[str] | set[str] | None = None,
         n_sampled_entities: int | None = None,
-    ) -> Score | Scores:
+    ) -> Scores: ...
+    @overload
+    def __call__(self, 
+        entity: Entity,
+        criterion: list[str] | set[str] | None,
+        n_sampled_entities: int | None,
+    ) -> Scores: ...
+    def __call__(self, entity=None, criterion=None, n_sampled_entities=None):
         """ Assigns a score to an entity, or to multiple entities. Handles sampling. """
         criteria = to_criteria(self.criteria() if criterion is None else criterion)
         entities = self.sample_entities(entity, criteria, n_sampled_entities)

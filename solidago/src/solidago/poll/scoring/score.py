@@ -280,14 +280,10 @@ class Scores(FilteredTable[Score]):
     ) -> Self:
         
         def default_score_factory(**keys) -> Score:
-            score = self.get(**{name: key for name, key in keys.items() if name in self.keynames})
+            score = self.get(**{n: k for n, k in keys.items() if n in self.keynames})
             if isinstance(other, Score):
-                score = op(score, other)
-            else:
-                assert isinstance(other, Scores)
-                score = op(score, other.get(**{name: key for name, key in keys.items() if name in other.keynames}))
-            assert isinstance(score, Score)
-            return score
+                return op(score, other)
+            return op(score, other.get(**{n: k for n, k in keys.items() if n in other.keynames}))
             
         if isinstance(other, Score):
             others = type(self)(keynames=[])
@@ -329,9 +325,7 @@ class Scores(FilteredTable[Score]):
                 right_unc=self.right_unc + other.right_unc
             )
             def default_score_factory(**keys) -> Score:
-                score = self.get(**{name: key for name, key in keys.items() if name in self.keynames}) + other
-                assert isinstance(score, Score)
-                return score
+                return self.get(**{n: k for n, k in keys.items() if n in self.keynames}) + other
             result._default_score_factory = default_score_factory
             return result
         return self.cw_operation(other, Score.__add__)
@@ -348,9 +342,7 @@ class Scores(FilteredTable[Score]):
             right_unc = np.max(extremes, axis=1) - value
             result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
             def default_score_factory(**keys) -> Score:
-                score = self.get(**{name: key for name, key in keys.items() if name in self.keynames}) * other
-                assert isinstance(score, Score)
-                return score
+                return self.get(**{n: k for n, k in keys.items() if n in self.keynames}) * other
             result._default_score_factory = default_score_factory
             return result
         return self.cw_operation(other, Score.__mul__)
@@ -364,9 +356,7 @@ class Scores(FilteredTable[Score]):
             right_unc = np.max(extremes, axis=1) - value
             result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
             def default_score_factory(**keys) -> Score:
-                score = self.get(**{name: key for name, key in keys.items() if name in self.keynames}) / other
-                assert isinstance(score, Score)
-                return score
+                return self.get(**{n: k for n, k in keys.items() if n in self.keynames}) / other
             result._default_score_factory = default_score_factory
             return result
         return self.cw_operation(other, Score.__truediv__)

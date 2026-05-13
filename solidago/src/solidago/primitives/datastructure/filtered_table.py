@@ -470,12 +470,9 @@ class FilteredTable(Generic[TableRow]):
     def iter(self, 
         *keynames: str, 
         select: Select | None = None
-    ) -> Iterator[tuple[tuple[Hashable, ...], Self | TableRow]]:
+    ) -> Iterator[tuple[tuple[Hashable, ...], Self]]:
         for keys, filter in self.iter_filters(*keynames):
-            table = type(self)(self.table, filter=filter)
-            result = table if select is None else table.get(select)
-            assert result is not None, result
-            yield keys, result
+            yield keys, type(self)(self.table, filter=filter)
     
     def iter_indices(self) -> Iterator[np.int64]:
         for index in self.filter.get_indices(len(self.table)):

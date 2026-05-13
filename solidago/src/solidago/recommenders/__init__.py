@@ -5,10 +5,8 @@ from .chronological import Chronological
 from .veche import Veche
 from .chronofair import ChronoFair
 
-import solidago.recommenders.bias as bias
 import solidago.recommenders.sampler as sampler
 
 __all__ = [
-    "Recommender", "Chronological", "Veche", "ChronoFair", 
-    "bias", "sampler",
+    "Recommender", "Chronological", "Veche", "ChronoFair", "sampler",
 ]

@@ -22,7 +22,6 @@ class Normalize(PollFunction):
         scores = user_models(entities)
         multipliers = UserMultipliers(keynames=["username", "criterion"])
         for (username, criterion), subscores in scores.iter("username", "criterion"):
-            assert isinstance(subscores, Scores)
             q = self.qs[str(criterion)] if criterion in self.qs else self.default_q
             multiplier = self.multiplier(subscores("value"), q)
             multipliers.append(multiplier, username=username, criterion=criterion)

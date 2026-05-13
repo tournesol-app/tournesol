@@ -50,9 +50,7 @@ class ScaleProcessing(ScoreProcessing):
     def __call__(self, criteria: set[str], scores: Scores) -> Scores:
         multipliers = self.multipliers.filters(criterion=list(criteria))
         translations = self.translations.filters(criterion=list(criteria))
-        results = scores * multipliers + translations
-        assert isinstance(results, Scores)
-        return results
+        return scores * multipliers + translations
 
     def matches_composition(self, other: "ScoreProcessing") -> bool:
         return isinstance(other, ScaleProcessing)
@@ -71,7 +69,6 @@ class SquashProcessing(ScoreProcessing):
 
     def __call__(self, criteria: set[str], scores: Scores) -> Scores:
         """ criteria is not used """
-        assert isinstance(scores, Scores), scores 
         squashed_scores = deepcopy(scores)
         value, min, max = self.squash(scores.value), self.squash(scores.min), self.squash(scores.max)
         left_unc, right_unc = value - min, max - value

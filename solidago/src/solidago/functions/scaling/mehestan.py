@@ -504,7 +504,6 @@ class Mehestan(PollFunction):
         penalty = lambda entity_name: scaler_public.penalty(self.privacy_penalty, entity_name)
         for e, f in pairs:
             scalee_diff = scalee_scores.get(entity_name=e) - scalee_scores.get(entity_name=f)
-            assert isinstance(scalee_diff, Score)
             if scalee_diff.contains(0): 
                 continue
             scaler_diff = scaler_scores.get(entity_name=e) - scaler_scores.get(entity_name=f)
