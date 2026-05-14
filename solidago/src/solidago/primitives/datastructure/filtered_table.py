@@ -1,7 +1,7 @@
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Hashable, Iterable, Iterator, Literal, Generic, Optional, TypeVar, Self, Union
+from typing import Any, Hashable, Iterable, Iterator, Generic, Optional, TypeVar, Self, Union
 from numpy.typing import NDArray, DTypeLike
 
 import numpy as np
@@ -381,7 +381,9 @@ class FilteredTable(Generic[TableRow]):
         if args and isinstance(args[0], _Table):
             self.table = args[0]
         elif args and isinstance(args[0], pd.DataFrame):
-            self.table = _Table(args[0])
+            df = deepcopy(args[0])
+            df.index = np.arange(len(df))
+            self.table = _Table(df)
         else:
             if "columns" not in kwargs:
                 kwargs["columns"] = self.default_column_names

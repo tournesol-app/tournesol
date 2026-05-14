@@ -18,8 +18,11 @@ class NoDecay(Decay):
 
 
 class QuadraticDecay(Decay):
+    def __init__(self, multiplier: float = 1.):
+        self.multiplier = multiplier
+
     def __call__(self, ages: NDArray, lifetimes: NDArray | float) -> NDArray:
-        return lifetimes**2 / (ages**2 + lifetimes**2)
+        return self.multiplier * lifetimes**2 / (ages**2 + lifetimes**2)
 
 
 class LifetimeBiasedDecay(Decay):

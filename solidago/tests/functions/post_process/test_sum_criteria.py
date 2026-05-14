@@ -30,5 +30,6 @@ global_model = ScoringModel(
 def test_sum_criteria():
     f = functions.post_process.SumCriteria(dict(post=1, repost=2, report=3), "main2")
     u, g = f.fn(user_models, global_model)
-    assert u["user_0"](Entity("entity_0"), "main2") == Score((.4, .8, .6))
-    assert g(Entity("entity_0"), "main2").to_triplet() == pytest.approx((-2.4, 4, 2), rel=1e-3)
+    e, c = Entity("entity_0"), "main2"
+    assert u["user_0"](e, c) == Score((.4, .8, .6))
+    assert g(e, c).to_triplet() == pytest.approx((-2.4, 4, 2), rel=1e-3)

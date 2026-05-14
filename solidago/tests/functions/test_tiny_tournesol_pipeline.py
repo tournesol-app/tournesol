@@ -1,10 +1,13 @@
 from solidago import *
 
 
+usernames = ["amatissart", "Jean-Lou", "lafabriquesociale", "Tit0uan"]
+
 def test_pipeline_tiny_tournesol():
     pipeline = functions.TournesolFull(max_workers=1)
     tournesol_export = TournesolExport("tests/tiny_tournesol.zip")
-    p0 = pipeline[0](tournesol_export)
+    poll = functions.filtering.Filtering(usernames=usernames)(tournesol_export)
+    p0 = pipeline[0](poll)
     p1 = pipeline[1](p0)
     p2 = pipeline[2](p1)
     p3 = pipeline[3](p2)
