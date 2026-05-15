@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='emaildomain',
-            constraint=models.CheckConstraint(check=models.Q(('domain__istartswith', '@')), name='domain_starts_with_at'),
+            constraint=models.CheckConstraint(condition=models.Q(('domain__istartswith', '@')), name='domain_starts_with_at'),
         ),
         migrations.AddField(
             model_name='user',

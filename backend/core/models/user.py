@@ -282,7 +282,7 @@ class EmailDomain(models.Model):
         ordering = ["-datetime_add", "domain"]
         constraints = [
             CheckConstraint(
-                check=Q(domain__istartswith="@"),
+                condition=Q(domain__istartswith="@"),
                 name="domain_starts_with_at",
             ),
         ]

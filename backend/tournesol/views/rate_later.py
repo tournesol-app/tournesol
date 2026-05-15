@@ -80,6 +80,7 @@ class RateLaterList(RateLaterQuerysetMixin, generics.ListCreateAPIView):
         self.prefetch_entity(rate_later)
 
         if self.request.query_params.get("entity_seen", "false") == "true":
+            # TODO:5.2
             # We could have used update_or_create instead of a try/except
             # block, but this would reset the value of the field `is_public`
             # with each update, regardless of the user's preferences. In

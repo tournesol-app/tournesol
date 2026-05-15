@@ -23,7 +23,7 @@ class Comparison(models.Model):
         unique_together = ["user", "poll", "entity_1_2_ids_sorted"]
         constraints = [
             models.CheckConstraint(
-                check=~Q(entity_1=F("entity_2")), name="videos_cannot_be_equal"
+                condition=~Q(entity_1=F("entity_2")), name="videos_cannot_be_equal"
             )
         ]
 

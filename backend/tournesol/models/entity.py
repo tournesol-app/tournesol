@@ -216,7 +216,7 @@ class Entity(models.Model):
         " stemmed and weighted according to the language's search config.",
     )
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Always refresh the metadata text search vector.
 
@@ -224,7 +224,16 @@ class Entity(models.Model):
         there are different weights and configs, and the
         format of the metadata can vary with the entity type.
         """
-        super().save(force_insert, force_update, using, update_fields)
+        if args:
+            # args are deprecated in Django 5.2, and removed in 6.0
+            raise TypeError("Entity.save() expects only kwargs")
+
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
         # If "metadata" has changed, the indexed search_vector needs to be updated.
         # This condition also avoids infinite loop when calling .save()
