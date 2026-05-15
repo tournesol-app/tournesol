@@ -1,3 +1,5 @@
+from numpy.typing import NDArray
+
 import numpy as np
 
 from solidago.poll import *
@@ -11,8 +13,11 @@ class Discoverability(WeightPreservingBias):
         self.min = min
         self.bias = bias
 
-    def multipliers(self, poll: Poll, scores: Scores) -> Scores:
-        entities = poll.entities.filters(scores("entity_names"))
+    def _multipliers(self,  # type: ignore
+        scores: Scores, 
+        entities: Entities
+    ) -> tuple[NDArray, NDArray | float, NDArray | float]:
+        entities = entities.filters(scores("entity_names"))
         popularities = entities(self.popularity_indicator)
-        values = np.power(np.log(self.min) / np.log(self.min + popularities), self.bias)
-        return Scores(value=values)
+        multipliers = np.power(np.log(self.min) / np.log(self.min + popularities), self.bias)
+        return multipliers, 0., 0.

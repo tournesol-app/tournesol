@@ -3,12 +3,11 @@ from copy import deepcopy
 from typing import Any, Callable
 
 from solidago.poll import *
-from solidago.primitives.time import timeit
 from .poll_function import PollFunction
 
 
-class ParallelizedPollFunction(PollFunction):
-    block_parallelization: bool = False
+class ThreadedPollFunction(PollFunction):
+    parallelize: bool = False
 
     def __init__(self, max_workers: int | None = None):
         super().__init__(max_workers)
@@ -41,7 +40,7 @@ class ParallelizedPollFunction(PollFunction):
         with self.timeit(f"{type(self).__name__} - Loading data"):
             kwargs, variables, nonargs_list, args_lists = self.precompute(*args, **kwargs)
         with self.timeit(f"{type(self).__name__} - Parallelized computing"):
-            results = ParallelizedPollFunction.threading(self.max_workers, self.thread_function, *args_lists)
+            results = ThreadedPollFunction.threading(self.max_workers, self.thread_function, *args_lists)
         with self.timeit(f"{type(self).__name__} - Processing results"):
             process_kwargs = self._extract(kwargs, "_process_results")
             return self._process_results(variables, nonargs_list, results, args_lists, **process_kwargs)
@@ -68,7 +67,7 @@ class ParallelizedPollFunction(PollFunction):
         return self.precompute(*args, **kwargs)[3]
 
     def _get_max_workers(self):
-        return 1 if self.block_parallelization else self.max_workers
+        return 1 if self.parallelize else self.max_workers
 
     def _extract(self, kwargs: dict, fn_name: str) -> dict:
         annotations = getattr(self, fn_name).__annotations__
@@ -113,8 +112,9 @@ class ParallelizedPollFunction(PollFunction):
         return ()
     
     def _args_lists(self, variables: list, nonargs_list: list, **kwargs) -> list:
+        to_tuple = lambda t: t if isinstance(t, tuple) else (t,)
         return list(zip(*[
-            self._args(variable, non_args, **kwargs) 
+            to_tuple(self._args(variable, non_args, **kwargs))
             for variable, non_args in zip(variables, nonargs_list)
         ]))
 

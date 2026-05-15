@@ -6,11 +6,11 @@ import numpy as np
 from solidago.poll.scoring.user_models import CommonTranslations
 from solidago.primitives import qr_quantile
 from solidago.poll import *
-from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 
 
-class LipschitzQuantileShift(ParallelizedPollFunction):
-    block_parallelization: bool = False
+class LipschitzQuantileShift(ThreadedPollFunction):
+    parallelize: bool = False
     
     def __init__(self,
         quantile: float = 0.15,

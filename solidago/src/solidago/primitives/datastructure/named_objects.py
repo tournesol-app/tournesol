@@ -77,6 +77,9 @@ class NamedObject:
         if key in self.default:
             return self.default[key]
         raise KeyError(key)
+    
+    def get(self, key: str, default_value: Any) -> Any:
+        return self[key] if key in self else default_value
 
     def __setitem__(self, key: str, value: Any):
         self.series[key] = value

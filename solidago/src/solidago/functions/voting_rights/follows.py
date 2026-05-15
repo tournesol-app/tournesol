@@ -35,8 +35,8 @@ class Follows(PollFunction):
         follows = socials.filters(by=self.receiver.name, kind=self.follows.keys())
         councillors = users.filters(follows("to"))
         follow_volumes = councillors.names().map(lambda c: follows.get(to=c)["weight"])
-        dates = councillors.names().map(lambda c: Date(follows.get(to=c)["date"]).seconds)
+        dates = councillors.names().map(lambda c: Date(follows.get(to=c)["date"]).timestamp())
         date = Date.now() if self.date is None else self.date
-        ages = date.seconds - dates.to_numpy()
+        ages = date.timestamp() - dates.to_numpy()
         follow_volumes *= self.decay(ages, self.follow_lifetime.seconds)
         return users.assign(follow_volumes=follow_volumes)

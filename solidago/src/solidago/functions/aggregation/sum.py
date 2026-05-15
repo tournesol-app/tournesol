@@ -7,7 +7,7 @@ from solidago.functions.aggregation.entity_criterion_wise import EntityCriterion
 
 class Sum(EntityCriterionWise):
     note: str="sum"
-    block_parallelization: bool = False
+    parallelize: bool = False
 
     def thread_function(self, 
         vrights: NDArray[np.float64], 

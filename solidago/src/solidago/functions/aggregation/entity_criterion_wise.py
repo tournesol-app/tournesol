@@ -2,10 +2,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from solidago.poll import *
-from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 
 
-class EntityCriterionWise(ParallelizedPollFunction):
+class EntityCriterionWise(ThreadedPollFunction):
     note: str="entity_criterion_wise_aggregation"
 
     def __init__(self, *args, **kwargs):
