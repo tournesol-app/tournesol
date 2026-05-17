@@ -114,7 +114,12 @@ const manifest = {
     },
     {
       matches: ['https://*.youtube.com/*'],
-      js: ['addVideoStatistics.js', 'addModal.js', 'addVideoButtons.js'],
+      js: [
+        'addVideoStatistics.js',
+        'addModal.js',
+        'addVideoButtons.js',
+        'detectVideoWatched.js',
+      ],
       css: ['addVideoStatistics.css', 'addModal.css', 'addVideoButtons.css'],
       run_at: 'document_end',
       all_frames: true,

@@ -17,6 +17,7 @@ import { LoginState } from 'src/features/login/LoginState.model';
 import { initialState } from 'src/features/login/loginSlice';
 import {
   ComparisonUi_weeklyCollectiveGoalDisplayEnum,
+  Extension_onVideoWatchedEnum,
   FeedForyou_dateEnum,
   Notifications_langEnum,
   OpenAPI,
@@ -85,6 +86,7 @@ describe('GenericPollUserSettingsForm', () => {
           videos: {
             rate_later__auto_remove: 16,
             comparison_ui__weekly_collective_goal_display: 'NEVER',
+            extension__on_video_watched: 'MARK_AS_WATCHED',
             feed_foryou__unsafe: true,
           },
           general: {
@@ -151,6 +153,9 @@ describe('GenericPollUserSettingsForm', () => {
     const compUiWeeklyColGoalDisplay = screen.getByTestId(
       'videos_weekly_collective_goal_display'
     );
+    const extOnVideoWatched = screen.getByTestId(
+      'videos_extension__on_video_watched'
+    );
     const rateLaterAutoRemove = screen.getByTestId(
       'videos_rate_later__auto_remove'
     );
@@ -161,6 +166,7 @@ describe('GenericPollUserSettingsForm', () => {
 
     return {
       compUiWeeklyColGoalDisplay,
+      extOnVideoWatched,
       notificationsEmailResearch,
       notificationsEmailNewFeatures,
       notificationsLang,
@@ -185,6 +191,7 @@ describe('GenericPollUserSettingsForm', () => {
     it('displays the defined values after a submit', async () => {
       const {
         compUiWeeklyColGoalDisplay,
+        extOnVideoWatched,
         notificationsEmailResearch,
         notificationsEmailNewFeatures,
         notificationsLang,
@@ -206,6 +213,9 @@ describe('GenericPollUserSettingsForm', () => {
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.ALWAYS
       );
+      expect(extOnVideoWatched).toHaveValue(
+        Extension_onVideoWatchedEnum.DO_NOTHING
+      );
       expect(feedForYouDate).toHaveValue(FeedForyou_dateEnum.MONTH);
       expect(feedForYouUnsafe).toHaveProperty('checked', false);
 
@@ -214,6 +224,9 @@ describe('GenericPollUserSettingsForm', () => {
       fireEvent.change(rateLaterAutoRemove, { target: { value: 16 } });
       fireEvent.change(compUiWeeklyColGoalDisplay, {
         target: { value: ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER },
+      });
+      fireEvent.change(extOnVideoWatched, {
+        target: { value: Extension_onVideoWatchedEnum.MARK_AS_WATCHED },
       });
       fireEvent.change(feedForYouDate, {
         target: { value: FeedForyou_dateEnum.ALL_TIME },
@@ -231,6 +244,9 @@ describe('GenericPollUserSettingsForm', () => {
       expect(rateLaterAutoRemove).toHaveValue(16);
       expect(compUiWeeklyColGoalDisplay).toHaveValue(
         ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER
+      );
+      expect(extOnVideoWatched).toHaveValue(
+        Extension_onVideoWatchedEnum.MARK_AS_WATCHED
       );
       expect(feedForYouDate).toHaveValue(FeedForyou_dateEnum.ALL_TIME);
       expect(feedForYouUnsafe).toHaveProperty('checked', true);
@@ -274,6 +290,8 @@ describe('GenericPollUserSettingsForm', () => {
           videos: {
             comparison_ui__weekly_collective_goal_display:
               ComparisonUi_weeklyCollectiveGoalDisplayEnum.NEVER,
+            extension__on_video_watched:
+              Extension_onVideoWatchedEnum.MARK_AS_WATCHED,
             rate_later__auto_remove: 16,
             feed_foryou__unsafe: true,
           },

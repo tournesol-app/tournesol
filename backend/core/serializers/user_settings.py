@@ -88,10 +88,24 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
         ("ALL_TIME", "all_time"),
     ]
 
+    ON_VIDEO_WATCHED_CHOICES = [
+        ("DO_NOTHING", "do_nothing"),
+        ("MARK_AS_WATCHED", "mark_as_watched"),
+    ]
+
     extension__search_reco = serializers.BooleanField(
         required=False,
         help_text=(
             "Whether Tournesol recommendations should be integrated in Youtube.com search results."
+        ),
+    )
+    extension__on_video_watched = serializers.ChoiceField(
+        choices=ON_VIDEO_WATCHED_CHOICES,
+        allow_blank=True,
+        required=False,
+        help_text=(
+            "What the browser extension should do when a video is detected as "
+            "watched on YouTube."
         ),
     )
 

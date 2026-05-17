@@ -3453,6 +3453,14 @@ components:
       - is_public
       - last_compared_at
       - n_comparisons
+    Extension_onVideoWatchedEnum:
+      enum:
+      - DO_NOTHING
+      - MARK_AS_WATCHED
+      type: string
+      description: |-
+        * `DO_NOTHING` - do_nothing
+        * `MARK_AS_WATCHED` - mark_as_watched
     FAQEntry:
       type: object
       description: A translated question with its translated answer.
@@ -4932,6 +4940,15 @@ components:
           type: boolean
           description: Whether Tournesol recommendations should be integrated in Youtube.com
             search results.
+        extension__on_video_watched:
+          description: |-
+            What the browser extension should do when a video is detected as watched on YouTube.
+
+            * `DO_NOTHING` - do_nothing
+            * `MARK_AS_WATCHED` - mark_as_watched
+          oneOf:
+          - $ref: '#/components/schemas/Extension_onVideoWatchedEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         recommendations__default_date:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
@@ -4986,6 +5003,15 @@ components:
           type: boolean
           description: Whether Tournesol recommendations should be integrated in Youtube.com
             search results.
+        extension__on_video_watched:
+          description: |-
+            What the browser extension should do when a video is detected as watched on YouTube.
+
+            * `DO_NOTHING` - do_nothing
+            * `MARK_AS_WATCHED` - mark_as_watched
+          oneOf:
+          - $ref: '#/components/schemas/Extension_onVideoWatchedEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         recommendations__default_date:
           oneOf:
           - $ref: '#/components/schemas/Recommendations_defaultDateEnum'
