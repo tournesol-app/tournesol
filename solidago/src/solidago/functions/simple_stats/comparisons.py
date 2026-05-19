@@ -81,4 +81,4 @@ class SimpleComparisonStats(PollFunction):
     
     def user_trusts(self, users: Users, comparisons: Comparisons) -> NDArray[np.float64]:
         users = users.filters(comparisons("username"))
-        return users("trust").to_numpy(np.float64)
+        return users("trust", 1.)

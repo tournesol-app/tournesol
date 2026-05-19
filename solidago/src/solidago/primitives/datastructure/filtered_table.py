@@ -556,7 +556,9 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
 
-    def __call__(self, column_name: str) -> NDArray:
+    def __call__(self, column_name: str, default_value: Any | None = None) -> NDArray:
+        if column_name not in self.columns:
+            return np.array([default_value] * len(self))
         if self.filter.indices is not None:
             series = self.table.df.loc[self.filter.indices][column_name]
         else:

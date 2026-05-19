@@ -34,13 +34,19 @@ class AddColumn(PollFunction):
         return users.assign(**{self.column: self.distribution.sample(len(users))})
 
 class BernoulliPretrust(PollFunction):
-    def __init__(self, p_if_trustworthy: float, p_if_untrustworthy: float=0.0):
+    def __init__(self, 
+        p_if_trustworthy: float, 
+        p_if_untrustworthy: float = 0.0, 
+        default_trustworthy: bool = True
+    ):
         assert p_if_trustworthy >= 0 and p_if_trustworthy <= 1
         assert p_if_untrustworthy >= 0 and p_if_untrustworthy <= 1
         self.p_if_trustworthy = p_if_trustworthy
         self.p_if_untrustworthy = p_if_untrustworthy
+        self.default_trustworthy = default_trustworthy
     
     def fn(self, users: poll.Users) -> poll.Users:
-        args = self.p_if_trustworthy, self.p_if_untrustworthy
-        pretrust = np.random.random(len(users)) < np.where(users("trustworthy"), *args)
+        trustworthy = users("trustworthy", self.default_trustworthy)
+        thresholds = trustworthy * self.p_if_trustworthy + (1-trustworthy) * self.p_if_untrustworthy
+        pretrust = np.random.random(len(users)) < thresholds
         return users.assign(pretrust=pretrust)

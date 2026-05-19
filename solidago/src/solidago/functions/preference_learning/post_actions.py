@@ -5,8 +5,12 @@ from solidago.primitives.datastructure.named_objects import Contains
 
 class PostActions(ThreadedPollFunction):
     default_action_weights: dict = dict(post=1, repost=1, report=-1)
+    default_default_lifetime: int | float = 3600 * 24 * 3
 
-    def __init__(self, action_weights: dict | None = None):
+    def __init__(self, 
+        action_weights: dict | None = None,
+        default_lifetime: int | float | None = None,
+    ):
         """ 
         Parameters
         ---------
@@ -15,6 +19,7 @@ class PostActions(ThreadedPollFunction):
         """
         super().__init__()
         self.action_weights = action_weights or self.default_action_weights
+        self.default_lifetime = self.default_default_lifetime if default_lifetime is None else default_lifetime
 
     def actions(self) -> set[str]:
         return set(self.action_weights.keys())
@@ -30,11 +35,13 @@ class PostActions(ThreadedPollFunction):
     ) -> tuple[
         list[tuple[str, int | float, int | float]], # publications, with name, date, lifetime
         list[tuple[str, int | float, int | float, str]] # reactions, with name, date, lifetime, criterion
-    ]: 
-        e = entities.filters(authors=Contains(username))
-        publications = list(zip(e.names(), e("date"), e("lifetime")))
+    ]:
+        publications = list()
+        if "authors" in entities.columns:
+            e = entities.filters(authors=Contains(username))
+            publications = list(zip(e.names(), e("date"), e("lifetime", self.default_lifetime)))
         r = ratings.filters(username=username, criterion=self.actions())
-        reactions = list(zip(r("entity_name"), r("date"), r("lifetime"), r("criterion")))
+        reactions = list(zip(r("entity_name"), r("date"), r("lifetime", self.default_lifetime), r("criterion")))
         return publications, reactions
     
     def thread_function(self, 

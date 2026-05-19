@@ -16,6 +16,7 @@ class AffineOvertrust(ThreadedPollFunction):
         privacy_penalty: float = 0.5, 
         min_overtrust: float = 2.0,
         overtrust_ratio: float = 0.1,
+        default_trust: float = 0.5,
         *args, **kwargs,
     ):
         """ Computes voting_rights using the affine overtrust algorithm described in 
@@ -37,6 +38,7 @@ class AffineOvertrust(ThreadedPollFunction):
         self.privacy_penalty = privacy_penalty
         self.min_overtrust = min_overtrust
         self.overtrust_ratio = overtrust_ratio
+        self.default_trust = default_trust
 
     def _variables(self, # type: ignore
         entities: Entities, 
@@ -71,7 +73,7 @@ class AffineOvertrust(ThreadedPollFunction):
     ) -> tuple[NDArray, NDArray, float, float]:
         (entity, _), evaluators = variable, nonargs
         assert isinstance(evaluators, Users)
-        trusts = np.array([user["trust"] for user in evaluators])
+        trusts = evaluators("trust", self.default_trust)
         public = np.array([public_settings.get(username=user.name, entity_name=entity.name)["public"] for user in evaluators])
         privacy_weights = public * (1 - self.privacy_penalty) + self.privacy_penalty
         return trusts, privacy_weights, self.overtrust_ratio, self.min_overtrust

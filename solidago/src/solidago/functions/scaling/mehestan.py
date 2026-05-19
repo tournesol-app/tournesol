@@ -222,7 +222,7 @@ class Mehestan(PollFunction):
         """
         return np.array([
             self.compute_user_activities(
-                user["trust"], 
+                user.get("trust", 1.),
                 public_settings.filters(username=user.name), 
                 scores.filters(username=user.name)
             ) for user in users
@@ -352,7 +352,7 @@ class Mehestan(PollFunction):
             value = qr_median(**kwargs) # type: ignore
             uncertainty = qr_uncertainty(median=value, default_dev=default_dev, **kwargs) # type: ignore
             scores.set(Score((value, uncertainty, uncertainty)), scalee_name=scalee_name, scaler_name=scaler_name)
-            voting_rights.set(scalee_name=scalee_name, scaler_name=scaler_name, voting_right=users[scaler_name]["trust"])
+            voting_rights.set(scalee_name=scalee_name, scaler_name=scaler_name, voting_right=users[scaler_name].get("trust", 1.))
                 
         return voting_rights, scores
 

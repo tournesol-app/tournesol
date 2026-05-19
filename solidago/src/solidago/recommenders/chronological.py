@@ -18,16 +18,18 @@ class Chronological(Recommender):
     ) -> Entities:
         followings = poll.socials.filters(by=receiver_name, kind=self.follow_kind)("to")
         reposts = poll.ratings.filters(username=followings, criterion=self.rating_criteria)
-        names = set(poll.entities.filters(authors=Contains(followings)).names())
+        names = set()
+        if "authors" in poll.entities.columns:
+            names = set(poll.entities.filters(authors=Contains(followings)).names())
         entities = poll.entities.filters(names | reposts.keys("entity_name"))
-        entities = entities.assign(last_date=entities("date"))
+        entities = entities.assign(last_date=entities("date", 0))
         
-        if receiver_name is not None:
+        if receiver_name is not None and "authors" in poll.entities.columns:
             entities = entities.excludes(authors=Contains(receiver_name))
         
         for repost in reposts:
             name = repost["entity_name"]
-            if receiver_name not in poll.entities[name]["authors"]:
+            if receiver_name not in poll.entities[name].get("authors", ()):
                 last_date = max(repost["date"], entities[name]["last_date"])
                 entities[name, "last_date"] = last_date
         

@@ -5,26 +5,21 @@ from solidago.functions.poll_function import PollFunction
 
 
 class ErdosRenyiVouch(PollFunction):
+    def __init__(self, default_trustworthy: bool = True, default_expected_n_vouches: float = 5.):
+        self.default_trustworthy = default_trustworthy
+        self.default_expected_n_vouches = default_expected_n_vouches
+
     def fn(self, users: Users, socials: Socials) -> Socials:
-        """ Each social is sampled independently, with a probability dependent on users' metadata.
-        Each user must have the two keys `trustworthy: bool` and `n_expected_vouches: float`.
-        Trustworthy vouchers only vouch for trustworthy vouchees,
-        and untrustworthy vouchers only vouch for untrustworthy vouchees.
-        The probability of a vouch from `voucher` to `vouchee` is given by
-        `voucher["expected_n_vouches"] / len({ user if user["trustworthy"] == voucher["trustworthy"] })`,
-        assuming the voucher and vouchee have the same "trustworthy" value.
-        """
-        for user in users:
-            assert "trustworthy" in user
-            assert "expected_n_vouches" in user
-        
+        if "trustworthy" not in users.columns:
+            users = users.assign(trustworthy=self.default_trustworthy)
         for trustworthy in (True, False):
-            usernames_subset = {user.name for user in users if user["trustworthy"] == trustworthy}
-            if len(usernames_subset) <= 1: continue
+            subusers = users.filters(trustworthy=trustworthy)
+            if len(subusers) <= 1: continue
             
-            for by in usernames_subset:
-                p_vouch = users[by]["expected_n_vouches"] / (len(usernames_subset) - 1)
-                for to in usernames_subset:
+            for by in subusers:
+                expected_n_vouches = by.get("expected_n_vouches", self.default_expected_n_vouches)
+                p_vouch = expected_n_vouches / (len(subusers) - 1)
+                for to in subusers:
                     if (by != to) and (np.random.random() < p_vouch):
                         value = (1 - np.random.random()**2, 0)
                         socials.set(by=by, to=to, kind="Personhood", value=value)

@@ -42,8 +42,7 @@ class Independent(PollFunction):
         left_public: bool, right_public: bool, 
         criterion: str
     ) -> dict[str, Any]:
-        malicious = "trustworthy" in user and not user["trustworthy"]
-        compare = self.malicious if malicious else self.honest
+        compare = self.honest if user.get("trustworthy", True) else self.malicious
         return compare(comparison, user, left, right, left_public, right_public, criterion)
 
 

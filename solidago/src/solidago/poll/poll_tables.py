@@ -9,11 +9,7 @@ from solidago.primitives.datastructure.named_objects import NamedObject, NamedOb
 
 
 class User(NamedObject):
-    default: dict[str, bool | int | float | str] = dict(
-        pretrust=False, 
-        trust=0.0,
-        representative="default",
-    )
+    pass
 
 class Users(NamedObjects[User]):
     name: str = "users"
@@ -23,11 +19,7 @@ class Users(NamedObjects[User]):
 
 
 class Entity(NamedObject):
-    default: dict[str, bool | int | float | str | tuple[str, ...]] = dict(
-        authors=(), 
-        mentions=(),
-        date=0,
-    )
+    pass
 
 class Entities(NamedObjects[Entity]):
     name: str = "entities"
@@ -37,15 +29,14 @@ class Entities(NamedObjects[Entity]):
 
 
 class Social(Row):
-    default: dict[str, Any] = dict(weight=0.0, date=0)
+    pass
 
 class Socials(FilteredTable[Social]):
     TableRowType: type = Social
     name: str = "socials"
-    default_column_names: list[str] = ["by", "to", "kind", "weight", "date"]
+    default_column_names: list[str] = ["by", "to", "kind", "weight", "timestamp"]
     default_keynames: set[str] = {"by", "to", "kind"}
-    default_dtypes: dict[str, DTypeLike] = dict(weight=np.float64)
-    default_default_select: Select = SelectLast("date")
+    default_default_select: Select = SelectLast("timestamp")
 
 
 class PublicSetting(Row):
@@ -57,59 +48,58 @@ class PublicSettings(FilteredTable[PublicSetting]):
     default_column_names: list[str] = ["username", "entity_name", "public"]
     default_keynames: set[str] = {"username", "entity_name"}
     default_dtypes: dict[str, DTypeLike] = dict(public=np.bool_)
+    
+    def __init__(self, *args, default_value: bool = True, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_value = default_value
 
     def penalties(self, privacy_penalty: float) -> NDArray[np.float64]:
-        return self("public") * privacy_penalty
+        return self("public", self.default_value) * privacy_penalty
 
     def penalty(self, privacy_penalty: float, *args, **kwargs) -> float:
-        return 1 if self.get(*args, **kwargs)["public"] else privacy_penalty
+        if self.get(*args, **kwargs).get("public", self.default_value):
+            return 1
+        return privacy_penalty
     
 
 class Rating(Row):
-    default: dict[str, Any] = dict(
-        value=np.nan, min=-np.inf, max=np.inf,
-        root_law=None, root_law_arg=None, 
-        context="undefined", date=0,
-    )
+    pass
 
 class Ratings(FilteredTable[Rating]):
     TableRowType: type = Rating
     name: str = "ratings"
-    default_column_names: list[str] = ["username", "entity_name", "criterion", "context", 
-        "value", "min", "max", "root_law", "root_law_arg", "date"]
+    default_column_names = ["username", "entity_name", "criterion", "context", "timestamp"]
     default_keynames: set[str] = {"username", "entity_name", "criterion", "context"}
-    default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, min=np.float64, max=np.float64)
     default_default_select: Select = SelectLast("date")
 
 
 class Comparison(Row):
-    default: dict[str, Any] = dict(
-        value=np.nan, max=np.inf,
-        root_law=None, root_law_arg=None, 
-        context="undefined", date=0,
-    )
+    pass
 
 class Comparisons(FilteredTable[Comparison]):
     TableRowType: type = Comparison
     name: str = "comparisons"
-    default_column_names: list[str] = ["username", "criterion", "context", "left_name", "right_name",
-        "value", "max", "root_law", "root_law_arg", "date"]
+    default_column_names: list[str] = ["username", "criterion", "context", 
+        "left_name", "right_name", "timestamp"]
     default_keynames: set[str] = {"username", "criterion", "context", "left_name", "right_name"}
-    default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, max=np.float64)
-    default_default_select: Select = SelectLast("date")
+    default_default_select: Select = SelectLast("timestamp")
 
-    def entity_comparisons(self, entities: Entities) -> list[tuple[NDArray[np.int64], NDArray[np.float64], NDArray[np.float64]]]:
+    def entity_comparisons(self, 
+        entities: Entities,
+        default_value: float = 1.,
+        default_max: float = np.inf,
+    ) -> list[tuple[NDArray[np.int64], NDArray[np.float64], NDArray[np.float64]]]:
         """ Returns other_indices, comparison_values, comparison_maxs """
         result = list()
         for entity in entities:
             as_left = self.filters(left_name=entity.name)
-            as_left_other_indices = [entities.name2index(right_name) for right_name in as_left("right_name")]
-            as_left_values = as_left("value").astype(np.float64)
-            as_left_maxs = as_left("max").astype(np.float64)
+            as_left_other_indices = [entities.name2index(r) for r in as_left("right_name")]
+            as_left_values = as_left("value", default_value)
+            as_left_maxs = as_left("max", default_max)
             as_right = self.filters(right_name=entity.name)
-            as_right_other_indices = [entities.name2index(left_name) for left_name in as_right("left_name")]
-            as_right_values = - as_right("value").astype(np.float64)
-            as_right_maxs = as_right("max").astype(np.float64)
+            as_right_other_indices = [entities.name2index(l) for l in as_right("left_name")]
+            as_right_values = - as_right("value", default_value)
+            as_right_maxs = as_right("max", default_max)
             other_indices = np.array(as_left_other_indices + as_right_other_indices, dtype=np.int64)
             comparison_values = np.concatenate([as_left_values, as_right_values], dtype=np.float64)
             comparison_maxs = np.concatenate([as_left_maxs, as_right_maxs], dtype=np.float64)
@@ -141,6 +131,6 @@ class PastRecommendation(Row):
 class PastRecommendations(FilteredTable[PastRecommendation]):
     TableRowType: type = PastRecommendation
     name: str = "past_recommendations"
-    default_column_names: list[str] = ["username", "entity_name", "context", "date"]
+    default_column_names: list[str] = ["username", "entity_name", "context", "timestamp"]
     default_keynames: set[str] = {"username", "entity_name", "context"}
-    default_dtypes: dict[str, DTypeLike] = dict(date=np.int64)
+    

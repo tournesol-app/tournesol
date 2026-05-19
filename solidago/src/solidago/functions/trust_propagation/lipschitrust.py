@@ -19,6 +19,7 @@ class LipschiTrust(PollFunction):
         decay: float = 0.8,
         sink_vouch: float = 5.0,
         error: float = 1e-8,
+        default_pretrust: bool = False,
         *args, **kwargs,
     ):
         """A robustified variant of PageRank.
@@ -65,6 +66,7 @@ class LipschiTrust(PollFunction):
         self.decay = decay
         self.sink_vouch = sink_vouch
         self.error = error
+        self.default_pretrust = default_pretrust
 
     def fn(self, users: Users, socials: Socials) -> Users:
         if len(users) == 0:
@@ -74,7 +76,7 @@ class LipschiTrust(PollFunction):
         bys = np.array(list(map(users.name2index, personhood_vouches("by"))))
         tos = np.array(list(map(users.name2index, personhood_vouches("to"))))
         weights = personhood_vouches("weight")
-        pretrusts = users("pretrust").to_numpy(np.float64) * self.pretrust_value
+        pretrusts = users("pretrust", self.default_pretrust) * self.pretrust_value
         
         trusts = type(self).main(bys, tos, weights, pretrusts, self.sink_vouch, self.decay, self.error)
         return users.assign(trust=trusts)

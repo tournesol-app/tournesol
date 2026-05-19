@@ -47,9 +47,10 @@ class Mentions(CustomizablePollFunction):
         follow_volumes = users("follow_volume", 0)
         date = self.date or Date.now()
         min_date = (date - self.age_cutoff).timestamp()
+        entities = entities if "mentions" in entities else entities.assign(mentions=())
         entities = entities.filters(mentions=Contains(self.receiver.name), date=After(min_date))
-        mentioners = reduce(lambda acc, e: acc | set(e["authors"]), entities, set())
-        is_mentioner = users.names().isin(mentioners)
+        mentioners = reduce(lambda acc, e: acc | set(e.get("authors", ())), entities, set())
+        is_mentioner = [n for n in users.names() if n in mentioners]
         missing_volumes = (self.mention_volume - follow_volumes).clip(0) * is_mentioner
         multiplier = min(1., self.relative_max_volume * follow_volumes.sum() / missing_volumes.sum())
         mention_volumes = missing_volumes * multiplier

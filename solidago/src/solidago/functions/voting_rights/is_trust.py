@@ -3,7 +3,7 @@ from solidago.functions.poll_function import PollFunction
 
 
 class Trust2VotingRights(PollFunction):
-    def __init__(self, privacy_penalty: float=0.5, *args, **kwargs):
+    def __init__(self, privacy_penalty: float=0.5, default_trust: float=.1, *args, **kwargs):
         """ Computes voting_rights simply as the user trust scores,
         potentially multiplied by the privacy penalty if the vote is private.
         
@@ -14,6 +14,7 @@ class Trust2VotingRights(PollFunction):
         """
         super().__init__(*args, **kwargs)
         self.privacy_penalty = privacy_penalty
+        self.default_trust = default_trust
     
     def fn(self, 
         users: Users, 
@@ -33,7 +34,7 @@ class Trust2VotingRights(PollFunction):
                         username=user.name, 
                         entity_name=entity.name, 
                         criterion=criterion, 
-                        voting_right=penalty * user["trust"]
+                        voting_right=penalty * user.get("trust", self.default_trust)
                     )
         
         return voting_rights

@@ -39,7 +39,7 @@ class After:
 
 
 class NamedObject:
-    default: dict[str, Any] = dict(trust=0.0)
+    default: dict[str, Any] = dict()
 
     def __init__(self, name: str, series: pd.Series | None = None, vector: Iterable[float] | None = None, **kwargs):
         if series is None:
@@ -111,8 +111,8 @@ class NamedObjects(Generic[Object]):
         self._get_vector_coordinates()
 
     @property
-    def columns(self) -> pd.Index:
-        return self.df.columns
+    def columns(self) -> list[str]:
+        return self.df.columns.to_list()
 
     @abstractmethod
     def row2object(self, row: pd.Series) -> Object:
@@ -161,8 +161,8 @@ class NamedObjects(Generic[Object]):
         self._cache_name2index()
         return self._index2name[index] # type: ignore - previous line guaranteed self._index2name is not None
     
-    def names(self) -> pd.Index:
-        return self.df.index
+    def names(self) -> list[str]:
+        return self.df.index.to_list()
     
     def __getitem__(self, name: int | np.integer | Hashable | Object) -> Object:
         if isinstance(name, (int, np.integer)):
@@ -256,13 +256,10 @@ class NamedObjects(Generic[Object]):
                 pair = (self[i], self[j]) if s else (self[j], self[i])
                 yield pair # type: ignore - Cannot be Self given i, j are int
 
-    def __call__(self, name: str, default_value: Any | None = None) -> pd.Series:
+    def __call__(self, name: str, default_value: Any | None = None) -> NDArray:
         if name not in self.df.columns and default_value is not None:
-            return pd.Series([default_value] * len(self))
-        return self.df[name] 
-    
-    def get_columns(self, names: Iterable[str]) -> pd.DataFrame:
-        return self.df[list(names)]
+            return np.array([default_value] * len(self))
+        return self.df[name].to_numpy() 
 
     def drop(self, names: Iterable[str] | str) -> Self:
         names = [names] if isinstance(names, str) else list(names)

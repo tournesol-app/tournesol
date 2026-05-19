@@ -35,12 +35,8 @@ class Independent(PollFunction):
     
     def rate(self, 
         rating: Rating, 
-        user: User, 
-        entity: Entity, 
-        public: bool, 
-        criterion: str
+        user: User, entity: Entity, public: bool, criterion: str
     ) -> dict[str, Any]:
-        malicious = "trustworthy" in user and not user["trustworthy"]
-        rate = self.malicious if malicious else self.honest
+        rate = self.honest if user.get("trustworthy", True) else self.malicious
         return rate(rating, user, entity, public, criterion)
 
