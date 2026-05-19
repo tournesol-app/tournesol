@@ -1,4 +1,4 @@
-from typing import Any, Hashable, Literal
+from typing import Any, Hashable
 from numpy.typing import DTypeLike, NDArray
 
 import numpy as np, pandas as pd
@@ -37,14 +37,14 @@ class Entities(NamedObjects[Entity]):
 
 
 class Social(Row):
-    default: dict[str, Any] = dict(weight=0.0, priority=-0.0, date=0)
+    default: dict[str, Any] = dict(weight=0.0, date=0)
 
 class Socials(FilteredTable[Social]):
     TableRowType: type = Social
     name: str = "socials"
-    default_column_names: list[str] = ["by", "to", "kind", "weight", "priority", "date"]
+    default_column_names: list[str] = ["by", "to", "kind", "weight", "date"]
     default_keynames: set[str] = {"by", "to", "kind"}
-    default_dtypes: dict[str, DTypeLike] = dict(weight=np.float64, priority=np.float64)
+    default_dtypes: dict[str, DTypeLike] = dict(weight=np.float64)
     default_default_select: Select = SelectLast("date")
 
 

@@ -16,5 +16,6 @@ __all__ = [
     "UserModels", "UserDirectScores", "UserCategoryScores", "UserParameters", 
     "UserMultipliers", "UserTranslations", "CommonMultipliers", "CommonTranslations",
     "Linear",
+    "PastRecommendations",
     "Poll", "TournesolExport",
 ]

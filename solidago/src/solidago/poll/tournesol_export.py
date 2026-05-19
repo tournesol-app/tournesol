@@ -65,7 +65,6 @@ class TournesolExport(Poll):
 
         users["pretrust"] = pd.to_numeric(users["trust"]) >= 0.8
         socials["kind"] = "Personhood"
-        socials["priority"] = 0
         socials["date"] = cls.start_date.second
         user_scores["depth"] = 0
         global_scores["depth"] = 0

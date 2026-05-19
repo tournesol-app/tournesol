@@ -20,6 +20,6 @@ __all__ = [
     "User", "Users", "Entity", "Entities",
     "Socials", "PublicSettings",
     "Rating", "Ratings", "Comparison", "Comparisons",
-    "VotingRights", "Score", "Scores", "ScoringModel", "UserModels",
+    "VotingRights", "Score", "Scores", "ScoringModel", "UserModels", "PastRecommendations",
     "Poll", "TournesolExport", "Experiment",
 ]

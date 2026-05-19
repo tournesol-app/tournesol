@@ -75,7 +75,6 @@ class Row:
         self._table = None
         self.series = pd.Series(self.to_dict())
 
-
 class NonUniqueError(Exception):
     pass
 
@@ -147,7 +146,6 @@ class Filter:
             return "No filter"
         return f"Filters " + ', '.join(f'{n}={k}' for n, k in self.keys.items()) + f", indices={self.indices}"
 
-
 class _TableCache:
     def __init__(self, indices: dict[str, dict[Hashable, pd.Index | NDArray[np.int_] | list[int]]] | None = None):
         self._indices = indices or dict() # indices[keyname, key] = {indices}
@@ -211,7 +209,6 @@ class _TableCache:
             for key in self.keys(keyname):
                 r += f"Cached {keyname}, {key}: {set(self.indices(keyname, key))}\n"
         return r
-
 
 class _Table:
     def __init__(self, df: pd.DataFrame, _cache: _TableCache | None = None, version: int = 0):
@@ -327,7 +324,6 @@ class _Table:
 
     def __repr__(self) -> str:
         return f"{self._cache}\n\n{self.df}"
-    
 
 class FilteredTable(Generic[TableRow]):
     """ Datastructure for tables of entries without index column. 
