@@ -1,17 +1,19 @@
 from contextlib import contextmanager
-
 from datetime import datetime, timedelta
 from timeit import default_timer
-import logging
 from typing import Self, overload
 
-DateInput = datetime | dict | str | int | float
-DurationInput = timedelta | dict | int
+import numpy as np
+import logging
+
+
+DateInput = datetime | dict | str | int | np.integer | float
+DurationInput = timedelta | dict | int | np.integer | float
 
 class Date:
     def __init__(self, date: DateInput): 
-        if isinstance(date, (int, float)):
-            self.date = datetime.fromtimestamp(date)
+        if isinstance(date, (int, np.integer, float)):
+            self.date = datetime.fromtimestamp(float(date))
         elif isinstance(date, str):
             self.date = datetime.fromisoformat(date)
         elif isinstance(date, dict):
@@ -19,16 +21,31 @@ class Date:
         else:
             self.date = date
 
-    @property
-    def seconds(self) -> int:
-        return self.date.second
+    def timestamp(self) -> float:
+        return self.date.timestamp()
     
+    def __add__(self, other: "Duration") -> Self:
+        return type(self)(self.date + other.duration)
+    
+    @overload
+    def __sub__(self, other: "Duration") -> Self: ...
+    @overload
+    def __sub__(self, other: Self) -> "Duration": ...
+    def __sub__(self, other):
+        if isinstance(other, Date):
+            return Duration(self.date - other.date)
+        assert isinstance(other, Duration)
+        return Date(self.date - other.duration)
+
     @classmethod
     def now(cls) -> Self:
         return cls(datetime.now())
     
     def __bool__(self) -> bool:
         return True
+    
+    def __repr__(self) -> str:
+        return repr(self.date)
 
 
 class Duration:
@@ -44,18 +61,21 @@ class Duration:
 
     @staticmethod
     def _load(duration: DurationInput) -> timedelta:
-        if isinstance(duration, (int, float)):
-            return timedelta(seconds=duration)
+        if isinstance(duration, (int, np.integer, float)):
+            return timedelta(seconds=float(duration))
         if isinstance(duration, dict):
             return timedelta(**duration)
         return duration
 
     @property
-    def seconds(self) -> int:
+    def seconds(self) -> float:
         return self.duration.seconds
     
     def __bool__(self) -> bool:
         return True
+    
+    def __repr__(self) -> str:
+        return repr(self.duration)
 
 
 @contextmanager

@@ -1,7 +1,7 @@
 import numpy as np
 from solidago import *
 from solidago.primitives.time import timeit
-from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 
 import logging.config
 
@@ -33,11 +33,11 @@ def primes(base_value: int, n_values: int):
     numbers = range(base_value, base_value + 2 * n_values, 2)
     for max_workers in (1, 2, 6, 15):
         with timeit(f"Prime listing with max_workers={max_workers}"):
-            results = ParallelizedPollFunction.threading(max_workers, is_prime, list(numbers))
+            results = ThreadedPollFunction.threading(max_workers, is_prime, list(numbers))
             primes = [n for n, prime in zip(numbers, results) if prime]
             print(f"Found {len(primes)} primes")
 
-class PrimeFunction(ParallelizedPollFunction):
+class PrimeFunction(ThreadedPollFunction):
     def __init__(self, base_value: int, n_values: int, max_workers = None):
         super().__init__(max_workers)
         self.base_value = base_value

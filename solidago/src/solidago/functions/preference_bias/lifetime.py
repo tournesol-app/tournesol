@@ -1,3 +1,5 @@
+from numpy.typing import NDArray
+
 import numpy as np
 
 from solidago.primitives.time import DurationInput, Duration
@@ -6,23 +8,24 @@ from .bias import WeightPreservingBias
 
 
 class LifetimeBias(WeightPreservingBias):
-    def __init__(self, preferred_lifetime: DurationInput | None = None, bias: float = 1.):
-        self.preferred_lifetime = None
-        if preferred_lifetime is not None:
-            self.preferred_lifetime = Duration(preferred_lifetime)
-        self.bias = bias
+    def __init__(self, 
+        default_preferred_lifetime: DurationInput | None = None, 
+        default_lifetime_bias: float = 1., 
+        *args, **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.default_preferred_lifetime = None
+        if default_preferred_lifetime is not None:
+            self.default_preferred_lifetime = Duration(default_preferred_lifetime)
+        self.default_lifetime_bias = default_lifetime_bias
     
-    def customize(self, user: User, date=None):
-        if "preferred_lifetime" in user:
-            self.preferred_lifetime = user["preferred_lifetime"]
-        if "lifetime_bias" in user:
-            self.bias = user["lifetime_bias"]
-
-    def multipliers(self, poll: Poll, scores: Scores) -> Scores:
-        assert self.preferred_lifetime is not None, \
-            f"Ran {type(self).__name__} without receiver preferred lifetime"
-        entities = poll.entities.filters(scores("entity_names"))
-        lifetimes = entities("lifetime")
-        discrepancy = np.power(np.log(lifetimes / self.preferred_lifetime), 2)
-        multipliers = np.power(1 + discrepancy, - self.bias)
-        return Scores(value=multipliers)
+    def _multipliers(self,  # type: ignore
+        scores: Scores, 
+        entities: Entities
+    ) -> tuple[NDArray, NDArray | float, NDArray | float]:
+        assert self.user is not None, f"Ran {type(self).__name__} without receiver"
+        pref_lifetime = self.user.get("preferred_lifetime", self.default_preferred_lifetime)
+        lifetime_bias = self.user.get("lifetime_bias", self.default_lifetime_bias)
+        lifetimes = entities.filters(scores("entity_names"))("lifetime")
+        discrepancy = np.power(np.log(lifetimes / pref_lifetime), 2)
+        return np.power(1 + discrepancy, - lifetime_bias), 0., 0.

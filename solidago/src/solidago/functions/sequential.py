@@ -26,7 +26,7 @@ class Sequential(PollFunction):
     def __call__(self, poll: Poll, save_directory: str | None = None) -> Poll:
         return self.fn(poll, save_directory)
 
-    def customize(self, user: User, date: Date | None = None):
+    def customize(self, user: User | None = None, date: Date | None = None):
         for f in self.subfunctions:
             f.customize(user, date)
     

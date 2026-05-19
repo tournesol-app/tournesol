@@ -74,7 +74,7 @@ class PollFunction(ABC):
         self.save_result(result, save_directory)
         return result
 
-    def customize(self, user: User, date: Date | None = None):
+    def customize(self, user: User | None = None, date: Date | None = None):
         if hasattr(self, "user"):
             self.user = user
         if hasattr(self, "date"):
@@ -96,8 +96,8 @@ class PollFunction(ABC):
         else:
             for index, return_type in enumerate(annotations["return"].__args__):
                 if not isinstance(value[index], return_type):
-                    from solidago.functions import ParallelizedPollFunction
-                    fn_to_fix = "_process_results" if isinstance(self, ParallelizedPollFunction) else "fn"
+                    from solidago.functions import ThreadedPollFunction
+                    fn_to_fix = "_process_results" if isinstance(self, ThreadedPollFunction) else "fn"
                     raise TypeError(
                         f"Please verify type consistency of returned value number {index} " \
                         f"of `{type(self).__name__}.{fn_to_fix}`, whose annotation is currently " \
@@ -116,8 +116,6 @@ class PollFunction(ABC):
                 logger.info(f"{log} in {int(timeit.default_timer() - start)} seconds")
             elif unit == "ms":
                 logger.info(f"{log} in {int(1000*(timeit.default_timer() - start))} ms")
-
-
     
     def log_info(self, message: str):
         logger.info(message)

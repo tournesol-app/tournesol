@@ -10,7 +10,7 @@ from solidago.primitives.datastructure.filtered_table import SelectUnique
 
 
 class Score(Row):
-    default: dict[str, Any] = dict(value=np.nan, left_unc=0., right_unc=0., date=0, lifetime=3600*24*7)
+    default: dict[str, Any] = dict(value=np.nan, left_unc=0., right_unc=0.)
 
     def __init__(self, 
         arg: Union[float, list, tuple, dict, Series, "Score"] | None = None, 
@@ -202,18 +202,14 @@ class Score(Row):
         return self.min <= value and value <= self.max
     
     # The following methods allow to treat Score like a MultiScore object to simplify code
-    def __iter__(self) -> Iterator["Score"]:
+    def __iter__(self) -> Iterator[Self]:
         yield self
     
-    def get(self, *keys: Hashable) -> "Score":
-        assert not keys
-        return self
-
 
 class Scores(FilteredTable[Score]):
     TableRowType: type = Score
     name: str = "scores"
-    default_column_names: list[str] = ["value", "left_unc", "right_unc", "date", "lifetime"]
+    default_column_names: list[str] = ["value", "left_unc", "right_unc"]
     default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, left_unc=np.int64, right_unc=np.int64)
     default_default_score: tuple[float, float, float] = np.nan, np.inf, np.inf
 

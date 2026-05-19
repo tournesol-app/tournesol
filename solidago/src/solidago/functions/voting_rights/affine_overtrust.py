@@ -6,11 +6,11 @@ import numpy as np
 
 from solidago.primitives.dichotomy import solve
 from solidago.poll import *
-from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 
 
-class AffineOvertrust(ParallelizedPollFunction):
-    block_parallelization: bool = False
+class AffineOvertrust(ThreadedPollFunction):
+    parallelize: bool = False
     
     def __init__(self, 
         privacy_penalty: float = 0.5, 

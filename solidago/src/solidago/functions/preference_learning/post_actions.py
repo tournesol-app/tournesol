@@ -1,9 +1,9 @@
 from solidago.poll import *
-from solidago.functions import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 from solidago.primitives.datastructure.named_objects import Contains
 
 
-class PostActions(ParallelizedPollFunction):
+class PostActions(ThreadedPollFunction):
     default_action_weights: dict = dict(post=1, repost=1, report=-1)
 
     def __init__(self, action_weights: dict | None = None):

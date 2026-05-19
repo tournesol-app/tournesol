@@ -44,8 +44,9 @@ class Mentions(CustomizablePollFunction):
             self.log_warning("Mentions without receiver. Identity used instead.")
             return users
         
-        follow_volumes = users("follow_volume", 0)        
-        min_date = (self.date or Date.now()).seconds - self.age_cutoff.seconds
+        follow_volumes = users("follow_volume", 0)
+        date = self.date or Date.now()
+        min_date = (date - self.age_cutoff).timestamp()
         entities = entities.filters(mentions=Contains(self.receiver.name), date=After(min_date))
         mentioners = reduce(lambda acc, e: acc | set(e["authors"]), entities, set())
         is_mentioner = users.names().isin(mentioners)

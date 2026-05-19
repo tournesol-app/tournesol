@@ -10,10 +10,10 @@ from solidago.primitives.minimizer.minimizer import Minimizer
 from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator
 
 from solidago.poll import *
-from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 
 
-class ParallelizedPreferenceLearning(ParallelizedPollFunction):
+class ParallelizedPreferenceLearning(ThreadedPollFunction):
     def __init__(self, 
         max_workers: int = 1,
         direct: bool = True,

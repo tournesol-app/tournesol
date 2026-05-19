@@ -30,5 +30,12 @@ poll = Poll(
     ], columns=["username", "entity_name", "public"]),
     Ratings([
         
-    ], columns=["username", "entity_name", "public"]),
+    ], columns=["username", "entity_name", "criterion", "context"]),
+    Comparisons([
+        
+    ], columns=["username", "criterion", "context", "left_name", "right_name"]),
+    VotingRights(),
+    UserModels(),
+    ScoringModel(),
+    PastRecommendations(),
 )

@@ -46,6 +46,9 @@ class Row:
 
     def __getitem__(self, key: str) -> Any:
         return self.series[key]
+    
+    def get(self, key: str, default_value: Any) -> Any:
+        return self[key] if key in self else default_value
 
     def __setitem__(self, key: str, value: Any):
         if self._table is not None:
@@ -240,9 +243,11 @@ class _Table:
         self.cache(*keys.keys())
         filter = Filter()
         for name, key in keys.items():
-            if isinstance(key, (tuple, str)) or not isinstance(key, Iterable):
+            if isinstance(key, (tuple, str, Hashable)) or not isinstance(key, Iterable):
                 filter.keys[name] = key
                 key = {key}
+            if len(key) == 0:
+                return Filter(np.array([], np.int64))
             indices = np.concatenate([self._cache.indices(name, k) for k in key], dtype=np.int64)
             filter = filter & Filter(indices)
         return filter
@@ -253,7 +258,6 @@ class _Table:
             return other
         elif len(other.df) == 0:
             return self
-        # assert set(other.df.columns) == set(self.df.columns), (other.df.columns, self.df.columns)
         other_df = deepcopy(other.df)
         other_shift = len(self.df)
         other_df.index = other_df.index + other_shift

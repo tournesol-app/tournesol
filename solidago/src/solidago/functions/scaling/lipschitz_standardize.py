@@ -6,11 +6,11 @@ import numpy as np
 from solidago.poll.scoring.user_models import CommonMultipliers
 from solidago.primitives import qr_standard_deviation
 from solidago.poll import *
-from solidago.functions.parallelized import ParallelizedPollFunction
+from solidago.functions.threaded import ThreadedPollFunction
 
 
-class LipschitzStandardize(ParallelizedPollFunction):
-    block_parallelization: bool = False
+class LipschitzStandardize(ThreadedPollFunction):
+    parallelize: bool = False
     
     def __init__(self, 
         dev_quantile: float=0.9, 

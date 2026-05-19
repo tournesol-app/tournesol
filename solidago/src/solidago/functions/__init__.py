@@ -1,5 +1,5 @@
 from .poll_function import PollFunction
-from .parallelized import ParallelizedPollFunction
+from .threaded import ThreadedPollFunction
 from .sequential import Sequential
 from .identity import Identity
 
@@ -18,7 +18,7 @@ import solidago.functions.user_clustering as user_clustering
 from .tournesol_full import TournesolFull
 
 __all__ = [
-    "PollFunction", "ParallelizedPollFunction", "Sequential", "Identity", "TournesolFull",
+    "PollFunction", "ThreadedPollFunction", "Sequential", "Identity", "TournesolFull",
     "filtering", "simple_stats", "trust_propagation", "voting_rights",
     "preference_learning", "collaborative_filtering", "preference_bias",
     "scaling", "aggregation",
