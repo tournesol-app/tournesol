@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta
-
 import numpy as np
 
 from solidago.functions.poll_function import PollFunction
 from solidago.primitives.decay import Decay
 from solidago.poll import *
 from solidago.primitives.time import Date, DateInput, Duration, DurationInput
+from solidago.primitives.datastructure import SelectLast
 
 
 class Follows(PollFunction):
@@ -32,11 +31,12 @@ class Follows(PollFunction):
         if self.receiver is None:
             self.log_warning("Follows without receiver. Identity used instead.")
             return users.assign(follow_volume=0)
-        follows = socials.filters(by=self.receiver.name, kind=self.follows.keys())
-        councillors = users.filters(follows("to"))
-        follow_volumes = councillors.names().map(lambda c: follows.get(to=c)["weight"])
-        dates = councillors.names().map(lambda c: Date(follows.get(to=c)["date"]).timestamp())
-        date = Date.now() if self.date is None else self.date
-        ages = date.timestamp() - dates.to_numpy()
-        follow_volumes *= self.decay(ages, self.follow_lifetime.seconds)
-        return users.assign(follow_volumes=follow_volumes)
+        actions = socials.filters(by=self.receiver.name, kind=self.follows.keys())
+        follows_set = set(actions("to"))
+        follows = users.filters(follows_set)
+        g = lambda f, c, d: actions.get(SelectLast("timestamp"), to=f.name).get(c, d) 
+        t = (Date.now() if self.date is None else self.date).timestamp()
+        ages = t - np.array([g(f, "timestamp", t) for f in follows])
+        weights = np.array([g(f, "weight", 1.) for f in follows])
+        volumes = weights * self.decay(ages, self.follow_lifetime.seconds)
+        return follows.assign(follow_volumes=volumes)

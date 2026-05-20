@@ -23,7 +23,7 @@ poll = Poll(
         ("alice",   "erin",     "vouch",    1.,     33),
         ("bob",     "alice",    "follow",   1.,     25),
         ("bob",     "dave",     "vouch",    1.,     32),
-    ], colums=["by", "to", "kind", "weight", "date"]),
+    ], columns=["by", "to", "kind", "weight", "date"]),
     PublicSettings([
         ("alice",   "coconut",  False),
         ("dave",    "durian",   False),

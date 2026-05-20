@@ -6,7 +6,8 @@ def test_user():
     user = User("lpfaucon", vector=[1., 2.], trust=0.5)
     assert all(user.vector == np.array([1., 2.]))
     assert user["trust"] == 0.5
-    assert user["pretrust"] == False
+    assert user.get("pretrust", True) == True
+    assert user.get("pretrust", False) == False
 
 
 def test_users():

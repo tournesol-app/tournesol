@@ -10,7 +10,7 @@ from solidago.primitives.datastructure.filtered_table import SelectUnique
 
 
 class Score(Row):
-    default: dict[str, Any] = dict(value=np.nan, left_unc=0., right_unc=0.)
+    default_default_values: dict[str, Any] = dict(value=np.nan, left_unc=0., right_unc=0.)
 
     def __init__(self, 
         arg: Union[float, list, tuple, dict, Series, "Score"] | None = None, 
@@ -286,25 +286,26 @@ class Scores(FilteredTable[Score]):
             others.set(other)
             return self.cw_operation(others, op)
         
-        common_keynames = list(self.keynames & other.keynames)
-        result_keynames = self.keynames | other.keynames
+        common_keynames = list(set(self.keynames) & set(other.keynames))
+        result_keynames = list(set(self.keynames) | set(other.keynames))
         result = type(self)(keynames=result_keynames, default_score_factory=default_score_factory)
         keys_tuples = {tuple(s[name] for name in common_keynames) for s in itertools.chain(self, other)}
         for keys_tuple in keys_tuples:
             common_keys = dict(zip(common_keynames, keys_tuple))
             filtered_self, filtered_other = self.filters(**common_keys), other.filters(**common_keys)
             for self_score, other_score in itertools.product(filtered_self, filtered_other):
-                keys = common_keys | {n: self_score[n]for n in self.keynames - set(common_keynames)} | \
-                    {n: other_score[n]for n in other.keynames - set(common_keynames)}
+                keys = common_keys | \
+                    {n: self_score[n]for n in set(self.keynames) - set(common_keynames)} | \
+                    {n: other_score[n]for n in set(other.keynames) - set(common_keynames)}
                 score = op(self_score, other_score)
                 if isinstance(score, Score):
                     result.set(score, **keys)
-            if other.keynames.issubset(common_keynames) and not filtered_other:
+            if set(other.keynames).issubset(common_keynames) and not filtered_other:
                 for self_score in filtered_self:
                     score = op(self_score, other.get(**common_keys))
                     if isinstance(score, Score):
                         result.set(score, **common_keys)
-            if self.keynames.issubset(common_keynames) and not filtered_self:
+            if set(self.keynames).issubset(common_keynames) and not filtered_self:
                 for other_score in filtered_other:
                     score = op(other_score, self.get(**common_keys))
                     if isinstance(score, Score):

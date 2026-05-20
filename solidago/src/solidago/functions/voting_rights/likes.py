@@ -31,14 +31,13 @@ class LikesVolumes(PollFunction):
             self.log_warning("Mentions without receiver. Identity used instead.")
             return users
         
-        date = self.date or Date.now()
         users = users.assign(like_volume=0)
         likes = socials.filters(by=self.receiver.name, to=users.names(), kind=self.default_likes)
-        bonuses = np.array([b for b, _ in likes("kind")])
-        lifetimes = np.array([lt for _, lt in likes("kind")])
-        ages = np.array([(date - Date(d)).seconds] for d in likes("date"))
-        weights = likes("weight")
-        deltas = bonuses * weights * self.decay(ages, lifetimes)
-        for l, delta in zip(likes, deltas):
-            users[l["to"], "like_volume"] += delta
+        bonuses = np.array([self.likes[k][0] for k in likes("kind")])
+        lifetimes = np.array([self.likes[k][1] for k in likes("kind")])
+        t = (self.date or Date.now()).timestamp()
+        ages = t - likes("timestamp", t)
+        deltas = bonuses * likes("weight", 1.) * self.decay(ages, lifetimes)
+        for like, delta in zip(likes, deltas):
+            users[like["to"], "like_volume"] += delta
         return users

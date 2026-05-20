@@ -16,10 +16,10 @@ class ScoreProcessing:
     ):
         multipliers = Multipliers(keynames=["criterion"]) if multipliers is None else multipliers
         assert isinstance(multipliers, Multipliers), (multipliers, type(multipliers))
-        assert multipliers.keynames == {"criterion"}, multipliers.keynames
+        assert multipliers.keynames == ["criterion"], multipliers.keynames
         translations = Translations(keynames=["criterion"]) if translations is None else translations
         assert isinstance(translations, Translations), (translations, type(multipliers))
-        assert translations.keynames == {"criterion"}, translations.keynames
+        assert translations.keynames == ["criterion"], translations.keynames
         self.multipliers, self.translations = multipliers, translations
         self.note = note
 

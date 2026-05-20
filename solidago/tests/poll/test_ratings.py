@@ -8,7 +8,7 @@ def test_ratings():
     ratings.set(username="user_0", criterion="default", entity_name="entity_4", value=5)
     ratings.set(username="user_5", criterion="default", entity_name="entity_3", value=5, min=0, max=10)
     ratings.set(username="user_5", criterion="default", entity_name="entity_3", value=2, min=0, max=10)
-    assert np.isnan(ratings.get(username="user_2", criterion="default", entity_name="entity_4")["value"])
+    assert "value" not in ratings.get(username="user_2", criterion="default", entity_name="entity_4")
     for rating in ratings:
         assert isinstance(rating, Rating)
     assert ratings.filters(entity_name="entity_3").keys("username") == {"user_5"}

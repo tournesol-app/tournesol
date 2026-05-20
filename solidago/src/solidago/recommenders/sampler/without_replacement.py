@@ -5,7 +5,7 @@ from .sampler import Sampler
 
 class SamplingWithoutReplacement(Sampler):
     def __call__(self, poll: Poll, limit: int) -> Entities:
-        names = poll.entities.names().to_list()
-        weights = poll.entities("weight").to_numpy(np.float64)
+        names = poll.entities.names()
+        weights = poll.entities("weight", 1.)
         selected_entity_names = np.random.choice(names, limit, False, weights)
         return Entities([poll.entities[name] for name in selected_entity_names])

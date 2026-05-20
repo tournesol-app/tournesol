@@ -29,15 +29,21 @@ class SelectLast(Select):
 
 
 class Row:
-    default: dict[str, Any] = dict()
+    default_default_values: dict[str, Any] = dict()
 
-    def __init__(self, series: pd.Series | None = None, _table: Optional["_Table"] = None, **kwargs: Any):
+    def __init__(self, 
+        series: pd.Series | None = None, 
+        _table: Optional["_Table"] = None, 
+        default_values: dict[str, Any] | None = None,
+        **kwargs: Any
+    ):
         self.series = pd.Series() if series is None else series
         assert isinstance(self.series, pd.Series), self.series
         self._table = _table
+        self.default_values = self.default_default_values | (default_values or dict())
         for key, value in kwargs.items():
             self[key] = value
-        for key, value in self.default.items():
+        for key, value in self.default_values.items():
             if key not in self.series:
                 self[key] = value
 
@@ -283,6 +289,8 @@ class _Table:
             key = removed_row[keyname]
             assert isinstance(key, Hashable), (key, type(key))
             self._cache.remove(index, keyname, key)
+        for column in [c for c in dict(row) if c not in self.df.columns]:
+            self.df[column] = np.nan
         self.df.loc[int(index)] = pd.Series(row)
         for keyname in self._cache.keynames():
             key = row[keyname]
@@ -291,6 +299,8 @@ class _Table:
 
     def append_row(self, row: pd.Series | Mapping[str, Scalar]):
         index = len(self.df)
+        for column in [c for c in dict(row) if c not in self.df.columns]:
+            self.df[column] = np.nan
         self.df.loc[index] = dict(row) # type: ignore
         for keyname in self._cache.keynames():
             key = row[keyname]
@@ -345,8 +355,9 @@ class FilteredTable(Generic[TableRow]):
     name: str = "filtered_table"
 
     default_column_names: list[str] = list()
-    default_keynames: set[str] = set()
+    default_keynames: list[str] = list()
     default_dtypes: dict[str, DTypeLike] = dict()
+    default_default_values: dict[str, Any] = dict()
     default_default_select: Select = SelectUnique()
 
     ########################################
@@ -354,11 +365,15 @@ class FilteredTable(Generic[TableRow]):
     ########################################
 
     def row_factory(self, **keys: Hashable) -> TableRow:
-        return self.TableRowType(None, **keys)
+        return self.TableRowType(None, default_values=self.default_values, **keys)
 
     def series2row(self, series: pd.Series) -> TableRow:
         """ Transforms row as tuple into a usable row for applications """
-        return self.TableRowType(series=series, _table=self.table)
+        return self.TableRowType(
+            series=series, 
+            _table=self.table, 
+            default_values=self.default_values
+        )
     
     def _row2series(self, row: TableRow) -> pd.Series:
         """ Tries to convert row into a pandas Series. This may not be possible.
@@ -368,16 +383,20 @@ class FilteredTable(Generic[TableRow]):
         try:
             return row.series # type: ignore - Error caught
         except AttributeError:
-            raise ValueError(f"Cannot transform row {row} of type {type(row).__name__} into series")
+            raise ValueError(
+                f"Cannot transform row {row} of type {type(row).__name__} into series"
+            )
     
     def __init__(self, 
         *args: Any, 
         filter: Filter | None = None, 
         keynames: Iterable[str] | None = None, 
         default_select: Select | None = None,
+        default_values: dict[str, Any] | None = None,
         **kwargs: Any,
     ):
-        """ Either args is simply (table: _Table,) or (*args, **kwargs) are used to construct table """
+        """ Either args is simply (table: _Table,) or (*args, **kwargs) 
+        are used to construct table """
         if args and isinstance(args[0], _Table):
             self.table = args[0]
         elif args and isinstance(args[0], pd.DataFrame):
@@ -389,7 +408,7 @@ class FilteredTable(Generic[TableRow]):
                 kwargs["columns"] = self.default_column_names
             self.table = _Table(pd.DataFrame(*args, **kwargs))
         self.table_version = self.table.version
-        self.keynames = self.default_keynames if keynames is None else set(keynames)
+        self.keynames = self.default_keynames if keynames is None else list(keynames)
         for keyname in self.keynames:
             if keyname not in self.columns:
                 assert not self.table, (
@@ -401,6 +420,7 @@ class FilteredTable(Generic[TableRow]):
         assert filter is None or isinstance(filter, Filter)
         self._filter = filter or Filter() # self.filter handles version update
         self.default_select = self.default_default_select if default_select is None else default_select
+        self.default_values = self.default_default_values if default_values is None else default_values
 
     def cache(self, *column_names: str):
         self.table.cache(*column_names)
@@ -527,7 +547,7 @@ class FilteredTable(Generic[TableRow]):
         assert isinstance(row, pd.Series)
         return row
 
-    def get_keys(self, row: TableRow, keynames: set[str] | None = None) -> dict[str, Hashable]:
+    def get_keys(self, row: TableRow, keynames: list[str] | None = None) -> dict[str, Hashable]:
         keynames = self.keynames if keynames is None else keynames
         return {name: row[name] for name in keynames} # type: ignore - TableRow must have __getitem__
 
@@ -594,14 +614,14 @@ class FilteredTable(Generic[TableRow]):
     ):
         """ Modifies table. This does not affect filters. """
         self.set_columns(dtypes, **values)
-        self.keynames.update(values)
+        self.keynames += [k for k in values.keys() if k not in self.keynames]
 
     def add_keys(self, 
         dtypes: dict[str, type] | None = None, 
         **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
     ) -> Self:
         result = self.add_columns(dtypes, **values)
-        result.keynames.update(values)
+        result.keynames += [k for k in values.keys() if k not in result.keynames]
         return result
     
     def drop_column(self, *columns: str) -> Self:
@@ -646,7 +666,7 @@ class FilteredTable(Generic[TableRow]):
             kwargs = row.to_dict()
         else:
             kwargs = self.row2series(row).to_dict()
-        default = self.TableRowType.default
+        default = self.TableRowType.default_default_values
         assert isinstance(default, dict)
         kwargs = default | kwargs | values
         

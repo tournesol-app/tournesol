@@ -22,7 +22,7 @@ class Chronological(Recommender):
         if "authors" in poll.entities.columns:
             names = set(poll.entities.filters(authors=Contains(followings)).names())
         entities = poll.entities.filters(names | reposts.keys("entity_name"))
-        entities = entities.assign(last_date=entities("date", 0))
+        entities = entities.assign(last_timestamp=entities("timestamp", 0))
         
         if receiver_name is not None and "authors" in poll.entities.columns:
             entities = entities.excludes(authors=Contains(receiver_name))
@@ -30,13 +30,15 @@ class Chronological(Recommender):
         for repost in reposts:
             name = repost["entity_name"]
             if receiver_name not in poll.entities[name].get("authors", ()):
-                last_date = max(repost["date"], entities[name]["last_date"])
-                entities[name, "last_date"] = last_date
+                timestamp = repost.get("timestamp", 0)
+                last_timestamp = entities[name]["last_timestamp"]
+                last_timestamp = max(timestamp, last_timestamp)
+                entities[name, "last_timestamp"] = last_timestamp
         
         try:
             offset = 0 if cursor is None else int(cursor)
         except ValueError:
             offset = 0
         
-        entities = entities.sort_by("last_date", ascending=False)
+        entities = entities.sort_by("last_timestamp", ascending=False)
         return entities.tail(len(entities) - offset).head(limit)

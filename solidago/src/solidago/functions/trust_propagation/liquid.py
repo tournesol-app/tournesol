@@ -14,5 +14,5 @@ class Liquid(PollFunction):
     def fn(self, users: Users, socials: Socials) -> Users:
         users = users.assign(positive_volume=users("volume", 0) > 0)
         delegate_names = socials.filters(by=users.names(), kind=self.social_kinds).keys("to")
-        delegates = users.names().isin(delegate_names)
+        delegates = [u.name in delegate_names for u in users]
         return users.assign(delegate=delegates, included=delegates | users("positive_volume"))

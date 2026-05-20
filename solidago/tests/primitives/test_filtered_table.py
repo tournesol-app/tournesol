@@ -206,7 +206,7 @@ def test_filtered_table():
     assert t.multikeys("username", "entity_name") == {
         ("user_3", "entity_0"), ("user_3", "entity_5"), ("user_5", "entity_3"), ("user_9", "entity_0"), ("user_9", "entity_2")
     }
-    assert t.get_keys(Row(username="user_4", entity_name="entity_0"), {"username"}) == dict(username="user_4")
+    assert t.get_keys(Row(username="user_4", entity_name="entity_0"), ["username"]) == dict(username="user_4")
     assert len(list(t.iter_filters("username"))) == 3
     f = dict(t.iter_filters("username"))[("user_5",)]
     assert f.indices is not None

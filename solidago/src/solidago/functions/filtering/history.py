@@ -26,22 +26,20 @@ class RemoveRecommendedEntities(PollFunction):
         self.date = None if date is None else Date(date)
 
     def fn(self, poll: Poll) -> Poll:
-        if self.receiver is None:
-            self.log_warning("RemoveRecommendedEntities without receiver. Identity used instead.")
-            return poll
+        assert self.receiver is not None, f"{type(self).__name__} without receiver"
         past = poll.past_recommendations.filters(username=self.receiver.name)
-        n_recommendations = poll.entities.names()\
-            .map(lambda e: len(past.filters(entity_name=e)))
+        n_recommendations = [len(past.filters(entity_name=e.name)) for e in poll.entities]
         entities = poll.entities.assign(n_recommendations=n_recommendations)
-        entities = entities.assign(was_recommended=n_recommendations.to_numpy() > 0)
+        entities = entities.assign(was_recommended=entities("n_recommendations") > 0)
         entities = entities.filters(was_recommended=True)
-        last_dates = entities.names().map(lambda e:
-            np.max([Date(d).timestamp() for d in past.filters(entity_name=e)("date")])
-        )
-        entities = entities.assign(last_date=last_dates)
+        last_timestamps = np.array([
+            np.max([t for t in past.filters(entity_name=e.name)("timestamp")])
+            for e in entities
+        ])
+        entities = entities.assign(last_timestamp=last_timestamps)
         delay = self.delay * np.power(self.geometric_base, n_recommendations)
-        availability_dates = last_dates + delay
-        entities = entities.assign(availability_date=availability_dates)
+        availability_timestamps = last_timestamps + delay
+        entities = entities.assign(availability_timestamp=availability_timestamps)
         if self.date is not None:
-            entities = entities.excludes(availability_date=After(self.date.timestamp()))
+            entities = entities.excludes(availability_timestamp=After(self.date.timestamp()))
         return Filtering(entity_names=entities.names())(poll)

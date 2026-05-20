@@ -28,11 +28,11 @@ class PreferenceLearning(PollFunction, ABC):
             for user in users
         ]
         from solidago.poll.scoring.user_models import UserDirectScores
-        user_directs = UserDirectScores()
+        uds = UserDirectScores()
         for user, model in zip(users, models):
-            user_directs = user_directs | model.directs.add_columns(username=user.name)
+            uds = uds | model.directs.add_columns(username=user.name)
 
-        return UserModels(user_directs=user_directs)
+        return UserModels(user_directs=uds)
 
     def batch(self, 
         batch_number: int,

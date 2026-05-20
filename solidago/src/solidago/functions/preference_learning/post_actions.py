@@ -33,30 +33,47 @@ class PostActions(ThreadedPollFunction):
         entities: Entities, 
         ratings: Ratings
     ) -> tuple[
-        list[tuple[str, int | float, int | float]], # publications, with name, date, lifetime
-        list[tuple[str, int | float, int | float, str]] # reactions, with name, date, lifetime, criterion
+        list[tuple[str, float, int | float]], # publications, with name, timestamp, lifetime
+        list[tuple[str, float, int | float, str]] # reactions, with name, timestamp, lifetime, criterion
     ]:
         publications = list()
         if "authors" in entities.columns:
             e = entities.filters(authors=Contains(username))
-            publications = list(zip(e.names(), e("date"), e("lifetime", self.default_lifetime)))
+            publications = list(zip(
+                e.names(), 
+                e("timestamp", 0), 
+                e("lifetime", self.default_lifetime)
+            ))
         r = ratings.filters(username=username, criterion=self.actions())
-        reactions = list(zip(r("entity_name"), r("date"), r("lifetime", self.default_lifetime), r("criterion")))
+        reactions = list(zip(
+            r("entity_name"), 
+            r("timestamp", 0), 
+            r("lifetime", self.default_lifetime), 
+            r("criterion")
+        ))
         return publications, reactions
     
     def thread_function(self, 
-        publications: list[tuple[str, int | float, int | float]], 
-        reactions: list[tuple[str, int | float, int | float, str]],
+        publications: list[tuple[str, float, int | float]], 
+        reactions: list[tuple[str, float, int | float, str]],
     ) -> Scores:
-        scores = Scores(keynames=["entity_name", "criterion"])
+        scores = Scores(keynames=["entity_name", "criterion"], default_values=-1)
         
-        for name, date, lifetime in publications:
-            scores.append(Score(1), entity_name=name, criterion="post", date=date, lifetime=lifetime)
+        for name, timestamp, lifetime in publications:
+            scores.append(
+                Score(1), 
+                entity_name=name, criterion="post", 
+                timestamp=timestamp, lifetime=lifetime
+            )
 
-        for name, date, lifetime, action in reactions:
-            if date > scores.get(entity_name=name)["date"]:
-                score = Score(self.action_weights[action])
-                scores.append(score, entity_name=name, date=date, lifetime=lifetime, criterion=action)
+        for name, timestamp, lifetime, action in reactions:
+            score = scores.get(entity_name=name, criterion=action)
+            if timestamp > score["timestamp"]:
+                scores.append(
+                    Score(self.action_weights[action]), 
+                    entity_name=name, criterion=action, 
+                    timestamp=timestamp, lifetime=lifetime
+                )
 
         return scores
     

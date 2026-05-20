@@ -7,7 +7,7 @@ from solidago.primitives.time import Date, DateInput, Duration, DurationInput
 
 
 class Mentions(CustomizablePollFunction):
-    default_age_cutoff: Duration = Duration(weeks=52)
+    default_age_cutoff: float = Duration(weeks=52).seconds
 
     def __init__(self, 
         mention_volume: float = .5,
@@ -37,7 +37,7 @@ class Mentions(CustomizablePollFunction):
         self.relative_max_volume = relative_max_volume
         self.age_cutoff = self.default_age_cutoff
         if age_cutoff is not None:
-            self.age_cutoff = Duration(age_cutoff)
+            self.age_cutoff = Duration(age_cutoff).seconds
 
     def fn(self, users: Users, entities: Entities) -> Users:        
         if self.receiver is None:
@@ -45,8 +45,8 @@ class Mentions(CustomizablePollFunction):
             return users
         
         follow_volumes = users("follow_volume", 0)
-        date = self.date or Date.now()
-        min_date = (date - self.age_cutoff).timestamp()
+        t = (self.date or Date.now()).timestamp()
+        min_date = t - self.age_cutoff
         entities = entities if "mentions" in entities else entities.assign(mentions=())
         entities = entities.filters(mentions=Contains(self.receiver.name), date=After(min_date))
         mentioners = reduce(lambda acc, e: acc | set(e.get("authors", ())), entities, set())

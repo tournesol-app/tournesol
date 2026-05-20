@@ -65,7 +65,7 @@ class TournesolExport(Poll):
 
         users["pretrust"] = pd.to_numeric(users["trust"]) >= 0.8
         socials["kind"] = "Personhood"
-        socials["date"] = cls.start_date.second
+        socials["timestamp"] = cls.start_date.second
         user_scores["depth"] = 0
         global_scores["depth"] = 0
         unsquash = lambda x: np.clip(x, a_min=-99.9, a_max=99.9) / np.sqrt(100**2 - np.clip(x, a_min=-99.9, a_max=99.9)**2)
@@ -74,7 +74,7 @@ class TournesolExport(Poll):
         user_scores["left_unc"] = unsquash(max_values) - user_scores["value"]
         user_scores["right_unc"] = user_scores["left_unc"]
         global_scores["right_unc"] = global_scores["left_unc"]
-        comparisons["date"] = [datetime.fromisoformat(wd).second for wd in list(comparisons["week_date"])]
+        comparisons["timestamp"] = [datetime.fromisoformat(wd).second for wd in list(comparisons["week_date"])]
         comparisons["week_number"] = [cls.week_date_to_week_number(wd) for wd in list(comparisons["week_date"])]
         comparisons["context"] = "tournesol"
                 

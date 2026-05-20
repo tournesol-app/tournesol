@@ -16,13 +16,14 @@ user_models = UserModels(
         ("user_1", "entity_2", 63, "report", -.3, .2, .1),
         ("user_1", "entity_2", 35, "repost", .4, .4, .3),
     ], columns=[
-        "username", "entity_name", "date", "criterion", "value", "left_unc", "right_unc"
+        "username", "entity_name", "timestamp", "criterion", 
+        "value", "left_unc", "right_unc"
     ])
 )
 
 def test_time_decay():
     decay = QuadraticDecay(multiplier=2.)
-    decay_bias = functions.preference_bias.TimeDecay(decay, 10, 83)
+    decay_bias = functions.preference_bias.TimeDecay(decay, 10, 83, max_workers=1)
     b = decay_bias.fn(user_models)
     f = lambda biased_models, u, e, c: biased_models[u](Entity(e), c).value
     g = lambda lt, v, d: pytest.approx(2 * v * lt**2 / (lt**2 + (83-d)**2), 1e-3)

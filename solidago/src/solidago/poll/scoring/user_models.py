@@ -15,23 +15,23 @@ from .score import Scores
 
 class UserDirectScores(DirectScores):
     name: str="user_directs"
-    default_keynames: set[str] = {"username", "entity_name", "criterion"}
+    default_keynames: list[str] = ["username", "entity_name", "criterion"]
 
 class UserCategoryScores(CategoryScores):
     name: str="user_categories"
-    default_keynames: set[str] = {"username", "category", "group", "criterion"}
+    default_keynames: list[str] = ["username", "category", "group", "criterion"]
 
 class UserParameters(Parameters):
     name: str="user_parameters"
-    default_keynames: set[str] = {"username", "criterion", "coordinate"}
+    default_keynames: list[str] = ["username", "criterion", "coordinate"]
 
 class UserMultipliers(Multipliers):
     name: str="user_multipliers"
-    default_keynames: set[str] = {"username", "height", "criterion"}
+    default_keynames: list[str] = ["username", "height", "criterion"]
 
 class UserTranslations(Translations):
     name: str="user_translations"
-    default_keynames: set[str] = {"username", "height", "criterion"}
+    default_keynames: list[str] = ["username", "height", "criterion"]
 
 class CommonMultipliers(Multipliers):
     name: str="common_multipliers"

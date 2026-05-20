@@ -20,16 +20,16 @@ if TYPE_CHECKING:
 
 class DirectScores(Scores):
     name: str="directs"
-    default_keynames: set[str] = {"entity_name", "criterion"}
+    default_keynames: list[str] = ["entity_name", "criterion"]
 
 class CategoryScores(Scores):
     name: str="categories"
-    default_keynames: set[str] = {"category", "group", "criterion"}
+    default_keynames: list[str] = ["category", "group", "criterion"]
     default_default_score: tuple[float, float, float] = 0., 0., 0.
 
 class Parameters(Scores):
     name: str="parameters"
-    default_keynames: set[str] = {"criterion", "coordinate"}
+    default_keynames: list[str] = ["criterion", "coordinate"]
     default_default_score: tuple[float, float, float] = 0., 0., 0.
 
     def n_coordinates(self, **keys: Hashable) -> int:
@@ -67,12 +67,12 @@ class Parameters(Scores):
 
 class Multipliers(Scores):
     name: str="multipliers"
-    default_keynames: set[str] = {"height", "criterion"}
+    default_keynames: list[str] = ["height", "criterion"]
     default_default_score: tuple[float, float, float] = (1., 0., 0.)
 
 class Translations(Scores):
     name: str="translations"
-    default_keynames: set[str] = {"height", "criterion"}
+    default_keynames: list[str] = ["height", "criterion"]
     default_default_score: tuple[float, float, float] = (0., 0., 0.)
 
 

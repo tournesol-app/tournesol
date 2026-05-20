@@ -39,9 +39,12 @@ class After:
 
 
 class NamedObject:
-    default: dict[str, Any] = dict()
-
-    def __init__(self, name: str, series: pd.Series | None = None, vector: Iterable[float] | None = None, **kwargs):
+    def __init__(self, 
+        name: str, 
+        series: pd.Series | None = None, 
+        vector: Iterable[float] | None = None, 
+        **kwargs
+    ):
         if series is None:
             self.series = pd.Series(kwargs, name=name)
         else:
@@ -69,13 +72,11 @@ class NamedObject:
         return self.series[self._vector_coordinates].astype(np.float64).to_numpy()
     
     def __contains__(self, key: str) -> bool:
-        return (key in self.series) | (key in self.default)
+        return key in self.series
 
     def __getitem__(self, key: str) -> Any:
         if key in self.series:
             return self.series[key]
-        if key in self.default:
-            return self.default[key]
         raise KeyError(key)
     
     def get(self, key: str, default_value: Any) -> Any:
