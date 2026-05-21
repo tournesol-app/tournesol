@@ -1,0 +1,14 @@
+from abc import ABC
+
+from atproto_client.models import AppBskyFeedGetFeedSkeleton
+
+
+class AtprotoFeed(ABC):
+    def filter_message_str(self, message: str) -> bool:
+        return False
+
+    async def on_message(self, message: dict):
+        pass
+
+    def get_feed(self, limit: int, cursor: str | None) -> AppBskyFeedGetFeedSkeleton.Response:
+        raise NotImplementedError

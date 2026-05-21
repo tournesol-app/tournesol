@@ -1,0 +1,20 @@
+[project]
+name = "feed_server"
+version = "0.1.0"
+readme = "README.md"
+requires-python = "==3.13.*"
+dependencies = [
+    "atproto==0.0.65",
+    "fastapi[standard]>=0.136.1",
+    "httpx>=0.28.1",
+    "websockets>=15.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.10.0",
+    "ruff>=0.15.14",
+]
+
+[tool.ruff]
+line-length = 99
