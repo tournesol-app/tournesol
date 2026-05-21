@@ -10,5 +10,7 @@ class AtprotoFeed(ABC):
     async def on_message(self, message: dict):
         pass
 
-    def get_feed(self, limit: int, cursor: str | None) -> AppBskyFeedGetFeedSkeleton.Response:
+    async def get_feed(
+        self, limit: int, cursor: str | None
+    ) -> AppBskyFeedGetFeedSkeleton.Response:
         raise NotImplementedError
