@@ -12,13 +12,13 @@ router = APIRouter()
 
 
 @router.get("/xrpc/app.bsky.feed.getFeedSkeleton")
-def get_feed_skeleton(
+async def get_feed_skeleton(
     params: Annotated[AppBskyFeedGetFeedSkeleton.Params, Query()],
 ) -> AppBskyFeedGetFeedSkeleton.Response:
     # TODO handle feed id
     feed = ALL_FEEDS["videos_v0"]
 
-    return feed.get_feed(limit=params.limit or 50, cursor=params.cursor)
+    return await feed.get_feed(limit=params.limit or 50, cursor=params.cursor)
 
 
 @router.get("/xrpc/app.bsky.feed.describeFeedGenerator")

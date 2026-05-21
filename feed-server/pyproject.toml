@@ -7,6 +7,7 @@ dependencies = [
     "atproto==0.0.65",
     "fastapi[standard]>=0.136.1",
     "httpx>=0.28.1",
+    "redis>=7.0",
     "websockets>=15.0",
 ]
 

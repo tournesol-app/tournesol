@@ -1,13 +1,13 @@
 import dataclasses
-from itertools import islice
+import json
 import re
-from collections import deque
 from typing import Self
 
 from atproto_client.models import AppBskyFeedGetFeedSkeleton
 from atproto_client.models.app.bsky.feed.defs import SkeletonFeedPost
 import httpx
 
+from ..db.redis import redis_client
 from .base import AtprotoFeed
 
 http_client = httpx.AsyncClient()
@@ -54,24 +54,38 @@ class VideoPost:
 
 
 class VideosFeed(AtprotoFeed):
-    def __init__(self):
-        self.posts_in_feed: deque[VideoPost] = deque["VideoPost"](maxlen=1000)
+    def __init__(self, feed_name: str = "videos", max_length=1000):
+        self.feed_key = f"feed:{feed_name}:posts"
+        self.max_length = max_length
 
     def filter_message_str(self, message: str) -> bool:
-        return ("youtu.be" in message) or ("youtube.com" in message) or ("tournesol.app/entities/" in message)
+        return (
+            ("youtu.be" in message)
+            or ("youtube.com" in message)
+            or ("tournesol.app/entities/" in message)
+        )
 
     @staticmethod
-    async def check_video(video_id: str):
+    async def check_video(video_id: str) -> bool:
+        cache_key = f"cache:tournesol:video_is_safe:{video_id}"
+        cached = await redis_client.get(cache_key)
+        if cached is not None:
+            return cached == "1"
+
         resp = await http_client.get(
             f"https://api.tournesol.app/polls/videos/entities/yt:{video_id}"
         )
         if resp.status_code == 404:
+            await redis_client.set(cache_key, "0", ex=3600)
             return False
         entity_data = resp.json()
         collective_rating = entity_data.get("collective_rating")
         if not collective_rating:
+            await redis_client.set(cache_key, "0", ex=3600)
             return False
-        return not collective_rating["unsafe"]["status"]
+        result = not collective_rating["unsafe"]["status"]
+        await redis_client.set(cache_key, "1" if result else "0", ex=3600)
+        return result
 
     async def on_message(self, message: dict):
         video_post = VideoPost.from_post(message)
@@ -81,14 +95,15 @@ class VideosFeed(AtprotoFeed):
         print(f"Video {video_post.video_id} {is_video_safe=}")
         if is_video_safe:
             print(f"Post: {video_post.post}")
-            self.posts_in_feed.append(video_post)
+            await redis_client.lpush(self.feed_key, json.dumps(dataclasses.asdict(video_post)))
+            await redis_client.ltrim(self.feed_key, 0, self.max_length - 1)
 
-    def get_feed(self, limit, cursor):
+    async def get_feed(
+        self, limit: int, cursor: str | None
+    ) -> AppBskyFeedGetFeedSkeleton.Response:
+        items = await redis_client.lrange(self.feed_key, 0, limit - 1)
+        posts = [VideoPost(**json.loads(item)) for item in items]
         return AppBskyFeedGetFeedSkeleton.Response(
-            # TODO handle limit
             # TODO handle cursor
-            feed=[
-                SkeletonFeedPost(post=post.at_uri)
-                for post in islice(self.posts_in_feed, 0, limit)
-            ],
+            feed=[SkeletonFeedPost(post=post.at_uri) for post in posts],
         )
