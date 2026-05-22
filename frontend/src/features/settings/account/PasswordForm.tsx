@@ -4,9 +4,9 @@ import Button from '@mui/material/Button';
 import Grid2 from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 
+import { PasswordStrengthIndicator } from 'src/components';
 import { AccountsService, ApiError } from 'src/services/openapi';
 import { useNotifications } from 'src/hooks';
-import PasswordRecommendationAlert from 'src/components/PasswordStrengthIndicator';
 
 const PasswordForm = () => {
   const { t } = useTranslation();
@@ -123,7 +123,7 @@ const PasswordForm = () => {
           />
         </Grid2>
         <Grid2>
-          <PasswordRecommendationAlert pwd={password} />
+          <PasswordStrengthIndicator pwd={password} />
         </Grid2>
         <Grid2>
           <Button

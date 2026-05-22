@@ -21,6 +21,7 @@ import {
   Lines,
   FormTextField,
   InternalLink,
+  PasswordStrengthIndicator,
 } from 'src/components';
 import NotificationsEmailResearch from 'src/features/settings/preferences/fields/NotificationsEmailResearch';
 import NotificationsEmailNewFeatures from 'src/features/settings/preferences/fields/NotificationsEmailNewFeatures';
@@ -116,6 +117,7 @@ const Signup = () => {
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [password, setPassword] = useState('');
   const [successEmailAddress, setSuccessEmailAddress] = useState<string | null>(
     null
   );
@@ -217,6 +219,8 @@ const Signup = () => {
                   name="password"
                   label={t('password')}
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
                   formError={formError}
                 />
@@ -229,6 +233,9 @@ const Signup = () => {
                   autoComplete="new-password"
                   formError={formError}
                 />
+              </Grid2>
+              <Grid2 size={12}>
+                <PasswordStrengthIndicator pwd={password} />
               </Grid2>
               <Grid2
                 sx={{
