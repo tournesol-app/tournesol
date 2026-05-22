@@ -235,7 +235,7 @@ const Signup = () => {
                 />
               </Grid2>
               <Grid2 size={12}>
-                <PasswordStrengthIndicator pwd={password} />
+                <PasswordStrengthIndicator passwd={password} />
               </Grid2>
               <Grid2
                 sx={{

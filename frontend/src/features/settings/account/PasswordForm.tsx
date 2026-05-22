@@ -123,7 +123,7 @@ const PasswordForm = () => {
           />
         </Grid2>
         <Grid2>
-          <PasswordStrengthIndicator pwd={password} />
+          <PasswordStrengthIndicator passwd={password} />
         </Grid2>
         <Grid2>
           <Button

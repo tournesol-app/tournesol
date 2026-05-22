@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Box, Chip, Typography } from '@mui/material';
 import zxcvbn from 'zxcvbn-ts';
 
-const PasswordStrengthIndicator = ({ pwd }: { pwd: string }) => {
+const PasswordStrengthIndicator = ({ passwd }: { passwd: string }) => {
   const { t } = useTranslation();
 
-  const result = zxcvbn(pwd);
+  const result = zxcvbn(passwd);
 
   const passwordStrengths = [
     {
@@ -48,7 +48,7 @@ const PasswordStrengthIndicator = ({ pwd }: { pwd: string }) => {
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         {passwordStrengths.map((strength) => {
-          const disabled = pwd === '' || strength.score != result.score;
+          const disabled = passwd === '' || strength.score != result.score;
           return (
             <Chip
               key={strength.score}
