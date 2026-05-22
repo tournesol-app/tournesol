@@ -61,8 +61,8 @@
   },
   "passwordStrengthIndicator": {
     "strength": {
-      "veryWeak": "Weak",
-      "weak": "Very weak",
+      "veryWeak": "Very weak",
+      "weak": "Weak",
       "medium": "Medium",
       "strong": "Strong",
       "veryStrong": "Very strong"
