@@ -68,6 +68,7 @@ class VideosFeed(AtprotoFeed):
     @staticmethod
     async def check_video(video_id: str) -> bool:
         cache_key = f"cache:tournesol:video_is_safe:{video_id}"
+        cache_ttl = 3600
         cached = await redis_client.get(cache_key)
         if cached is not None:
             return cached == "1"
@@ -76,15 +77,15 @@ class VideosFeed(AtprotoFeed):
             f"https://api.tournesol.app/polls/videos/entities/yt:{video_id}"
         )
         if resp.status_code == 404:
-            await redis_client.set(cache_key, "0", ex=3600)
+            await redis_client.set(cache_key, "0", ex=cache_ttl)
             return False
         entity_data = resp.json()
         collective_rating = entity_data.get("collective_rating")
         if not collective_rating:
-            await redis_client.set(cache_key, "0", ex=3600)
+            await redis_client.set(cache_key, "0", ex=cache_ttl)
             return False
         result = not collective_rating["unsafe"]["status"]
-        await redis_client.set(cache_key, "1" if result else "0", ex=3600)
+        await redis_client.set(cache_key, "1" if result else "0", ex=cache_ttl)
         return result
 
     async def on_message(self, message: dict):
@@ -102,8 +103,11 @@ class VideosFeed(AtprotoFeed):
         self, limit: int, cursor: str | None
     ) -> AppBskyFeedGetFeedSkeleton.Response:
         items = await redis_client.lrange(self.feed_key, 0, limit - 1)
-        posts = [VideoPost(**json.loads(item)) for item in items]
+        # TODO handle cursor
+        if cursor:
+            posts = []
+        else:
+            posts = [VideoPost(**json.loads(item)) for item in items]
         return AppBskyFeedGetFeedSkeleton.Response(
-            # TODO handle cursor
             feed=[SkeletonFeedPost(post=post.at_uri) for post in posts],
         )
