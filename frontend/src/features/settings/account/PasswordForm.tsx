@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 
 import { AccountsService, ApiError } from 'src/services/openapi';
 import { useNotifications } from 'src/hooks';
+import PasswordRecommendationAlert from 'src/components/PasswordStrengthIndicator';
 
 const PasswordForm = () => {
   const { t } = useTranslation();
@@ -120,6 +121,9 @@ const PasswordForm = () => {
               htmlInput: { 'data-testid': 'password_confirm' },
             }}
           />
+        </Grid2>
+        <Grid2>
+          <PasswordRecommendationAlert pwd={password} />
         </Grid2>
         <Grid2>
           <Button
