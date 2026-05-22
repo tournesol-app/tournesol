@@ -13,26 +13,31 @@ const PasswordStrengthIndicator = ({ pwd }: { pwd: string }) => {
       score: 0,
       label: t('passwordStrengthIndicator.strength.veryWeak'),
       color: 'error',
+      testId: 'passwd_str_veryweak',
     },
     {
       score: 1,
       label: t('passwordStrengthIndicator.strength.weak'),
       color: 'warning',
+      testId: 'passwd_str_weak',
     },
     {
       score: 2,
       label: t('passwordStrengthIndicator.strength.medium'),
       color: 'info',
+      testId: 'passwd_str_medium',
     },
     {
       score: 3,
       label: t('passwordStrengthIndicator.strength.strong'),
       color: 'success',
+      testId: 'passwd_str_strong',
     },
     {
       score: 4,
       label: t('passwordStrengthIndicator.strength.veryStrong'),
       color: 'success',
+      testId: 'passwd_str_verystrong',
     },
   ] as const;
 
@@ -41,18 +46,21 @@ const PasswordStrengthIndicator = ({ pwd }: { pwd: string }) => {
       <Typography gutterBottom>
         {t('passwordStrengthIndicator.passwordStrength')}
       </Typography>
-      <Box
-        sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
-      >
-        {passwordStrengths.map((strength) => (
-          <Chip
-            key={strength.score}
-            size="small"
-            label={strength.label}
-            color={strength.color}
-            disabled={pwd === '' || strength.score != result.score}
-          />
-        ))}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        {passwordStrengths.map((strength) => {
+          const disabled = pwd === '' || strength.score != result.score;
+          return (
+            <Chip
+              key={strength.score}
+              size="small"
+              label={strength.label}
+              color={strength.color}
+              disabled={disabled}
+              data-disabled={disabled}
+              data-testid={strength.testId}
+            />
+          );
+        })}
       </Box>
     </>
   );
