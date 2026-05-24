@@ -1,5 +1,6 @@
 import dataclasses
 import json
+import logging
 import re
 from typing import Self
 
@@ -32,7 +33,7 @@ class VideoPost:
             return None
 
         candidate_strings = [
-            record.get("embed", {}).get("uri", ""),
+            record.get("embed", {}).get("external", {}).get("uri", ""),
             record.get("text", ""),
         ] + [
             feature.get("uri", "")
@@ -73,9 +74,16 @@ class VideosFeed(AtprotoFeed):
         if cached is not None:
             return cached == "1"
 
-        resp = await http_client.get(
-            f"https://api.tournesol.app/polls/videos/entities/yt:{video_id}"
-        )
+        try:
+            resp = await http_client.get(
+                f"https://api.tournesol.app/polls/videos/entities/yt:{video_id}",
+                timeout=5.0,
+            )
+            if resp.status_code not in (200, 404):
+                resp.raise_for_status()
+        except httpx.RequestError:
+            logging.warning("Failed to check video %s in Tournesol", video_id, exc_info=True)
+            return False
         if resp.status_code == 404:
             await redis_client.set(cache_key, "0", ex=cache_ttl)
             return False
