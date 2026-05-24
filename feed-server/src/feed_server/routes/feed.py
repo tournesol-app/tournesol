@@ -5,6 +5,7 @@ from atproto_client.models import (
     AppBskyFeedDescribeFeedGenerator,
 )
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import ConfigDict
 
 from ..feeds import ALL_FEEDS
 from ..config import FEED_SERVER_DID
@@ -12,9 +13,13 @@ from ..config import FEED_SERVER_DID
 router = APIRouter()
 
 
+class FeedParams(AppBskyFeedGetFeedSkeleton.Params):
+    model_config = ConfigDict(strict=False)
+
+
 @router.get("/xrpc/app.bsky.feed.getFeedSkeleton")
 async def get_feed_skeleton(
-    params: Annotated[AppBskyFeedGetFeedSkeleton.Params, Query()],
+    params: Annotated[FeedParams, Query()],
 ) -> AppBskyFeedGetFeedSkeleton.Response:
     rkey = params.feed.split("/")[-1]
     feed = ALL_FEEDS.get(rkey)
