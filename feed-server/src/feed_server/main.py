@@ -24,7 +24,10 @@ async def process_posts():
             continue
         _, message_json = result
         post = json.loads(message_json)
-        await asyncio.gather(*(feed.on_message(post) for feed in ALL_FEEDS.values()))
+        await asyncio.gather(
+            *(feed.on_message(post) for feed in ALL_FEEDS.values()),
+            return_exceptions=True,
+        )
 
 
 @asynccontextmanager
