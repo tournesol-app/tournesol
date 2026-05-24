@@ -1,3 +1,4 @@
+import uuid
 from typing import Annotated
 
 from atproto_client.models import (
@@ -25,7 +26,9 @@ async def get_feed_skeleton(
     feed = ALL_FEEDS.get(rkey)
     if feed is None:
         raise HTTPException(404, "Unknown feed")
-    return await feed.get_feed(limit=params.limit or 50, cursor=params.cursor)
+    skeleton = await feed.get_feed(limit=params.limit or 50, cursor=params.cursor)
+    skeleton.req_id = str(uuid.uuid4())
+    return skeleton
 
 
 @router.get("/xrpc/app.bsky.feed.describeFeedGenerator")
