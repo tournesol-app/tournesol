@@ -118,4 +118,5 @@ class VideosFeed(AtprotoFeed):
             posts = [VideoPost(**json.loads(item)) for item in items]
         return AppBskyFeedGetFeedSkeleton.Response(
             feed=[SkeletonFeedPost(post=post.at_uri) for post in posts],
+            cursor="dummy",
         )
