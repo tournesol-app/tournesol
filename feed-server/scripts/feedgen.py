@@ -20,8 +20,8 @@ def parse_args():
     common.add_argument("--handle", required=True, help="Your Bluesky handle")
     common.add_argument(
         "--service",
-        default="https://bsky.social",
-        help="PDS service URL (default: https://bsky.social)",
+        default="https://bsky.social/xrpc",
+        help="PDS service URL (default: https://bsky.social/xrpc)",
     )
     common.add_argument(
         "--record-name",
@@ -104,12 +104,12 @@ def cmd_publish(args: argparse.Namespace, client: Client) -> None:
     avatar_blob = None
     if args.avatar:
         img_data, encoding = load_avatar(args.avatar)
-        blob_response = client.com.atproto.repo.upload_blob(img_data, mime_type=encoding)
+        blob_response = client.com.atproto.repo.upload_blob(img_data)
         avatar_blob = blob_response.blob
 
     content_mode = CONTENT_MODE_VIDEO if args.video_only else CONTENT_MODE_UNSPECIFIED
 
-    client.com.atproto.repo.put_record(
+    resp = client.com.atproto.repo.put_record(
         data={
             "repo": client.me.did,
             "collection": "app.bsky.feed.generator",
@@ -122,9 +122,11 @@ def cmd_publish(args: argparse.Namespace, client: Client) -> None:
                 "avatar": avatar_blob,
                 "createdAt": datetime.datetime.utcnow().isoformat() + "Z",
                 "contentMode": content_mode,
+                "acceptsInteractions": True,
             },
         }
     )
+    print(f"record: {resp}")
     print("All done 🎉")
 
 
