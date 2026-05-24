@@ -18,7 +18,7 @@ class FeedParams(AppBskyFeedGetFeedSkeleton.Params):
     model_config = ConfigDict(strict=False)
 
 
-@router.get("/xrpc/app.bsky.feed.getFeedSkeleton")
+@router.get("/xrpc/app.bsky.feed.getFeedSkeleton", response_model_exclude_none=True)
 async def get_feed_skeleton(
     params: Annotated[FeedParams, Query()],
 ) -> AppBskyFeedGetFeedSkeleton.Response:
@@ -31,7 +31,7 @@ async def get_feed_skeleton(
     return skeleton
 
 
-@router.get("/xrpc/app.bsky.feed.describeFeedGenerator")
+@router.get("/xrpc/app.bsky.feed.describeFeedGenerator", response_model_exclude_none=True)
 def describe_feed_generator() -> AppBskyFeedDescribeFeedGenerator.Response:
     return AppBskyFeedDescribeFeedGenerator.Response(
         did=FEED_SERVER_DID,
