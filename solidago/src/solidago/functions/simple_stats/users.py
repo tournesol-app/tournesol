@@ -5,7 +5,7 @@ from solidago.functions.poll_function import PollFunction
 from solidago.primitives.criteria import to_criteria
 
 
-class SimpleUserStats(PollFunction):
+class UserStats(PollFunction):
     def __init__(self, criteria: set[str] | str | None = None, max_workers: int | None = None):
         super().__init__(max_workers)
         self.criteria = {criteria} if isinstance(criteria, str) else criteria

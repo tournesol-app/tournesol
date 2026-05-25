@@ -1,0 +1,11 @@
+columns:
+- username
+- entity_name
+- public
+data:
+- - alice
+  - etrog
+  - false
+- - dave
+  - durian
+  - false

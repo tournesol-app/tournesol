@@ -1,3 +1,4 @@
+fmt: parquet
 user_models:
 - UserModels
 - default_composition:
@@ -5,3 +6,4 @@ user_models:
     - {}
   - - SquashProcessing
     - max: 100
+  fmt: parquet

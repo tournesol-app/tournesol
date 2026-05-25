@@ -1,5 +1,5 @@
-from .users import SimpleUserStats
-from .entities import SimpleEntityStats
-from .comparisons import SimpleComparisonStats
+from .users import UserStats
+from .entities import EntityStats
+from .comparisons import ComparisonStats
 
-__all__ = ["SimpleUserStats", "SimpleEntityStats", "SimpleComparisonStats"]
+__all__ = ["UserStats", "EntityStats", "ComparisonStats"]

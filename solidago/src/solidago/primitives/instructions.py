@@ -1,11 +1,22 @@
 from copy import deepcopy
-from typing import Any, Iterator
-import yaml
+from typing import Any, Iterator, Iterable
+import yaml, numpy as np
 
 from .brackets import map_brackets
 
 _Value = list | tuple | dict | str | int | float | bool | None
 _Key = int | str | tuple[int | str, ...]
+
+
+def yaml_clean(x):
+    if isinstance(x, np.bool_):
+        return bool(x)
+    if isinstance(x, (str, dict)):
+        return x
+    if isinstance(x, Iterable):
+        return [yaml_clean(y) for y in x]
+    return x
+
 
 class Instructions:
     def __init__(self, value: _Value):

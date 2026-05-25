@@ -4,12 +4,13 @@ from solidago.primitives.datastructure.named_objects import Contains
 
 
 class PostActions(ThreadedPollFunction):
-    default_action_weights: dict = dict(post=1, repost=1, report=-1)
+    default_action_weights: dict = dict(repost=1, report=-1)
     default_default_lifetime: int | float = 3600 * 24 * 3
 
     def __init__(self, 
         action_weights: dict | None = None,
         default_lifetime: int | float | None = None,
+        max_workers: int | None = None,
     ):
         """ 
         Parameters
@@ -17,7 +18,7 @@ class PostActions(ThreadedPollFunction):
         criterion: str
             Name of the criterion associated to the learned scoring model
         """
-        super().__init__()
+        super().__init__(max_workers)
         self.action_weights = action_weights or self.default_action_weights
         self.default_lifetime = self.default_default_lifetime if default_lifetime is None else default_lifetime
 
@@ -28,7 +29,7 @@ class PostActions(ThreadedPollFunction):
         return [u.name for u in users]
     
     def _args(self, # type: ignore
-        username: str, 
+        variable: str, 
         nonargs, # not used
         entities: Entities, 
         ratings: Ratings
@@ -36,6 +37,7 @@ class PostActions(ThreadedPollFunction):
         list[tuple[str, float, int | float]], # publications, with name, timestamp, lifetime
         list[tuple[str, float, int | float, str]] # reactions, with name, timestamp, lifetime, criterion
     ]:
+        username = variable
         publications = list()
         if "authors" in entities.columns:
             e = entities.filters(authors=Contains(username))
@@ -57,7 +59,7 @@ class PostActions(ThreadedPollFunction):
         publications: list[tuple[str, float, int | float]], 
         reactions: list[tuple[str, float, int | float, str]],
     ) -> Scores:
-        scores = Scores(keynames=["entity_name", "criterion"], default_values=-1)
+        scores = Scores(keynames=["entity_name", "criterion"])
         
         for name, timestamp, lifetime in publications:
             scores.append(
@@ -67,8 +69,10 @@ class PostActions(ThreadedPollFunction):
             )
 
         for name, timestamp, lifetime, action in reactions:
+            if len(scores.filters(entity_name=name, criterion="post")) > 0:
+                continue
             score = scores.get(entity_name=name, criterion=action)
-            if timestamp > score["timestamp"]:
+            if timestamp > score.get("timestamp", -1):
                 scores.append(
                     Score(self.action_weights[action]), 
                     entity_name=name, criterion=action, 

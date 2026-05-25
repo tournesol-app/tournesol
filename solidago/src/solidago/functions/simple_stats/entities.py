@@ -2,7 +2,7 @@ from solidago.poll import *
 from solidago.functions.poll_function import PollFunction
 
 
-class SimpleEntityStats(PollFunction):
+class EntityStats(PollFunction):
     def fn(self, entities: Entities, ratings: Ratings, comparisons: Comparisons) -> Entities:
         return entities.assign(
             n_ratings=self.n_ratings(entities, ratings), 
@@ -13,22 +13,24 @@ class SimpleEntityStats(PollFunction):
         )
 
     def n_ratings(self, entities: Entities, ratings: Ratings) -> list[int]:
-        return [len(ratings.filters(entity_name=entity.name)) for entity in entities]
+        return [len(ratings.filters(entity_name=e.name)) for e in entities]
     
     def n_raters(self, entities: Entities, ratings: Ratings) -> list[int]:
-        return [len(ratings.filters(entity_name=entity.name).keys("username")) for entity in entities]
+        return [len(ratings.filters(entity_name=e.name).keys("username")) for e in entities]
 
     def n_comparisons(self, entities: Entities, comparisons: Comparisons) -> list[int]:
         return [
-            len(comparisons.filters(left_name=entity.name)) + len(comparisons.filters(right_name=entity.name)) 
-            for entity in entities
+            len(comparisons.filters(left_name=e.name)) \
+                + len(comparisons.filters(right_name=e.name)) 
+            for e in entities
         ]
     
     def n_comparers(self, entities: Entities, comparisons: Comparisons) -> list[int]:
         return [
-            len(comparisons.filters(left_name=entity.name).keys("username")) \
-                + len(comparisons.filters(right_name=entity.name).keys("username")) 
-            for entity in entities
+            len(
+                comparisons.filters(left_name=e.name).keys("username") | \
+                comparisons.filters(right_name=e.name).keys("username")
+            ) for e in entities
         ]
     
     def n_evaluators(self, entities: Entities, ratings: Ratings, comparisons: Comparisons) -> list[int]:

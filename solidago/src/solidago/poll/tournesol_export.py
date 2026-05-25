@@ -76,7 +76,6 @@ class TournesolExport(Poll):
         global_scores["right_unc"] = global_scores["left_unc"]
         comparisons["timestamp"] = [datetime.fromisoformat(wd).second for wd in list(comparisons["week_date"])]
         comparisons["week_number"] = [cls.week_date_to_week_number(wd) for wd in list(comparisons["week_date"])]
-        comparisons["context"] = "tournesol"
                 
         entity_names = set(global_scores["entity_name"]) | set(user_scores["entity_name"]) \
             | set(comparisons["left_name"]) | set(comparisons["right_name"])

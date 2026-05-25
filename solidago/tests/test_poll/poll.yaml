@@ -1,4 +1,4 @@
-fmt: parquet
+fmt: yaml
 user_models:
 - UserModels
 - default_composition:

@@ -280,9 +280,13 @@ class UserModels:
         return getattr(poll, clsname).load_tables(directory, **kwargs)
     
     @classmethod
-    def load_tables(cls, directory: str | Path, **kwargs) -> "UserModels":
+    def load_tables(cls, 
+        directory: str | Path, 
+        fmt: str = "parquet", 
+        **kwargs
+    ) -> "UserModels":
         def get_kwargs(key):
-            return dict(source=f"{key}.parquet") | kwargs[key] if key in kwargs else dict()
+            return dict(source=f"{key}.{fmt}") | kwargs[key] if key in kwargs else dict()
         return cls(
             kwargs["default_composition"] if "default_composition" in kwargs else None,
             kwargs["user_compositions"] if "user_compositions" in kwargs else dict(),
@@ -295,17 +299,26 @@ class UserModels:
             CommonTranslations.load(directory, **get_kwargs("common_translations")),
         )
     
-    def save(self, directory: Path | str | None = None, save_instructions: bool = True) -> tuple[str, dict]:
+    def save(self, 
+        directory: Path | str | None = None, 
+        save_instructions: bool = True,
+        fmt: str = "parquet",
+    ) -> tuple[str, dict]:
         for table_name in self.table_names:
-            self.save_table(directory, table_name)
-        return self.save_instructions(directory, save_instructions)
+            self.save_table(directory, table_name, fmt)
+        return self.save_instructions(directory, save_instructions, fmt)
     
-    def save_instructions(self, directory: Path | str | None = None, save_instructions: bool = True) -> tuple[str, dict]:
-        kwargs: dict[str, Any] = dict(default_composition=self.default_composition)
+    def save_instructions(self, 
+        directory: Path | str | None = None, 
+        save_instructions: bool = True,
+        fmt: str = "parquet",
+    ) -> tuple[str, dict]:
+        kwargs: dict[str, Any] = dict(default_composition=self.default_composition, fmt=fmt)
         if len(self.user_compositions) > 0:
             kwargs["user_compositions"] = self.user_compositions
         if self.user_categories:
-            kwargs["user_categories"] = dict(categories_list=list(self.user_categories.keys("category")))
+            l = list(self.user_categories.keys("category"))
+            kwargs["user_categories"] = dict(categories_list=l)
         if self.user_parameters:
             kwargs["user_parameters"] = dict(n_coordinates=self.user_parameters.n_coordinates)
         instructions = type(self).__name__, kwargs
@@ -314,17 +327,22 @@ class UserModels:
                 yaml.safe_dump(instructions, f)
         return instructions
     
-    def save_table(self, directory: Path | str | None, table_name: str) -> str | None:
+    def save_table(self, 
+        directory: Path | str | None, 
+        table_name: str,
+        fmt: str = "parquet",
+    ) -> str | None:
         assert table_name in self.table_names, table_name
         table = getattr(self, table_name)
         if directory and table:
             assert isinstance(table, Scores)
-            table.save(directory, f"{table_name}.parquet")
-            return f"{table_name}.parquet"
+            table.save(directory, f"{table_name}.{fmt}")
+            return f"{table_name}.{fmt}"
         return None
     
     def requires_save_instructions(self) -> bool:
-        return (self.default_composition != self.default_default_composition) or not self.user_compositions
+        return (self.default_composition != self.default_default_composition) \
+            or not self.user_compositions
 
     def __repr__(self) -> str:
         r = type(self).__name__ + ": " + " < ".join([o for o, _ in self.default_composition])

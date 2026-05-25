@@ -1,0 +1,29 @@
+columns:
+- name
+- trustworthy
+- pretrust
+data:
+- - alice
+  - true
+  - true
+- - bob
+  - true
+  - false
+- - charlie
+  - true
+  - true
+- - dave
+  - true
+  - true
+- - erin
+  - true
+  - false
+- - felix
+  - false
+  - false
+- - grace
+  - true
+  - false
+- - hank
+  - true
+  - false

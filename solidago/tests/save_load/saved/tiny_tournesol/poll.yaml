@@ -1,3 +1,4 @@
+fmt: parquet
 user_models:
 - UserModels
 - default_composition:
@@ -7,3 +8,4 @@ user_models:
     - note: user_scale_test_export
   - - ScaleProcessing
     - note: common_scale_test_export
+  fmt: parquet

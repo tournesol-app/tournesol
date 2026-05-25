@@ -36,9 +36,9 @@ class RootLaw:
 
 class BradleyTerry(RootLaw):
     def normalize_rating(self, rating: Rating) -> float:
-        mean = (rating["min"] + rating["max"]) / 2
-        mean = 0 if np.isfinite(mean) else mean
-        return np.sign(rating["value"] - mean)
+        middle = (rating.get("min", - np.inf) + rating.get("max", np.inf)) / 2
+        middle = middle if np.isfinite(middle) else 0
+        return np.sign(rating["value"] - middle)
     
     def normalize_comparison(self, comparison: Comparison) -> float:
         return np.sign(comparison["value"])
@@ -72,10 +72,12 @@ class BradleyTerry(RootLaw):
 
 class Uniform(RootLaw):
     def normalize_rating(self, rating: Rating) -> float:
+        assert "min" in rating and "max" in rating
         middle = (rating["max"] + rating["min"]) / 2
         return float(2 * (rating["value"] - middle) / (rating["max"] - rating["min"]))
     
     def normalize_comparison(self, comparison: Comparison) -> float:
+        assert "max" in comparison
         return float(comparison["value"] / comparison["max"])
     
     def sup(self, *args: Any) -> float:
@@ -159,12 +161,14 @@ class Discrete(RootLaw):
         return self.n_values
 
     def normalize_rating(self, rating: Rating) -> float:
+        assert "min" in rating and "max" in rating
         middle = (rating["max"] + rating["min"]) / 2
         return float(2 * (rating["value"] - middle) / (rating["max"] - rating["min"]))
     
     def normalize_comparison(self, comparison: Comparison) -> float:
-        if np.isfinite(comparison["max"]):
-            return float(comparison["value"] / comparison["max"])
+        comparison_max = comparison.get("max", 1)
+        if np.isfinite(comparison_max):
+            return float(comparison["value"] / comparison_max)
         return float(comparison["value"])
 
     def sup(self, *args: Any) -> float:

@@ -1,0 +1,51 @@
+columns:
+- name
+- authors
+- mentions
+- timestamp
+data:
+- - apple
+  - - alice
+  - []
+  - 0
+- - banana
+  - - alice
+    - bob
+  - - charlie
+  - 2
+- - coconut
+  - - alice
+  - - bob
+  - 11
+- - durian
+  - - felix
+  - []
+  - 16
+- - etrog
+  - - dave
+    - erin
+  - []
+  - 24
+- - fig
+  - - hank
+  - - alice
+    - bob
+  - 30
+- - grape
+  - []
+  - - hank
+  - 36
+- - hazelnut
+  - - erin
+    - hank
+  - - alice
+  - 43
+- - imbe
+  - - alice
+  - []
+  - 48
+- - jackfruit
+  - - bob
+    - dave
+  - []
+  - 57

@@ -9,14 +9,16 @@ class IsRating(PreferenceLearning):
         super().__init__(*args, **kwargs)
     
     def left_unc(self, rating: Rating):
-        if not np.isfinite(rating["min"]):
+        rating_min = rating.get("min", - np.inf)
+        if not np.isfinite(rating_min):
             return 1
-        return (rating["value"] - rating["min"]) / 2
+        return (rating["value"] - rating_min) / 2
     
     def right_unc(self, rating: Rating):
-        if not np.isfinite(rating["max"]):
+        rating_max = rating.get("max", np.inf)
+        if not np.isfinite(rating_max):
             return 1
-        return (rating["max"] - rating["value"]) / 2
+        return (rating_max - rating["value"]) / 2
 
     def user_learn(self,
         user: User, # not used
@@ -26,7 +28,7 @@ class IsRating(PreferenceLearning):
         base_model: ScoringModel, # not used
     ) -> ScoringModel:
         model = ScoringModel()
-        for rating in ratings:
-            score = Score((rating["value"], self.left_unc(rating), self.right_unc(rating)))
-            model.directs.set(score, entity_name=rating["entity_name"], criterion=rating["criterion"])
+        for r in ratings:
+            score = Score((r["value"], self.left_unc(r), self.right_unc(r)))
+            model.directs.set(score, entity_name=r["entity_name"], criterion=r["criterion"])
         return model

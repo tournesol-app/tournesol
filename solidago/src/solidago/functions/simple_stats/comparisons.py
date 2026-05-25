@@ -1,4 +1,3 @@
-from typing import Hashable
 from numpy.typing import NDArray
 import numpy as np
 
@@ -6,7 +5,7 @@ from solidago.poll import *
 from solidago.functions.poll_function import PollFunction
 
 
-class SimpleComparisonStats(PollFunction):
+class ComparisonStats(PollFunction):
     def __init__(self, 
         main_criterion: str | None = None, 
         criteria: set[str] | None = None, 
@@ -22,9 +21,8 @@ class SimpleComparisonStats(PollFunction):
         else:
             criteria = self.criteria
         left_firsts, right_firsts = self.firsts(comparisons)
+        comparisons = comparisons.add_columns(left_first=left_firsts, right_first=right_firsts)
         return comparisons.add_columns(
-            left_first=left_firsts,
-            right_first=right_firsts,
             first_value=self.first_values(comparisons),
             multiple_criteria=self.multiple_criteria(comparisons),
             all_criteria=self.all_criteria(comparisons, criteria),

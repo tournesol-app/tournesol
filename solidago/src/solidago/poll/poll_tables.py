@@ -4,7 +4,7 @@ from numpy.typing import DTypeLike, NDArray
 import numpy as np, pandas as pd
 
 from solidago.primitives.datastructure import Row, FilteredTable
-from solidago.primitives.datastructure.filtered_table import Select, SelectLast
+from solidago.primitives.datastructure.filtered_table import NoSelect, Select, SelectLast
 from solidago.primitives.datastructure.named_objects import NamedObject, NamedObjects
 
 
@@ -67,25 +67,24 @@ class PublicSettings(FilteredTable[PublicSetting]):
     
 
 class Rating(Row):
-    default_default_values: dict[str, Any] = dict(criterion="main", context="undefined")
+    default_default_values: dict[str, Any] = dict(criterion="main")
 
 class Ratings(FilteredTable[Rating]):
     TableRowType: type = Rating
     name: str = "ratings"
-    default_column_names = ["username", "entity_name", "criterion", "context", "timestamp"]
-    default_keynames: list[str] = ["username", "entity_name", "criterion", "context"]
+    default_column_names = ["username", "entity_name", "criterion", "timestamp"]
+    default_keynames = ["username", "entity_name", "criterion"]
     default_default_select: Select = SelectLast("timestamp")
 
 
 class Comparison(Row):
-    default_default_values: dict[str, Any] = dict(criterion="main", context="undefined")
+    default_default_values: dict[str, Any] = dict(criterion="main")
 
 class Comparisons(FilteredTable[Comparison]):
     TableRowType: type = Comparison
     name: str = "comparisons"
-    default_column_names: list[str] = [
-        "username", "criterion", "context", "left_name", "right_name", "timestamp"]
-    default_keynames = ["username", "criterion", "context", "left_name", "right_name"]
+    default_column_names = ["username", "criterion", "left_name", "right_name", "timestamp"]
+    default_keynames = ["username", "criterion", "left_name", "right_name"]
     default_default_select: Select = SelectLast("timestamp")
 
     def entity_comparisons(self, 
@@ -146,5 +145,5 @@ class PastRecommendations(FilteredTable[PastRecommendation]):
     TableRowType: type = PastRecommendation
     name: str = "past_recommendations"
     default_column_names: list[str] = ["username", "entity_name", "context", "timestamp"]
-    default_keynames: list[str] = ["username", "entity_name", "context"]
-    
+    default_keynames: list[str] = ["username", "entity_name"]
+    default_default_select: Select = NoSelect()

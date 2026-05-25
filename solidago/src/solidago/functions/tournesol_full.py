@@ -13,8 +13,8 @@ class TournesolFull(Sequential):
     def __init__(self, max_workers: int = 1, seed: int | None = None):
         import solidago.functions as f
         subfunctions = [
-            f.simple_stats.SimpleUserStats(max_workers=max_workers),
-            f.simple_stats.SimpleEntityStats(max_workers=max_workers),
+            f.simple_stats.UserStats(max_workers=max_workers),
+            f.simple_stats.EntityStats(max_workers=max_workers),
             f.trust_propagation.LipschiTrust(
                 pretrust_value=0.8, decay=0.8, sink_vouch=5.0, 
                 error=1.0e-8, max_workers=max_workers
@@ -55,11 +55,11 @@ class TournesolFull(Sequential):
         super().__init__(subfunctions, "TournesolFull", max_workers, seed)
 
     @property
-    def simple_user_stats(self) -> "simple_stats.SimpleUserStats":
+    def simple_user_stats(self) -> "simple_stats.UserStats":
         return self[0] # type: ignore
 
     @property
-    def simple_entity_stats(self) -> "simple_stats.SimpleEntityStats":
+    def simple_entity_stats(self) -> "simple_stats.EntityStats":
         return self[1] # type: ignore
 
     @property

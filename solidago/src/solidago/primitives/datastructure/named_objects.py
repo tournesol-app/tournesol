@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from solidago.primitives.instructions import yaml_clean
+
 Object = TypeVar("Object")
 
 
@@ -288,21 +290,34 @@ class NamedObjects(Generic[Object]):
             source = path.name
         else:
             source = source or cls.name
-            if (directory / source).is_file():
-                pass
-            elif (directory / f"{source}.parquet").is_file():
-                source = f"{source}.parquet"
-            elif (directory / f"{source}.csv").is_file():
-                source = f"{source}.csv"
+            for fmt in ("", ".parquet", ".csv", ".yaml"):
+                if (directory / f"{source}{fmt}").is_file():
+                    source = f"{source}{fmt}"
+                    break
             path = Path(directory) / source
         source = source or cls.name
         if not path.is_file():
             return cls(**kwargs)
         if source.endswith(".parquet"):
             df = pd.read_parquet(path)
-        else:
+        elif source.endswith(".csv"):
             assert source.endswith(".csv")
             df = pd.read_csv(path)
+        elif source.endswith(".yaml"):
+            def yaml_unclean(v):
+                if isinstance(v, list):
+                    return tuple(yaml_clean(x) for x in v)
+                return v
+            with open(path) as f:
+                y = yaml.safe_load(f)
+                if "columns" in y and "data" in y and isinstance(y["data"], list):
+                    y["data"] = [
+                        [yaml_unclean(v) for v in row]
+                        for row in y["data"]
+                    ]
+                df = pd.DataFrame(**y)
+        else:
+            raise ValueError(f"Wrong format. Cannot load table {str(path)}")
         return cls(df, **kwargs)
 
     def save(self, 
@@ -318,6 +333,16 @@ class NamedObjects(Generic[Object]):
             self.df.to_parquet(path)
         elif source.endswith(".csv"):
             self.df.to_csv(path)
+        elif source.endswith(".yaml"):
+            with open(path, "w") as f:
+                data = [
+                    [r.name] + [yaml_clean(r[c]) for c in self.columns]
+                    for _, r in self.df.iterrows()
+                ]
+                columns = ["name"] + self.columns
+                yaml.dump(dict(data=data, columns=columns), f)
+        else:
+            raise ValueError(f"Wrong format. Cannot load table {str(path)}")
         return self.save_instructions(source, directory, save_instructions)
 
     def save_instructions(self, 

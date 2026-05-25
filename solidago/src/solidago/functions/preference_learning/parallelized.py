@@ -93,7 +93,7 @@ class ParallelizedPreferenceLearning(ThreadedPollFunction):
             | filtered_comparisons.keys("left_name") \
             | filtered_comparisons.keys("right_name")
         evaluated_entities = entities.filters(names)
-        rating_contexts = list({r["context"] for r in filtered_ratings})
+        rating_contexts = list({r.get("context", "undefined") for r in filtered_ratings})
         category_groups = [(c, list(evaluated_entities(str(c)))) for c in self.categories]
         return evaluated_entities, category_groups, rating_contexts
 

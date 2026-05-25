@@ -8,12 +8,17 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from solidago.primitives.instructions import yaml_clean
+
 
 Scalar = Hashable | float | np.float32 | np.float64 | None
 TableRow = TypeVar('TableRow')
 
 
 class Select:
+    pass
+
+class NoSelect(Select):
     pass
 
 class SelectUnique(Select):
@@ -87,6 +92,9 @@ class Row:
 class NonUniqueError(Exception):
     pass
 
+class NoSelectError(Exception):
+    pass
+
 
 class Filter:
     def __init__(self, indices: NDArray[np.int64] | None = None, **keys: Hashable):
@@ -136,12 +144,14 @@ class Filter:
         return np.arange(n_rows, dtype=np.int64) if self.indices is None else self.indices
     
     def get_index(self, select: Select = SelectUnique()) -> np.int64 | None:
+        if isinstance(select, NoSelect):
+            raise NoSelectError()
         if self.indices is None:
             return np.int64(-1 if isinstance(select, SelectLast) else 0)
         if len(self.indices) == 0:
             return None
         if isinstance(select, SelectUnique) and len(self.indices) > 1:
-            raise NonUniqueError
+            raise NonUniqueError()
         return max(self.indices) if isinstance(select, SelectLast) else min(self.indices)
 
     def must_be_filtered_in(self, row: pd.Series | Mapping[str, Scalar]) -> bool:
@@ -372,7 +382,7 @@ class FilteredTable(Generic[TableRow]):
         return self.TableRowType(
             series=series, 
             _table=self.table, 
-            default_values=self.default_values
+            default_values=self.default_values,
         )
     
     def _row2series(self, row: TableRow) -> pd.Series:
@@ -790,20 +800,23 @@ class FilteredTable(Generic[TableRow]):
             source = path.name
         else:
             source = source or cls.name
-            if (directory / source).is_file():
-                pass
-            elif (directory / f"{source}.parquet").is_file():
-                source = f"{source}.parquet"
-            elif (directory / f"{source}.csv").is_file():
-                source = f"{source}.csv"
+            for fmt in ("", ".parquet", ".csv", ".yaml"):
+                if (directory / f"{source}{fmt}").is_file():
+                    source = f"{source}{fmt}"
+                    break
             path = Path(directory) / source
         if not path.is_file():
             return cls(**kwargs)
         if source.endswith(".parquet"):
             df = pd.read_parquet(path)
-        else:
+        elif source.endswith(".csv"):
             assert source.endswith(".csv")
             df = pd.read_csv(path)
+        elif source.endswith(".yaml"):
+            with open(path) as f:
+                df = pd.DataFrame(**yaml.safe_load(f))
+        else:
+            raise ValueError(f"Wrong format. Cannot load table {str(path)}")
         return cls(df, **kwargs)
     
     def save(self, 
@@ -820,6 +833,16 @@ class FilteredTable(Generic[TableRow]):
             self.table.df.to_parquet(path)
         elif source.endswith(".csv"):
             self.table.df.to_csv(path)
+        elif source.endswith(".yaml"):
+            with open(path, "w") as f:
+                data = [
+                    [yaml_clean(r[c]) for c in self.columns]
+                    for _, r in self.df.iterrows()
+                ]
+                columns = list(self.columns)
+                yaml.dump(dict(data=data, columns=columns), f)
+        else:
+            raise ValueError(f"Wrong format. Cannot load table {str(path)}")
         return self.save_instructions(source, directory, save_instructions)
     
     def save_instructions(self, 

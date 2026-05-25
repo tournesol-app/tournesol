@@ -91,7 +91,7 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         """ Ratings are ignored """
         assert not (self.discard_ratings and ratings), (self.discard_ratings, ratings)
         entity_indices = [entities.name2index(r["entity_name"]) for r in ratings]
-        context_indices = [len(entities) + rating_contexts.index(r["context"]) for r in ratings]
+        context_indices = [len(entities) + rating_contexts.index(r.get("context", "undefined")) for r in ratings]
         root_laws, root_law_indices, root_law_args = self._get_root_laws(ratings, *self.rating_root_law)
         normalized_ratings = [root_law.normalize_rating(r) for r, root_law in zip(ratings, root_laws)]
         return entity_indices, context_indices, normalized_ratings, root_law_indices, root_law_args
@@ -115,12 +115,13 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
         root_laws, indices, args = list(), list(), list()
         default_index = None if default_root_law_name is None else self.root_law_names.index(default_root_law_name)
         for row in table:
-            if "root_law" not in row or row["root_law"] is None or np.isnan(row["root_law"]):
+            root_law_name = row.get("root_law", None)
+            if root_law_name is None or np.isnan(root_law_name):
                 assert default_index is not None
                 index, arg = default_index, default_arg
             else:
-                index = self.root_law_names.index(row["root_law"])
-                arg = row["root_law_arg"] if "root_law_arg" in row else ()
+                index = self.root_law_names.index(root_law_name)
+                arg = row.get("root_law_arg", ())
             indices.append(index)
             args.append(arg)
             root_law_arg = arg if isinstance(arg, tuple) else (arg,)

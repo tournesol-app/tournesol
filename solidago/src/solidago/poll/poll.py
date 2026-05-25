@@ -67,63 +67,80 @@ class Poll:
         return criteria # type: ignore
 
     @classmethod
-    def load(cls, directory: Path | str | None = None, **kwargs: Any) -> "Poll":
+    def load(cls, 
+        directory: Path | str | None = None, 
+        fmt: str = "parquet",
+        **kwargs: Any
+    ) -> "Poll":
         if directory is None:
             return cls(**kwargs)
         path = Path(directory) / "poll.yaml"
         assert path.is_file(), f"Failed to load {path}. File does not exist."
+        with open(Path(directory) / "poll.yaml") as f: 
+            yaml_kwargs = yaml.safe_load(f)
+        if "fmt" in yaml_kwargs:
+            fmt = yaml_kwargs["fmt"]
+            del yaml_kwargs["fmt"]
         kwargs = dict(
-            users=(Users, dict()), 
-            entities=(Entities, dict()), 
-            socials=(Socials, dict()), 
-            public_settings=(PublicSettings, dict()),
-            ratings=(Ratings, dict()), 
-            comparisons=(Comparisons, dict()),
-            voting_rights=(VotingRights, dict()),
+            users=(Users, dict(source=f"users.{fmt}")), 
+            entities=(Entities, dict(source=f"entities.{fmt}")), 
+            socials=(Socials, dict(source=f"socials.{fmt}")), 
+            public_settings=(PublicSettings, dict(source=f"public_settings.{fmt}")),
+            ratings=(Ratings, dict(source=f"ratings.{fmt}")), 
+            comparisons=(Comparisons, dict(source=f"comparisons.{fmt}")),
+            voting_rights=(VotingRights, dict(source=f"voting_rights.{fmt}")),
             user_models=("UserModels", dict()),
             global_model=("ScoringModel", dict()),
             past_recommendations=(PastRecommendations, dict())
         ) | kwargs
-        with open(Path(directory) / "poll.yaml") as f: 
-            kwargs |= yaml.safe_load(f)
+        kwargs |= yaml_kwargs
 
         import solidago.poll as poll
         clsname, cls_kwargs = kwargs["user_models"]
-        user_models = getattr(poll, clsname).load_tables(directory, **cls_kwargs)
+        user_models = getattr(poll, clsname)\
+            .load_tables(directory, **dict(fmt=fmt) | cls_kwargs)
         clsname, cls_kwargs = kwargs["global_model"]
-        global_model = getattr(poll, clsname).load_tables(directory, filename="global", **cls_kwargs)
+        global_model = getattr(poll, clsname)\
+            .load_tables(directory, filename="global", **dict(fmt=fmt) | cls_kwargs)
         
         from solidago import load
         poll_kwargs = {
-            key: load(subcls, directory=directory, **subcls_kwargs) 
+            key: load(subcls, directory=directory, fmt=fmt, **subcls_kwargs) 
             for key, (subcls, subcls_kwargs) in kwargs.items()
             if key not in {"user_models", "global_model"}
         }
 
         return cls(**(poll_kwargs | dict(user_models=user_models, global_model=global_model))) # type: ignore
     
-    def save(self, directory: str | Path, save_instructions: bool = True) -> tuple:
+    def save(self, 
+        directory: str | Path, 
+        save_instructions: bool = True, 
+        fmt: str = "parquet",
+    ) -> tuple:
         """ Returns instructions to load content (but which is also already saved) """
         assert isinstance(directory, (str, Path))
         Path(directory).mkdir(parents=True, exist_ok=True)
-        self.users.save(directory)
-        self.entities.save(directory)
-        self.socials.save(directory)
-        self.public_settings.save(directory)
-        self.ratings.save(directory)
-        self.comparisons.save(directory)
-        self.voting_rights.save(directory)
-        self.user_models.save(directory, False)
-        self.global_model.save(directory, "global", save_instructions=False)
-        self.past_recommendations.save(directory)
-        return self.save_instructions(directory if save_instructions else None)
+        self.users.save(directory, f"users.{fmt}")
+        self.entities.save(directory, f"entities.{fmt}")
+        self.socials.save(directory, f"socials.{fmt}")
+        self.public_settings.save(directory, f"public_settings.{fmt}")
+        self.ratings.save(directory, f"ratings.{fmt}")
+        self.comparisons.save(directory, f"comparisons.{fmt}")
+        self.voting_rights.save(directory, f"voting_rights.{fmt}")
+        self.user_models.save(directory, False, fmt)
+        self.global_model.save(directory, "global", False, fmt)
+        self.past_recommendations.save(directory, f"past_recommendations.{fmt}")
+        return self.save_instructions(directory if save_instructions else None, fmt)
     
-    def save_instructions(self, directory: str | Path | None = None) -> tuple[str, dict]:
+    def save_instructions(self, 
+        directory: str | Path | None = None,
+        fmt: str = "parquet",
+    ) -> tuple[str, dict]:
         kwargs = { 
             key: value.save_instructions() 
             for key, value in self.__dict__.items() 
             if value.requires_save_instructions()
-        }
+        } | dict(fmt=fmt)
         if directory:
             with open(Path(directory) / "poll.yaml", "w") as f:
                 yaml.safe_dump(kwargs, f)

@@ -196,7 +196,11 @@ class ScoringModel:
         )
 
     @classmethod
-    def load(cls, directory: str | Path | None = None, filename: str = "scoring_model", **kwargs) -> "ScoringModel":
+    def load(cls, 
+        directory: str | Path | None = None, 
+        filename: str = "scoring_model", 
+        **kwargs
+    ) -> "ScoringModel":
         if not directory:
             return cls(**kwargs)
         filename = filename[:-5] if filename.endswith(".yaml") else filename
@@ -207,25 +211,33 @@ class ScoringModel:
             kwargs |= yaml_kwargs
         import solidago.poll as poll
         assert hasattr(poll, clsname) and issubclass(getattr(poll, clsname), ScoringModel), clsname
-        return getattr(poll, clsname).load_tables(directory, filename, **kwargs)
+        return getattr(poll, clsname)\
+            .load_tables(directory, filename, **kwargs)
     
     @classmethod
-    def load_tables(cls, directory: str | Path, filename: str = "scoring_model", **kwargs) -> "ScoringModel":
+    def load_tables(cls, 
+        directory: str | Path, 
+        filename: str = "scoring_model", 
+        fmt: str = "parquet",
+        **kwargs
+    ) -> "ScoringModel":
         def get_kwargs(key):
-            return dict(source=f"{filename}_{key}.parquet") | (kwargs[key] if key in kwargs else dict())
+            return dict(source=f"{filename}_{key}.{fmt}") \
+                | (kwargs[key] if key in kwargs else dict())
         return cls(
             composition=kwargs["composition"] if "composition" in kwargs else None,
-            directs=DirectScores.load(directory, **get_kwargs("directs")), # type: ignore
-            categories=CategoryScores.load(directory, **get_kwargs("categories")), # type: ignore
-            parameters=Parameters.load(directory, **get_kwargs("parameters")), # type: ignore
-            multipliers=Multipliers.load(directory, **get_kwargs("multipliers")), # type: ignore
-            translations=Translations.load(directory, **get_kwargs("translations")), # type: ignore
+            directs=DirectScores.load(directory, **get_kwargs("directs")),
+            categories=CategoryScores.load(directory, **get_kwargs("categories")),
+            parameters=Parameters.load(directory, **get_kwargs("parameters")),
+            multipliers=Multipliers.load(directory, **get_kwargs("multipliers")),
+            translations=Translations.load(directory, **get_kwargs("translations")),
         )
 
     def save(self, 
         directory: str | Path | None = None, 
         filename: str = "scoring_model", 
         save_instructions: bool = True,
+        fmt: str = "parquet",
     ) -> tuple[str, dict[str, Any]]:
         """ save must be given a filename_root (typically without extension),
         as multiple parquet files may be saved, with a name derived from the filename_root
@@ -234,8 +246,8 @@ class ScoringModel:
             table = getattr(self, table_name)
             if table:
                 assert isinstance(table, Scores)
-                table.save(directory, f"{filename}_{table_name}.parquet")
-        return self.save_instructions(directory, filename, save_instructions)
+                table.save(directory, f"{filename}_{table_name}.{fmt}")
+        return self.save_instructions(directory, filename, save_instructions, fmt)
 
     def requires_save_instructions(self) -> bool:
         return False # default value
@@ -244,8 +256,9 @@ class ScoringModel:
         directory: str | Path | None = None, 
         filename: str = "scoring_model", 
         save_instructions: bool = True,
+        fmt: str = "parquet",
     ) -> tuple[str, dict[str, Any]]:
-        kwargs: dict[str, Any] = dict(composition=self.composition)
+        kwargs: dict[str, Any] = dict(composition=self.composition, fmt=fmt)
         if self.parameters:
             kwargs["parameters"] = dict(n_coordinates=self.parameters.n_coordinates)
         instructions = type(self).__name__, kwargs
