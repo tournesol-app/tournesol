@@ -81,7 +81,7 @@ class VideosFeed(AtprotoFeed):
             )
             if resp.status_code not in (200, 404):
                 resp.raise_for_status()
-        except httpx.RequestError:
+        except (httpx.RequestError, httpx.HTTPError):
             logging.warning("Failed to check video %s in Tournesol", video_id, exc_info=True)
             return False
         if resp.status_code == 404:

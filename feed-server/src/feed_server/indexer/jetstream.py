@@ -24,9 +24,9 @@ async def listen_to_posts():
         uri = JETSTREAM_URI
 
     message_count = 0
-    async with websockets.connect(uri) as websocket:
-        while True:
-            try:
+    async for websocket in websockets.connect(uri):
+        try:
+            while True:
                 message: str | None = await websocket.recv()  # type: ignore
                 if message is None:
                     continue
@@ -39,8 +39,8 @@ async def listen_to_posts():
                     data = json.loads(message)
                     if time_us := data.get("time_us"):
                         await redis_client.set(CURSOR_KEY, time_us)
-            except websockets.ConnectionClosed as e:
-                logging.warning(f"Connection closed: {e}")
-                continue
-            except Exception:
-                logging.exception("unexpected error")
+        except websockets.ConnectionClosed as e:
+            logging.warning(f"Connection closed: {e}")
+            continue
+        except Exception:
+            logging.exception("unexpected error")
