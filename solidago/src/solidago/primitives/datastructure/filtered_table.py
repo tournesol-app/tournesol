@@ -530,7 +530,7 @@ class FilteredTable(Generic[TableRow]):
         select = self.default_select if select is None else select
         filter = self._get_filter(**keys)
         if isinstance(select, (SelectFirst, SelectLast)) and select.column is not None:
-            df = self.df if filter.indices is None else self.df.iloc[filter.indices]
+            df = self.df if filter.indices is None else self.table.df.iloc[filter.indices]
             indices = df.sort_values(select.column, ascending=isinstance(select, SelectFirst)).index
             return None if len(indices) == 0 else indices[0]
         try:
@@ -609,7 +609,7 @@ class FilteredTable(Generic[TableRow]):
 
     def add_columns(self, 
         dtypes: dict[str, type] | None = None, 
-        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+        **values: Scalar | Sequence[Scalar] | NDArray
     ) -> Self:
         return type(self)(
             self.table.add_columns(dtypes, **values), 

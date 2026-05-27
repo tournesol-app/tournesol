@@ -21,11 +21,13 @@ class LifetimeBias(WeightPreservingBias):
     
     def _multipliers(self,  # type: ignore
         scores: Scores, 
-        entities: Entities
+        users: Users,
+        entities: Entities,
     ) -> tuple[NDArray, NDArray | float, NDArray | float]:
-        assert self.user is not None, f"Ran {type(self).__name__} without receiver"
-        pref_lifetime = self.user.get("preferred_lifetime", self.default_preferred_lifetime)
-        lifetime_bias = self.user.get("lifetime_bias", self.default_lifetime_bias)
+        assert self.username is not None, f"Ran {type(self).__name__} without receiver"
+        user = users[self.username]
+        pref_lifetime = user.get("preferred_lifetime", self.default_preferred_lifetime)
+        lifetime_bias = user.get("lifetime_bias", self.default_lifetime_bias)
         lifetimes = entities.filters(scores("entity_names"))("lifetime")
         discrepancy = np.power(np.log(lifetimes / pref_lifetime), 2)
         return np.power(1 + discrepancy, - lifetime_bias), 0., 0.

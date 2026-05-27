@@ -127,6 +127,13 @@ poll = Poll(
             ("erin",    "main",     "hazelnut", "jackfruit",33, 2),
         ], columns=["username", "criterion", "left_name", "right_name", "timestamp", "value"]
     ).add_columns(max=3),
+    past_recommendations=PastRecommendations([
+        ("alice", "durian", 18),
+        ("alice", "durian", 36),
+        ("alice", "grape", 46),
+        ("alice", "jackfruit", 57),
+        ("erin", "banana", 67),
+    ], columns=["username", "entity_name", "timestamp"])
 )
 
 poll = functions.preference_learning.PostActions()(poll)

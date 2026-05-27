@@ -18,7 +18,7 @@ class Veche(Recommender):
             f.voting_rights.Mentions(),
             f.voting_rights.AggregateVolumes(),
             f.trust_propagation.Liquid(),
-            f.filtering.IncludedUsersOnly(),
+            f.filtering.PositiveVotingRightOnly(),
             f.preference_learning.PostActions(),
             f.collaborative_filtering.Liquid(),
             f.preference_bias.TimeDecay(),
@@ -38,9 +38,8 @@ class Veche(Recommender):
         cursor: str | None = None,
         date: DateInput | None = None,
     ) -> Entities:
-        receiver = poll.users[receiver_name]
         d = Date.now() if date is None else Date(date)
-        self.preprocess.customize(receiver, d)
+        self.preprocess.customize(receiver_name, d)
         poll = self.preprocess(poll)
         return self.sampler(poll, limit)
     

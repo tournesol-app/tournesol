@@ -1,3 +1,3 @@
 from .filtering import Filtering
 from .history import RemoveRecommendedEntities
-from .included_users import IncludedUsersOnly
+from .positive_voting_right_only import PositiveVotingRightOnly

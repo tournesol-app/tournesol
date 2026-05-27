@@ -10,7 +10,7 @@ __all__ = [
     "User", "Users", "Entity", "Entities",
     "Social", "Socials", "PublicSetting", "PublicSettings",
     "Rating", "Ratings", "Comparison", "Comparisons",
-    "VotingRights",
+    "VotingRight", "VotingRights",
     "Score", "Scores", "ScoringModel", "UserModels",
     "DirectScores", "CategoryScores", "Parameters", "Multipliers", "Translations",
     "UserModels", "UserDirectScores", "UserCategoryScores", "UserParameters", 

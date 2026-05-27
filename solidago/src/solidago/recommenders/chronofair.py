@@ -10,7 +10,7 @@ class ChronoFair(Veche):
             f.voting_rights.Follows(),
             f.voting_rights.Mentions(),
             f.voting_rights.AggregateVolumes(),
-            f.filtering.IncludedUsersOnly(),
+            f.filtering.PositiveVotingRightOnly(),
             f.preference_learning.PostActions(),
             f.preference_bias.TimeDecay(QuadraticDecay()),
             f.scaling.MaxNorm(default_q=1.),

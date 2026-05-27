@@ -32,8 +32,8 @@ class LifetimeBiasedDecay(Decay):
 
     def __call__(self, ages: NDArray, lifetimes: NDArray | float) -> NDArray:
         """ All values must be in seconds """
-        decay = self.default_lifetime.seconds * lifetimes / (ages**2 + lifetimes**2)
+        decay = self.default_lifetime.total_seconds * lifetimes / (ages**2 + lifetimes**2)
         if self.lifetime_bias == 0:
             return decay
-        log = np.log(1 + lifetimes / self.default_lifetime.seconds)
+        log = np.log(1 + lifetimes / self.default_lifetime.total_seconds)
         return decay * np.power(log, self.lifetime_bias)

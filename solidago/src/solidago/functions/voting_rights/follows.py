@@ -1,7 +1,7 @@
 import numpy as np
 
 from solidago.functions.poll_function import PollFunction
-from solidago.primitives.decay import Decay
+from solidago.primitives.decay import Decay, QuadraticDecay
 from solidago.poll import *
 from solidago.primitives.time import Date, DateInput, Duration, DurationInput
 from solidago.primitives.datastructure import SelectLast
@@ -10,33 +10,38 @@ from solidago.primitives.datastructure import SelectLast
 class Follows(PollFunction):
     default_follows: dict[str, float] = dict(follow=1.)
     default_follow_lifetime: Duration = Duration(weeks=52.*3)
+    default_decay: Decay = QuadraticDecay(2.)
 
     def __init__(self,
         follows: dict[str, float] | None = None, 
         decay: Decay | tuple[str, dict] | None = None,
         follow_lifetime: DurationInput | None = None,
-        receiver: User | None = None,
+        username: str | None = None,
         date: DateInput | None = None,
     ):
         """ decay is directly in added to BaseVolumes because it also depends on self.follows """
         self.follows = self.default_follows if follows is None else follows
         import solidago, solidago.primitives.decay as d
-        self.decay = solidago.load(decay, d, Decay, d.NoDecay())
+        self.decay = solidago.load(decay, d, Decay, self.default_decay)
         fl = follow_lifetime
         self.follow_lifetime = self.default_follow_lifetime if fl is None else Duration(fl)
-        self.receiver = receiver
+        self.username = username
         self.date = None if date is None else Date(date)
 
-    def fn(self, users: Users, socials: Socials) -> Users:
-        if self.receiver is None:
+    def fn(self, users: Users, socials: Socials) -> VotingRights:
+        if self.username is None:
             self.log_warning("Follows without receiver. Identity used instead.")
-            return users.assign(follow_volume=0)
-        actions = socials.filters(by=self.receiver.name, kind=self.follows.keys())
-        follows_set = set(actions("to"))
-        follows = users.filters(follows_set)
-        g = lambda f, c, d: actions.get(SelectLast("timestamp"), to=f.name).get(c, d) 
+            return VotingRights(keynames=["username"]).add_columns(follow_volume=0)
+        
+        actions = socials.filters(by=self.username, kind=self.follows.keys())
+        followed_usernames = list(set(actions("to")))
+        voting_rights = VotingRights(followed_usernames, columns=["username"], keynames=["username"])
+        g = lambda to, column, default: actions.get(SelectLast("timestamp"), to=to).get(column, default) 
+        follow_kinds = [g(n, "kind", "None") for n in followed_usernames]
         t = (Date.now() if self.date is None else self.date).timestamp()
-        ages = t - np.array([g(f, "timestamp", t) for f in follows])
-        weights = np.array([g(f, "weight", 1.) for f in follows])
-        volumes = weights * self.decay(ages, self.follow_lifetime.seconds)
-        return follows.assign(follow_volumes=volumes)
+        timestamps = np.array([g(n, "timestamp", t) for n in followed_usernames])
+        ages = t - timestamps
+        weights = np.array([g(n, "weight", 1.) for n in followed_usernames])
+        decays = self.decay(ages, self.follow_lifetime.total_seconds)
+        return voting_rights.add_columns(weight=weights, decay=decays, age=ages, 
+            timestamp=timestamps, follow_kind=follow_kinds, follow_volume=weights * decays)

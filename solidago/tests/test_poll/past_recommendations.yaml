@@ -1,6 +1,20 @@
 columns:
 - username
 - entity_name
-- context
 - timestamp
-data: []
+data:
+- - alice
+  - durian
+  - 18
+- - alice
+  - durian
+  - 36
+- - alice
+  - grape
+  - 46
+- - alice
+  - jackfruit
+  - 57
+- - erin
+  - banana
+  - 67

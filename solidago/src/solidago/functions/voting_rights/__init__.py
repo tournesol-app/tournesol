@@ -9,4 +9,4 @@ from .affine_overtrust import AffineOvertrust
 from .follows import Follows
 from .likes import LikesVolumes
 from .mentions import Mentions
-from .volume import AggregateVolumes
+from .aggregate_volumes import AggregateVolumes

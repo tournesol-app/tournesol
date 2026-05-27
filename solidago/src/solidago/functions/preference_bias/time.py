@@ -29,8 +29,8 @@ class TimeDecay(PreferenceBias):
         scores: Scores
     ) -> tuple[NDArray, NDArray | float, NDArray | float]: 
         date = Date.now() if self.date is None else self.date
-        ages = np.array([(date - Date(d)).seconds for d in scores("timestamp", 0)])
-        lifetimes = self.default_lifetime.seconds
+        ages = np.array([(date - Date(d)).total_seconds for d in scores("timestamp", 0)])
+        lifetimes = self.default_lifetime.total_seconds
         if "lifetime" in scores.columns:
-            lifetimes = np.array([Duration(d).seconds for d in scores("lifetime")])
+            lifetimes = np.array([Duration(d).total_seconds for d in scores("lifetime")])
         return self.decay(ages, lifetimes), 0., 0.

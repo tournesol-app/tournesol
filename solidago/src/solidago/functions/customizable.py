@@ -4,6 +4,6 @@ from solidago.primitives.time import Date, DateInput
 
 
 class CustomizablePollFunction(PollFunction):
-    def __init__(self, receiver: User | None = None, date: DateInput | None = None):
-        self.receiver = receiver
+    def __init__(self, username: str | None = None, date: DateInput | None = None):
+        self.username = username
         self.date = None if date is None else Date(date)

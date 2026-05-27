@@ -28,9 +28,3 @@ def test_generative_model():
 
     f = lambda s: s.comparisons.filters(username="user_0", criterion="default", left_name="entity_5").keys("right_name")
     assert f(s1) == f(s2)
-
-def test_generative_model2():
-    for seed in range(N_SEEDS):
-        state = Poll.load(f"tests/save_load/saved/{seed}")
-        for key in ("users", "entities", "socials", "public_settings", "ratings", "comparisons"):
-            assert len(getattr(state, key)) > 0

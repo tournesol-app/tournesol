@@ -8,20 +8,22 @@ from .bias import PreferenceBias
 
 class SemanticBias(PreferenceBias):
     def __init__(self, 
-        receiver: User | None = None, 
+        username: str | None = None, 
         bias: float = 1., 
         *args, **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.receiver = receiver
+        self.username = username
         self.bias = bias
 
     def _multipliers(self,  # type: ignore
         scores: Scores, 
-        entities: Entities
+        users: Users,
+        entities: Entities,
     ) -> tuple[NDArray, NDArray | float, NDArray | float]:
-        assert self.receiver is not None, f"Ran {type(self).__name__} with receiver"
+        assert self.username is not None, f"Ran {type(self).__name__} with receiver"
         entities = entities.filters(scores("entity_names"))
-        unit = self.receiver.vector / np.sqrt((self.receiver.vector**2).sum())
+        vector = users[self.username].vector
+        unit = vector / np.sqrt((vector**2).sum())
         unit_embeddings = entities.vectors / np.sqrt((entities.vectors**2).sum(axis=0))
         return np.power(1 + unit @ unit_embeddings, self.bias), 0., 0.

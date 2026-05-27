@@ -74,9 +74,9 @@ class PollFunction(ABC):
         self.save_result(result, save_directory)
         return result
 
-    def customize(self, user: User | None = None, date: Date | None = None):
-        if hasattr(self, "user"):
-            self.user = user
+    def customize(self, username: str | None = None, date: Date | None = None):
+        if hasattr(self, "username"):
+            self.username = username
         if hasattr(self, "date"):
             self.date = date
     

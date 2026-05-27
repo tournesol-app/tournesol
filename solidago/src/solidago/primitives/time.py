@@ -68,8 +68,8 @@ class Duration:
         return duration
 
     @property
-    def seconds(self) -> float:
-        return self.duration.seconds
+    def total_seconds(self) -> float:
+        return self.duration.total_seconds()
     
     def __bool__(self) -> bool:
         return True

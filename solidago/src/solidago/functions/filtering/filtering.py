@@ -76,13 +76,13 @@ class Filtering(PollFunction):
     
     def _get_voting_rights(self, voting_rights: VotingRights) -> VotingRights:
         df = voting_rights.df
-        if self.usernames is not None:
+        if self.usernames is not None and "username" in df.columns:
             df = df[df.username.isin(self.usernames)]
-        if self.entity_names is not None:
+        if self.entity_names is not None and "entity_name" in df.columns:
             df = df[df.entity_name.isin(self.entity_names)]
-        if self.criteria is not None:
+        if self.criteria is not None and "criterion" in df.columns:
             df = df[df.criterion.isin(self.criteria)]
-        return VotingRights(df)
+        return VotingRights(df, keynames=voting_rights.keynames)
 
     def _get_user_models(self, user_models: UserModels) -> UserModels:
         user_directs_df = user_models.user_directs.df
