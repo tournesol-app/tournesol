@@ -1,27 +1,23 @@
 import numpy as np
 
 from solidago.poll import *
-from solidago.functions.poll_function import PollFunction
+from solidago.functions.customizable import CustomizablePollFunction
 from solidago.primitives.datastructure.named_objects import After
 from solidago.primitives.time import Date, DateInput, Duration, DurationInput
 from .filtering import Filtering
 
 
-class RemoveRecommendedEntities(PollFunction):
+class RemoveRecommendedEntities(CustomizablePollFunction):
     default_delay: Duration = Duration(weeks=1)
 
     def __init__(self, 
         delay: DurationInput | None = None, 
         geometric_base: float = 2.,
-        username: str | None = None,
-        date: DateInput | None = None,
         *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.delay = self.default_delay if delay is None else Duration(delay)
         self.geometric_base = geometric_base
-        self.username = username
-        self.date = None if date is None else Date(date)
 
     def fn(self, poll: Poll) -> Poll:
         assert self.username is not None, f"{type(self).__name__} without receiver"

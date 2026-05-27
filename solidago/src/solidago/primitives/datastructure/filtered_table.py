@@ -607,15 +607,26 @@ class FilteredTable(Generic[TableRow]):
                 column_index = self.table.df.columns.get_loc(column)
                 self.table.df.iloc[self.filter.indices, column_index] = column_values # type: ignore
 
+    # def add_columns(self, 
+    #     dtypes: dict[str, type] | None = None, 
+    #     **values: Scalar | Sequence[Scalar] | NDArray
+    # ) -> Self:
+    #     return type(self)(
+    #         self.table.add_columns(dtypes, **values), 
+    #         keynames=self.keynames, 
+    #         filter=deepcopy(self.filter), 
+    #         **self.filters_kwargs()
+    #     )
     def add_columns(self, 
         dtypes: dict[str, type] | None = None, 
         **values: Scalar | Sequence[Scalar] | NDArray
     ) -> Self:
+        table = self.table if self.filter is None else _Table(self.df)
         return type(self)(
-            self.table.add_columns(dtypes, **values), 
+            table.add_columns(dtypes, **values), 
             keynames=self.keynames, 
-            filter=deepcopy(self.filter), 
-            **self.filters_kwargs()
+            default_select=self.default_select, 
+            default_values=self.default_values
         )
     
     def set_keys(self, 

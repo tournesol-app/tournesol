@@ -31,7 +31,11 @@ class EntityCriterionWise(ThreadedPollFunction):
         (entity, criterion), scores = variable, nonargs
         vrights = list()
         for score in scores:
-            kwargs = dict(username=score["username"], entity_name=entity.name, criterion=criterion)
+            kwargs = dict(username=score["username"])
+            if "entity_name" in voting_rights.keynames:
+                kwargs["entity_name"] = entity.name
+            if "criterion" in voting_rights.keynames:
+                kwargs["criterion"] = criterion
             vright = voting_rights.get(**kwargs)["voting_right"]
             vrights.append(vright)
         values, left_uncs, right_uncs = scores.value, scores.left_unc, scores.right_unc

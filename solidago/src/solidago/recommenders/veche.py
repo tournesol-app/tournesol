@@ -8,10 +8,11 @@ from .sampler import Sampler
 class Veche(Recommender):
     def __init__(self, 
         preprocess: PollFunction | tuple[str, dict] | None = None,
-        sampler: Sampler | tuple[str, dict] | None = None,
+        sampler: Sampler | tuple[str, dict] | None = None,        
     ):        
         import solidago, solidago.functions as f, solidago.recommenders.sampler as s
         self.preprocess = solidago.load(preprocess, f, PollFunction, f.Sequential([
+            f.filtering.RemoveAuthoredEntities(),
             f.filtering.RemoveRecommendedEntities(),
             f.voting_rights.Follows(),
             f.voting_rights.LikesVolumes(),
@@ -31,6 +32,13 @@ class Veche(Recommender):
         ]))
         self.sampler = solidago.load(sampler, s, Sampler, s.SamplingWithoutReplacement())
 
+    def customize(self,
+        receiver_name: str | None = None, 
+        date: DateInput | None = None,
+    ):
+        d = Date.now() if date is None else Date(date)
+        self.preprocess.customize(receiver_name, d)        
+
     def __call__(self, 
         poll: Poll, 
         limit: int, 
@@ -38,8 +46,7 @@ class Veche(Recommender):
         cursor: str | None = None,
         date: DateInput | None = None,
     ) -> Entities:
-        d = Date.now() if date is None else Date(date)
-        self.preprocess.customize(receiver_name, d)
+        self.customize(receiver_name, date)
         poll = self.preprocess(poll)
         return self.sampler(poll, limit)
     
