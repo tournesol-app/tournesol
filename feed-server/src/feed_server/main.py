@@ -32,6 +32,8 @@ async def process_posts():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
     asyncio.create_task(process_posts())
     asyncio.create_task(listen_to_posts())
     yield

@@ -1,9 +1,11 @@
+import logging
 import uuid
 from typing import Annotated
 
 from atproto_client.models import (
     AppBskyFeedGetFeedSkeleton,
     AppBskyFeedDescribeFeedGenerator,
+    AppBskyFeedSendInteractions,
 )
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import ConfigDict
@@ -11,6 +13,7 @@ from pydantic import ConfigDict
 from ..feeds import ALL_FEEDS
 from ..config import FEED_SERVER_DID
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -42,3 +45,12 @@ def describe_feed_generator() -> AppBskyFeedDescribeFeedGenerator.Response:
             for rkey in ALL_FEEDS.keys()
         ],
     )
+
+
+@router.post("/xrpc/app.bsky.feed.sendInteractions")
+async def send_interactions(
+    body: AppBskyFeedSendInteractions.Data,
+) -> AppBskyFeedSendInteractions.Response:
+    for interaction in body.interactions:
+        logger.info("Received feed interaction: %s", interaction)
+    return AppBskyFeedSendInteractions.Response()
