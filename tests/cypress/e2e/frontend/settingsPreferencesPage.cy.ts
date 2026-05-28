@@ -59,7 +59,8 @@ describe('Settings - preferences page', () => {
   });
 
 
-  afterEach(() => {
+  after(() => {
+    // user is also deleted by 'recreateUser' in beforeEach
     deleteComparisons();
     cy.deleteUser(username);
   });
