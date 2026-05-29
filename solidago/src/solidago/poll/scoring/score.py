@@ -50,11 +50,11 @@ class Score(Row):
     
     @property
     def left_unc(self) -> float:
-        return float(self.series["left_unc"])
+        return float(self.series.get("left_unc", 0))
     
     @property
     def right_unc(self) -> float:
-        return float(self.series["right_unc"])
+        return float(self.series.get("right_unc", 0))
 
     @property
     def min(self) -> float:
@@ -83,106 +83,132 @@ class Score(Row):
             return score.isnan()
         return self.to_triplet() == score.to_triplet()
         
-    def __neq__(self, score: Union[int, float, "Score"]) -> bool:
+    def __neq__(self, score: int | float | np.number | Self) -> bool:
         return not (self == score)
     
-    def __lt__(self, score: Union[int, float, "Score"]) -> bool:
+    def __lt__(self, score: int | float | np.number | Self) -> bool:
         """ Holds if any value of self is less than any value of score """
-        if not isinstance(score, Score):
-            score = Score(score)
-        return self.max < score.min
+        return self.max < (score.min if isinstance(score, Score) else float(score))
     
     def __gt__(self, score: Union[int, float, "Score"]) -> bool:
         """ Holds if any value of self is more than any value of score """
-        if not isinstance(score, Score):
-            score = Score(score)
-        return self.min > score.max
+        return self.min > (score.max if isinstance(score, Score) else float(score))
     
     def __le__(self, score: Union[int, float, "Score"]) -> bool:
         """ Holds if some value of self is less than some value of score """
-        if not isinstance(score, Score):
-            score = Score(score)
-        return self.min <= score.max
+        return self.min <= (score.max if isinstance(score, Score) else float(score))
     
     def __ge__(self, score: Union[int, float, "Score"]) -> bool:
         """ Holds if some value of self is more than some value of score """
-        if not isinstance(score, Score):
-            score = Score(score)
-        return self.max >= score.min
+        return self.max >= (score.min if isinstance(score, Score) else float(score))
     
     def set_score(self, 
-        value: float | None = None, 
-        left_unc: float | None = None, 
-        right_unc: float | None = None
+        value: int | float | np.number | None = None, 
+        left_unc: int | float | np.number | None = None, 
+        right_unc: int | float | np.number | None = None
     ):
         if value is not None:
-            self["value"] = value
+            self["value"] = float(value)
         if left_unc is not None:
-            self["left_unc"] = left_unc
+            self["left_unc"] = float(left_unc)
         if right_unc is not None:
-            self["right_unc"] = right_unc
+            self["right_unc"] = float(right_unc)
 
     def __neg__(self) -> Self:
         result = deepcopy(self)
-        result.set_score(-self.value, self.right_unc, self.left_unc)
+        result.set_score(-self.value)
+        if "right_unc" in self:
+            result.set_score(left_unc=self.right_unc)
+        if "left_unc" in self:
+            result.set_score(right_unc=self.left_unc)
         return result
     
     @overload
-    def __add__(self, score: Union[int, float, Self]) -> Self: ...
+    def __add__(self, score: int | float | np.number | Self) -> Self: ...
     @overload
     def __add__(self, score: "Scores") -> "Scores": ...
     def __add__(self, score):
         if isinstance(score, Scores):
             return score + self
-        score = score if isinstance(score, Score) else Score(score)
+        score_value = score.value if isinstance(score, Score) else float(score)
         result = deepcopy(self)
-        result.set_score(
-            self.value + score.value, 
-            self.left_unc + score.left_unc, 
-            self.right_unc + score.right_unc
-        )
+        result.set_score(self.value + score_value)
+        if "left_unc" in self or (isinstance(score, Score) and "left_unc" in score):
+            result.set_score(left_unc=self.left_unc + score.left_unc)
+        if "right_unc" in self or (isinstance(score, Score) and "right_unc" in score):
+            result.set_score(right_unc=self.right_unc + score.right_unc)
         return result
     
     @overload
-    def __sub__(self, score: Union[int, float, Self]) -> Self: ...
+    def __sub__(self, score: int | float | np.number | Self) -> Self: ...
     @overload
     def __sub__(self, score: "Scores") -> "Scores": ...
     def __sub__(self, score):
         if isinstance(score, Scores):
             return score * self
-        score = score if isinstance(score, Score) else Score(score)
+        score_value = score.value if isinstance(score, Score) else float(score)
         result = deepcopy(self)
-        result.set_score(self.value - score.value, self.left_unc + score.right_unc, self.right_unc + score.left_unc)
+        result.set_score(self.value - score_value)
+        if "left_unc" in self or (isinstance(score, Score) and "right_unc" in score):
+            result.set_score(left_unc=self.left_unc + score.right_unc)
+        if "right_unc" in self or (isinstance(score, Score) and "left_unc" in score):
+            result.set_score(right_unc=self.right_unc + score.left_unc)
         return result
         
     @overload
-    def __mul__(self, score: Union[int, float, Self]) -> Self: ...
+    def __mul__(self, score: int | float | np.number | Self) -> Self: ...
     @overload
     def __mul__(self, score: "Scores") -> "Scores": ...
     def __mul__(self, score):
         if isinstance(score, Scores):
             return score * self
-        s = score if isinstance(score, Score) else Score(score)
-        value = self.value * s.value
-        extremes = [ self.min * s.min, self.min * s.max, self.max * s.min, self.max * s.max ]
         result = deepcopy(self)
+        if isinstance(score, (int, float, np.number)):
+            value = float(score)
+            result.set_score(value=self.value * value)
+            if "left_unc" in self:
+                if value >= 0:
+                    result.set_score(left_unc=self.left_unc*value)
+                else:
+                    result.set_score(right_unc=-self.left_unc*value)
+            if "right_unc" in self:
+                if value >= 0:
+                    result.set_score(right_unc=self.right_unc*value)
+                else:
+                    result.set_score(left_unc=-self.right_unc*value)            
+            return result
+        if "left_unc" not in self and "right_unc" not in self:
+            return score * self
+        assert isinstance(score, Score)
+        value = self.value * score.value
+        extremes = [
+            self.min * score.min, self.min * score.max, 
+            self.max * score.min, self.max * score.max 
+        ]
         result.set_score(value, value - min(extremes), max(extremes) - value)
         return result
         
-    def __truediv__(self, s: Union[int, float, Self]) -> Self:
-        s = s if isinstance(s, Score) else type(self)(s)
+    def __truediv__(self, score: int | float | np.number | Self) -> Self:
+        if isinstance(score, (int, float, np.number)):
+            if score == 0.:
+                result = deepcopy(self)
+                result.set_score(np.nan)
+                return result
+            return self * (1./score)
         result = deepcopy(self)
-        if s.contains(0):
+        if score.contains(0):
             result.set_score(np.nan)
             return result
-        value = self.value / s.value
-        extremes = [ self.min / s.min, self.min / s.max, self.max / s.min, self.max / s.max ]
+        value = self.value / score.value
+        extremes = [ self.min / score.min, self.min / score.max, self.max / score.min, self.max / score.max ]
         result.set_score(value, value - min(extremes), max(extremes) - value)
         return result
 
-    def abs(self) -> "Score":
+    def abs(self) -> Self:
         result = deepcopy(self)
-        if self.contains(0):
+        if "left_unc" not in self and "right_unc" not in self:
+            result.set_score(abs(self.value))
+        elif self.contains(0):
             result.set_score(abs(self.value), abs(self.value), max(abs(self.min), self.max) - abs(self.value))
         elif self.value > 0:
             result.set_score(self.value, self.left_unc, self.right_unc)
@@ -202,8 +228,8 @@ class Score(Row):
         return self.min <= value and value <= self.max
     
     # The following methods allow to treat Score like a MultiScore object to simplify code
-    def __iter__(self) -> Iterator[Self]:
-        yield self
+    # def __iter__(self) -> Iterator[Self]:
+    #     yield self
     
 
 class Scores(FilteredTable[Score]):
@@ -233,15 +259,15 @@ class Scores(FilteredTable[Score]):
     
     @property
     def value(self) -> NDArray[np.float64]:
-        return self("value").astype(np.float64)
+        return self("value", np.nan).astype(np.float64)
     
     @property
     def left_unc(self) -> NDArray[np.float64]:
-        return self("left_unc").astype(np.float64)
+        return np.nan_to_num(self("left_unc", 0.).astype(np.float64))
     
     @property
     def right_unc(self) -> NDArray[np.float64]:
-        return self("right_unc").astype(np.float64)
+        return np.nan_to_num(self("right_unc", 0.).astype(np.float64))
     
     @property
     def min(self) -> NDArray[np.float64]:
@@ -267,98 +293,203 @@ class Scores(FilteredTable[Score]):
 
     def __neg__(self) -> Self:
         result = deepcopy(self)
-        result.set_columns(value=self.value, left_unc=self.left_unc, right_unc=self.right_unc)
+        result.set_columns(value=self.value)
+        if "left_unc" in self.columns:
+            result.set_columns(left_unc=self.left_unc)
+        if "right_unc" in self.columns:
+            result.set_columns(right_unc=self.right_unc)
         return result
     
-    def cw_operation(self, 
-        other: Union[Score, Self], 
-        op: Callable[[Score, Score], Score]
-    ) -> Self:
+    def _result_keys(self, other: Union[int, float, np.number, Score, Self]) -> tuple[
+        dict[str, list] | dict[str, NDArray], # keys
+        tuple[NDArray, NDArray | None, NDArray | None], # self (value, left_unc, right_unc)
+        tuple[NDArray | float, NDArray | float | None, NDArray | float | None], # other
+    ]:
         
-        def default_score_factory(**keys) -> Score:
-            score = self.get(**{n: k for n, k in keys.items() if n in self.keynames})
+        if isinstance(other, (int, float, np.number, Score)):
+            keys = {kn: self(kn) for kn in self.keynames}
+            self_left_unc = self.left_unc if "left_unc" in self.columns else None
+            self_right_unc = self.right_unc if "right_unc" in self.columns else None
+            self_tuple = self.value, self_left_unc, self_right_unc
             if isinstance(other, Score):
-                return op(score, other)
-            return op(score, other.get(**{n: k for n, k in keys.items() if n in other.keynames}))
-            
-        if isinstance(other, Score):
-            others = type(self)(keynames=[])
-            others.set(other)
-            return self.cw_operation(others, op)
+                return keys, self_tuple, other.to_triplet()
+            return keys, self_tuple, (float(other), None, None)
         
         common_keynames = list(set(self.keynames) & set(other.keynames))
-        result_keynames = list(set(self.keynames) | set(other.keynames))
-        result = type(self)(keynames=result_keynames, default_score_factory=default_score_factory)
-        keys_tuples = {tuple(s[name] for name in common_keynames) for s in itertools.chain(self, other)}
-        for keys_tuple in keys_tuples:
-            common_keys = dict(zip(common_keynames, keys_tuple))
-            filtered_self, filtered_other = self.filters(**common_keys), other.filters(**common_keys)
-            for self_score, other_score in itertools.product(filtered_self, filtered_other):
-                keys = common_keys | \
-                    {n: self_score[n]for n in set(self.keynames) - set(common_keynames)} | \
-                    {n: other_score[n]for n in set(other.keynames) - set(common_keynames)}
-                score = op(self_score, other_score)
-                if isinstance(score, Score):
-                    result.set(score, **keys)
-            if set(other.keynames).issubset(common_keynames) and not filtered_other:
-                for self_score in filtered_self:
-                    score = op(self_score, other.get(**common_keys))
-                    if isinstance(score, Score):
-                        result.set(score, **common_keys)
-            if set(self.keynames).issubset(common_keynames) and not filtered_self:
-                for other_score in filtered_other:
-                    score = op(other_score, self.get(**common_keys))
-                    if isinstance(score, Score):
-                        result.set(score, **common_keys)
+        keynames = list(set(self.keynames) | set(other.keynames))
+        common_keys_tuples = {
+            tuple(scores[name] for name in common_keynames) 
+            for scores in itertools.chain(self, other)
+        }
+        keys = {kn: list() for kn in keynames}
+        self_values, other_values = list(), list()
+        self_left_uncs = list() if "left_unc" in self.columns else None
+        self_right_uncs = list() if "right_unc" in self.columns else None
+        other_left_uncs = list() if "left_unc" in other.columns else None
+        other_right_uncs = list() if "right_unc" in other.columns else None
+
+        def append(self_score: Score | None, other_score: Score | None, common_keys: dict):
+            self_score = self.get(**common_keys) if self_score is None else self_score
+            other_score = other.get(**common_keys) if other_score is None else other_score
+            if np.isnan(self_score.value) or np.isnan(other_score.value):
+                return
+            for keyname in keynames:
+                if keyname in common_keys:
+                    keys[keyname].append(common_keys[keyname])
+                elif self_score is not None and keyname in self_score:
+                    keys[keyname].append(self_score[keyname])
+                else:
+                    assert other_score is not None
+                    keys[keyname].append(other_score[keyname])
+            self_values.append(self_score.value)
+            other_values.append(other_score.value)
+            if self_left_uncs is not None:
+                self_left_uncs.append(self_score.left_unc)
+            if self_right_uncs is not None:
+                self_right_uncs.append(self_score.right_unc)
+            if other_left_uncs is not None:
+                other_left_uncs.append(other_score.left_unc)
+            if other_right_uncs is not None:
+                other_right_uncs.append(other_score.right_unc)
         
-        return result
+        for common_keys_tuple in common_keys_tuples:
+            common_keys = dict(zip(common_keynames, common_keys_tuple))
+            f_self, f_other = self.filters(**common_keys), other.filters(**common_keys)
+
+            for self_score, other_score in itertools.product(f_self, f_other):
+                append(self_score, other_score, common_keys)
+
+            if set(other.keynames).issubset(common_keynames) and len(f_other) == 0:
+                for self_score in f_self:
+                    append(self_score, None, common_keys)
+
+            if set(self.keynames).issubset(common_keynames) and len(f_self) == 0:
+                for other_score in f_other:
+                    append(None, other_score, common_keys)
+
+        to_np = lambda x: None if x is None else np.array(x)
+        self_tuple = np.array(self_values), to_np(self_left_uncs), to_np(self_right_uncs)
+        other_tuple = np.array(other_values), to_np(other_left_uncs), to_np(other_right_uncs)
+        return keys, self_tuple, other_tuple
+        
+    def _result_default_factory(self, 
+        other: Union[int, float, np.number, Score, Self], 
+        op: Callable[[Score, int | float | np.number | Score], Score],
+    ) -> Callable[..., Score]:
+        
+        def f(**keys) -> Score:
+            score = self.get(**{n: k for n, k in keys.items() if n in self.keynames})
+            if isinstance(other, (int, float, np.number, Score)):
+                return op(score, other)
+            subkeys = {n: k for n, k in keys.items() if n in other.keynames}
+            return op(score, other.get(**subkeys))
+        
+        return f
     
     def __add__(self, other: Union[Score, Self]) -> Self:
-        if isinstance(other, Score):
-            result = deepcopy(self)
-            result.set_columns(
-                value=self.value + other.value,
-                left_unc=self.left_unc + other.left_unc,
-                right_unc=self.right_unc + other.right_unc
-            )
-            def default_score_factory(**keys) -> Score:
-                return self.get(**{n: k for n, k in keys.items() if n in self.keynames}) + other
-            result._default_score_factory = default_score_factory
-            return result
-        return self.cw_operation(other, Score.__add__)
-        
+        keys, (v1, l1, r1), (v2, l2, r2) = self._result_keys(other)
+        keynames = list(keys.keys())
+        left_uncs, right_uncs = None, None
+
+        result = type(self)(keys, 
+            keynames=keynames, columns=keynames,
+            default_score_factory=self._result_default_factory(other, Score.__add__),
+        )
+        result.set_columns(value=v1+v2)
+
+        if l1 is not None or l2 is not None:
+            left_uncs = l2 if l1 is None else (l1 if l2 is None else l1+l2)
+            result.set_columns(left_unc=left_uncs)
+        if r1 is not None or r2 is not None:
+            right_uncs = r2 if r1 is None else (r1 if r2 is None else r1+r2)
+            result.set_columns(right_unc=right_uncs)
+
+        return result
+    
     def __sub__(self, other: Union[Score, Self]) -> Self:
-        return self + (- other)
+        keys, (v1, l1, r1), (v2, l2, r2) = self._result_keys(other)
+        keynames = list(keys.keys())
+        left_uncs, right_uncs = None, None
+
+        result = type(self)(keys, 
+            keynames=keynames, columns=keynames,
+            default_score_factory=self._result_default_factory(other, Score.__sub__),
+        )
+        result.set_columns(value=v1-v2)
+
+        if l1 is not None or r2 is not None:
+            left_uncs = r2 if l1 is None else (l1 if r2 is None else l1+r2)
+            result.set_columns(left_unc=left_uncs)
+        if r1 is not None or l2 is not None:
+            right_uncs = l2 if r1 is None else (r1 if l2 is None else r1+l2)
+            result.set_columns(right_unc=right_uncs)
+
+        return result
     
     def __mul__(self, other: Union[Score, Self]) -> Self:
-        if isinstance(other, Score):
-            result = deepcopy(self)
-            extremes = np.stack([self.min * other.min, self.min * other.max, self.max * other.min, self.max * other.max])
-            value = result.value * other.value
-            left_unc = value - np.min(extremes, axis=1)
-            right_unc = np.max(extremes, axis=1) - value
-            result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
-            def default_score_factory(**keys) -> Score:
-                return self.get(**{n: k for n, k in keys.items() if n in self.keynames}) * other
-            result._default_score_factory = default_score_factory
+        keys, (v1, l1, r1), (v2, l2, r2) = self._result_keys(other)
+        keynames = list(keys.keys())
+        values = v1*v2
+        result = type(self)(keys, 
+            keynames=keynames, columns=keynames,
+            default_score_factory=self._result_default_factory(other, Score.__mul__),
+        )
+        result.set_columns(value=values)
+
+        if l1 is None and r1 is None and l2 is None and r2 is None:
             return result
-        return self.cw_operation(other, Score.__mul__)
         
+        l1 = 0 if l1 is None else l1
+        r1 = 0 if r1 is None else r1
+        l2 = 0 if l2 is None else l2
+        r2 = 0 if r2 is None else r2
+
+        extremes = np.stack([
+            (v1 - l1) * (v2 - l2), (v1 - l1) * (v2 + r2),
+            (v1 + r1) * (v2 - l2), (v1 + r1) * (v2 + r2),
+        ])
+        result.set_columns(left_unc=values - extremes.min(axis=0))
+        result.set_columns(right_unc=extremes.max(axis=0) - values)
+
+        return result
+    
     def __truediv__(self, other: Union[Score, Self]) -> Self:
-        if isinstance(other, Score):
-            result = deepcopy(self)
-            extremes = np.stack([self.min * other.min, self.min * other.max, self.max * other.min, self.max * other.max])
-            value = result.value * other.value
-            left_unc = value - np.min(extremes, axis=1)
-            right_unc = np.max(extremes, axis=1) - value
-            result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
-            def default_score_factory(**keys) -> Score:
-                return self.get(**{n: k for n, k in keys.items() if n in self.keynames}) / other
-            result._default_score_factory = default_score_factory
+        keys, (v1, l1, r1), (v2, l2, r2) = self._result_keys(other)
+        keynames = list(keys.keys())
+
+        result = type(self)(keys, 
+            keynames=keynames, columns=keynames,
+            default_score_factory=self._result_default_factory(other, Score.__truediv__),
+        )
+
+        if l1 is None and r1 is None and l2 is None and r2 is None:
+            result.set_columns(value=v1/v2)
             return result
-        return self.cw_operation(other, Score.__truediv__)
+        
+        l1 = 0 if l1 is None else l1
+        r1 = 0 if r1 is None else r1
+        l2 = 0 if l2 is None else l2
+        r2 = 0 if r2 is None else r2
+
+        if l2 is None and r2 is None:
+            values = v1 / v2
+        else:
+            values = np.where((v2 - l2) * (v2 + r2) > 0, v1 / v2, np.nan)
+
+        extremes = np.stack([
+            (v1 - l1) / (v2 - l2), (v1 - l1) / (v2 + r2),
+            (v1 + r1) / (v2 - l2), (v1 + r1) / (v2 + r2),
+        ])
+        result.set_columns(
+            values=values,
+            left_unc=values - extremes.min(axis=0),
+            right_unc=extremes.max(axis=0) - values
+        )
+        return result
 
     def abs(self) -> Self:
+        if "left_unc" not in self.columns and "right_unc" not in self.columns:
+            return self.add_columns(value=np.abs(self.value))
         value, min, max = self.value, self.min, self.max
         abs_value = np.abs(value)
         left_unc = np.where(min * max < 0, abs_value, np.where(value > 0, self.left_unc, self.right_unc))

@@ -16,4 +16,7 @@ class Sum(EntityCriterionWise):
         right_uncs: NDArray[np.float64],
     ) -> tuple[float, float, float]:
         assert len(vrights) == len(values) == len(left_uncs) == len(right_uncs)
-        return (values * vrights).sum(), (left_uncs * vrights).sum(), (right_uncs * vrights).sum()
+        v = (values * vrights).sum()
+        l = (left_uncs * vrights).sum()
+        r = (right_uncs * vrights).sum()
+        return v, l, r

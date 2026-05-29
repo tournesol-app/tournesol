@@ -12,10 +12,10 @@ class ChronoFair(Veche):
             f.voting_rights.Mentions(),
             f.voting_rights.AggregateVolumes(),
             f.filtering.PositiveVotingRightOnly(),
-            f.preference_learning.PostActions(max_workers=1),
-            f.preference_bias.TimeDecay(QuadraticDecay(), max_workers=1),
+            f.preference_learning.PostActions(),
+            f.preference_bias.TimeDecay(QuadraticDecay()),
             f.scaling.MaxNorm(default_q=1.),
-            f.aggregation.Sum(max_workers=1),
-            f.post_process.SumCriteria(),
-        ]), s.SamplingWithoutReplacement())
+            f.aggregation.Sum(),
+            f.post_process.GlobalSumCriteria(),
+        ], max_workers=1), s.SamplingWithoutReplacement())
 

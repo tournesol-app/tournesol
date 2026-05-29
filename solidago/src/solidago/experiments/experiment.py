@@ -1,16 +1,17 @@
 from pathlib import Path
 from typing import Iterable
-import shutil, logging
+import shutil
 
 import numpy as np
 import yaml
-
-logger = logging.getLogger(__name__)
 
 from solidago.primitives.instructions import Instructions
 from solidago.poll import Poll
 from solidago.functions import PollFunction, Sequential
 from solidago.generators import Generator
+
+import logging
+logger = logging.getLogger("solidago.experiments")
 
 
 class Experiment:

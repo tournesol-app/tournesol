@@ -12,14 +12,15 @@ class EntityCriterionWise(ThreadedPollFunction):
         super().__init__(*args, **kwargs)
 
     def _variables(self, entities: Entities, user_models: UserModels) -> list[tuple[Entity, str]]: # type: ignore
-        return [(entity, criterion) for entity in entities for criterion in user_models.criteria()]
+        return [(e, c) for e in entities for c in user_models.criteria()]
 
     def _nonargs_list(self,  # type: ignore
         variables: list[tuple[Entity, str]], 
         entities: Entities,
         user_models: UserModels,
     ) -> list[Scores]:
-        scores = user_models(entities)
+        with self.timeit(f"{type(self).__name__} - Loading data - Nonargs - user_models", unit="ms"):
+            scores = user_models(entities)
         return [scores.filters(entity_name=e.name, criterion=c) for e, c in variables]
 
     def _args(self, # type: ignore

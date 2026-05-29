@@ -3,8 +3,8 @@ from solidago.primitives.time import timeit
 from solidago.functions.preference_learning.gbt.root_law import *
 
 import logging.config
-
 logging.config.fileConfig("tests/info.conf")
+
 
 def simple():
     source = "tests/experiments/simple.yaml"

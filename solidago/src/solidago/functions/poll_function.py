@@ -8,11 +8,10 @@ import timeit
 import yaml
 
 from solidago.poll import *
+from solidago.primitives.time import Date, DateInput
 
 import logging
-
-from solidago.primitives.time import Date
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("solidago.functions")
 
 
 class PollFunction(ABC):
@@ -74,11 +73,11 @@ class PollFunction(ABC):
         self.save_result(result, save_directory)
         return result
 
-    def customize(self, username: str | None = None, date: Date | None = None):
+    def customize(self, username: str | None = None, date: Date | DateInput | None = None):
         if hasattr(self, "username"):
             self.username = username
         if hasattr(self, "date"):
-            self.date = date
+            self.date = Date(date) if isinstance(date, DateInput) else date
     
     def type_check(self, value, annotations):
         assert "return" in annotations, "" \

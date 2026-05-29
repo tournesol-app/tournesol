@@ -34,9 +34,10 @@ class Veche(Recommender):
 
     def customize(self,
         receiver_name: str | None = None, 
-        date: DateInput | None = None,
+        date: Date | DateInput | None = None,
     ):
-        d = Date.now() if date is None else Date(date)
+        date = Date(date) if isinstance(date, DateInput) else date
+        d = Date.now() if date is None else date
         self.preprocess.customize(receiver_name, d)        
 
     def __call__(self, 
@@ -44,9 +45,11 @@ class Veche(Recommender):
         limit: int, 
         receiver_name: str | None = None, 
         cursor: str | None = None,
-        date: DateInput | None = None,
+        date: Date | DateInput | None = None,
     ) -> Entities:
         self.customize(receiver_name, date)
-        poll = self.preprocess(poll)
-        return self.sampler(poll, limit)
+        with self.timeit(f"{type(self).__name__} preprocessing", unit="ms"):
+            poll = self.preprocess(poll)
+        with self.timeit(f"{type(self).__name__} sampling", unit="ms"):
+            return self.sampler(poll, limit)
     

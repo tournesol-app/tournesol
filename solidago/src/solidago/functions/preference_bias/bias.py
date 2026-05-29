@@ -22,12 +22,19 @@ class PreferenceBias(ThreadedPollFunction):
             for criterion in user_models.criteria()
         ]
     
-    def _args(self, variable: tuple[str, str], nonargs, user_models: UserModels) -> Scores: # type: ignore
-        username, criterion = variable
-        return user_models[username](criterion=criterion)
+    def _nonargs_list(self,  # type: ignore
+        variables: list[tuple[Entity, str]], 
+        user_models: UserModels,
+    ) -> list[Scores]:
+        scores = user_models()
+        return [scores.filters(username=u, criterion=c) for u, c in variables]
+
+    def _args(self, variable: tuple[str, str], nonargs) -> Scores: # type: ignore
+        return nonargs
     
     def thread_function(self, scores: Scores, **kwargs) -> Scores:
-        return scores * self.multipliers(scores, **kwargs)
+        multipliers = self.multipliers(scores, **kwargs)
+        return scores * multipliers
     
     def _process_results(self,  # type: ignore
         variables: list[tuple[str, str]], 

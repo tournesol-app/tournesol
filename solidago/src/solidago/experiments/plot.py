@@ -8,10 +8,9 @@ import logging
 
 import yaml
 
-from solidago.experiments.experiment import Experiment
-from solidago.poll.poll import Poll
+from solidago.experiments.experiment import Experiment, logger
+from solidago.poll import *
 
-logger = logging.getLogger(__name__)
 
 
 class XYZPlot:

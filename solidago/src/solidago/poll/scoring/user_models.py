@@ -1,3 +1,4 @@
+import logging
 from typing import Iterable, Iterator
 from numpy.typing import NDArray
 from pathlib import Path
@@ -8,6 +9,7 @@ import yaml
 
 from solidago.poll.poll_tables import *
 from solidago.primitives.criteria import to_criteria
+from solidago.primitives.time import timeit
 
 from .model import CategoryScores, DirectScores, Multipliers, Parameters, ScoringModel, Translations
 from .score import Scores
@@ -132,11 +134,28 @@ class UserModels:
     ) -> Scores:
         return self.score(entity, criterion, n_sampled_entities_per_user)
     
+    def _is_direct_only(self):
+        if len(self.default_composition) > 1 or self.default_composition[0][0] != "Linear":
+            return False
+        if len(self.user_compositions) > 0:
+            return False
+        if len(self.user_categories) > 0 or len(self.user_parameters) > 0:
+            return False
+        return True
+
     def score(self, 
         entity: Entity | Entities | None = None,
         criterion: str | Iterable[str] | None = None,
         n_sampled_entities_per_user: int | None = None,
     ) -> Scores:
+        if n_sampled_entities_per_user is None and self._is_direct_only():
+            scores = self.user_directs
+            if entity is not None:
+                e = entity.name if isinstance(entity, Entity) else entity.names()
+                scores = scores.filters(entity_name=e)
+            if criterion is not None:
+                scores = scores.filters(criterion=criterion)
+            return scores
         scores = Scores(keynames=["username", "entity_name", "criterion"])
         criteria = to_criteria(self.criteria() if criterion is None else criterion)
         for username, model in self:

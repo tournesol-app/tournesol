@@ -37,11 +37,11 @@ class ThreadedPollFunction(PollFunction):
     ##########################
 
     def fn(self, *args: Any, **kwargs: Any) -> Any:
-        with self.timeit(f"{type(self).__name__} - Loading data"):
+        with self.timeit(f"{type(self).__name__} - Loading data", unit="ms"):
             kwargs, variables, nonargs_list, args_lists = self.precompute(*args, **kwargs)
-        with self.timeit(f"{type(self).__name__} - Parallelized computing"):
+        with self.timeit(f"{type(self).__name__} - Parallelized computing", unit="ms"):
             results = ThreadedPollFunction.threading(self.max_workers, self.thread_function, *args_lists)
-        with self.timeit(f"{type(self).__name__} - Processing results"):
+        with self.timeit(f"{type(self).__name__} - Processing results", unit="ms"):
             process_kwargs = self._extract(kwargs, "_process_results")
             return self._process_results(variables, nonargs_list, results, args_lists, **process_kwargs)
         
@@ -50,14 +50,18 @@ class ThreadedPollFunction(PollFunction):
         list[Any], # variables
         list[Any], # nonargs_lists
         list[Any], # args_lists
-    ]: 
+    ]:
         kwargs |= {Poll.key_by_type(arg): arg for arg in args}
-        kwargs |= self._process_kwargs(**self._extract(kwargs, "_process_kwargs"))
-        variables = self._variables(**self._extract(kwargs, "_variables"))
-        nonargs_kwargs = self._extract(kwargs, "_nonargs") | self._extract(kwargs, "_nonargs_list")
-        nonargs_list = self._nonargs_list(variables, **nonargs_kwargs)
-        args_lists_kwargs = self._extract(kwargs, "_args_lists") | self._extract(kwargs, "_args")
-        args_lists = self._args_lists(variables, nonargs_list, **args_lists_kwargs)
+        with self.timeit(f"{type(self).__name__} - Loading data - Process kwargs", unit="ms"):
+            kwargs |= self._process_kwargs(**self._extract(kwargs, "_process_kwargs"))
+        with self.timeit(f"{type(self).__name__} - Loading data - Variables", unit="ms"):
+            variables = self._variables(**self._extract(kwargs, "_variables"))
+        with self.timeit(f"{type(self).__name__} - Loading data - Nonargs", unit="ms"):
+            nonargs_kwargs = self._extract(kwargs, "_nonargs") | self._extract(kwargs, "_nonargs_list")
+            nonargs_list = self._nonargs_list(variables, **nonargs_kwargs)
+        with self.timeit(f"{type(self).__name__} - Loading data - Args", unit="ms"):
+            args_lists_kwargs = self._extract(kwargs, "_args_lists") | self._extract(kwargs, "_args")
+            args_lists = self._args_lists(variables, nonargs_list, **args_lists_kwargs)
         return kwargs, variables, nonargs_list, args_lists
     
     def _precompute_args_lists(self, *args, **kwargs) -> list[Any]:

@@ -332,13 +332,16 @@ class _Table:
 
     def set_columns(self, 
         dtypes: dict[str, type] | None = None, 
-        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+        **values: Scalar | Sequence[Scalar] | NDArray
     ):
         for name, value in values.items():
             dtype = dtypes[name] if dtypes and name in dtypes else None
             self.set_column(name, value, dtype)
 
-    def add_columns(self, dtypes: dict[str, type] | None = None, **values: Scalar | Sequence[Scalar] | NDArray[np.float64]) -> Self:
+    def add_columns(self, 
+        dtypes: dict[str, type] | None = None, 
+        **values: Scalar | Sequence[Scalar] | NDArray
+    ) -> Self:
         copy = deepcopy(self)
         copy.set_columns(dtypes, **values)
         return copy
@@ -597,7 +600,7 @@ class FilteredTable(Generic[TableRow]):
 
     def set_columns(self, 
         dtypes: dict[str, type] | None = None, 
-        **values: Scalar | Sequence[Scalar] | NDArray[np.float64]
+        **values: Scalar | Sequence[Scalar] | NDArray
     ):
         """ Modifies table. This does not affect filters. """
         if self.filter.indices is None:

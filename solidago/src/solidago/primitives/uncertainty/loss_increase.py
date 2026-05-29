@@ -1,13 +1,11 @@
 import numpy as np
-import logging
-
-logger = logging.getLogger(__name__)
 
 from numpy.typing import NDArray
 from typing import Any, Callable
 from numba import njit
 
-from solidago.primitives import dichotomy
+from solidago.primitives.dichotomy import solve as dichotomy_solve
+from solidago.primitives.logger import logger
 from solidago.primitives.uncertainty.uncertainty_evaluator import UncertaintyEvaluator, CwLossGetter
 
 
@@ -30,12 +28,12 @@ class UncertaintyByLossIncrease(UncertaintyEvaluator):
         compute_uncertainties = type(self).compute_uncertainties
         try:
             njit_compute = njit(compute_uncertainties)
-            njit_dichotomy = njit(dichotomy.solve)
+            njit_dichotomy = njit(dichotomy_solve)
             njit_cw_loss = njit(cw_loss)
             return njit_compute(njit_dichotomy, njit_cw_loss, *self_args, *cw_loss_args) # type: ignore
         except:
             logger.info("Failed to jit uncertainty computation.")
-            return compute_uncertainties(dichotomy.solve, cw_loss, *self_args, *cw_loss_args)
+            return compute_uncertainties(dichotomy_solve, cw_loss, *self_args, *cw_loss_args)
 
     def get_cw_loss_and_args(self,
         cw_prior_loss_getter: CwLossGetter | None,

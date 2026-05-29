@@ -1,5 +1,6 @@
 from solidago.poll import *
 from solidago.functions.threaded import ThreadedPollFunction
+from solidago.primitives.datastructure.filtered_table import SelectLast
 from solidago.primitives.datastructure.named_objects import Contains
 
 
@@ -59,27 +60,26 @@ class PostActions(ThreadedPollFunction):
         publications: list[tuple[str, float, int | float]], 
         reactions: list[tuple[str, float, int | float, str]],
     ) -> Scores:
-        scores = Scores(keynames=["entity_name", "criterion"])
-        
-        for name, timestamp, lifetime in publications:
-            scores.append(
-                Score(1), 
-                entity_name=name, criterion="post", 
-                timestamp=timestamp, lifetime=lifetime
-            )
+        scores = Scores(
+            publications,
+            columns=["entity_name", "timestamp", "lifetime"],
+            keynames=["entity_name"],
+            default_select=SelectLast("timestamp"),
+        ).add_columns(value=1, left_unc=0, right_unc=0, criterion="post")
+        scores.keynames.append("criterion")
 
+        latest = dict()
         for name, timestamp, lifetime, action in reactions:
-            if len(scores.filters(entity_name=name, criterion="post")) > 0:
+            if "post" in scores.filters(entity_name=name)("criterion"):
                 continue
-            score = scores.get(entity_name=name, criterion=action)
-            if timestamp > score.get("timestamp", -1):
-                scores.append(
-                    Score(self.action_weights[action]), 
-                    entity_name=name, criterion=action, 
-                    timestamp=timestamp, lifetime=lifetime
-                )
+            if name not in latest or timestamp > latest[name][1]:
+                latest[name] = name, timestamp, lifetime, action, self.action_weights[action]
 
-        return scores
+        return scores | Scores(
+            latest.values(),
+            columns=["entity_name", "timestamp", "lifetime", "criterion", "value"],
+            keynames=["entity_name", "criterion"],
+        ).add_columns(left_unc=0, right_unc=0)
     
     def _process_results(self,  # type: ignore
         variables: list[str], 

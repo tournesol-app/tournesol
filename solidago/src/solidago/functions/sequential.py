@@ -2,7 +2,7 @@ from typing import Any, Iterator
 import numpy as np
 
 from solidago.poll import *
-from solidago.primitives.time import Date
+from solidago.primitives.time import Date, DateInput
 from .poll_function import PollFunction
 
 
@@ -19,14 +19,15 @@ class Sequential(PollFunction):
         self.subfunctions: list[PollFunction] = list()
         for sub in subfunctions or list():
             import solidago, solidago.functions as m
-            subfunction = solidago.load(sub, m, PollFunction, max_workers=max_workers) 
+            subfunction = solidago.load(sub, m, PollFunction) 
             assert isinstance(subfunction, PollFunction)
+            subfunction.max_workers = 1
             self.subfunctions.append(subfunction)
             
     def __call__(self, poll: Poll, save_directory: str | None = None) -> Poll:
         return self.fn(poll, save_directory)
 
-    def customize(self, username: str | None = None, date: Date | None = None):
+    def customize(self, username: str | None = None, date: Date | DateInput | None = None):
         for f in self.subfunctions:
             f.customize(username, date)
     
@@ -50,7 +51,7 @@ class Sequential(PollFunction):
             if skip_steps is not None and step in skip_steps:
                 continue
             log = f"{self.name} {step+1}. {type(subfunction).__name__}"
-            with self.timeit(log):
+            with self.timeit(log, unit="ms"):
                 result = subfunction(result, save_directory)
         return result
     
