@@ -76,8 +76,17 @@ const PrivacyPolicyPage = () => {
           <Typography id="browser-extension" variant="h5">
             1.7. {t('privacyPolicy.browserExtension')}
           </Typography>
+          <Typography id="browser-extension-for-all-users" variant="h6">
+            {t('privacyPolicy.forAllUsers')}
+          </Typography>
           <Typography>
-            {t('privacyPolicy.browserExtensionDataCollection')}
+            {t('privacyPolicy.browserExtensionDataCollectionForAll')}
+          </Typography>
+          <Typography id="browser-extension-for-connected-users" variant="h6">
+            {t('privacyPolicy.forUsersConnectedToTheirAccount')}
+          </Typography>
+          <Typography>
+            {t('privacyPolicy.browserExtensionDataCollectionForAuthenticated')}
           </Typography>
         </LegalPaper>
         <LegalPaper>
