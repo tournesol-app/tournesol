@@ -4,14 +4,6 @@ user_models:
 - default_composition:
   - - Linear
     - note: FlexibleGeneralizedBradleyTerry
-  - - ScaleProcessing
-    - note: mehestan
-  - - ScaleProcessing
-    - note: lipschitz_standardardize
-  - - ScaleProcessing
-    - note: lipschitz_quantile_shift
-  - - SquashProcessing
-    - max: 100
   fmt: parquet
   user_categories:
     categories_list:

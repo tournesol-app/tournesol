@@ -255,7 +255,8 @@ class Scores(FilteredTable[Score]):
     def row_factory(self, **keys: Hashable) -> Score:
         if self._default_score_factory is not None:
             return self._default_score_factory(**keys)
-        return self.TableRowType(None, **(keys | dict(zip(["value", "left_unc", "right_unc"], self.default_score))))
+        values = dict(zip(["value", "left_unc", "right_unc"], self.default_score))
+        return self.TableRowType(None, **keys | values)
     
     @property
     def value(self) -> NDArray[np.float64]:
@@ -315,62 +316,53 @@ class Scores(FilteredTable[Score]):
                 return keys, self_tuple, other.to_triplet()
             return keys, self_tuple, (float(other), None, None)
         
-        common_keynames = list(set(self.keynames) & set(other.keynames))
-        keynames = list(set(self.keynames) | set(other.keynames))
-        common_keys_tuples = {
-            tuple(scores[name] for name in common_keynames) 
-            for scores in itertools.chain(self, other)
-        }
-        keys = {kn: list() for kn in keynames}
-        self_values, other_values = list(), list()
-        self_left_uncs = list() if "left_unc" in self.columns else None
-        self_right_uncs = list() if "right_unc" in self.columns else None
-        other_left_uncs = list() if "left_unc" in other.columns else None
-        other_right_uncs = list() if "right_unc" in other.columns else None
+        self_keys = tuple(self(keyname) for keyname in self.keynames)
+        other_keys = tuple(other(keyname) for keyname in other.keynames)
 
-        def append(self_score: Score | None, other_score: Score | None, common_keys: dict):
-            self_score = self.get(**common_keys) if self_score is None else self_score
-            other_score = other.get(**common_keys) if other_score is None else other_score
-            if np.isnan(self_score.value) or np.isnan(other_score.value):
-                return
-            for keyname in keynames:
-                if keyname in common_keys:
-                    keys[keyname].append(common_keys[keyname])
-                elif self_score is not None and keyname in self_score:
-                    keys[keyname].append(self_score[keyname])
-                else:
-                    assert other_score is not None
-                    keys[keyname].append(other_score[keyname])
-            self_values.append(self_score.value)
-            other_values.append(other_score.value)
-            if self_left_uncs is not None:
-                self_left_uncs.append(self_score.left_unc)
-            if self_right_uncs is not None:
-                self_right_uncs.append(self_score.right_unc)
-            if other_left_uncs is not None:
-                other_left_uncs.append(other_score.left_unc)
-            if other_right_uncs is not None:
-                other_right_uncs.append(other_score.right_unc)
-        
-        for common_keys_tuple in common_keys_tuples:
-            common_keys = dict(zip(common_keynames, common_keys_tuple))
-            f_self, f_other = self.filters(**common_keys), other.filters(**common_keys)
+        keys, common_keys, self_indices, other_indices = _njit_indices(
+            self.keynames, other.keynames, self_keys, other_keys,
+            self.all_keys_indices(), other.all_keys_indices(),
+        )
 
-            for self_score, other_score in itertools.product(f_self, f_other):
-                append(self_score, other_score, common_keys)
+        c = self_indices == -1
+        l1, r1, l2, r2 = None, None, None, None
+        if self._default_score_factory is None:
+            v, l, r = self.default_score
+            v1 = np.where(c, v, self.value[self_indices])
+            if "left_unc" in self.columns:
+                l1 = np.where(c, l, self.left_unc[self_indices])
+            if "right_unc" in self.columns:
+                r1 = np.where(c, r, self.right_unc[self_indices])
+        else:
+            g = lambda i: self.get(None, **{
+                n: k for n, k in common_keys[i].items()
+                if n in self.keynames
+            })
+            v1 = np.where(c, g(self_indices).value, self.value[self_indices])
+            if "left_unc" in self.columns:
+                l1 = np.where(c, g(self_indices).left_unc, self.left_unc[self_indices])
+            if "right_unc" in self.columns:
+                r1 = np.where(c, g(self_indices).right_unc, self.right_unc[self_indices])
 
-            if set(other.keynames).issubset(common_keynames) and len(f_other) == 0:
-                for self_score in f_self:
-                    append(self_score, None, common_keys)
+        if other._default_score_factory is None:
+            v, l, r = other.default_score
+            v2 = np.where(c, v, other.value[other_indices])
+            if "left_unc" in other.columns:
+                l2 = np.where(c, l, other.left_unc[other_indices])
+            if "right_unc" in other.columns:
+                r2 = np.where(c, r, other.right_unc[other_indices])
+        else:
+            g = lambda i: other.get(None, **{
+                n: k for n, k in common_keys[i].items()
+                if n in other.keynames
+            })
+            v2 = np.where(c, g(other_indices).value, other.value[other_indices])
+            if "left_unc" in other.columns:
+                l2 = np.where(c, g(other_indices).left_unc, other.left_unc[other_indices])
+            if "right_unc" in other.columns:
+                r2 = np.where(c, g(other_indices).right_unc, other.right_unc[other_indices])
 
-            if set(self.keynames).issubset(common_keynames) and len(f_self) == 0:
-                for other_score in f_other:
-                    append(None, other_score, common_keys)
-
-        to_np = lambda x: None if x is None else np.array(x)
-        self_tuple = np.array(self_values), to_np(self_left_uncs), to_np(self_right_uncs)
-        other_tuple = np.array(other_values), to_np(other_left_uncs), to_np(other_right_uncs)
-        return keys, self_tuple, other_tuple
+        return keys, (v1, l1, r1), (v2, l2, r2)
         
     def _result_default_factory(self, 
         other: Union[int, float, np.number, Score, Self], 
@@ -501,3 +493,95 @@ class Scores(FilteredTable[Score]):
         result = deepcopy(self)
         result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
         return result
+
+def _njit_common_keys_tuples(
+    keynames1: list[str], keynames2: list[str],
+    keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
+) -> tuple[
+    list[str], # common_keynames
+    set[tuple[Hashable, ...]], # common_keys_tuples
+]:
+    common_keynames = list(set(keynames1) & set(keynames2))
+    common_keyname_indices1 = [keynames1.index(kn) for kn in common_keynames]
+    common_keyname_indices2 = [keynames2.index(kn) for kn in common_keynames]
+    n_common_keynames = len(common_keynames)
+    n_keys1, n_keys2 = len(keys1[0]), len(keys2[0])
+    return common_keynames, {
+        tuple(keys1[common_keyname_indices1[i]][j] for i in range(n_common_keynames)) 
+        for j in range(n_keys1)
+    } | {
+        tuple(keys2[common_keyname_indices2[i]][j] for i in range(n_common_keynames))
+        for j in range(n_keys2)
+    }
+
+def _njit_indices(
+    keynames1: list[str], keynames2: list[str],
+    keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
+    all_keys_indices1: dict[str, dict[Hashable, NDArray[np.int_]]],
+    all_keys_indices2: dict[str, dict[Hashable, NDArray[np.int_]]],
+) -> tuple[
+    dict[str, list], # keys
+    list[dict[str, Hashable]], # common_keys_list
+    NDArray[np.int64], # indices1
+    NDArray[np.int64], # indices2
+]:
+    x = _njit_common_keys_tuples(keynames1, keynames2, keys1, keys2)
+    common_keynames, common_keys_tuples = x
+
+    keynames = list(set(keynames1) | set(keynames2))
+    keys = {keyname: list() for keyname in keynames}
+    common_keys_list, indices1, indices2 = list(), list(), list()
+    keyname_indices1 = {keyname: index for index, keyname in enumerate(keynames1)}
+    keyname_indices2 = {keyname: index for index, keyname in enumerate(keynames2)}
+    args = (
+        keyname_indices1, keyname_indices2, keys1, keys2, keynames, 
+        keys, common_keys_list, indices1, indices2
+    )
+    
+    for common_keys_tuple in common_keys_tuples:
+        common_keys = dict(zip(common_keynames, common_keys_tuple))
+        commons = common_keynames, common_keys_tuple
+        subindices1 = _njit_filtered_indices(all_keys_indices1, *commons)
+        subindices2 = _njit_filtered_indices(all_keys_indices2, *commons)
+
+        for i1, i2 in itertools.product(subindices1, subindices2):
+            _njit_append(i1, i2, common_keys, *args)
+
+        if set(keynames2).issubset(common_keynames) and len(subindices2) == 0:
+            for i1 in subindices1:
+                _njit_append(i1, np.int64(-1), common_keys, *args)
+
+        if set(keynames1).issubset(common_keynames) and len(subindices1) == 0:
+            for i2 in subindices2:
+                _njit_append(np.int64(-1), i2, common_keys, *args)
+    
+    return keys, common_keys_list, np.array(indices1), np.array(indices2)
+
+def _njit_append(
+    i1: np.int_, i2: np.int_, common_keys: dict[str, Hashable],
+    keyname_indices1: dict[str, int], keyname_indices2: dict[str, int],
+    keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...], keynames: list[str],
+    keys: dict[str, list], common_keys_list: list[dict[str, Hashable]],
+    indices1: list[np.int_ | int], indices2: list[np.int_ | int],
+):
+    indices1.append(i1)
+    indices2.append(i2)
+    common_keys_list.append(common_keys)
+    for keyname in keynames:
+        if keyname in common_keys:
+            key = common_keys[keyname]
+        elif keyname in keyname_indices1:
+            key = keys1[keyname_indices1[keyname]][i1]
+        else:
+            key = keys2[keyname_indices2[keyname]][i2]
+        keys[keyname].append(key)
+
+def _njit_filtered_indices(
+    all_keys_indices: dict[str, dict[Hashable, NDArray[np.int_]]],
+    keynames: list[str], keys: tuple[Hashable, ...], 
+):
+    indices = all_keys_indices[keynames[0]][keys[0]]
+    for keyname, key in zip(keynames[1:], keys[1:]):
+        indices = np.intersect1d(indices, all_keys_indices[keyname][key])
+    return indices
+

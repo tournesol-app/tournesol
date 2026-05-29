@@ -105,7 +105,7 @@ def test_cache():
     from solidago.primitives.datastructure.filtered_table import _TableCache
     import numpy as np
     
-    cache = _TableCache(dict(criterion={"default": [1, 4, 2], "important": [0, 3]}))
+    cache = _TableCache(dict(criterion={"default": np.array([1, 4, 2]), "important": np.array([0, 3])}))
     assert cache.keynames() == {"criterion"}
     assert cache.keys("criterion") == {"default", "important"}
     
@@ -114,7 +114,7 @@ def test_cache():
     cache.remove(np.int64(1), "criterion", "default")
     assert set(cache.indices("criterion", "default")) == {2, 4, 5}
 
-    cache2 = _TableCache(dict(criterion={"default": [2, 8], "important": [6, 7]}))
+    cache2 = _TableCache(dict(criterion={"default": np.array([2, 8]), "important": np.array([6, 7])}))
     c = cache | cache2
     assert set(c.indices("criterion", "default")) == {2, 4, 5, 8}
     assert set(c.indices("criterion", "important")) == {0, 3, 6, 7}

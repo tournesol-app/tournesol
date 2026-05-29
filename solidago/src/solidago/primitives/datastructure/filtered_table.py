@@ -166,14 +166,21 @@ class Filter:
         return f"Filters " + ', '.join(f'{n}={k}' for n, k in self.keys.items()) + f", indices={self.indices}"
 
 class _TableCache:
-    def __init__(self, indices: dict[str, dict[Hashable, pd.Index | NDArray[np.int_] | list[int]]] | None = None):
-        self._indices = indices or dict() # indices[keyname, key] = {indices}
+    def __init__(self, indices: dict[str, dict[Hashable, NDArray[np.int_]]] | None = None):
+        self._indices = indices or dict() # indices[keyname][key] = {indices}
 
     def cache(self, keyname: str, table: "_Table", force: bool=False):
         if keyname in self._indices and not force:
             return
         assert keyname in table.df.columns, (keyname, table.df.columns)
-        self._indices[keyname] = table.df.groupby(keyname).indices
+        def to_numpy(indices: pd.Index | NDArray[np.int_] | list[int]) -> NDArray[np.int_]:
+            if isinstance(indices, pd.Index):
+                return indices.to_numpy()
+            elif isinstance(indices, list):
+                return np.array(indices)
+            return indices
+        groups = table.df.groupby(keyname).indices.items()
+        self._indices[keyname] = {k: to_numpy(v) for k, v in groups}
     
     def keynames(self) -> set[str]:
         return set(self._indices.keys())
@@ -485,6 +492,10 @@ class FilteredTable(Generic[TableRow]):
             keynames=keynames, 
             **self.filters_kwargs()
         )
+
+    def all_keys_indices(self) -> dict[str, dict[Hashable, NDArray[np.int_]]]:
+        self.table.cache(*self.keynames)
+        return self.table._cache._indices
     
     def filters_kwargs(self) -> dict[str, Any]:
         return dict()
