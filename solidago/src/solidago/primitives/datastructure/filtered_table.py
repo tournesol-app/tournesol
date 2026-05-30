@@ -260,9 +260,15 @@ class _Table:
         self.cache(keyname)
         return self._cache.indices(keyname, key)
 
-    def get_filter(self, **keys: str | tuple | Iterable | Hashable) -> Filter:
+    def get_filter(self, 
+        filter_keys: bool = False, 
+        **keys: str | tuple | Iterable | Hashable,
+    ) -> Filter:
         """ Filtered tables only have a changed filter """
-        assert all(name in self.df.columns for name in keys), (keys, self.df.columns)
+        if filter_keys:
+            keys = {n: k for n, k in keys.items() if n in self.df.columns}
+        else:
+            assert all(name in self.df.columns for name in keys), (keys, self.df.columns)
         self.cache(*keys.keys())
         filter = Filter()
         for name, key in keys.items():
@@ -459,7 +465,7 @@ class FilteredTable(Generic[TableRow]):
             return self._filter
         if self.table_version != self.table.version:
             assert self.table_version < self.table.version
-            self._fitler = self.table.get_filter(**self._filter.keys)
+            self._fitler = self.table.get_filter(False, **self._filter.keys)
             self.table_version = self.table.version
         return self._filter
     
@@ -478,24 +484,39 @@ class FilteredTable(Generic[TableRow]):
         df.index = list(range(len(df)))
         return df
 
-    def _get_filter(self, **keys: str | tuple | Iterable | Hashable) -> Filter:
-        return self.filter & self.table.get_filter(**keys)
+    def _get_filter(self, 
+        filter_keys: bool = False, 
+        **keys: str | tuple | Iterable | Hashable
+    ) -> Filter:
+        return self.filter & self.table.get_filter(filter_keys, **keys)
     
-    def filters(self, **keys: str | tuple | Iterable | Hashable) -> Self:
+    def filters(self, 
+        filter_keys: bool = False, 
+        **keys: str | tuple | Iterable | Hashable
+    ) -> Self:
         keynames = [
             name for name in self.keynames 
-            if name not in keys or isinstance(keys[name], list)
+            if name not in keys or not isinstance(keys[name], Hashable)
         ]
         return type(self)(
             self.table, 
-            filter=self._get_filter(**keys), 
+            filter=self._get_filter(filter_keys, **keys), 
             keynames=keynames, 
             **self.filters_kwargs()
         )
 
     def all_keys_indices(self) -> dict[str, dict[Hashable, NDArray[np.int_]]]:
         self.table.cache(*self.keynames)
-        return self.table._cache._indices
+        if self.filter.indices is None:
+            return self.table._cache._indices
+        return {
+            keyname: {
+                key: np.intersect1d(f, self.filter.indices)
+                for key, f in d.items()
+            }
+            for keyname, d in self.table._cache._indices.items()
+            if keyname in self.keynames
+        }
     
     def filters_kwargs(self) -> dict[str, Any]:
         return dict()
@@ -540,9 +561,13 @@ class FilteredTable(Generic[TableRow]):
     def multikeys(self, *keynames: str) -> set[tuple[Hashable, ...]]:
         return {tuple(row[name] for name in keynames) for row in self._iter_series()}
 
-    def get_index(self, select: Select | None = None, **keys: Hashable) -> np.int64 | None:
+    def get_index(self, 
+        select: Select | None = None, 
+        filter_keys: bool = False, 
+        **keys: Hashable
+    ) -> np.int64 | None:
         select = self.default_select if select is None else select
-        filter = self._get_filter(**keys)
+        filter = self._get_filter(filter_keys, **keys)
         if isinstance(select, (SelectFirst, SelectLast)) and select.column is not None:
             df = self.df if filter.indices is None else self.table.df.iloc[filter.indices]
             indices = df.sort_values(select.column, ascending=isinstance(select, SelectFirst)).index
@@ -552,9 +577,13 @@ class FilteredTable(Generic[TableRow]):
         except NonUniqueError:
             raise NonUniqueError(select, keys, self.filter.keys, self)
 
-    def get(self, select: Select | None = None, **keys: Hashable) -> TableRow:
+    def get(self, 
+        select: Select | None = None, 
+        filter_keys: bool = False, 
+        **keys: Hashable
+    ) -> TableRow:
         select = self.default_select if select is None else select
-        index = self.get_index(select, **keys)
+        index = self.get_index(select, filter_keys, **keys)
         return self._get_row(index, **keys)
     
     def __getitem__(self, index: int | np.int64 | None) -> TableRow:
@@ -600,10 +629,14 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
 
-    def __call__(self, column_name: str, default_value: Any | None = None) -> NDArray:
+    def __call__(self, 
+        column_name: str, 
+        default_value: Any | None = None, 
+        filtered: bool = True
+    ) -> NDArray:
         if column_name not in self.columns:
             return np.array([default_value] * len(self))
-        if self.filter.indices is not None:
+        if self.filter.indices is not None and filtered:
             series = self.table.df.loc[self.filter.indices][column_name]
         else:
             series = self.table.df[column_name]

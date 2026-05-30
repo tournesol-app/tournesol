@@ -130,12 +130,14 @@ class VotingRights(FilteredTable[VotingRight]):
     default_default_values: dict[str, Any] = dict(voting_right=0.)
     default_dtypes: dict[str, DTypeLike] = dict(voting_right=np.float64)
 
-    def get(self, select: Select | None = None, **keys: Hashable) -> VotingRight:
+    def get(self, 
+        select: Select | None = None, 
+        filter_keys: bool = True,
+        **keys: Hashable
+    ) -> VotingRight:
         """ For convenience, if VotingRight is the same for all entities,
         then it may have be set without entity_name as a keyname. """
-        if "entity_name" in keys and "entity_name" not in self.keynames:
-            del keys["entity_name"]
-        return super().get(select, **keys)
+        return super().get(select, filter_keys, **keys)
 
 
 class PastRecommendation(Row):

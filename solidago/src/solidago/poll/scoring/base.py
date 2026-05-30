@@ -31,7 +31,7 @@ class Linear(BaseScoring):
         """ Defines how to score entities on criteria """
         if self.directs and not self.categories and not self.parameters:
             return self.direct_scoring(entities, criteria)
-        scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))
+        scores = Scores(keynames=["entity_name", "criterion"], default_score=Score(0.))
         if self.directs:
             scores += self.direct_scoring(entities, criteria)
         if self.categories:
@@ -54,10 +54,10 @@ class Linear(BaseScoring):
             self.directs.df, 
             keynames=["entity_name", "criterion"], 
             default_score=self.directs.default_score
-        ).filters(**keys)
+        ).filters(False, **keys)
     
     def categories_scoring(self, entities: Entity | Entities, criteria: str | Iterable[str] | None) -> Scores:
-        scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))
+        scores = Scores(keynames=["entity_name", "criterion"], default_score=Score(0.))
         categories = self.categories.keys("category")
         if criteria is not None:
             criteria = {str(c) for c in self.categories.keys("criterion")}
@@ -71,7 +71,7 @@ class Linear(BaseScoring):
         return scores
 
     def linear_scoring(self, entities: Entity | Entities, criteria: str | Iterable[str] | None) -> Scores:
-        scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))
+        scores = Scores(keynames=["entity_name", "criterion"], default_score=Score(0.))
         if criteria is not None:
             criteria = {str(c) for c in self.categories.keys("criterion")}
         assert criteria is not None

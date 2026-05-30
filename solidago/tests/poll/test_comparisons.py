@@ -12,7 +12,7 @@ def test_comparisons():
     assert len(comparisons) == 2
     assert len(comparisons.filters(username="user_2")) == 0
     kwargs = dict(zip(keys[:4], ["user_0", "default", "entity_4", "entity_2"]))
-    assert comparisons.get(None, **kwargs)["value"] == 8
+    assert comparisons.get(None, False, **kwargs)["value"] == 8
     for comparison in comparisons:
         assert isinstance(comparison, Comparison)
     

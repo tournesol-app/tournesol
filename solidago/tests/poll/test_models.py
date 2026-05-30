@@ -57,7 +57,7 @@ def test_direct():
     assert len(entities) == 2
     base_scoring = direct.base_scoring
     assert isinstance(base_scoring, Linear)
-    scores = Scores(keynames=["entity_name", "criterion"], default_score=(0., 0., 0.))
+    scores = Scores(keynames=["entity_name", "criterion"], default_score=Score(0.))
     scores2 = base_scoring.direct_scoring(entities, None)
     assert isinstance(scores2, Scores)
     assert len(scores2) == 3
@@ -66,7 +66,8 @@ def test_direct():
     assert isinstance(scores, Scores)
     assert len(scores) == 3
     
-    multipliers, translations = Multipliers(keynames=["criterion"]), Translations(keynames=["criterion"])
+    multipliers = Multipliers(keynames=["criterion"])
+    translations = Translations(keynames=["criterion"])
     multipliers.set(criterion="default", value=1)
     multipliers.set(criterion="importance", value=2, left_unc=1, right_unc=1)
     translations.set(criterion="default", value=1)
@@ -76,7 +77,8 @@ def test_direct():
     nonscaled_scores = scaled.base_score(entities, {"default", "importance"})
     assert isinstance(nonscaled_scores, Scores)
     assert len(nonscaled_scores) == 3
-    assert nonscaled_scores.get(entity_name="entity_1", criterion="default") == scores.get(entity_name="entity_1", criterion="default")
+    assert nonscaled_scores.get(entity_name="entity_1", criterion="default") \
+        == scores.get(entity_name="entity_1", criterion="default")
     
     scores = scaled(entities)
     assert isinstance(scores, Scores)
@@ -90,4 +92,5 @@ def test_direct():
     assert scores.get(entity_name="entity_2", criterion="importance").value < 100
     assert len(scores) == 3
 
-    assert scores.get(entity_name="entity_2", criterion="importance").value == squashed(Entity("entity_2"), "importance").value
+    assert scores.get(entity_name="entity_2", criterion="importance").value \
+        == squashed(Entity("entity_2"), "importance").value

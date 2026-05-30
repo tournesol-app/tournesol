@@ -25,15 +25,15 @@ class DirectScores(Scores):
 class CategoryScores(Scores):
     name: str="categories"
     default_keynames: list[str] = ["category", "group", "criterion"]
-    default_default_score: tuple[float, float, float] = 0., 0., 0.
+    default_default_score: Score = Score(0.)
 
 class Parameters(Scores):
     name: str="parameters"
     default_keynames: list[str] = ["criterion", "coordinate"]
-    default_default_score: tuple[float, float, float] = 0., 0., 0.
+    default_default_score: Score = Score(0.)
 
     def n_coordinates(self, **keys: Hashable) -> int:
-        multiscores = self.filters(**keys)
+        multiscores = self.filters(False, **keys)
         coordinates = [int(i) for i in multiscores.keys("coordinate")] # type: ignore
         return max(coordinates) + 1 if coordinates else 0
     
@@ -41,7 +41,7 @@ class Parameters(Scores):
         return list(range(self.n_coordinates(**keys)))
 
     def scores_list(self, **keys: Hashable) -> list[Score]:
-        multiscores, coordinate, values = self.filters(**keys), 0, list()
+        multiscores, coordinate, values = self.filters(False, **keys), 0, list()
         if not multiscores:
             return list()
         coordinates = [int(i) for i in multiscores.keys("coordinate")] # type: ignore
@@ -68,12 +68,12 @@ class Parameters(Scores):
 class Multipliers(Scores):
     name: str="multipliers"
     default_keynames: list[str] = ["height", "criterion"]
-    default_default_score: tuple[float, float, float] = (1., 0., 0.)
+    default_default_score: Score = Score(1.)
 
 class Translations(Scores):
     name: str="translations"
     default_keynames: list[str] = ["height", "criterion"]
-    default_default_score: tuple[float, float, float] = (0., 0., 0.)
+    default_default_score: Score = Score(0.)
 
 
 class ScoringModel:

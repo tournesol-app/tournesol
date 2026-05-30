@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import Any, Callable, Hashable, Iterator, Self, Union, overload
 from pandas import Series
+from numba import njit
 
 import itertools
 
@@ -237,17 +238,23 @@ class Scores(FilteredTable[Score]):
     name: str = "scores"
     default_column_names: list[str] = ["value", "left_unc", "right_unc"]
     default_dtypes: dict[str, DTypeLike] = dict(value=np.float64, left_unc=np.int64, right_unc=np.int64)
-    default_default_score: tuple[float, float, float] = np.nan, np.inf, np.inf
+    default_default_score: Score = Score.nan()
 
     def __init__(self, 
         *args, 
-        default_score: tuple[float, float, float] | None = None, 
-        default_score_factory: Callable[..., Score] | None = None,
+        default_score: Score | Callable[..., Score] | None = None,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
-        self.default_score = default_score or self.default_default_score
-        self._default_score_factory = default_score_factory
+        if default_score is None:
+            self.default_score = self.default_default_score
+            self._default_score_factory = None
+        elif isinstance(default_score, Score):
+            self.default_score = default_score
+            self._default_score_factory = None
+        else:
+            self.default_score = self.default_default_score
+            self._default_score_factory = default_score
     
     def filters_kwargs(self) -> dict[str, Any]:
         return dict(default_score=self.default_score, default_score_factory=self._default_score_factory)
@@ -255,8 +262,7 @@ class Scores(FilteredTable[Score]):
     def row_factory(self, **keys: Hashable) -> Score:
         if self._default_score_factory is not None:
             return self._default_score_factory(**keys)
-        values = dict(zip(["value", "left_unc", "right_unc"], self.default_score))
-        return self.TableRowType(None, **keys | values)
+        return self.TableRowType(None, **keys | self.default_score.to_dict())
     
     @property
     def value(self) -> NDArray[np.float64]:
@@ -316,58 +322,80 @@ class Scores(FilteredTable[Score]):
                 return keys, self_tuple, other.to_triplet()
             return keys, self_tuple, (float(other), None, None)
         
-        self_keys = tuple(self(keyname) for keyname in self.keynames)
-        other_keys = tuple(other(keyname) for keyname in other.keynames)
+        self_keys = tuple(self(keyname, filtered=False) for keyname in self.keynames)
+        other_keys = tuple(other(keyname, filtered=False) for keyname in other.keynames)
 
-        keys, common_keys, self_indices, other_indices = _njit_indices(
+        keys, common_keys_list, self_indices, other_indices = _Njit.indices(
             self.keynames, other.keynames, self_keys, other_keys,
             self.all_keys_indices(), other.all_keys_indices(),
         )
+        assert len(self_indices) == len(other_indices)
+        if len(self_indices) == 0:
+            e = np.array([], dtype=np.float64)
+            return keys, (e, e, e), (e, e, e)
 
-        c = self_indices == -1
-        l1, r1, l2, r2 = None, None, None, None
-        if self._default_score_factory is None:
-            v, l, r = self.default_score
-            v1 = np.where(c, v, self.value[self_indices])
-            if "left_unc" in self.columns:
-                l1 = np.where(c, l, self.left_unc[self_indices])
-            if "right_unc" in self.columns:
-                r1 = np.where(c, r, self.right_unc[self_indices])
-        else:
-            g = lambda i: self.get(None, **{
-                n: k for n, k in common_keys[i].items()
-                if n in self.keynames
-            })
-            v1 = np.where(c, g(self_indices).value, self.value[self_indices])
-            if "left_unc" in self.columns:
-                l1 = np.where(c, g(self_indices).left_unc, self.left_unc[self_indices])
-            if "right_unc" in self.columns:
-                r1 = np.where(c, g(self_indices).right_unc, self.right_unc[self_indices])
-
-        if other._default_score_factory is None:
-            v, l, r = other.default_score
-            v2 = np.where(c, v, other.value[other_indices])
-            if "left_unc" in other.columns:
-                l2 = np.where(c, l, other.left_unc[other_indices])
-            if "right_unc" in other.columns:
-                r2 = np.where(c, r, other.right_unc[other_indices])
-        else:
-            g = lambda i: other.get(None, **{
-                n: k for n, k in common_keys[i].items()
-                if n in other.keynames
-            })
-            v2 = np.where(c, g(other_indices).value, other.value[other_indices])
-            if "left_unc" in other.columns:
-                l2 = np.where(c, g(other_indices).left_unc, other.left_unc[other_indices])
-            if "right_unc" in other.columns:
-                r2 = np.where(c, g(other_indices).right_unc, other.right_unc[other_indices])
-
-        return keys, (v1, l1, r1), (v2, l2, r2)
+        self_scores = self._extract_indices(common_keys_list, self_indices)
+        other_scores = other._extract_indices(common_keys_list, other_indices)
+        return keys, self_scores, other_scores
+    
+    def _extract_indices(self, 
+        keys_list: list[dict[str, Hashable]],
+        indices: NDArray[np.int_]
+    ) -> tuple[NDArray[np.float64], NDArray[np.float64] | None, NDArray[np.float64] | None]:
         
-    def _result_default_factory(self, 
+        if len(indices) == 0:
+            empty = np.array([], dtype=np.float64)
+            return empty, empty, empty
+        
+        left_uncs, right_uncs = None, None
+        if len(self) == 0:
+            if self._default_score_factory is None:
+                n, (v, l, r) = len(indices), self.default_score.to_triplet()
+                return np.full(n, v), np.full(n, l), np.full(n, r)
+            scores = [self._default_score_factory(**keys_list[i]) for i in indices]
+            return (
+                np.array([s.value for s in scores]),
+                np.array([s.left_unc for s in scores]),
+                np.array([s.right_unc for s in scores]),
+            )
+        
+        values = self("value", filtered=False)[indices].astype(np.float64)
+        if "left_unc" in self.columns:
+            left_uncs = self("left_unc", filtered=False)[indices].astype(np.float64)
+        if "right_unc" in self.columns:
+            right_uncs = self("right_unc", filtered=False)[indices].astype(np.float64)
+
+        default_indices = np.where(indices == -1)[0]
+        if len(default_indices) == 0:
+            return values, left_uncs, right_uncs
+
+        if self._default_score_factory is None:
+            values[default_indices] = self.default_score.value
+            if left_uncs is not None:
+                left_uncs[default_indices] = self.default_score.left_unc
+            if right_uncs is not None:
+                right_uncs[default_indices] = self.default_score.right_unc
+        else:
+            for i in default_indices:
+                score = self._default_score_factory(**keys_list[i])
+                values[i] = score.value
+                if left_uncs is not None:
+                    left_uncs[i] = score.left_unc
+                if right_uncs is not None:
+                    right_uncs[i] = score.right_unc
+        
+        return values, left_uncs, right_uncs
+
+    def _result_default_score(self, 
         other: Union[int, float, np.number, Score, Self], 
         op: Callable[[Score, int | float | np.number | Score], Score],
-    ) -> Callable[..., Score]:
+    ) -> Score | Callable[..., Score]:
+        
+        if self._default_score_factory is None:
+            if isinstance(other, (int, float, np.number, Score)):
+                return op(self.default_score, other)
+            if other._default_score_factory is None:
+                return op(self.default_score, other.default_score)
         
         def f(**keys) -> Score:
             score = self.get(**{n: k for n, k in keys.items() if n in self.keynames})
@@ -385,7 +413,7 @@ class Scores(FilteredTable[Score]):
 
         result = type(self)(keys, 
             keynames=keynames, columns=keynames,
-            default_score_factory=self._result_default_factory(other, Score.__add__),
+            default_score=self._result_default_score(other, Score.__add__)
         )
         result.set_columns(value=v1+v2)
 
@@ -405,7 +433,7 @@ class Scores(FilteredTable[Score]):
 
         result = type(self)(keys, 
             keynames=keynames, columns=keynames,
-            default_score_factory=self._result_default_factory(other, Score.__sub__),
+            default_score=self._result_default_score(other, Score.__sub__),
         )
         result.set_columns(value=v1-v2)
 
@@ -424,7 +452,7 @@ class Scores(FilteredTable[Score]):
         values = v1*v2
         result = type(self)(keys, 
             keynames=keynames, columns=keynames,
-            default_score_factory=self._result_default_factory(other, Score.__mul__),
+            default_score=self._result_default_score(other, Score.__mul__),
         )
         result.set_columns(value=values)
 
@@ -451,7 +479,7 @@ class Scores(FilteredTable[Score]):
 
         result = type(self)(keys, 
             keynames=keynames, columns=keynames,
-            default_score_factory=self._result_default_factory(other, Score.__truediv__),
+            default_score=self._result_default_score(other, Score.__truediv__),
         )
 
         if l1 is None and r1 is None and l2 is None and r2 is None:
@@ -494,94 +522,104 @@ class Scores(FilteredTable[Score]):
         result.set_columns(value=value, left_unc=left_unc, right_unc=right_unc)
         return result
 
-def _njit_common_keys_tuples(
-    keynames1: list[str], keynames2: list[str],
-    keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
-) -> tuple[
-    list[str], # common_keynames
-    set[tuple[Hashable, ...]], # common_keys_tuples
-]:
-    common_keynames = list(set(keynames1) & set(keynames2))
-    common_keyname_indices1 = [keynames1.index(kn) for kn in common_keynames]
-    common_keyname_indices2 = [keynames2.index(kn) for kn in common_keynames]
-    n_common_keynames = len(common_keynames)
-    n_keys1, n_keys2 = len(keys1[0]), len(keys2[0])
-    return common_keynames, {
-        tuple(keys1[common_keyname_indices1[i]][j] for i in range(n_common_keynames)) 
-        for j in range(n_keys1)
-    } | {
-        tuple(keys2[common_keyname_indices2[i]][j] for i in range(n_common_keynames))
-        for j in range(n_keys2)
-    }
 
-def _njit_indices(
-    keynames1: list[str], keynames2: list[str],
-    keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
-    all_keys_indices1: dict[str, dict[Hashable, NDArray[np.int_]]],
-    all_keys_indices2: dict[str, dict[Hashable, NDArray[np.int_]]],
-) -> tuple[
-    dict[str, list], # keys
-    list[dict[str, Hashable]], # common_keys_list
-    NDArray[np.int64], # indices1
-    NDArray[np.int64], # indices2
-]:
-    x = _njit_common_keys_tuples(keynames1, keynames2, keys1, keys2)
-    common_keynames, common_keys_tuples = x
+class _Njit:
+    @staticmethod
+    def common_keys_tuples(
+        keynames1: list[str], keynames2: list[str],
+        keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
+    ) -> tuple[
+        list[str], # common_keynames
+        set[tuple[Hashable, ...]], # common_keys_tuples
+    ]:
+        common_keynames = list(set(keynames1) & set(keynames2))
+        common_keyname_indices1 = [keynames1.index(kn) for kn in common_keynames]
+        common_keyname_indices2 = [keynames2.index(kn) for kn in common_keynames]
+        n_common_keynames = len(common_keynames)
+        n_keys1, n_keys2 = len(keys1[0]), len(keys2[0])
+        return common_keynames, {
+            tuple(keys1[common_keyname_indices1[i]][j] for i in range(n_common_keynames)) 
+            for j in range(n_keys1)
+        } | {
+            tuple(keys2[common_keyname_indices2[i]][j] for i in range(n_common_keynames))
+            for j in range(n_keys2)
+        }
 
-    keynames = list(set(keynames1) | set(keynames2))
-    keys = {keyname: list() for keyname in keynames}
-    common_keys_list, indices1, indices2 = list(), list(), list()
-    keyname_indices1 = {keyname: index for index, keyname in enumerate(keynames1)}
-    keyname_indices2 = {keyname: index for index, keyname in enumerate(keynames2)}
-    args = (
-        keyname_indices1, keyname_indices2, keys1, keys2, keynames, 
-        keys, common_keys_list, indices1, indices2
-    )
-    
-    for common_keys_tuple in common_keys_tuples:
-        common_keys = dict(zip(common_keynames, common_keys_tuple))
-        commons = common_keynames, common_keys_tuple
-        subindices1 = _njit_filtered_indices(all_keys_indices1, *commons)
-        subindices2 = _njit_filtered_indices(all_keys_indices2, *commons)
+    @staticmethod
+    def indices(
+        keynames1: list[str], keynames2: list[str],
+        keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
+        all_keys_indices1: dict[str, dict[Hashable, NDArray[np.int_]]],
+        all_keys_indices2: dict[str, dict[Hashable, NDArray[np.int_]]],
+    ) -> tuple[
+        dict[str, list], # keys
+        list[dict[str, Hashable]], # common_keys_list
+        NDArray[np.int64], # indices1
+        NDArray[np.int64], # indices2
+    ]:
+        x = _Njit.common_keys_tuples(keynames1, keynames2, keys1, keys2)
+        common_keynames, common_keys_tuples = x
 
-        for i1, i2 in itertools.product(subindices1, subindices2):
-            _njit_append(i1, i2, common_keys, *args)
+        keynames = list(set(keynames1) | set(keynames2))
+        keys = {keyname: list() for keyname in keynames}
+        common_keys_list, indices1, indices2 = list(), list(), list()
+        keyname_indices1 = {keyname: index for index, keyname in enumerate(keynames1)}
+        keyname_indices2 = {keyname: index for index, keyname in enumerate(keynames2)}
+        args = (
+            keyname_indices1, keyname_indices2, keys1, keys2, keynames, 
+            keys, common_keys_list, indices1, indices2
+        )
+        
+        for common_keys_tuple in common_keys_tuples:
+            common_keys = dict(zip(common_keynames, common_keys_tuple))
+            commons = common_keynames, common_keys_tuple
+            subindices1 = _Njit.filtered_indices(all_keys_indices1, *commons)
+            subindices2 = _Njit.filtered_indices(all_keys_indices2, *commons)
 
-        if set(keynames2).issubset(common_keynames) and len(subindices2) == 0:
-            for i1 in subindices1:
-                _njit_append(i1, np.int64(-1), common_keys, *args)
+            for i1, i2 in itertools.product(subindices1, subindices2):
+                _Njit.append(i1, i2, common_keys, *args)
 
-        if set(keynames1).issubset(common_keynames) and len(subindices1) == 0:
-            for i2 in subindices2:
-                _njit_append(np.int64(-1), i2, common_keys, *args)
-    
-    return keys, common_keys_list, np.array(indices1), np.array(indices2)
+            if set(keynames2).issubset(common_keynames) and len(subindices2) == 0:
+                for i1 in subindices1:
+                    _Njit.append(i1, np.int64(-1), common_keys, *args)
 
-def _njit_append(
-    i1: np.int_, i2: np.int_, common_keys: dict[str, Hashable],
-    keyname_indices1: dict[str, int], keyname_indices2: dict[str, int],
-    keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...], keynames: list[str],
-    keys: dict[str, list], common_keys_list: list[dict[str, Hashable]],
-    indices1: list[np.int_ | int], indices2: list[np.int_ | int],
-):
-    indices1.append(i1)
-    indices2.append(i2)
-    common_keys_list.append(common_keys)
-    for keyname in keynames:
-        if keyname in common_keys:
-            key = common_keys[keyname]
-        elif keyname in keyname_indices1:
-            key = keys1[keyname_indices1[keyname]][i1]
-        else:
-            key = keys2[keyname_indices2[keyname]][i2]
-        keys[keyname].append(key)
+            if set(keynames1).issubset(common_keynames) and len(subindices1) == 0:
+                for i2 in subindices2:
+                    _Njit.append(np.int64(-1), i2, common_keys, *args)
+        
+        return keys, common_keys_list, np.array(indices1), np.array(indices2)
 
-def _njit_filtered_indices(
-    all_keys_indices: dict[str, dict[Hashable, NDArray[np.int_]]],
-    keynames: list[str], keys: tuple[Hashable, ...], 
-):
-    indices = all_keys_indices[keynames[0]][keys[0]]
-    for keyname, key in zip(keynames[1:], keys[1:]):
-        indices = np.intersect1d(indices, all_keys_indices[keyname][key])
-    return indices
+    @staticmethod
+    def append(
+        i1: np.int_, i2: np.int_, common_keys: dict[str, Hashable],
+        keyname_indices1: dict[str, int], keyname_indices2: dict[str, int],
+        keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...], keynames: list[str],
+        keys: dict[str, list], common_keys_list: list[dict[str, Hashable]],
+        indices1: list[np.int_ | int], indices2: list[np.int_ | int],
+    ):
+        indices1.append(i1)
+        indices2.append(i2)
+        common_keys_list.append(common_keys)
+        for keyname in keynames:
+            if keyname in common_keys:
+                key = common_keys[keyname]
+            elif keyname in keyname_indices1:
+                key = keys1[keyname_indices1[keyname]][i1]
+            else:
+                key = keys2[keyname_indices2[keyname]][i2]
+            keys[keyname].append(key)
+
+    @staticmethod
+    def filtered_indices(
+        all_keys_indices: dict[str, dict[Hashable, NDArray[np.int_]]],
+        keynames: list[str], keys: tuple[Hashable, ...], 
+    ) -> NDArray[np.int_]:
+        if keys[0] not in all_keys_indices[keynames[0]]:
+            return np.array([], dtype=np.int64)
+        indices = all_keys_indices[keynames[0]][keys[0]]
+        for keyname, key in zip(keynames[1:], keys[1:]):
+            if key not in all_keys_indices[keyname]:
+                return np.array([], dtype=np.int64)
+            indices = np.intersect1d(indices, all_keys_indices[keyname][key])
+        return indices
 
