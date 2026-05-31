@@ -505,18 +505,42 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
 
-    def all_keys_indices(self) -> dict[str, dict[Hashable, NDArray[np.int_]]]:
+    def keys_indices(self) -> list[tuple[NDArray[np.int64], list[NDArray[np.int64]]]]:
         self.table.cache(*self.keynames)
         if self.filter.indices is None:
-            return self.table._cache._indices
-        return {
-            keyname: {
-                key: np.intersect1d(f, self.filter.indices)
-                for key, f in d.items()
-            }
-            for keyname, d in self.table._cache._indices.items()
-            if keyname in self.keynames
-        }
+            indices = [self.table._cache._indices[kn] for kn in self.keynames]
+        else:
+            indices = [
+                {
+                    key: np.intersect1d(f_indices, self.filter.indices) 
+                    for key, f_indices in self.table._cache._indices[kn].items()
+                } for kn in self.keynames
+            ]
+        return [
+            (
+                np.array([hash(key) for key, f_indices in d.items() if len(f_indices) > 0]),
+                [f_indices.astype(np.int64) for _, f_indices in d.items() if len(f_indices) > 0]
+            ) for d in indices
+        ]
+
+    # def all_keys_indices(self) -> list[tuple[NDArray[np.int64], list[NDArray[np.int_]]]]:
+    #     self.table.cache(*self.keynames)
+    #     if self.filter.indices is None:
+    #         return [
+    #             (
+    #                 np.array([hash(key) for key in self.table._cache._indices[kn]]),
+    #                 list(self.table._cache._indices[kn].values())
+    #             ) for kn in self.keynames
+    #         ]
+    #     return [
+    #         (
+    #             np.array([hash(key) for key in self.table._cache._indices[kn]]), 
+    #             [
+    #                 np.intersect1d(indices, self.filter.indices)
+    #                 for indices in self.table._cache._indices[kn].values()
+    #             ]
+    #         ) for kn in self.keynames
+    #     ]
     
     def filters_kwargs(self) -> dict[str, Any]:
         return dict()

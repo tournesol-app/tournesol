@@ -327,20 +327,21 @@ class Scores(FilteredTable[Score]):
 
         keys, common_keys_list, self_indices, other_indices = _Njit.indices(
             self.keynames, other.keynames, self_keys, other_keys,
-            self.all_keys_indices(), other.all_keys_indices(),
+            self.indices.astype(np.int64), other.indices.astype(np.int64), 
+            self.keys_indices(), other.keys_indices(),
         )
         assert len(self_indices) == len(other_indices)
         if len(self_indices) == 0:
             e = np.array([], dtype=np.float64)
             return keys, (e, e, e), (e, e, e)
 
-        self_scores = self._extract_indices(common_keys_list, self_indices)
-        other_scores = other._extract_indices(common_keys_list, other_indices)
+        self_scores = self._extract_from_indices(common_keys_list, self_indices)
+        other_scores = other._extract_from_indices(common_keys_list, other_indices)
         return keys, self_scores, other_scores
     
-    def _extract_indices(self, 
+    def _extract_from_indices(self, 
         keys_list: list[dict[str, Hashable]],
-        indices: NDArray[np.int_]
+        indices: NDArray[np.int64]
     ) -> tuple[NDArray[np.float64], NDArray[np.float64] | None, NDArray[np.float64] | None]:
         
         if len(indices) == 0:
@@ -536,6 +537,8 @@ class _Njit:
         common_keyname_indices1 = [keynames1.index(kn) for kn in common_keynames]
         common_keyname_indices2 = [keynames2.index(kn) for kn in common_keynames]
         n_common_keynames = len(common_keynames)
+        if len(keys1) == 0 or len(keys2) == 0:
+            return common_keynames, set()
         n_keys1, n_keys2 = len(keys1[0]), len(keys2[0])
         return common_keynames, {
             tuple(keys1[common_keyname_indices1[i]][j] for i in range(n_common_keynames)) 
@@ -549,8 +552,9 @@ class _Njit:
     def indices(
         keynames1: list[str], keynames2: list[str],
         keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...],
-        all_keys_indices1: dict[str, dict[Hashable, NDArray[np.int_]]],
-        all_keys_indices2: dict[str, dict[Hashable, NDArray[np.int_]]],
+        all_indices1: NDArray[np.int64], all_indices2: NDArray[np.int64],
+        keys_indices1: list[tuple[NDArray[np.int64], list[NDArray[np.int64]]]],
+        keys_indices2: list[tuple[NDArray[np.int64], list[NDArray[np.int64]]]],
     ) -> tuple[
         dict[str, list], # keys
         list[dict[str, Hashable]], # common_keys_list
@@ -572,9 +576,16 @@ class _Njit:
         
         for common_keys_tuple in common_keys_tuples:
             common_keys = dict(zip(common_keynames, common_keys_tuple))
-            commons = common_keynames, common_keys_tuple
-            subindices1 = _Njit.filtered_indices(all_keys_indices1, *commons)
-            subindices2 = _Njit.filtered_indices(all_keys_indices2, *commons)
+            common_hashed_keys = np.array([hash(k) for k in common_keys_tuple], dtype=np.int64)
+            commons = common_keynames, common_hashed_keys
+            if len(keynames1) == 0 or len(all_indices1) == 0:
+                subindices1 = np.arange(0)
+            else:
+                subindices1 = _Njit.filters(keynames1, all_indices1, keys_indices1, *commons)
+            if len(keynames2) == 0 or len(all_indices2) == 0:
+                subindices2 = np.arange(0)
+            else:
+                subindices2 = _Njit.filters(keynames2, all_indices2, keys_indices2, *commons)
 
             for i1, i2 in itertools.product(subindices1, subindices2):
                 _Njit.append(i1, i2, common_keys, *args)
@@ -591,11 +602,11 @@ class _Njit:
 
     @staticmethod
     def append(
-        i1: np.int_, i2: np.int_, common_keys: dict[str, Hashable],
+        i1: np.int64, i2: np.int64, common_keys: dict[str, Hashable],
         keyname_indices1: dict[str, int], keyname_indices2: dict[str, int],
         keys1: tuple[NDArray, ...], keys2: tuple[NDArray, ...], keynames: list[str],
         keys: dict[str, list], common_keys_list: list[dict[str, Hashable]],
-        indices1: list[np.int_ | int], indices2: list[np.int_ | int],
+        indices1: list[np.int64 | int], indices2: list[np.int64 | int],
     ):
         indices1.append(i1)
         indices2.append(i2)
@@ -610,16 +621,39 @@ class _Njit:
             keys[keyname].append(key)
 
     @staticmethod
-    def filtered_indices(
-        all_keys_indices: dict[str, dict[Hashable, NDArray[np.int_]]],
-        keynames: list[str], keys: tuple[Hashable, ...], 
-    ) -> NDArray[np.int_]:
-        if keys[0] not in all_keys_indices[keynames[0]]:
-            return np.array([], dtype=np.int64)
-        indices = all_keys_indices[keynames[0]][keys[0]]
-        for keyname, key in zip(keynames[1:], keys[1:]):
-            if key not in all_keys_indices[keyname]:
-                return np.array([], dtype=np.int64)
-            indices = np.intersect1d(indices, all_keys_indices[keyname][key])
+    def filters(
+        keynames: list[str], all_indices: NDArray[np.int64],
+        keys_indices: list[tuple[NDArray[np.int64], list[NDArray[np.int64]]]],
+        common_keynames: list[str], common_hashed_keys: NDArray[np.int64], 
+    ) -> NDArray[np.int64]:
+        common_keynames_indices = [keynames.index(kn) for kn in common_keynames]
+        for _, l in keys_indices:
+            if len(l) == 0:
+                return np.arange(0)
+        # return _Njit.f(all_indices, keys_indices, common_hashed_keys, common_keynames_indices)
+        indices = all_indices.astype(np.int64)
+        for i, hashed_key in enumerate(common_hashed_keys):
+            # indices = _Njit.f(i, indices)
+            hashed_keys, indices_list = keys_indices[common_keynames_indices[i]]
+            key_indices = np.where(hashed_keys == hashed_key)[0]
+            if len(key_indices) == 0:
+                return np.arange(0)
+            indices = np.intersect1d(indices, indices_list[key_indices[0]].astype(np.int64))
         return indices
-
+    
+    # @staticmethod
+    # @njit
+    # def f(
+    #     all_indices: NDArray[np.int64],
+    #     keys_indices: list[tuple[NDArray[np.int64], list[NDArray[np.int64]]]],
+    #     common_hashed_keys: NDArray[np.int64], 
+    #     common_keynames_indices: NDArray[np.int64],
+    # ) -> NDArray[np.int64]:
+    #     indices = all_indices
+    #     for i, hashed_key in enumerate(common_hashed_keys):
+    #         hashed_keys, indices_list = keys_indices[common_keynames_indices[i]]
+    #         key_indices = np.where(hashed_keys == hashed_key)[0]
+    #         if len(key_indices) == 0:
+    #             return np.arange(0)
+    #         indices = np.intersect1d(indices, indices_list[key_indices[0]])
+    #     return indices
