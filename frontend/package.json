@@ -70,7 +70,7 @@
     "prettier": "^2.3.2",
     "redux-mock-store": "^1.5.4",
     "vite": "^5.4.21",
-    "vitest": "^1",
+    "vitest": "^4",
     "vitest-fetch-mock": "^0.2.2"
   },
   "config": {
