@@ -31,6 +31,7 @@ async def listen_to_posts():
         try:
             uri = await get_jetstream_url()
             async with websockets.connect(uri) as websocket:
+                retry_delay = 1.0   # reset delay on successful connection
                 message: str
                 async for message in websocket:  # type: ignore
                     if any(f.filter_message_str(message) for f in ALL_FEEDS.values()):
