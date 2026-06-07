@@ -147,16 +147,21 @@ class VideosFeed(AtprotoFeed):
             # Records are only ever inserted at the head, so the anchor's real
             # index can only have grown since the cursor was issued (>= `idx`).
             items = await redis_client.lrange(self.feed_key, idx, -1)
-            anchor = next(
-                (i for i, item in enumerate(items) if json.loads(item)["post"]["commit"]["cid"] == cid),
-                None,
-            )
+            anchor = None
+            posts = []
+            for i, item in enumerate(items):
+                post = VideoPost(**json.loads(item))
+                if anchor is None:
+                    if post.cid == cid:
+                        anchor = i
+                    continue
+                posts.append(post)
+                if len(posts) >= limit:
+                    break
             if anchor is None:
                 # The anchor was trimmed off the tail, so everything after it is
                 # gone too: end of feed.
                 return self._skeleton([], None)
-            tail = items[anchor + 1 : anchor + 1 + limit]
-            posts = [VideoPost(**json.loads(item)) for item in tail]
             start_idx = idx + anchor + 1
 
         if not posts:
