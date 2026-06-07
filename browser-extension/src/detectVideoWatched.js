@@ -17,6 +17,26 @@ const PROGRESS_TICK_MS = 1000;
 // so it can be called on SPA navigation before setting up a new one.
 let cleanupWatchProgressTracking = null;
 
+// What to do when a video has been watched, depending on the user's
+// `extension__on_video_watched` setting. A missing entry (e.g. DO_NOTHING)
+// disables watch progress tracking entirely.
+const onVideoWatchedActions = {
+  MARK_AS_WATCHED: (videoId) => {
+    chrome.runtime.sendMessage({
+      message: 'updateContributorRatingEntitySeen',
+      videoId: videoId,
+      entitySeen: true,
+    });
+  },
+  MARK_AS_WATCHED_AND_RATE_LATER: (videoId) => {
+    chrome.runtime.sendMessage({
+      message: 'addRateLater',
+      video_id: videoId,
+      entitySeen: true,
+    });
+  },
+};
+
 document.addEventListener('yt-navigate-finish', onNavigateFinish);
 
 function onNavigateFinish() {
@@ -36,14 +56,11 @@ function onNavigateFinish() {
     chrome.runtime.sendMessage(
       { message: 'get:setting:extension__on_video_watched' },
       (setting) => {
-        if (setting?.value !== 'MARK_AS_WATCHED') return;
+        const onWatched = onVideoWatchedActions[setting?.value];
+        if (!onWatched) return;
 
         cleanupWatchProgressTracking = startWatchProgressTracking(() => {
-          chrome.runtime.sendMessage({
-            message: 'updateContributorRatingEntitySeen',
-            videoId: videoId,
-            entitySeen: true,
-          });
+          onWatched(videoId);
         });
       }
     );

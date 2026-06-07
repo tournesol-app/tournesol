@@ -3458,10 +3458,12 @@ components:
       enum:
       - DO_NOTHING
       - MARK_AS_WATCHED
+      - MARK_AS_WATCHED_AND_RATE_LATER
       type: string
       description: |-
         * `DO_NOTHING` - do_nothing
         * `MARK_AS_WATCHED` - mark_as_watched
+        * `MARK_AS_WATCHED_AND_RATE_LATER` - mark_as_watched_and_rate_later
     FAQEntry:
       type: object
       description: A translated question with its translated answer.
@@ -4947,6 +4949,7 @@ components:
 
             * `DO_NOTHING` - do_nothing
             * `MARK_AS_WATCHED` - mark_as_watched
+            * `MARK_AS_WATCHED_AND_RATE_LATER` - mark_as_watched_and_rate_later
           oneOf:
           - $ref: '#/components/schemas/Extension_onVideoWatchedEnum'
           - $ref: '#/components/schemas/BlankEnum'
@@ -5010,6 +5013,7 @@ components:
 
             * `DO_NOTHING` - do_nothing
             * `MARK_AS_WATCHED` - mark_as_watched
+            * `MARK_AS_WATCHED_AND_RATE_LATER` - mark_as_watched_and_rate_later
           oneOf:
           - $ref: '#/components/schemas/Extension_onVideoWatchedEnum'
           - $ref: '#/components/schemas/BlankEnum'

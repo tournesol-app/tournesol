@@ -514,6 +514,7 @@
     "alwaysDisplayedCriteriaEmptyText": "No criteria selected. All optional criteria will be hidden by default.",
     "onVideoWatchedDoNothing": "Do nothing",
     "onVideoWatchedMarkAsWatched": "Mark as watched",
+    "onVideoWatchedMarkAsWatchedAndRateLater": "Mark as watched and rate later",
     "whenAVideoIsWatchedOnYouTube": "When a video is watched on YouTube",
     "includeTournesolResultsInYouTubeSearch": "Include Tournesol recommendations in the YouTube search results.",
     "preferredLanguage": "Preferred language",

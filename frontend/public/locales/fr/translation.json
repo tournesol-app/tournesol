@@ -522,6 +522,7 @@
     "alwaysDisplayedCriteriaEmptyText": "Aucun critère sélectionné. Tous les critères optionnels seront masqués par défaut.",
     "onVideoWatchedDoNothing": "Ne rien faire",
     "onVideoWatchedMarkAsWatched": "Marquer la vidéo comme vue",
+    "onVideoWatchedMarkAsWatchedAndRateLater": "Marquer la vidéo comme vue et comparer plus tard",
     "whenAVideoIsWatchedOnYouTube": "Quand une vidéo est regardée sur YouTube",
     "includeTournesolResultsInYouTubeSearch": "Inclure les recommandations Tournesol dans les résultats de recherche sur YouTube.",
     "preferredLanguage": "Langue préférée",
