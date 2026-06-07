@@ -53,6 +53,10 @@ class VideoPost:
     def at_uri(self):
         return f"at://{self.post['did']}/{self.post['commit']['collection']}/{self.post['commit']['rkey']}"
 
+    @property
+    def cid(self) -> str:
+        return self.post["commit"]["cid"]
+
 
 class VideosFeed(AtprotoFeed):
     def __init__(self, feed_name: str = "videos", max_length=1000):
@@ -107,16 +111,65 @@ class VideosFeed(AtprotoFeed):
             await redis_client.lpush(self.feed_key, json.dumps(dataclasses.asdict(video_post)))
             await redis_client.ltrim(self.feed_key, 0, self.max_length - 1)
 
+    @staticmethod
+    def _parse_cursor(cursor: str) -> tuple[str, int] | None:
+        """Parse an ``after:<cid>:<idx>`` cursor into ``(cid, idx)``.
+
+        Returns ``None`` for any malformed cursor so the caller can treat it as
+        "no results" rather than raising (the cursor is opaque to clients, but
+        a bad one should not 500).
+        """
+        parts = cursor.split(":")
+        if len(parts) != 3 or parts[0] != "after":
+            return None
+        cid = parts[1]
+        try:
+            idx = int(parts[2])
+        except ValueError:
+            return None
+        if idx < 0 or not cid:
+            return None
+        return cid, idx
+
     async def get_feed(
         self, limit: int, cursor: str | None
     ) -> AppBskyFeedGetFeedSkeleton.Response:
-        items = await redis_client.lrange(self.feed_key, 0, limit - 1)
-        # TODO handle cursor
-        if cursor:
-            posts = []
-        else:
+        if cursor is None:
+            # First page: the newest `limit` records, starting at absolute index 0.
+            items = await redis_client.lrange(self.feed_key, 0, limit - 1)
             posts = [VideoPost(**json.loads(item)) for item in items]
+            start_idx = 0
+        else:
+            parsed = self._parse_cursor(cursor)
+            if parsed is None:
+                return self._skeleton([], None)
+            cid, idx = parsed
+            # Records are only ever inserted at the head, so the anchor's real
+            # index can only have grown since the cursor was issued (>= `idx`).
+            items = await redis_client.lrange(self.feed_key, idx, -1)
+            anchor = next(
+                (i for i, item in enumerate(items) if json.loads(item)["post"]["commit"]["cid"] == cid),
+                None,
+            )
+            if anchor is None:
+                # The anchor was trimmed off the tail, so everything after it is
+                # gone too: end of feed.
+                return self._skeleton([], None)
+            tail = items[anchor + 1 : anchor + 1 + limit]
+            posts = [VideoPost(**json.loads(item)) for item in tail]
+            start_idx = idx + anchor + 1
+
+        if not posts:
+            return self._skeleton([], None)
+        last_idx = start_idx + len(posts) - 1
+        next_cursor = f"after:{posts[-1].cid}:{last_idx}"
+        return self._skeleton(posts, next_cursor)
+
+    @staticmethod
+    def _skeleton(
+        posts: list[VideoPost], cursor: str | None
+    ) -> AppBskyFeedGetFeedSkeleton.Response:
         return AppBskyFeedGetFeedSkeleton.Response(
             feed=[SkeletonFeedPost(post=post.at_uri) for post in posts],
-            cursor="dummy",
+            cursor=cursor,
         )
