@@ -47,6 +47,17 @@ def parse_args():
         action="store_true",
         help="Set content mode to video (enables immersive video experience)",
     )
+    publish.add_argument(
+        "--accept-interactions",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Advertise that this feed wants client interaction events "
+            "(likes, reposts, clicks, 'show more/less like this') sent to its "
+            "sendInteractions endpoint so it can tune ranking. Sets the record's "
+            "acceptsInteractions flag (default: True)"
+        ),
+    )
 
     subparsers.add_parser("unpublish", parents=[common], help="Delete a feed generator record")
 
@@ -74,6 +85,7 @@ def confirm_publish(args: argparse.Namespace, feed_gen_did: str) -> None:
     print(f"  Description  : {args.description or '(none)'}")
     print(f"  Avatar       : {args.avatar or '(none)'}")
     print(f"  Video only   : {args.video_only}")
+    print(f"  Interactions : {args.accept_interactions}")
     print(f"  Feed DID     : {feed_gen_did}")
     print("──────────────────────────────────────────────\n")
     answer = input("Publish this feed? [y/N] ").strip().lower()
@@ -122,7 +134,7 @@ def cmd_publish(args: argparse.Namespace, client: Client) -> None:
                 "avatar": avatar_blob,
                 "createdAt": datetime.datetime.utcnow().isoformat() + "Z",
                 "contentMode": content_mode,
-                "acceptsInteractions": True,
+                "acceptsInteractions": args.accept_interactions,
             },
         }
     )
