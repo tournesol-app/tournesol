@@ -1,5 +1,6 @@
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
+from functools import reduce
 from pathlib import Path
 from typing import Any, Hashable, Iterable, Iterator, Generic, Optional, TypeVar, Self, Union
 from numpy.typing import NDArray, DTypeLike
@@ -505,23 +506,30 @@ class FilteredTable(Generic[TableRow]):
             **self.filters_kwargs()
         )
 
-    def keys_indices(self) -> list[tuple[NDArray[np.int64], list[NDArray[np.int64]]]]:
+    def keys_indices(self) -> tuple[
+        tuple[NDArray[np.int64], ...], # hashed_keys_list (for different keynames)
+        NDArray[np.int64], # offsets (as indices_lists is flattened)
+        tuple[NDArray[np.int64], ...], # indices_lists
+    ]:
+        """ This method outputs values that can be njitted.
+        This requires non-nested output values.
+        """
         self.table.cache(*self.keynames)
-        if self.filter.indices is None:
-            indices = [self.table._cache._indices[kn] for kn in self.keynames]
-        else:
-            indices = [
-                {
-                    key: np.intersect1d(f_indices, self.filter.indices) 
-                    for key, f_indices in self.table._cache._indices[kn].items()
-                } for kn in self.keynames
-            ]
-        return [
-            (
-                np.array([hash(key) for key, f_indices in d.items() if len(f_indices) > 0]),
-                [f_indices.astype(np.int64) for _, f_indices in d.items() if len(f_indices) > 0]
-            ) for d in indices
-        ]
+        hashed_keys, offset, offsets, indices_lists = list(), 0, list(), list()
+        for keyname in self.keynames:
+            d = deepcopy(self.table._cache._indices[keyname])
+            if self.filter.indices is not None:
+                for key in list(d.keys()):
+                    d[key] = np.intersect1d(d[key], self.filter.indices)
+                    if len(d[key]) == 0:
+                        del d[key]
+            
+            hashed_keys.append(np.array([hash(k) for k in d.keys()]))
+            offsets.append(offset)
+            for indices in d.values():
+                indices_lists.append(indices)
+            offset = offset + len(d.values())
+        return tuple(hashed_keys), np.array(offsets, dtype=np.int64), tuple(indices_lists)
 
     # def all_keys_indices(self) -> list[tuple[NDArray[np.int64], list[NDArray[np.int_]]]]:
     #     self.table.cache(*self.keynames)
