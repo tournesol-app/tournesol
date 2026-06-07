@@ -391,8 +391,9 @@
     "videoAdded": "Vidéo bien ajoutée à votre liste de vidéos à comparer plus tard.",
     "addVideosToRateLaterList": "Ajouter des videos à votre liste",
     "addVideosToYourListToCompareThemLater": "Ajoutez des vidéos à votre liste pour les comparer plus tard.",
-    "useOurBrowserExtension": "Utilisez notre <2>extension navigateur</2> pour ajouter sans effort des vidéos directement depuis YouTube.",
-    "orCopyPasteVideoUrlHere": "Ou copiez collez des URLs de vidéos ici.",
+    "addFromYoutube": "Ajouter depuis YouTube",
+    "installExtensionToAddVideosEasily": "Installez notre <2>extension navigateur</2> pour ajouter des vidéos à votre liste directement depuis YouTube.",
+    "extensionInstalledChooseOnVideoWatched": "L'extension navigateur est installée. Choisissez ce qu'elle doit faire quand vous regardez une vidéo sur YouTube :",
     "listHasNbVideos_one": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéo. Elle sera automatiquement retirée après <1>{{rateLaterSetting}}</1> comparaison(s).",
     "listHasNbVideos_many": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos. Elles seront automatiquement retirées après <1>{{rateLaterSetting}}</1> comparaison(s).",
     "listHasNbVideos_other": "Votre liste contient actuellement <1>{{entityCount}}</1> vidéos. Elles seront automatiquement retirées après <1>{{rateLaterSetting}}</1> comparaison(s)."

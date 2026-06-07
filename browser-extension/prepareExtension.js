@@ -140,6 +140,15 @@ const manifest = {
       run_at: 'document_end',
       all_frames: true,
     },
+    {
+      matches: selectValue(env, {
+        production: ['https://tournesol.app/*'],
+        'dev-env': ['http://localhost/*'],
+      }),
+      js: ['signalExtensionPresence.js'],
+      run_at: 'document_start',
+      all_frames: false,
+    },
   ],
   options_ui: {
     page: 'options/options.html',

@@ -384,8 +384,9 @@
     "videoAdded": "Video added to your Rate Later list!",
     "addVideosToRateLaterList": "Add videos to your rate-later list",
     "addVideosToYourListToCompareThemLater": "Add videos to your list to compare them later.",
-    "useOurBrowserExtension": "We recommend using our <2>browser extension</2> to effortlessly add videos directly from YouTube.",
-    "orCopyPasteVideoUrlHere": "Or copy paste video URLs here.",
+    "addFromYoutube": "Add from YouTube",
+    "installExtensionToAddVideosEasily": "Install our <2>browser extension</2> to add videos to your rate-later list directly from YouTube.",
+    "extensionInstalledChooseOnVideoWatched": "The browser extension is installed. Choose what it should do when you watch a video on YouTube:",
     "listHasNbVideos_one": "Your rate-later list contains <1>{{entityCount}}</1> video. It will be automatically removed after <1>{{rateLaterSetting}}</1> comparison(s).",
     "listHasNbVideos_other": "Your rate-later list contains <1>{{entityCount}}</1> videos. They will be automatically removed after <1>{{rateLaterSetting}}</1> comparison(s)."
   },

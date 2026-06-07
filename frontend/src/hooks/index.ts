@@ -1,6 +1,7 @@
 export { useCurrentPoll } from './useCurrentPoll';
 export { useDocumentTitle } from './useDocumentTitle';
 export { useEntityAvailable } from './useEntityAvailable';
+export { useIsExtensionInstalled } from './useIsExtensionInstalled';
 export { useSearchParams } from './useSearchParams';
 export { useLoginState } from './useLoginState';
 export { useListFilter } from './useListFilter';
