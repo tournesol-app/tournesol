@@ -530,25 +530,6 @@ class FilteredTable(Generic[TableRow]):
                 indices_lists.append(indices)
             offset = offset + len(d.values())
         return tuple(hashed_keys), np.array(offsets, dtype=np.int64), tuple(indices_lists)
-
-    # def all_keys_indices(self) -> list[tuple[NDArray[np.int64], list[NDArray[np.int_]]]]:
-    #     self.table.cache(*self.keynames)
-    #     if self.filter.indices is None:
-    #         return [
-    #             (
-    #                 np.array([hash(key) for key in self.table._cache._indices[kn]]),
-    #                 list(self.table._cache._indices[kn].values())
-    #             ) for kn in self.keynames
-    #         ]
-    #     return [
-    #         (
-    #             np.array([hash(key) for key in self.table._cache._indices[kn]]), 
-    #             [
-    #                 np.intersect1d(indices, self.filter.indices)
-    #                 for indices in self.table._cache._indices[kn].values()
-    #             ]
-    #         ) for kn in self.keynames
-    #     ]
     
     def filters_kwargs(self) -> dict[str, Any]:
         return dict()

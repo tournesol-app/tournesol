@@ -24,7 +24,7 @@ user_models = UserModels(
 
 def test_normalize():
     normalize = functions.scaling.Normalize(dict(repost=2, report=float("inf")), 1)
-    scaled = normalize.fn(entities, user_models)
+    scaled = normalize.fn(user_models)
     f = lambda u, e, c: scaled[u](Entity(e), c).value
     assert len(user_models) == len(scaled)
     assert f("user_0", "entity_0", "post") == pytest.approx(1., 1e-3)
@@ -40,7 +40,7 @@ def test_normalize():
 
 def test_max_normalize():
     normalize = functions.scaling.MaxNorm(dict(repost=2, report=float("inf")), default_q=1)
-    scaled = normalize.fn(entities, user_models)
+    scaled = normalize.fn(user_models)
     f = lambda u, e, c: scaled[u](Entity(e), c).value
     assert len(user_models) == len(scaled)
     assert f("user_0", "entity_0", "post") == pytest.approx(1., 1e-3)

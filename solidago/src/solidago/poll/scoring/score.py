@@ -689,7 +689,6 @@ class _Njit:
             keys[keyname].append(key)
 
     @staticmethod
-    @njit
     def filters(
         keynames: tuple[str, ...], 
         all_indices: NDArray[np.int64],
