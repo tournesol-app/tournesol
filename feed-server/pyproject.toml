@@ -5,8 +5,10 @@ readme = "README.md"
 requires-python = "==3.13.*"
 dependencies = [
     "atproto==0.0.65",
+    "backports-zstd>=1.5.0",
     "fastapi[standard]>=0.136.1",
     "httpx>=0.28.1",
+    "orjson>=3.11.9",
     "redis>=7.0",
     "websockets>=15.0",
 ]
@@ -14,6 +16,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "ipython>=9.10.0",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
     "ruff>=0.15.14",
 ]
 
@@ -23,3 +27,7 @@ build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 99
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -1,11 +1,12 @@
 import asyncio
-import json
 import logging
 from contextlib import asynccontextmanager
 
+from feed_server.indexer.record import AtprotoCompactRecord
+import orjson
 from fastapi import FastAPI
 
-from feed_server.db.redis import redis_client
+from feed_server.db import db
 from feed_server.indexer.jetstream import listen_to_posts, QUEUE_KEY
 from feed_server.routes.feed import router as feed_router
 from feed_server.routes.well_known import router as well_known_router
@@ -14,18 +15,20 @@ from feed_server.feeds import ALL_FEEDS
 
 async def process_posts():
     while True:
-        queue_size = await redis_client.llen(QUEUE_KEY)
-        if queue_size >= 3:
+        queue_size = await db.redis_client.llen(QUEUE_KEY)
+        if queue_size >= 100:
             logging.warning("Many posts to process. Queue size: %s", queue_size)
 
-        result = await redis_client.blpop(QUEUE_KEY, timeout=0)
+        result = await db.redis_client.blpop(QUEUE_KEY, timeout=0)
         if result is None:
             await asyncio.sleep(1.0)
             continue
         _, message_json = result
-        post = json.loads(message_json)
+        post = orjson.loads(message_json)
+        record = AtprotoCompactRecord.from_raw(post)
         await asyncio.gather(
-            *(feed.on_message(post) for feed in ALL_FEEDS.values()),
+            db.save_record(record),
+            *(feed.on_message(post, record) for feed in ALL_FEEDS.values()),
             return_exceptions=True,
         )
 

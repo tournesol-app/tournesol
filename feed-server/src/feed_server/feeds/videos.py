@@ -1,14 +1,14 @@
 import dataclasses
-import json
 import logging
 import re
 from typing import Self
 
 from atproto_client.models import AppBskyFeedGetFeedSkeleton
 from atproto_client.models.app.bsky.feed.defs import SkeletonFeedPost
+from feed_server.indexer.record import AtprotoCompactRecord
 import httpx
 
-from ..db.redis import redis_client
+from ..db import db
 from .base import AtprotoFeed
 
 http_client = httpx.AsyncClient()
@@ -60,7 +60,7 @@ class VideoPost:
 
 class VideosFeed(AtprotoFeed):
     def __init__(self, feed_name: str = "videos", max_length=1000):
-        self.feed_key = f"feed:{feed_name}:posts"
+        self.feed_name = feed_name
         self.max_length = max_length
 
     def filter_message_str(self, message: str) -> bool:
@@ -74,7 +74,7 @@ class VideosFeed(AtprotoFeed):
     async def check_video(video_id: str) -> bool:
         cache_key = f"cache:tournesol:video_is_safe:{video_id}"
         cache_ttl = 3600
-        cached = await redis_client.get(cache_key)
+        cached = await db.redis_client.get(cache_key)
         if cached is not None:
             return cached == "1"
 
@@ -89,18 +89,18 @@ class VideosFeed(AtprotoFeed):
             logging.warning("Failed to check video %s in Tournesol", video_id, exc_info=True)
             return False
         if resp.status_code == 404:
-            await redis_client.set(cache_key, "0", ex=cache_ttl)
+            await db.redis_client.set(cache_key, "0", ex=cache_ttl)
             return False
         entity_data = resp.json()
         collective_rating = entity_data.get("collective_rating")
         if not collective_rating:
-            await redis_client.set(cache_key, "0", ex=cache_ttl)
+            await db.redis_client.set(cache_key, "0", ex=cache_ttl)
             return False
         result = not collective_rating["unsafe"]["status"]
-        await redis_client.set(cache_key, "1" if result else "0", ex=cache_ttl)
+        await db.redis_client.set(cache_key, "1" if result else "0", ex=cache_ttl)
         return result
 
-    async def on_message(self, message: dict):
+    async def on_message(self, message: dict, record: AtprotoCompactRecord):
         video_post = VideoPost.from_post(message)
         if video_post is None:
             return
@@ -108,8 +108,8 @@ class VideosFeed(AtprotoFeed):
         print(f"Video {video_post.video_id} {is_video_safe=}")
         if is_video_safe:
             print(f"Post: {video_post.post}")
-            await redis_client.lpush(self.feed_key, json.dumps(dataclasses.asdict(video_post)))
-            await redis_client.ltrim(self.feed_key, 0, self.max_length - 1)
+            await db.add_to_feed(feed_key=self.feed_name, record=record, feed_max_length=self.max_length)
+
 
     @staticmethod
     def _parse_cursor(cursor: str) -> tuple[str, int] | None:
@@ -136,8 +136,7 @@ class VideosFeed(AtprotoFeed):
     ) -> AppBskyFeedGetFeedSkeleton.Response:
         if cursor is None:
             # First page: the newest `limit` records, starting at absolute index 0.
-            items = await redis_client.lrange(self.feed_key, 0, limit - 1)
-            posts = [VideoPost(**json.loads(item)) for item in items]
+            posts = await db.get_feed(self.feed_name, 0, limit-1)
             start_idx = 0
         else:
             parsed = self._parse_cursor(cursor)
@@ -146,11 +145,10 @@ class VideosFeed(AtprotoFeed):
             cid, idx = parsed
             # Records are only ever inserted at the head, so the anchor's real
             # index can only have grown since the cursor was issued (>= `idx`).
-            items = await redis_client.lrange(self.feed_key, idx, -1)
+            items = await db.get_feed(self.feed_name, idx, -1)
             anchor = None
             posts = []
-            for i, item in enumerate(items):
-                post = VideoPost(**json.loads(item))
+            for i, post in enumerate(items):
                 if anchor is None:
                     if post.cid == cid:
                         anchor = i
@@ -167,12 +165,15 @@ class VideosFeed(AtprotoFeed):
         if not posts:
             return self._skeleton([], None)
         last_idx = start_idx + len(posts) - 1
-        next_cursor = f"after:{posts[-1].cid}:{last_idx}"
+        if len(posts) < limit:
+            next_cursor = None
+        else:
+            next_cursor = f"after:{posts[-1].cid}:{last_idx}"
         return self._skeleton(posts, next_cursor)
 
     @staticmethod
     def _skeleton(
-        posts: list[VideoPost], cursor: str | None
+        posts: list[AtprotoCompactRecord], cursor: str | None
     ) -> AppBskyFeedGetFeedSkeleton.Response:
         return AppBskyFeedGetFeedSkeleton.Response(
             feed=[SkeletonFeedPost(post=post.at_uri) for post in posts],
