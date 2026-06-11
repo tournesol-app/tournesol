@@ -15,5 +15,5 @@ user_models:
   fmt: parquet
   user_categories:
     categories_list:
-    - journalism
     - author
+    - journalism

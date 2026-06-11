@@ -1,9 +1,6 @@
 from copy import deepcopy
-from functools import reduce
 from typing import Any, Callable, Hashable, Self, Union, overload
 from pandas import Series
-from numba import njit
-from numba.typed import List
 
 import itertools
 
