@@ -31,6 +31,7 @@ import {
   DEFAULT_RATE_LATER_AUTO_REMOVAL,
   YOUTUBE_POLL_NAME,
   YT_DEFAULT_AUTO_SELECT_ENTITIES,
+  YT_DEFAULT_EXTENSION_ON_VIDEO_WATHCED,
   YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE,
   polls,
 } from 'src/utils/constants';
@@ -97,7 +98,7 @@ const TournesolUserSettingsForm = () => {
     Extension_onVideoWatchedEnum | BlankEnum
   >(
     pollSettings?.extension__on_video_watched ??
-      Extension_onVideoWatchedEnum.DO_NOTHING
+      YT_DEFAULT_EXTENSION_ON_VIDEO_WATHCED
   );
 
   // Comparison

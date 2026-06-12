@@ -18,7 +18,10 @@ import {
   TournesolUserSettings,
   UsersService,
 } from 'src/services/openapi';
-import { YOUTUBE_POLL_NAME } from 'src/utils/constants';
+import {
+  YOUTUBE_POLL_NAME,
+  YT_DEFAULT_EXTENSION_ON_VIDEO_WATHCED,
+} from 'src/utils/constants';
 
 const RateLaterOnVideoWatchedSetting = () => {
   const { t } = useTranslation();
@@ -31,7 +34,7 @@ const RateLaterOnVideoWatchedSetting = () => {
     Extension_onVideoWatchedEnum | BlankEnum
   >(
     pollSettings?.extension__on_video_watched ??
-      Extension_onVideoWatchedEnum.DO_NOTHING
+      YT_DEFAULT_EXTENSION_ON_VIDEO_WATHCED
   );
   const [disabled, setDisabled] = useState(false);
 
