@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import { Box, Divider, Grid, IconButton, Paper, Stack } from '@mui/material';
+import { Box, Grid, IconButton, Paper, Stack } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/Info';
@@ -25,13 +25,13 @@ import {
 } from 'src/utils/action';
 import { addToRateLaterList } from 'src/utils/api/rateLaters';
 import { UID_YT_NAMESPACE, YOUTUBE_POLL_NAME } from 'src/utils/constants';
-import { getWebExtensionUrl } from 'src/utils/extension';
 
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { DEFAULT_RATE_LATER_AUTO_REMOVAL } from 'src/utils/constants';
 import PreferencesIconButtonLink from 'src/components/buttons/PreferencesIconButtonLink';
 import DialogBox from 'src/components/DialogBox';
 import { PollUserSettingsKeys } from 'src/utils/types';
+import RateLaterExtensionSection from 'src/features/rateLater/RateLaterExtensionSection';
 
 const useStyles = makeStyles({
   rateLaterContent: {
@@ -220,7 +220,7 @@ const RateLaterPage = () => {
         >
           <Grid
             item
-            sm={6}
+            md={6}
             sx={{
               display: 'flex',
               width: '100%',
@@ -267,47 +267,13 @@ const RateLaterPage = () => {
 
           <Grid
             item
-            sm={6}
+            md={6}
             sx={{
               display: 'flex',
               width: '100%',
             }}
           >
-            <Paper sx={{ p: 2, width: '100%' }}>
-              <Typography
-                sx={{
-                  marginBottom: 2,
-                }}
-              >
-                {t('ratelater.addVideosToYourListToCompareThemLater')}
-              </Typography>
-              <Divider />
-              <ul>
-                <li>
-                  <Trans t={t} i18nKey="ratelater.useOurBrowserExtension">
-                    Use our{' '}
-                    <ExternalLink
-                      href={
-                        getWebExtensionUrl() ?? getWebExtensionUrl('chrome')
-                      }
-                    >
-                      browser extension
-                    </ExternalLink>{' '}
-                    to effortlessly add videos directly from YouTube.
-                  </Trans>
-                </li>
-                <li>
-                  <Typography
-                    sx={{
-                      mt: 2,
-                      mb: 0,
-                    }}
-                  >
-                    {t('ratelater.orCopyPasteVideoUrlHere')}
-                  </Typography>
-                </li>
-              </ul>
-            </Paper>
+            <RateLaterExtensionSection />
           </Grid>
         </Grid>
 

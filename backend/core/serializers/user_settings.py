@@ -91,6 +91,7 @@ class VideosPollUserSettingsSerializer(GenericPollUserSettingsSerializer):
     ON_VIDEO_WATCHED_CHOICES = [
         ("DO_NOTHING", "do_nothing"),
         ("MARK_AS_WATCHED", "mark_as_watched"),
+        ("MARK_AS_WATCHED_AND_RATE_LATER", "mark_as_watched_and_rate_later"),
     ]
 
     extension__search_reco = serializers.BooleanField(

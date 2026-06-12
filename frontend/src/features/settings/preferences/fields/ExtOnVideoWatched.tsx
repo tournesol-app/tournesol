@@ -27,6 +27,10 @@ const ExtOnVideoWatched = ({
       label: t('pollUserSettingsForm.onVideoWatchedMarkAsWatched'),
       value: Extension_onVideoWatchedEnum.MARK_AS_WATCHED,
     },
+    {
+      label: t('pollUserSettingsForm.onVideoWatchedMarkAsWatchedAndRateLater'),
+      value: Extension_onVideoWatchedEnum.MARK_AS_WATCHED_AND_RATE_LATER,
+    },
   ];
 
   return (

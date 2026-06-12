@@ -146,7 +146,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.message == 'addRateLater') {
-    addRateLater(request.video_id).then(sendResponse);
+    addRateLater(request.video_id, request.entitySeen).then(sendResponse);
     return true;
   }
 

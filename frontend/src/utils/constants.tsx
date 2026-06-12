@@ -1,7 +1,10 @@
 import { TFunction } from 'i18next';
 import { YouTube, HowToVote } from '@mui/icons-material';
 
-import { RelatedEntity } from 'src/services/openapi';
+import {
+  Extension_onVideoWatchedEnum,
+  RelatedEntity,
+} from 'src/services/openapi';
 
 import { AddToRateLaterList, CompareNowAction } from './action';
 import {
@@ -188,6 +191,9 @@ export const getFeedTopItemsPageName = (t: TFunction, pollName: string) => {
 export const DEFAULT_RATE_LATER_AUTO_REMOVAL = 4;
 
 export const YT_DEFAULT_AUTO_SELECT_ENTITIES = true;
+
+export const YT_DEFAULT_EXTENSION_ON_VIDEO_WATHCED =
+  Extension_onVideoWatchedEnum.DO_NOTHING;
 
 export const YT_DEFAULT_UI_WEEKLY_COL_GOAL_MOBILE = false;
 
