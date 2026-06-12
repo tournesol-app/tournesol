@@ -220,7 +220,7 @@ const RateLaterPage = () => {
         >
           <Grid
             item
-            sm={6}
+            md={6}
             sx={{
               display: 'flex',
               width: '100%',
@@ -267,7 +267,7 @@ const RateLaterPage = () => {
 
           <Grid
             item
-            sm={6}
+            md={6}
             sx={{
               display: 'flex',
               width: '100%',
