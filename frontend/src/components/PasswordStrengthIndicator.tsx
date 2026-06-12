@@ -58,6 +58,7 @@ const PasswordStrengthIndicator = ({ passwd }: { passwd: string }) => {
               disabled={disabled}
               data-disabled={disabled}
               data-testid={strength.testId}
+              sx={(t) => ({ [t.breakpoints.down('sm')]: { fontSize: '11px' } })}
             />
           );
         })}
