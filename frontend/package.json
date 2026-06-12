@@ -32,7 +32,8 @@
     "recharts": "^2.10.1",
     "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
-    "typescript": "~4.9.5"
+    "typescript": "~4.9.5",
+    "zxcvbn-ts": "^2.2.0"
   },
   "scripts": {
     "start": "vite",

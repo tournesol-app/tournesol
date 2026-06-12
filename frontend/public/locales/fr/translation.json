@@ -63,6 +63,16 @@
     "showingCounts_many": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}",
     "showingCounts_other": "Éléments {{firstElementIdx}} à {{lastElementIdx}} sur {{count}}"
   },
+  "passwordStrengthIndicator": {
+    "strength": {
+      "veryWeak": "Très faible",
+      "weak": "Faible",
+      "medium": "Moyenne",
+      "strong": "Forte",
+      "veryStrong": "Très forte"
+    },
+    "passwordStrength": "Force du mot de passe"
+  },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "Vous devez être connecté.e pour afficher les scores personnels.",

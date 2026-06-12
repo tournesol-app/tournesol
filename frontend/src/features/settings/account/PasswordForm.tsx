@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Grid2 from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 
+import { PasswordStrengthIndicator } from 'src/components';
 import { AccountsService, ApiError } from 'src/services/openapi';
 import { useNotifications } from 'src/hooks';
 
@@ -120,6 +121,9 @@ const PasswordForm = () => {
               htmlInput: { 'data-testid': 'password_confirm' },
             }}
           />
+        </Grid2>
+        <Grid2>
+          <PasswordStrengthIndicator passwd={password} />
         </Grid2>
         <Grid2>
           <Button

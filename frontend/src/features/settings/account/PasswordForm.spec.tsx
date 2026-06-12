@@ -195,4 +195,34 @@ describe('change password feature', () => {
       }
     );
   });
+
+  it('displays password strength indicators', () => {
+    const { password } = setup();
+
+    const strVeryWeak = screen.getByTestId('passwd_str_veryweak');
+    const strWeak = screen.getByTestId('passwd_str_weak');
+    const strMedium = screen.getByTestId('passwd_str_medium');
+    const strStrong = screen.getByTestId('passwd_str_strong');
+    const strVeryStrong = screen.getByTestId('passwd_str_verystrong');
+
+    expect(strVeryWeak).toBeVisible();
+    expect(strWeak).toBeVisible();
+    expect(strMedium).toBeVisible();
+    expect(strStrong).toBeVisible();
+    expect(strVeryStrong).toBeVisible();
+
+    fireEvent.change(password, { target: { value: 'veryweak' } });
+    expect(strVeryWeak.getAttribute('data-disabled')).toBe('false');
+    expect(strWeak.getAttribute('data-disabled')).toBe('true');
+    expect(strMedium.getAttribute('data-disabled')).toBe('true');
+    expect(strStrong.getAttribute('data-disabled')).toBe('true');
+    expect(strVeryStrong.getAttribute('data-disabled')).toBe('true');
+
+    fireEvent.change(password, { target: { value: 'QUITE strong p@$$w0rd!' } });
+    expect(strVeryWeak.getAttribute('data-disabled')).toBe('true');
+    expect(strWeak.getAttribute('data-disabled')).toBe('true');
+    expect(strMedium.getAttribute('data-disabled')).toBe('true');
+    expect(strStrong.getAttribute('data-disabled')).toBe('true');
+    expect(strVeryStrong.getAttribute('data-disabled')).toBe('false');
+  });
 });

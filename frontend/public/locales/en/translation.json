@@ -59,6 +59,16 @@
     "showingCounts_one": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}",
     "showingCounts_other": "Showing {{firstElementIdx}} - {{lastElementIdx}} of {{count}}"
   },
+  "passwordStrengthIndicator": {
+    "strength": {
+      "veryWeak": "Very weak",
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong",
+      "veryStrong": "Very strong"
+    },
+    "passwordStrength": "Password strength"
+  },
   "personalCriteriaScores": {
     "reasonWhyItCannotBeActivated": {
       "notLoggedIn": "You must be logged in to display personal scores.",
