@@ -22,6 +22,8 @@ def time(log: str, logger: logging.Logger | type | None = None, log_start: bool 
             logger.info(f"{log} in {int(timeit.default_timer() - start)} seconds")
         elif unit == "ms":
             logger.info(f"{log} in {int(1000*(timeit.default_timer() - start))} ms")
+        elif unit == "microseconds":
+            logger.info(f"{log} in {int(1_000_000*(timeit.default_timer() - start))} microseconds")
 
 
 

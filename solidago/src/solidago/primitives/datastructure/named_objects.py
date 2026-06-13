@@ -40,6 +40,17 @@ class After:
         return f"After({self.value})"
 
 
+class Before:
+    def __init__(self, value: int | float):
+        self.value = value
+
+    def __call__(self, t: int | float) -> bool:
+        return t < self.value
+
+    def __repr__(self) -> str:
+        return f"Before({self.value})"
+
+
 class NamedObject:
     def __init__(self, 
         name: str, 
