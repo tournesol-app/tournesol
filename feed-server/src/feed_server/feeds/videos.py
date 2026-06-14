@@ -108,8 +108,9 @@ class VideosFeed(AtprotoFeed):
         print(f"Video {video_post.video_id} {is_video_safe=}")
         if is_video_safe:
             print(f"Post: {video_post.post}")
-            await db.add_to_feed(feed_key=self.feed_name, record=record, feed_max_length=self.max_length)
-
+            await db.add_to_feed(
+                feed_key=self.feed_name, record=record, feed_max_length=self.max_length
+            )
 
     @staticmethod
     def _parse_cursor(cursor: str) -> tuple[str, int] | None:
@@ -136,7 +137,7 @@ class VideosFeed(AtprotoFeed):
     ) -> AppBskyFeedGetFeedSkeleton.Response:
         if cursor is None:
             # First page: the newest `limit` records, starting at absolute index 0.
-            posts = await db.get_feed(self.feed_name, 0, limit-1)
+            posts = await db.get_feed(self.feed_name, 0, limit - 1)
             start_idx = 0
         else:
             parsed = self._parse_cursor(cursor)
