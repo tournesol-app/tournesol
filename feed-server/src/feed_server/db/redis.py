@@ -63,7 +63,14 @@ class RedisDb:
         items = await self.redis_client_bytes.lrange(key, start, end)
         return [AtprotoCompactRecord.deserialize(it) for it in items]
 
-    # TODO: get_records_by_poster(did)
+    async def get_records_by_poster(self, poster_did: str):
+        items = []
+        today = datetime.datetime.now(datetime.UTC).date()
+        for n in range(self.POSTS_RETENTION_IN_DAYS + 1):
+            day = today - datetime.timedelta(days=n)
+            key = self.account_posts_key(poster_did, day)
+            items.extend(await self.redis_client_bytes.lrange(key, 0, -1))
+        return [AtprotoCompactRecord.deserialize(it) for it in items]
 
 
 db = RedisDb()
