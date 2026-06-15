@@ -40,13 +40,13 @@ class GlobalSumCriteria(PollFunction):
         self.aggregated_name = aggregated_name
 
     def fn(self, global_model: ScoringModel) -> ScoringModel:
-        global_model = ScoringModel()
+        scores = list()
 
-        for (entity_name,), subscores in global_model().iter("entity_name"):
-            kwargs = dict(entity_name=entity_name, criterion=self.aggregated_name)
-            global_model.directs.append(self._add(subscores), **kwargs)
+        for (e,), subscores in global_model().iter("entity_name"):
+            v, l, r = self._add(subscores).to_triplet()
+            scores.append((e, self.aggregated_name, v, l, r))
 
-        return global_model
+        return ScoringModel(directs=DirectScores(scores, columns=["entity_name", "criterion", "value", "left", "right"]))
 
     def _add(self, subscores: Scores) -> Score:
         def f(score: Score, criterion: Hashable) -> Score:
