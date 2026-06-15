@@ -133,7 +133,7 @@ class VideosFeed(AtprotoFeed):
         return cid, idx
 
     async def get_feed(
-        self, limit: int, cursor: str | None
+        self, limit: int, cursor: str | None, requester_did: str | None
     ) -> AppBskyFeedGetFeedSkeleton.Response:
         if cursor is None:
             # First page: the newest `limit` records, starting at absolute index 0.

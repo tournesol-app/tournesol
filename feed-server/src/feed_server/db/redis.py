@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import os
 
@@ -71,6 +72,14 @@ class RedisDb:
             key = self.account_posts_key(poster_did, day)
             items.extend(await self.redis_client_bytes.lrange(key, 0, -1))
         return [AtprotoCompactRecord.deserialize(it) for it in items]
+
+    async def get_records_by_posters(
+        self, poster_dids: list[str]
+    ) -> list[AtprotoCompactRecord]:
+        records_per_poster = await asyncio.gather(
+            *(self.get_records_by_poster(did) for did in poster_dids)
+        )
+        return [record for records in records_per_poster for record in records]
 
 
 db = RedisDb()
