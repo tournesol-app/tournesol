@@ -19,7 +19,7 @@ const InstallMobileApp = ({ titleColor }: UseOurExtensionProps) => {
         title={t('home.installTheMobileAppTitle')}
         color={titleColor}
         dividerColor={titleColor}
-        headingId="use-extension"
+        headingId="use-app"
       />
       <Paper sx={{ p: 2 }}>
         <Grid
