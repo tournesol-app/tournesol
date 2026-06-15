@@ -13,6 +13,6 @@ class AtprotoFeed(ABC):
         pass
 
     async def get_feed(
-        self, limit: int, cursor: str | None
+        self, limit: int, cursor: str | None, requester_did: str | None
     ) -> AppBskyFeedGetFeedSkeleton.Response:
         raise NotImplementedError
