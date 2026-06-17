@@ -1,7 +1,12 @@
+import json
+
 import httpx
+
+from .db import db
 
 PUBLIC_APPVIEW_BASE_URL = "https://public.api.bsky.app"
 GET_FOLLOWS_PAGE_LIMIT = 100
+FOLLOWS_CACHE_TTL_SECONDS = 300
 
 http_client = httpx.AsyncClient(base_url=PUBLIC_APPVIEW_BASE_URL)
 
@@ -11,7 +16,13 @@ async def get_follows(actor: str) -> list[str]:
 
     ``actor`` may be a DID or a handle. Follows are read from the public Bluesky
     AppView, which exposes them paginated; this walks every page.
+    Results are cached in Redis for FOLLOWS_CACHE_TTL_SECONDS seconds.
     """
+    cache_key = f"cache:follows:{actor}"
+    cached = await db.redis_client.get(cache_key)
+    if cached is not None:
+        return json.loads(cached)
+
     followed_dids: list[str] = []
     cursor: str | None = None
     while True:
@@ -26,4 +37,7 @@ async def get_follows(actor: str) -> list[str]:
         followed_dids.extend(follow["did"] for follow in data["follows"])
         cursor = data.get("cursor")
         if not cursor:
-            return followed_dids
+            break
+
+    await db.redis_client.set(cache_key, json.dumps(followed_dids), ex=FOLLOWS_CACHE_TTL_SECONDS)
+    return followed_dids
