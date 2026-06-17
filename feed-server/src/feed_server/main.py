@@ -24,13 +24,16 @@ async def process_posts():
             await asyncio.sleep(1.0)
             continue
         _, message_json = result
-        post = orjson.loads(message_json)
-        record = AtprotoCompactRecord.from_raw(post)
-        await asyncio.gather(
-            db.save_record(record),
-            *(feed.on_message(post, record) for feed in ALL_FEEDS.values()),
-            return_exceptions=True,
-        )
+        try:
+            post = orjson.loads(message_json)
+            record = AtprotoCompactRecord.from_raw(post)
+            await asyncio.gather(
+                db.save_record(record),
+                *(feed.on_message(post, record) for feed in ALL_FEEDS.values()),
+                return_exceptions=True,
+            )
+        except Exception:
+            logging.exception("Failed to process message, skipping: %s", message_json)
 
 
 @asynccontextmanager
