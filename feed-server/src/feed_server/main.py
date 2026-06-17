@@ -36,13 +36,33 @@ async def process_posts():
             logging.exception("Failed to process message, skipping: %s", message_json)
 
 
+def log_unexpected_task_exit(task: asyncio.Task):
+    if task.cancelled():
+        return
+    exception = task.exception()
+    if exception is not None:
+        logging.error("Background task %s crashed", task.get_name(), exc_info=exception)
+    else:
+        logging.error("Background task %s exited unexpectedly", task.get_name())
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
-    asyncio.create_task(process_posts())
-    asyncio.create_task(listen_to_posts())
+
+    background_tasks = [
+        asyncio.create_task(process_posts(), name="process_posts"),
+        asyncio.create_task(listen_to_posts(), name="listen_to_posts"),
+    ]
+    for task in background_tasks:
+        task.add_done_callback(log_unexpected_task_exit)
+
     yield
+
+    for task in background_tasks:
+        task.cancel()
+    await asyncio.gather(*background_tasks, return_exceptions=True)
 
 
 app = FastAPI(lifespan=lifespan)
