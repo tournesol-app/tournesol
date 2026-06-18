@@ -81,7 +81,7 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
             (30, int(1 / 2 * ((240 - line_height * len(title_lines)) * upscale_ratio))),
         )
 
-    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
+    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW, public=True))
     @extend_schema(
         description="FAQ preview",
         responses={200: OpenApiTypes.BINARY},

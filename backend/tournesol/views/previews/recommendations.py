@@ -314,7 +314,7 @@ class DynamicWebsitePreviewRecommendations(BasePreviewAPIView, PollsRecommendati
 
         return offset, limit
 
-    @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW))
+    @method_decorator(cache_page_no_i18n(CACHE_RECOMMENDATIONS_PREVIEW, public=True))
     @extend_schema(exclude=True)
     def get(self, request, *args, **kwargs):
         upscale_ratio = self.upscale_ratio

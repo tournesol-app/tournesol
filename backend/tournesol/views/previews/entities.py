@@ -169,7 +169,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
             ),
         )
 
-    @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW))
+    @method_decorator(cache_page_no_i18n(CACHE_ENTITY_PREVIEW, public=True))
     @extend_schema(
         description="Generic preview of an entity.",
         responses={200: OpenApiTypes.BINARY},

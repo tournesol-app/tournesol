@@ -82,6 +82,6 @@ class RandomRecommendationList(RandomRecommendationBaseAPIView):
     serializer_class = RecommendationBaseSerializer
     poll_parameter = "name"
 
-    @method_decorator(cache_page_no_i18n(60 * 10))
+    @method_decorator(cache_page_no_i18n(60 * 10, public=True))
     def get(self, request, *args, **kwargs):
         return self.list(self, request, *args, **kwargs)

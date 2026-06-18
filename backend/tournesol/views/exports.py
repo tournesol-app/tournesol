@@ -82,7 +82,7 @@ class ExportPublicComparisonsView(APIView):
     permission_classes = [AllowAny]
     throttle_scope = "api_export_comparisons"
 
-    @method_decorator(cache_page_no_i18n(60 * 10))  # 10 minutes cache
+    @method_decorator(cache_page_no_i18n(60 * 10, public=True))  # 10 minutes cache
     @extend_schema(
         description="Download all public comparisons made in the `videos` poll by all users in a"
         " CSV file.",

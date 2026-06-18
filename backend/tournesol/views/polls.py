@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Case, F, Prefetch, Sum, When
 from django.shortcuts import get_object_or_404
-from django.utils.cache import patch_vary_headers
+from django.utils.cache import patch_cache_control, patch_vary_headers
 from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -288,7 +288,12 @@ class PollsRecommendationsView(PollRecommendationsBaseAPIView):
     def list(self, request, *args, **kwargs):
         response = super().list(self, request, *args, **kwargs)
         if request.query_params.get("exclude_compared_entities") == "true":
+            # Django 5.2.15+ automatically handles the Vary header for non-public responses,
+            # making this call redundant, but it is kept for explicitness.
             patch_vary_headers(response, ['Authorization'])
+        else:
+            # Necessary with Django 5.2.15+ to cache reponses independently of the user.
+            patch_cache_control(response, public=True)
         return response
 
     def annotate_and_prefetch_scores(self, queryset, request, poll: Poll):
