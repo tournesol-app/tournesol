@@ -20,6 +20,11 @@ WANTED_COLLECTIONS = [
 ]
 
 
+def is_reply(data: dict) -> bool:
+    record = data.get("commit", {}).get("record", {})
+    return record.get("reply") is not None
+
+
 async def get_jetstream_url():
     params: dict[str, Any] = {"wantedCollections": WANTED_COLLECTIONS}
     cursor = await db.redis_client.get(CURSOR_KEY)
@@ -41,7 +46,7 @@ async def listen_to_posts():
                     if "commit" not in data:
                         print(data)
                         continue
-                    if data["commit"].get("operation") == "create":
+                    if data["commit"].get("operation") == "create" and not is_reply(data):
                         await db.redis_client.rpush(QUEUE_KEY, message)
                     if time_us := data.get("time_us"):
                         await db.redis_client.set(CURSOR_KEY, time_us)
