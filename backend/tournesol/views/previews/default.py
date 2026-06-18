@@ -282,7 +282,7 @@ class DynamicWebsitePreviewDefault(BasePreviewAPIView):
 
     permission_classes = []
 
-    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW))
+    @method_decorator(cache_page_no_i18n(CACHE_DEFAULT_PREVIEW, public=True))
     @extend_schema(
         description="Default website preview.",
         responses={200: OpenApiTypes.BINARY},

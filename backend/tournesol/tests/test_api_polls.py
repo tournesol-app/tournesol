@@ -726,6 +726,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="abc")
         results = response.data["results"]
         self.assertSetEqual(set(e["entity"]["uid"] for e in results), {self.video_2.uid, self.video_4.uid})
+        self.assertIn("Authorization", response.headers["Vary"])
 
     def test_response_is_not_cached_when_exclude_is_true_for_two_users(self):
         self.client.force_authenticate(user=self.user_with_ratings)
@@ -734,6 +735,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=true", HTTP_AUTHORIZATION="def")
         results = response.data["results"]
         self.assertEqual(len(results), 4)
+        self.assertIn("Authorization", response.headers["Vary"])
 
     def test_response_is_cached_when_exclude_is_false(self):
         self.client.force_authenticate(user=self.user_no_comparisons)
@@ -744,6 +746,7 @@ class PollsRecommendationsFilterRatedEntitiesTestCase(TestCase):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false", HTTP_AUTHORIZATION="def")
         results = response.data["results"]
         self.assertEqual(len(results), 4)
+        self.assertNotIn("Authorization", response.headers["Vary"])
 
     def test_response_anonymous_writes_to_cache_when_exclude_is_false(self):
         response = self.client.get("/polls/videos/recommendations/?exclude_compared_entities=false")
