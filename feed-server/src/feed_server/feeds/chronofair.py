@@ -1,7 +1,10 @@
 import logging
+import uuid
 
 from atproto_client.models import AppBskyFeedGetFeedSkeleton
 from atproto_client.models.app.bsky.feed.defs import SkeletonFeedPost
+from solidago import Poll, Socials, Users, Entities
+from solidago.recommenders import ChronoFair
 
 from ..db import db
 from ..follows import get_follows
@@ -17,6 +20,15 @@ class ChronofairFeed(AtprotoFeed):
     def __init__(self, max_posts: int = 1000):
         # Upper bound on how many merged posts we rank/paginate over per request.
         self.max_posts = max_posts
+        self.recommender = ChronoFair()
+
+    def get_poll(self, records: list[AtprotoCompactRecord], requester_did: str, followed_dids: list[str]) -> Poll:
+        # TODO populate poll ratings (reposts) and past_recommendations (posts with interactionSeen)
+        usernames = set(r.did for r in records)
+        users = Users(list(usernames))
+        entities = Entities([dict(name=r.cid, authors=(r.did,)) for r in records])
+        socials = Socials([dict(kind="follow", by=requester_did, to=followed_did) for followed_did in followed_dids])
+        return Poll(users=users, entities=entities, socials=socials)
 
     async def get_feed(
         self, limit: int, cursor: str | None, requester_did: str | None
@@ -24,41 +36,37 @@ class ChronofairFeed(AtprotoFeed):
         if requester_did is None:
             return self._skeleton([], None)
 
+        if cursor is None:
+            # TODO try to return feed from cache (ttl ~1 minute), to avoid recomputing a new feed unnecessarily
+            pass
+
         followed_dids = await get_follows(requester_did)
         records = await db.get_records_by_posters(followed_dids)
-        records.sort(key=lambda record: record.time_us, reverse=True)
-        records = records[: self.max_posts]
-        logger.info(
-            "Chronofair feed for %s: %d follows, %d posts",
-            requester_did,
-            len(followed_dids),
-            len(records),
+        # we will use the "cid" as the entity name
+        cid_to_record = {
+            r.cid: r
+            for r in records
+        }
+
+        poll = self.get_poll(records=records, requester_did=requester_did, followed_dids=followed_dids)
+        feed_entities = self.recommender(
+            poll=poll,
+            limit=limit,
+            receiver_name=requester_did,
         )
+        page = [
+            cid_to_record[cid] for cid in feed_entities.names() 
+        ]
 
-        if cursor is not None:
-            anchor_cid = self._parse_cursor(cursor)
-            if anchor_cid is None:
-                return self._skeleton([], None)
-            start = next(
-                (i + 1 for i, record in enumerate(records) if record.cid == anchor_cid),
-                None,
-            )
-            if start is None:
-                # Anchor aged out of the retention window: end of feed.
-                return self._skeleton([], None)
-            records = records[start:]
+        # TODO Do we want to keep track of specific cursors?
+        # Or should we just check the presence of a cursor to decide whether "past_recommendations"
+        # should be populated based on the "interactionSeen" events?
+        if len(page) < limit:
+            next_cursor = None
+        else:
+            next_cursor = uuid.uuid4().hex
 
-        page = records[:limit]
-        has_more = len(records) > len(page)
-        next_cursor = f"{CURSOR_PREFIX}{page[-1].cid}" if page and has_more else None
         return self._skeleton(page, next_cursor)
-
-    @staticmethod
-    def _parse_cursor(cursor: str) -> str | None:
-        if not cursor.startswith(CURSOR_PREFIX):
-            return None
-        cid = cursor[len(CURSOR_PREFIX):]
-        return cid or None
 
     @staticmethod
     def _skeleton(

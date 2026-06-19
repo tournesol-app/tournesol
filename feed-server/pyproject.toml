@@ -10,6 +10,7 @@ dependencies = [
     "httpx>=0.28.1",
     "orjson>=3.11.9",
     "redis>=7.0",
+    "solidago",
     "websockets>=15.0",
 ]
 
@@ -31,3 +32,6 @@ line-length = 99
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.uv.sources]
+solidago = { git = "https://github.com/tournesol-app/tournesol.git", subdirectory = "solidago", rev = "d3f2076" }
