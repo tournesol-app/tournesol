@@ -22,12 +22,28 @@ class ChronofairFeed(AtprotoFeed):
         self.max_posts = max_posts
         self.recommender = ChronoFair()
 
-    def get_poll(self, records: list[AtprotoCompactRecord], requester_did: str, followed_dids: list[str]) -> Poll:
+    def get_poll(
+        self, records: list[AtprotoCompactRecord], requester_did: str, followed_dids: list[str]
+    ) -> Poll:
         # TODO populate poll ratings (reposts) and past_recommendations (posts with interactionSeen)
         usernames = set(r.did for r in records)
         users = Users(list(usernames))
-        entities = Entities([dict(name=r.cid, authors=(r.did,)) for r in records])
-        socials = Socials([dict(kind="follow", by=requester_did, to=followed_did) for followed_did in followed_dids])
+        entities = Entities(
+            [
+                dict(
+                    name=r.cid,
+                    authors=(r.did,),
+                    timestamp=r.time_us / 1e6,
+                )
+                for r in records
+            ]
+        )
+        socials = Socials(
+            [
+                dict(kind="follow", by=requester_did, to=followed_did)
+                for followed_did in followed_dids
+            ]
+        )
         return Poll(users=users, entities=entities, socials=socials)
 
     async def get_feed(
@@ -43,20 +59,19 @@ class ChronofairFeed(AtprotoFeed):
         followed_dids = await get_follows(requester_did)
         records = await db.get_records_by_posters(followed_dids)
         # we will use the "cid" as the entity name
-        cid_to_record = {
-            r.cid: r
-            for r in records
-        }
+        cid_to_record = {r.cid: r for r in records}
 
-        poll = self.get_poll(records=records, requester_did=requester_did, followed_dids=followed_dids)
+        poll = self.get_poll(
+            records=records,
+            requester_did=requester_did,
+            followed_dids=followed_dids,
+        )
         feed_entities = self.recommender(
             poll=poll,
             limit=limit,
             receiver_name=requester_did,
         )
-        page = [
-            cid_to_record[cid] for cid in feed_entities.names() 
-        ]
+        page = [cid_to_record[cid] for cid in feed_entities.names()]
 
         # TODO Do we want to keep track of specific cursors?
         # Or should we just check the presence of a cursor to decide whether "past_recommendations"
