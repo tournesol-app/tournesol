@@ -47,9 +47,10 @@ class EntityCriterionWise(ThreadedPollFunction):
         nonargs_list: list, 
         results: list, args_lists: list
     ) -> ScoringModel: # type: ignore
-        global_model = ScoringModel(note=type(self).note)
-        for (entity, criterion), (value, left, right) in zip(variables, results):
-            score = Score((value, left, right))
-            global_model.directs.set(score, entity_name=entity.name, criterion=criterion)
-        return global_model
+        rows = [
+            (entity.name, criterion, value, left, right)
+            for (entity, criterion), (value, left, right) in zip(variables, results)
+        ]
+        directs = DirectScores(rows, columns=["entity_name", "criterion", "value", "left_unc", "right_unc"])
+        return ScoringModel(directs=directs, note=type(self).note)
     
