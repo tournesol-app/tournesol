@@ -17,6 +17,7 @@ CURSOR_UPDATE_INTERVAL = 100  # parse 1 out of N messages to update the cursor
 
 WANTED_COLLECTIONS = [
     "app.bsky.feed.post",
+    "app.bsky.feed.repost",
 ]
 
 
