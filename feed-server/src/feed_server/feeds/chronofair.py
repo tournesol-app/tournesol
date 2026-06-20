@@ -1,4 +1,5 @@
 import logging
+import time
 import uuid
 
 from atproto_client.models import AppBskyFeedGetFeedSkeleton
@@ -38,11 +39,13 @@ class ChronofairFeed(AtprotoFeed):
                 for r in records
             ]
         )
+        follow_timestamp = int(time.time())
         socials = Socials(
             [
-                dict(kind="follow", by=requester_did, to=followed_did)
+                [requester_did, followed_did, "follow", 1.0, follow_timestamp]
                 for followed_did in followed_dids
-            ]
+            ],
+            columns=["by", "to", "kind", "weight", "timestamp"],
         )
         return Poll(users=users, entities=entities, socials=socials)
 
