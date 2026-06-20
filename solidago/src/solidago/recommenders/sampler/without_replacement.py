@@ -17,5 +17,6 @@ class SamplingWithoutReplacement(Sampler):
         if len(scores) == 0:
             return Entities()
         probs = scores("value") / scores("value").sum()
-        feed = np.random.choice(scores("entity_name"), limit, False, probs)
+        sample_size = min(limit, len(scores))
+        feed = np.random.choice(scores("entity_name"), sample_size, False, probs)
         return poll.entities.filters(feed)
