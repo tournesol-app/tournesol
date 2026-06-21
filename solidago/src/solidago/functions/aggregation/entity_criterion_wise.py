@@ -1,3 +1,6 @@
+from functools import reduce
+import operator
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -31,10 +34,14 @@ class EntityCriterionWise(ThreadedPollFunction):
         assert isinstance(nonargs, Scores) and "username" in nonargs.keynames, nonargs
         (entity, criterion), scores = variable, nonargs
         voting_rights_df = voting_rights.df
+        filters = []
         if "entity_name" in voting_rights.keynames:
-            voting_rights_df = voting_rights_df[voting_rights_df["entity_name"] == entity.name]
+            filters.append(voting_rights_df["entity_name"] == entity.name)
         if "criterion" in voting_rights.keynames:
-            voting_rights_df = voting_rights_df[voting_rights_df["criterion"] == criterion]
+            filters.append(voting_rights_df["criterion"] == criterion)
+        if filters:
+            mask = reduce(operator.__and__, filters)
+            voting_rights_df = voting_rights_df[mask]
         voting_right_by_username = dict(zip(voting_rights_df["username"], voting_rights_df["voting_right"]))
         vrights = [
             voting_right_by_username.get(username, 0.)
