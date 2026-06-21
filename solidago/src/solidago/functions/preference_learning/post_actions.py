@@ -71,7 +71,7 @@ class PostActions(ThreadedPollFunction):
 
         latest = dict()
         for name, timestamp, lifetime, action in reactions:
-            if "post" in entity_names_with_post:
+            if name in entity_names_with_post:
                 continue
             if name not in latest or timestamp > latest[name][1]:
                 latest[name] = name, timestamp, lifetime, action, self.action_weights[action]
