@@ -36,12 +36,21 @@ class Follows(PollFunction):
         actions = socials.filters(by=self.username, kind=self.follows.keys())
         followed_usernames = list(set(actions("to")))
         voting_rights = VotingRights(followed_usernames, columns=["username"], keynames=["username"])
-        g = lambda to, column, default: actions.get(SelectLast("timestamp"), to=to).get(column, default) 
-        follow_kinds = [g(n, "kind", "None") for n in followed_usernames]
+
+        actions_df = actions.df
+        last_action_df = actions_df.loc[actions_df.groupby("to")["timestamp"].idxmax()]
+        last_action_kinds = dict(zip(last_action_df["to"], last_action_df["kind"]))
+        last_action_timestamps = dict(zip(last_action_df["to"], last_action_df["timestamp"]))
+        if "weight" in last_action_df:
+            last_action_weights = dict(zip(last_action_df["to"], last_action_df["weight"]))
+        else:
+            last_action_weights = {}
+
+        follow_kinds = [last_action_kinds.get(n, "None") for n in followed_usernames]
         t = (Date.now() if self.date is None else self.date).timestamp()
-        timestamps = np.array([g(n, "timestamp", t) for n in followed_usernames])
+        timestamps = np.array([last_action_timestamps.get(n, t) for n in followed_usernames])
         ages = t - timestamps
-        weights = np.array([g(n, "weight", 1.) for n in followed_usernames])
+        weights = np.array([last_action_weights.get(n, 1.) for n in followed_usernames])
         decays = self.decay(ages, self.follow_lifetime.total_seconds)
         return voting_rights.add_columns(weight=weights, decay=decays, age=ages, 
             timestamp=timestamps, follow_kind=follow_kinds, follow_volume=weights * decays)
