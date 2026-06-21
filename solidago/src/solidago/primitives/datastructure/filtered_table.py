@@ -111,12 +111,12 @@ class Filter:
             return Filter(None, **self.keys | other.keys)
         if self.indices is None:
             assert other.indices is not None
-            indices = deepcopy(other.indices)
+            indices = other.indices.copy()
         elif other.indices is None:
             assert self.indices is not None
-            indices = deepcopy(self.indices)
+            indices = self.indices.copy()
         else:
-            indices = np.intersect1d(self.indices, other.indices)
+            indices = np.intersect1d(self.indices, other.indices, assume_unique=True)
         return Filter(indices, **self.keys | other.keys)
 
     def __or__(self, other: "Filter", self_len: int, other_len: int) -> "Filter":
