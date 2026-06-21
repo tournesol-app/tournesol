@@ -72,4 +72,4 @@ class GlobalSumCriteria(PollFunction):
             sum_per_entity(lefts),
             sum_per_entity(rights),
         ))
-        return ScoringModel(directs=DirectScores(rows, columns=["entity_name", "criterion", "value", "left", "right"]))
+        return ScoringModel(directs=DirectScores(rows, columns=["entity_name", "criterion", "value", "left_unc", "right_unc"]))
