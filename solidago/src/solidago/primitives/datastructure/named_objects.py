@@ -17,13 +17,17 @@ Object = TypeVar("Object")
 
 class Contains:
     def __init__(self, value: str | Iterable[str]):
-        self.value = value if isinstance(value, str) else set(value)
+        if isinstance(value, str):
+            self.value = value
+            self.single_value = True
+        else:
+            self.value = set(value)
+            self.single_value = False
 
     def __call__(self, t: Iterable) -> bool:
-        assert isinstance(t, Iterable)
-        if isinstance(self.value, str):
+        if self.single_value:
             return self.value in t
-        return bool(self.value & set(t))
+        return bool(self.value & set(t))  # type: ignore
 
     def __repr__(self) -> str:
         return f"Contains({self.value})"
