@@ -650,10 +650,9 @@ class FilteredTable(Generic[TableRow]):
         if column_name not in self.columns:
             return np.array([default_value] * len(self))
         if self.filter.indices is not None and filtered:
-            series = self.table.df.loc[self.filter.indices][column_name]
-        else:
-            series = self.table.df[column_name]
-        return series.to_numpy()
+            # is it safe to assume self.table.df is indexed by 0..len(df) ???
+            return self.table.df[column_name].to_numpy()[self.filter.indices]
+        return self.table.df[column_name].to_numpy()
 
     def set_columns(self, 
         dtypes: dict[str, type] | None = None, 
