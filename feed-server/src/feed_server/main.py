@@ -6,6 +6,7 @@ from feed_server.indexer.record import AtprotoCompactRecord
 import orjson
 from fastapi import FastAPI
 
+from feed_server import config
 from feed_server.db import db
 from feed_server.indexer.jetstream import listen_to_posts, QUEUE_KEY
 from feed_server.routes.feed import router as feed_router
@@ -30,7 +31,6 @@ async def process_posts():
             await asyncio.gather(
                 db.save_record(record),
                 *(feed.on_message(post, record) for feed in ALL_FEEDS.values()),
-                return_exceptions=True,
             )
         except Exception:
             logging.exception("Failed to process message, skipping: %s", message_json)
@@ -50,6 +50,10 @@ def log_unexpected_task_exit(task: asyncio.Task):
 async def lifespan(app: FastAPI):
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
+
+    if not config.FEED_SERVER_RUN_TASKS_IN_LIFESPAN:
+        yield
+        return
 
     background_tasks = [
         asyncio.create_task(process_posts(), name="process_posts"),
