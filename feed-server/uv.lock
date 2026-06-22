@@ -387,7 +387,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "orjson", specifier = ">=3.11.9" },
     { name = "redis", specifier = ">=7.0" },
-    { name = "solidago", git = "https://github.com/tournesol-app/tournesol.git?subdirectory=solidago&rev=cbbda29c" },
+    { name = "solidago", git = "https://github.com/tournesol-app/tournesol.git?subdirectory=solidago&rev=313a1cb" },
     { name = "websockets", specifier = ">=15.0" },
 ]
 
@@ -1301,7 +1301,7 @@ wheels = [
 [[package]]
 name = "solidago"
 version = "1.0.0"
-source = { git = "https://github.com/tournesol-app/tournesol.git?subdirectory=solidago&rev=cbbda29c#cbbda29cc89ed713a4b8c7b65c1e3facfd5bd863" }
+source = { git = "https://github.com/tournesol-app/tournesol.git?subdirectory=solidago&rev=313a1cb#313a1cbc7e425ac6a69bb6aa3ca00c929e6fc94a" }
 dependencies = [
     { name = "matplotlib" },
     { name = "numba" },
