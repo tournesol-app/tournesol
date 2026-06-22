@@ -32,14 +32,16 @@ class VideoPost:
         if not record:
             return None
 
-        candidate_strings = [
-            record.get("embed", {}).get("external", {}).get("uri", ""),
-            record.get("text", ""),
-        ] + [
+        candidate_strings = [record.get("text", "")]
+        if embed := record.get("embed"):
+            if external := embed.get("external"):
+                candidate_strings.append(external.get("uri", ""))
+
+        candidate_strings.extend([
             feature.get("uri", "")
             for facet in record.get("facets", [])
             for feature in facet.get("features", [])
-        ]
+        ])
 
         for s in candidate_strings:
             if not s:
