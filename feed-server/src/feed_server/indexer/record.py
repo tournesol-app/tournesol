@@ -83,6 +83,10 @@ class AtprotoSeenRecord:
     time_us: int
 
     @property
+    def timestamp(self):
+        return self.time_us / 1e6
+
+    @property
     def dt(self):
         return datetime.datetime.fromtimestamp(self.time_us / 1e6, tz=datetime.UTC)
 
