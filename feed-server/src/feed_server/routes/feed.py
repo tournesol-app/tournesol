@@ -7,7 +7,6 @@ from atproto_client.models import (
     AppBskyFeedGetFeedSkeleton,
     AppBskyFeedDescribeFeedGenerator,
     AppBskyFeedSendInteractions,
-    AppBskyFeedDefs,
 )
 from fastapi import APIRouter, Header, HTTPException, Query
 from feed_server.indexer.record import AtprotoSeenRecord
@@ -73,7 +72,7 @@ async def send_interactions(
         logger.info("Received interaction on feed %s: %s", feed_rkey, interaction)
         if (
             requester_did
-            and interaction.event == AppBskyFeedDefs.InteractionSeen
+            and interaction.event == 'app.bsky.feed.defs#interactionSeen'
             and interaction.item
         ):
             await db.mark_record_as_seen(
