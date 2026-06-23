@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 import uuid
@@ -7,12 +8,12 @@ from atproto_client.models.app.bsky.feed.defs import (
     SkeletonFeedPost,
     SkeletonReasonRepost,
 )
-from solidago import Entities, Poll, Ratings, Socials, Users
+from solidago import Entities, PastRecommendations, Poll, Ratings, Socials, Users
 from solidago.recommenders import ChronoFair
 
 from ..db import db
 from ..follows import get_follows
-from ..indexer.record import AtprotoCompactRecord
+from ..indexer.record import AtprotoCompactRecord, AtprotoSeenRecord
 from .base import AtprotoFeed
 
 logger = logging.getLogger(__name__)
@@ -23,13 +24,16 @@ def _author_did_from_at_uri(at_uri: str) -> str:
 
 
 class ChronofairFeed(AtprotoFeed):
-    def __init__(self, max_posts: int = 1000):
-        # Upper bound on how many merged posts we rank/paginate over per request.
-        self.max_posts = max_posts
+    def __init__(self, feed_key: str):
+        self.feed_key = feed_key
         self.recommender = ChronoFair()
 
     def get_poll(
-        self, records: list[AtprotoCompactRecord], requester_did: str, followed_dids: list[str]
+        self,
+        records: list[AtprotoCompactRecord],
+        requester_did: str,
+        followed_dids: list[str],
+        seen_records: list[AtprotoSeenRecord],
     ) -> Poll:
         # TODO populate past_recommendations (posts with interactionSeen)
 
@@ -44,10 +48,21 @@ class ChronofairFeed(AtprotoFeed):
 
         candidate_entities: dict[str, dict] = {}
         indexed_post_cids: set[str] = set()
+        uri_to_cid: dict[str, str] = {}
 
         for record in posts:
             indexed_post_cids.add(record.cid)
             candidate_entities[record.cid] = dict(author=record.did, timestamp=record.time_us / 1e6)
+            uri_to_cid[record.at_uri] = record.cid
+
+        past_recommendations = PastRecommendations(
+            [
+                [requester_did, cid, seen_record.timestamp]
+                for seen_record in seen_records
+                if (cid := uri_to_cid.get(seen_record.at_uri))
+            ],
+            columns=["username", "entity_name", "timestamp"],
+        )
 
         # Reposted posts are candidates too, so they surface even when their author is not followed.
         # The reposted post's own timestamp is not indexed so we use the earliest repost time.
@@ -101,7 +116,13 @@ class ChronofairFeed(AtprotoFeed):
         )
         users = Users(list(usernames))
 
-        return Poll(users=users, entities=entities, socials=socials, ratings=ratings)
+        return Poll(
+            users=users,
+            entities=entities,
+            socials=socials,
+            ratings=ratings,
+            past_recommendations=past_recommendations,
+        )
 
     async def get_feed(
         self, limit: int, cursor: str | None, requester_did: str | None
@@ -113,7 +134,10 @@ class ChronofairFeed(AtprotoFeed):
             # TODO try to return feed from cache (ttl ~1 minute), to avoid recomputing a new feed unnecessarily
             pass
 
-        followed_dids = await get_follows(requester_did)
+        followed_dids, seen_records = await asyncio.gather(
+            get_follows(requester_did),
+            db.get_records_seen_by_user(self.feed_key, did=requester_did),
+        )
         records = await db.get_records_by_posters(followed_dids)
         if not records:
             return self._skeleton([], None)
@@ -122,6 +146,7 @@ class ChronofairFeed(AtprotoFeed):
             records=records,
             requester_did=requester_did,
             followed_dids=followed_dids,
+            seen_records=seen_records,
         )
         feed_entities = self.recommender(
             poll=poll,
