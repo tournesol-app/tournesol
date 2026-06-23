@@ -48,8 +48,10 @@ def log_unexpected_task_exit(task: asyncio.Task):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+    )
 
     if not config.FEED_SERVER_RUN_TASKS_IN_LIFESPAN:
         yield

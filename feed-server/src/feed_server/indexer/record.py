@@ -74,4 +74,21 @@ class AtprotoCompactRecord:
 
     @property
     def dt(self):
-        return datetime.datetime.fromtimestamp(self.time_us / 1e6, tz=datetime.timezone.utc)
+        return datetime.datetime.fromtimestamp(self.time_us / 1e6, tz=datetime.UTC)
+
+
+@dataclass
+class AtprotoSeenRecord:
+    at_uri: str
+    time_us: int
+
+    @property
+    def dt(self):
+        return datetime.datetime.fromtimestamp(self.time_us / 1e6, tz=datetime.UTC)
+
+    def serialize(self):
+        return orjson.dumps(self)
+
+    @classmethod
+    def deserialize(cls, data: str):
+        return cls(**orjson.loads(data))

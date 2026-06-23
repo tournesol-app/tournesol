@@ -4,13 +4,14 @@ import os
 
 import redis.asyncio as redis
 
-from feed_server.indexer.record import AtprotoCompactRecord
+from feed_server.indexer.record import AtprotoCompactRecord, AtprotoSeenRecord
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 
 
 class RedisDb:
     POSTS_RETENTION_IN_DAYS = 3
+    SEEN_RETENTION_IN_DAYS = 7
 
     def __init__(self) -> None:
         self.redis_client = redis.from_url(REDIS_URL, decode_responses=True)
@@ -35,6 +36,10 @@ class RedisDb:
     @staticmethod
     def account_posts_key(did: str, date: datetime.date):
         return f"account:posts:{date.isoformat()}:{did}"
+
+    @staticmethod
+    def feed_posts_seen_key(feed_key: str, did: str, date: datetime.date):
+        return f"feed:seen:{feed_key}:{date.isoformat()}:{did}"
 
     @staticmethod
     def feed_posts_key(feed_key: str):
@@ -73,13 +78,27 @@ class RedisDb:
             items.extend(await self.redis_client_bytes.lrange(key, 0, -1))
         return [AtprotoCompactRecord.deserialize(it) for it in items]
 
-    async def get_records_by_posters(
-        self, poster_dids: list[str]
-    ) -> list[AtprotoCompactRecord]:
+    async def get_records_by_posters(self, poster_dids: list[str]) -> list[AtprotoCompactRecord]:
         records_per_poster = await asyncio.gather(
             *(self.get_records_by_poster(did) for did in poster_dids)
         )
         return [record for records in records_per_poster for record in records]
+
+    async def mark_record_as_seen(
+        self, feed_key: str, user_did: str, seen_record: AtprotoSeenRecord
+    ):
+        key = self.feed_posts_seen_key(feed_key, did=user_did, date=seen_record.dt.date())
+        await self.redis_client.lpush(key, seen_record.serialize())
+        await self.redis_client.expire(key, self.SEEN_RETENTION_IN_DAYS * 24 * 3600)
+
+    async def get_records_seen_by_user(self, feed_key: str, did: str) -> list[AtprotoSeenRecord]:
+        items = []
+        today = datetime.datetime.now(datetime.UTC).date()
+        for n in range(self.SEEN_RETENTION_IN_DAYS + 1):
+            day = today - datetime.timedelta(days=n)
+            key = self.feed_posts_seen_key(feed_key, did=did, date=day)
+            items.extend(await self.redis_client.lrange(key, 0, -1))
+        return [AtprotoSeenRecord.deserialize(it) for it in items]
 
 
 db = RedisDb()

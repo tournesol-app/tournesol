@@ -1,4 +1,5 @@
 import logging
+import time
 import uuid
 from typing import Annotated
 
@@ -6,11 +7,14 @@ from atproto_client.models import (
     AppBskyFeedGetFeedSkeleton,
     AppBskyFeedDescribeFeedGenerator,
     AppBskyFeedSendInteractions,
+    AppBskyFeedDefs,
 )
 from fastapi import APIRouter, Header, HTTPException, Query
+from feed_server.indexer.record import AtprotoSeenRecord
 from pydantic import ConfigDict
 
 from ..auth import get_requester_did
+from ..db import db
 from ..feeds import ALL_FEEDS
 from ..config import FEED_SERVER_DID
 
@@ -56,7 +60,25 @@ def describe_feed_generator() -> AppBskyFeedDescribeFeedGenerator.Response:
 @router.post("/xrpc/app.bsky.feed.sendInteractions")
 async def send_interactions(
     body: AppBskyFeedSendInteractions.Data,
+    authorization: Annotated[str | None, Header()] = None,
 ) -> AppBskyFeedSendInteractions.Response:
+    requester_did = get_requester_did(authorization)
+    if body.feed:
+        feed_rkey = body.feed.split("/")[-1]
+    else:
+        feed_rkey = "none"
+
+    time_us_now = time.time_ns() // 1000
     for interaction in body.interactions:
-        logger.info("Received feed interaction: %s", interaction)
+        logger.info("Received interaction on feed %s: %s", feed_rkey, interaction)
+        if (
+            requester_did
+            and interaction.event == AppBskyFeedDefs.InteractionSeen
+            and interaction.item
+        ):
+            await db.mark_record_as_seen(
+                feed_rkey,
+                user_did=requester_did,
+                seen_record=AtprotoSeenRecord(at_uri=interaction.item, time_us=time_us_now),
+            )
     return AppBskyFeedSendInteractions.Response()
