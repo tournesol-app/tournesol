@@ -198,7 +198,19 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
             )
             return queryset.order_by("-search_score", "-pk")
 
+        if filters["ordering"] == "most_recent":
+            return self._sort_most_recent(queryset)
+
         return queryset.order_by("-total_score", "-pk")
+
+    def _sort_most_recent(self, queryset):
+        poll = self.poll_from_url
+        date_field = poll.entity_cls.get_filter_date_field()
+        return queryset.order_by(
+            F(date_field).desc(nulls_last=True),
+            "-total_score",
+            "-pk",
+        )
 
     def _build_criteria_weight_condition(
         self, request, poll: Poll, when="criteria_scores__criteria"
