@@ -17,6 +17,10 @@ if [[ "${2:-""}" == "fast" ]]
 then
   echo "Using setup-fast.yaml"
   SETUP_FILE="setup-fast.yml"
+elif [[ "${2:-""}" == "discord" ]]
+then
+  echo "Using setup-discord.yaml"
+  SETUP_FILE="setup-discord.yml"
 else
   echo "Using setup.yaml"
   SETUP_FILE="setup.yml"
@@ -53,6 +57,7 @@ ansible-playbook -i inventory.yml -l "$ANSIBLE_HOST" "$SETUP_FILE" \
   -e "consumer_secret_twitterbot_en=${TWBOT_CONSUMER_SECRET_EN:-""}" \
   -e "access_token_twitterbot_en=${TWBOT_ACCESS_TOKEN_EN:-""}" \
   -e "access_token_secret_twitterbot_en=${TWBOT_ACCESS_TOKEN_SECRET_EN:-""}" \
+  -e "discord_bot_token=${DISCORD_BOT_TOKEN:-""}" \
   -e "discord_infra_alert_webhook=${DISCORD_INFRA_ALERT_WEBHOOK:-""}" \
   -e "discord_infra_alert_private_webhook=${DISCORD_INFRA_ALERT_PRIVATE_WEBHOOK:-""}" \
   -e "discord_twitter_webhook=${DISCORD_TWITTER_WEBHOOK:-""}" \
