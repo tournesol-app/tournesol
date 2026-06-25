@@ -67,10 +67,11 @@ class PostActions(ThreadedPollFunction):
             default_select=SelectLast("timestamp"),
         ).add_columns(value=1, left_unc=0, right_unc=0, criterion="post")
         scores.keynames.append("criterion")
+        entity_names_with_post = set(scores("entity_name"))
 
         latest = dict()
         for name, timestamp, lifetime, action in reactions:
-            if "post" in scores.filters(entity_name=name)("criterion"):
+            if name in entity_names_with_post:
                 continue
             if name not in latest or timestamp > latest[name][1]:
                 latest[name] = name, timestamp, lifetime, action, self.action_weights[action]
