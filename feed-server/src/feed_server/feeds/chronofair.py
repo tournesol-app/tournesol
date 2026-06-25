@@ -47,13 +47,27 @@ class ChronofairFeed(AtprotoFeed):
         ]
 
         candidate_entities: dict[str, dict] = {}
-        indexed_post_cids: set[str] = set()
         uri_to_cid: dict[str, str] = {}
 
         for record in posts:
-            indexed_post_cids.add(record.cid)
             candidate_entities[record.cid] = dict(author=record.did, timestamp=record.time_us / 1e6)
             uri_to_cid[record.at_uri] = record.cid
+
+        # Reposted posts are candidates too, so they surface even when their author is not followed.
+        # The reposted post's own timestamp is not indexed so we use the earliest repost time.
+        reposts.sort(key=lambda r: r.time_us)
+        for record in reposts:
+            subject_cid = record.repost_subject_cid
+            subject_uri = record.repost_subject_uri
+            assert subject_cid is not None
+            assert subject_uri is not None
+            if subject_cid not in candidate_entities:
+                repost_time = record.time_us / 1e6
+                candidate_entities[subject_cid] = dict(
+                    author=_author_did_from_at_uri(subject_uri),
+                    timestamp=repost_time,
+                )
+                uri_to_cid[subject_uri] = subject_cid
 
         past_recommendations = PastRecommendations(
             [
@@ -63,22 +77,6 @@ class ChronofairFeed(AtprotoFeed):
             ],
             columns=["username", "entity_name", "timestamp"],
         )
-
-        # Reposted posts are candidates too, so they surface even when their author is not followed.
-        # The reposted post's own timestamp is not indexed so we use the earliest repost time.
-        for record in reposts:
-            subject_cid = record.repost_subject_cid
-            if subject_cid in indexed_post_cids:
-                continue
-            repost_time = record.time_us / 1e6
-            entity = candidate_entities.get(subject_cid)
-            if entity is None:
-                candidate_entities[subject_cid] = dict(
-                    author=_author_did_from_at_uri(record.repost_subject_uri),
-                    timestamp=repost_time,
-                )
-            elif repost_time < entity["timestamp"]:
-                entity["timestamp"] = repost_time
 
         entities = Entities(
             [
