@@ -34,4 +34,4 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 
 [tool.uv.sources]
-solidago = { git = "https://github.com/tournesol-app/tournesol.git", subdirectory = "solidago", rev = "313a1cb" }
+solidago = { git = "https://github.com/tournesol-app/tournesol.git", subdirectory = "solidago", rev = "d32cf89e7" }
