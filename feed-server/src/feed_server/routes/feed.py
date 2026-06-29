@@ -34,7 +34,9 @@ async def get_feed_skeleton(
     feed = ALL_FEEDS.get(rkey)
     if feed is None:
         raise HTTPException(404, "Unknown feed")
-    requester_did = get_requester_did(authorization)
+    requester_did = await get_requester_did(
+        authorization, lexicon_method="app.bsky.feed.getFeedSkeleton"
+    )
     logger.info("Feed %s requested by %s", rkey, requester_did)
     skeleton = await feed.get_feed(
         limit=params.limit or 50, cursor=params.cursor, requester_did=requester_did
@@ -61,7 +63,9 @@ async def send_interactions(
     body: AppBskyFeedSendInteractions.Data,
     authorization: Annotated[str | None, Header()] = None,
 ) -> AppBskyFeedSendInteractions.Response:
-    requester_did = get_requester_did(authorization)
+    requester_did = await get_requester_did(
+        authorization, lexicon_method="app.bsky.feed.sendInteractions"
+    )
     if body.feed:
         feed_rkey = body.feed.split("/")[-1]
     else:
