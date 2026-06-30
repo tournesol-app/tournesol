@@ -198,7 +198,7 @@ class NamedObjects(Generic[Object]):
         if names is not None:
             names = names if isinstance(names, pd.Index) else list(names)
             return type(self)(self.df.loc[names]).filters(None, **kwargs)
-        if not kwargs:
+        if not kwargs or len(self.df) == 0:
             return self
         key, value = next(iter(kwargs.items()))
         del kwargs[key]
@@ -217,7 +217,7 @@ class NamedObjects(Generic[Object]):
         if names is not None:
             remaining_names = [n for n in self.names() if n not in names]
             return type(self)(self.df.loc[remaining_names]).excludes(None, **kwargs)
-        if not kwargs:
+        if not kwargs or len(self.df) == 0:
             return self
         key, value = next(iter(kwargs.items()))
         del kwargs[key]
