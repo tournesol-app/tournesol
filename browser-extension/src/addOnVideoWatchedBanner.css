@@ -1,0 +1,60 @@
+#ts-on-video-watched-banner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background-color: #f3bd0020;
+
+  font-family: 'Roboto', 'Noto', sans-serif;
+  font-size: 16px;
+  color: var(--ts-yt-text-primary);
+}
+
+.ts-on-video-watched-choices {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
+button.ts-on-video-watched-choice {
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  font-family: 'Roboto', 'Noto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #0f0f0f;
+  background: #ffc800;
+}
+
+button.ts-on-video-watched-choice:hover {
+  background: #b28c00;
+}
+
+button.ts-on-video-watched-choice.ts-on-video-watched-choice-do-nothing {
+  color: var(--ts-yt-text-primary);
+  background: transparent;
+  border: 1px solid var(--ts-yt-text-secondary);
+}
+
+button.ts-on-video-watched-choice.ts-on-video-watched-choice-do-nothing:hover {
+  background: #f3bd0040;
+}
+
+button.ts-on-video-watched-choice:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
