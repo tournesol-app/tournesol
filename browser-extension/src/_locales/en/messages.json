@@ -177,6 +177,22 @@
     "message": "Watch on Tournesol",
     "description": "Label of the button displayed on video pages."
   },
+  "onVideoWatchedQuestion": {
+    "message": "What should the Tournesol extension do when you watch a video on YouTube?",
+    "description": "Question displayed on video pages while the user has not chosen what the extension should do when a video is watched."
+  },
+  "onVideoWatchedMarkAsWatched": {
+    "message": "Mark as watched",
+    "description": "Choice offered by the on-video-watched banner: mark the watched videos as watched on Tournesol."
+  },
+  "onVideoWatchedMarkAsWatchedAndRateLater": {
+    "message": "Mark as watched and rate later",
+    "description": "Choice offered by the on-video-watched banner: mark the watched videos as watched and add them to the rate-later list."
+  },
+  "onVideoWatchedDoNothing": {
+    "message": "Do nothing",
+    "description": "Choice offered by the on-video-watched banner: keep the default behavior and stop displaying the banner."
+  },
   "rateLaterHistoryImportButton": {
     "message": "Import history to Tournesol",
     "description": "Label of the button displayed on the YouTube history page to import the history into your 'rate later' list."

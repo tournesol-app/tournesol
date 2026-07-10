@@ -39,6 +39,14 @@ const onVideoWatchedActions = {
 
 document.addEventListener('yt-navigate-finish', onNavigateFinish);
 
+// Dispatched by addOnVideoWatchedBanner.js when the user chooses a value
+// for the `extension__on_video_watched` setting. Re-evaluating the setting
+// allows to track the current video without waiting for the next navigation.
+document.addEventListener(
+  'tournesol:onVideoWatchedSettingSaved',
+  onNavigateFinish
+);
+
 function onNavigateFinish() {
   if (cleanupWatchProgressTracking) {
     cleanupWatchProgressTracking();

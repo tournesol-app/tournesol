@@ -10,8 +10,10 @@ import {
   getUserProof,
   getRecommendationsLanguagesAuthenticated,
   getSingleSetting,
+  getUserSettings,
   getVideoStatistics,
   updateContributorRatingEntitySeen,
+  updateSingleSetting,
 } from './utils.js';
 
 import { frontendHost } from './config.js';
@@ -176,6 +178,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.message == 'getVideoStatistics') {
     getVideoStatistics(request.video_id).then(sendResponse);
+    return true;
+  }
+
+  if (request.message === 'getUserSettings') {
+    getUserSettings().then(sendResponse);
+    return true;
+  }
+
+  if (request.message === 'updateSetting') {
+    updateSingleSetting(request.name, request.value).then(sendResponse);
     return true;
   }
 

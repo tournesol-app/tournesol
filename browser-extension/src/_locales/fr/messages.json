@@ -175,6 +175,22 @@
     "message": "Regarder sur Tournesol",
     "description": "Label du bouton affiché sur les pages de vidéo."
   },
+  "onVideoWatchedQuestion": {
+    "message": "Que doit faire l'extension Tournesol quand vous regardez une vidéo sur YouTube ?",
+    "description": "Question affichée sur les pages de vidéo tant que l'utilisateur n'a pas choisi ce que l'extension doit faire quand une vidéo est regardée."
+  },
+  "onVideoWatchedMarkAsWatched": {
+    "message": "Marquer comme vue",
+    "description": "Choix proposé par la bannière on-video-watched : marquer les vidéos regardées comme vues sur Tournesol."
+  },
+  "onVideoWatchedMarkAsWatchedAndRateLater": {
+    "message": "Marquer comme vue et comparer plus tard",
+    "description": "Choix proposé par la bannière on-video-watched : marquer les vidéos regardées comme vues et les ajouter à la liste à comparer plus tard."
+  },
+  "onVideoWatchedDoNothing": {
+    "message": "Ne rien faire",
+    "description": "Choix proposé par la bannière on-video-watched : conserver le comportement par défaut et ne plus afficher la bannière."
+  },
   "rateLaterHistoryImportButton": {
     "message": "Importer l'historique dans Tournesol",
     "description": "Label du  bouton affiché sur l'historique YouTube pour l'importer dans les vidéos à comparer plus tard."

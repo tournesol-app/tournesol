@@ -171,6 +171,15 @@ export const getUserProof = async (keyword) => {
   return { success: false };
 };
 
+export const updateSingleSetting = async (name, value, scope = 'videos') => {
+  const response = await fetchTournesolApi('users/me/settings/', {
+    method: 'PATCH',
+    data: { [scope]: { [name]: value } },
+  });
+
+  return { success: Boolean(response && response.ok) };
+};
+
 export const getUserSettings = async () => {
   const userSettingsResponse = await fetchTournesolApi('users/me/settings/');
 
