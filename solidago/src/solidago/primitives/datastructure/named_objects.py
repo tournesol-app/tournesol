@@ -17,13 +17,17 @@ Object = TypeVar("Object")
 
 class Contains:
     def __init__(self, value: str | Iterable[str]):
-        self.value = value if isinstance(value, str) else set(value)
+        if isinstance(value, str):
+            self.value = value
+            self.single_value = True
+        else:
+            self.value = set(value)
+            self.single_value = False
 
     def __call__(self, t: Iterable) -> bool:
-        assert isinstance(t, Iterable)
-        if isinstance(self.value, str):
+        if self.single_value:
             return self.value in t
-        return bool(self.value & set(t))
+        return bool(self.value & set(t))  # type: ignore
 
     def __repr__(self) -> str:
         return f"Contains({self.value})"
@@ -194,7 +198,7 @@ class NamedObjects(Generic[Object]):
         if names is not None:
             names = names if isinstance(names, pd.Index) else list(names)
             return type(self)(self.df.loc[names]).filters(None, **kwargs)
-        if not kwargs:
+        if not kwargs or len(self.df) == 0:
             return self
         key, value = next(iter(kwargs.items()))
         del kwargs[key]
@@ -213,7 +217,7 @@ class NamedObjects(Generic[Object]):
         if names is not None:
             remaining_names = [n for n in self.names() if n not in names]
             return type(self)(self.df.loc[remaining_names]).excludes(None, **kwargs)
-        if not kwargs:
+        if not kwargs or len(self.df) == 0:
             return self
         key, value = next(iter(kwargs.items()))
         del kwargs[key]

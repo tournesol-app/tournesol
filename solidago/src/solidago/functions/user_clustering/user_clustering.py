@@ -1,8 +1,5 @@
 from typing import Iterable
 from numpy.typing import NDArray
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 
 import numpy as np, pandas as pd
 
@@ -26,6 +23,8 @@ class UserClustering(PollFunction):
         return users
 
     def cluster(self, users: Users, entities: Entities, criterion: str, user_models: UserModels) -> Users:
+        from sklearn.decomposition import PCA
+
         matrix, _, _ = user_models.to_matrices(users, entities, criterion)
         if self.pca_dimension:
             matrix = PCA(n_components=self.pca_dimension).fit_transform(matrix)
@@ -36,6 +35,8 @@ class UserClustering(PollFunction):
         matrix: NDArray, 
         n_clusters: int | Iterable | None=None,
     ) -> NDArray[np.int64]:
+        from sklearn.cluster import KMeans
+
         n_clusters = n_clusters or self.n_clusters
         if not isinstance(n_clusters, int):
             assert isinstance(n_clusters, Iterable)
@@ -71,6 +72,8 @@ class UserClustering(PollFunction):
         clusters: list[set], 
         cluster_assignment: list[int] | NDArray[np.int64],
     ) -> float:
+        from sklearn.metrics import silhouette_score
+
         silhouette = (
             silhouette_score(matrix, np.array(cluster_assignment))
             if len(np.unique(cluster_assignment)) > 1

@@ -1,4 +1,4 @@
-from solidago import *
+from solidago.experiments import Experiment
 
 def test_simple():
     source = "tests/experiments/simple.yaml"

@@ -1,6 +1,10 @@
-from solidago import *
+import numpy as np
+from numpy.typing import NDArray
+
+from solidago import Poll
+from solidago.experiments import Experiment
 from solidago.primitives.time import timeit
-from solidago.functions.preference_learning.gbt.root_law import *
+# from solidago.functions.preference_learning.gbt.root_law import *
 
 import logging.config
 logging.config.fileConfig("tests/info.conf")

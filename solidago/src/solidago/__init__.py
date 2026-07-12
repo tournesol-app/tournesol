@@ -9,7 +9,6 @@ from solidago.primitives.load import load
 from solidago.poll import *
 from solidago.functions import PollFunction, Sequential, Identity
 from solidago.generators import Generator
-from solidago.experiments import Experiment
 
 
 __all__ = [
@@ -21,5 +20,5 @@ __all__ = [
     "Socials", "PublicSettings",
     "Rating", "Ratings", "Comparison", "Comparisons",
     "VotingRights", "Score", "Scores", "ScoringModel", "UserModels", "PastRecommendations",
-    "Poll", "TournesolExport", "Experiment",
+    "Poll", "TournesolExport",
 ]

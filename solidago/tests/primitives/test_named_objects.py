@@ -2,7 +2,11 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 
-from solidago.primitives.datastructure.named_objects import SeriesNamedObjects
+from solidago.primitives.datastructure.named_objects import (
+    SeriesNamedObjects,
+    Contains,
+    After,
+)
 
 
 def test_objects():
@@ -53,3 +57,23 @@ def test_objects():
     assert len(list(objects)) == 4
     assert len(list(objects.iter_pairs(False))) == 6
     assert len(list(objects.iter_pairs(True))) == 6
+
+
+def test_chained_filters_on_emptied_table_preserve_columns():
+    # A table reduced to zero rows by one filter must keep its columns so the
+    # next filter can still find the column it filters on (previously the second
+    # filter raised KeyError because the mask on an empty column dropped them).
+    columns = ["name", "authors", "timestamp"]
+    objects = SeriesNamedObjects([["object_1", ["alice"], 5]], columns=columns)
+
+    emptied = objects.filters([])
+    assert len(emptied) == 0
+    assert emptied.columns == ["authors", "timestamp"]
+
+    twice_filtered = emptied.filters(authors=Contains("nobody"), timestamp=After(0))
+    assert len(twice_filtered) == 0
+    assert twice_filtered.columns == ["authors", "timestamp"]
+
+    twice_excluded = emptied.excludes(authors=Contains("nobody"), timestamp=After(0))
+    assert len(twice_excluded) == 0
+    assert twice_excluded.columns == ["authors", "timestamp"]

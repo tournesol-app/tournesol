@@ -18,15 +18,16 @@ class Filtering(PollFunction):
 
     def fn(self, poll: Poll) -> Poll:
         return Poll(
-            self._get_users(poll.users),
-            self._get_entities(poll.entities),
-            self._get_socials(poll.socials),
-            self._get_public_settings(poll.public_settings),
-            self._get_ratings(poll.ratings),
-            self._get_comparisons(poll.comparisons),
-            self._get_voting_rights(poll.voting_rights),
-            self._get_user_models(poll.user_models),
-            self._get_global_model(poll.global_model),
+            users=self._get_users(poll.users),
+            entities=self._get_entities(poll.entities),
+            socials=self._get_socials(poll.socials),
+            public_settings=self._get_public_settings(poll.public_settings),
+            ratings=self._get_ratings(poll.ratings),
+            comparisons=self._get_comparisons(poll.comparisons),
+            voting_rights=self._get_voting_rights(poll.voting_rights),
+            user_models=self._get_user_models(poll.user_models),
+            global_model=self._get_global_model(poll.global_model),
+            past_recommendations=self._get_past_recommendations(poll.past_recommendations),
         )
 
     def _get_users(self, users: Users) -> Users:
@@ -152,3 +153,11 @@ class Filtering(PollFunction):
             Multipliers(multipliers_df),
             Translations(translations_df),
         )
+
+    def _get_past_recommendations(self, past_recos: PastRecommendations) -> PastRecommendations:
+        df = past_recos.df
+        if self.usernames is not None:
+            df = df[df.username.isin(self.usernames)]
+        if self.entity_names is not None:
+            df = df[df.entity_name.isin(self.entity_names)]
+        return PastRecommendations(df)

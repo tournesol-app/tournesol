@@ -1,3 +1,6 @@
+from functools import reduce
+import operator
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -30,15 +33,20 @@ class EntityCriterionWise(ThreadedPollFunction):
     ) -> tuple[NDArray, NDArray, NDArray, NDArray]:
         assert isinstance(nonargs, Scores) and "username" in nonargs.keynames, nonargs
         (entity, criterion), scores = variable, nonargs
-        vrights = list()
-        for score in scores:
-            kwargs = dict(username=score["username"])
-            if "entity_name" in voting_rights.keynames:
-                kwargs["entity_name"] = entity.name
-            if "criterion" in voting_rights.keynames:
-                kwargs["criterion"] = criterion
-            vright = voting_rights.get(**kwargs)["voting_right"]
-            vrights.append(vright)
+        voting_rights_df = voting_rights.df
+        filters = []
+        if "entity_name" in voting_rights.keynames:
+            filters.append(voting_rights_df["entity_name"] == entity.name)
+        if "criterion" in voting_rights.keynames:
+            filters.append(voting_rights_df["criterion"] == criterion)
+        if filters:
+            mask = reduce(operator.__and__, filters)
+            voting_rights_df = voting_rights_df[mask]
+        voting_right_by_username = dict(zip(voting_rights_df["username"], voting_rights_df["voting_right"]))
+        vrights = [
+            voting_right_by_username.get(username, 0.)
+            for username in scores("username")
+        ]
         values, left_uncs, right_uncs = scores.value, scores.left_unc, scores.right_unc
         return np.array(vrights, dtype=np.float64), values, left_uncs, right_uncs
 
@@ -47,9 +55,10 @@ class EntityCriterionWise(ThreadedPollFunction):
         nonargs_list: list, 
         results: list, args_lists: list
     ) -> ScoringModel: # type: ignore
-        global_model = ScoringModel(note=type(self).note)
-        for (entity, criterion), (value, left, right) in zip(variables, results):
-            score = Score((value, left, right))
-            global_model.directs.set(score, entity_name=entity.name, criterion=criterion)
-        return global_model
+        rows = [
+            (entity.name, criterion, value, left, right)
+            for (entity, criterion), (value, left, right) in zip(variables, results)
+        ]
+        directs = DirectScores(rows, columns=["entity_name", "criterion", "value", "left_unc", "right_unc"])
+        return ScoringModel(directs=directs, note=self.note)
     
