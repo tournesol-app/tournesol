@@ -99,7 +99,7 @@ class LBFGSGeneralizedBradleyTerry(GeneralizedBradleyTerry):
         """ Computes the scores given comparisons """
         values = self.init_values(entities, init)
         entity_names = list(entities.names())
-        comparisons = comparisons.filters(left_name=entity_names, right_names=entity_names)
+        comparisons = comparisons.filters(left_name=entity_names, right_name=entity_names)
         left_indices = [entities.name2index(name) for name in comparisons("left_name")]
         right_indices = [entities.name2index(name) for name in comparisons("right_name")]
         comparison_values = comparisons("value").astype(np.float64)
