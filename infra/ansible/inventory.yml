@@ -229,6 +229,19 @@ all:
           export_backups_bucket_name: tournesol-app-backups
           export_backups_path: prod
 
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
-        ansible_ssh_pipelining: true
+    feed_server:
+      hosts:
+        # VM for local development
+        tournesol-feed-vm:
+          ansible_host: tournesol-feed-vm
+          machine_name: tournesol-feed
+          feed_server_domain_name: tournesol-feed-vm
+          upgrade_packages: true
+
+        # tournesol-feed-prod:
+        #   ansible_host: feeds.tournesol.app
+        #   machine_name: tournesol-feed
+        #   feed_server_domain_name: feeds.tournesol.app
+        #   upgrade_packages: false
+        #   letsencrypt_email: tournesol.application@gmail.com
+        #   feed_server_web_workers: 4

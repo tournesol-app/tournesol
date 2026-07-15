@@ -1,3 +1,15 @@
+- name: Map the tournesol domains to loopback
+  blockinfile:
+    path: "{{ item }}"
+    create: true
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: tournesol domains"
+    block: |
+
+      127.0.1.1    {{domain_name}} {{api_domain_name}}
+  loop:
+    - /etc/hosts
+    - /etc/cloud/templates/hosts.debian.tmpl  # Template used by cloud-init on startup
+
 - name: Install Python and virtualenv
   apt:
     name:
@@ -208,6 +220,42 @@
     when: find_snippet.matched == 0
   notify:
     - Reload Nginx
+
+- name: Check if certificates for frontend are already present
+  stat:
+    path: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
+  register: cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if certificates for frontend are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and cert_file.stat.exists == False
+
+- name: Run Certbot for frontend
+  shell:
+    cmd: "certbot certonly --standalone -d {{domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
+
+- name: Check if certificates for backend are already present
+  stat:
+    path: /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem
+  register: api_cert_file
+  when: letsencrypt_email is defined
+
+- name: Stop Nginx if certificates for backend are not present
+  systemd:
+    name: nginx
+    state: stopped
+  when: letsencrypt_email is defined and api_cert_file.stat.exists == False
+
+- name: Run Certbot for backend
+  shell:
+    cmd: "certbot certonly --standalone -d {{api_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
+    creates: /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem
+  when: letsencrypt_email is defined
 
 - name: Copy Nginx configuration
   template:
