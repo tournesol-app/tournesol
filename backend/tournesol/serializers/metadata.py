@@ -1,11 +1,13 @@
 from rest_framework import serializers
 
-from tournesol.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.utils.constants import BILIBILI_VIDEO_ID_REGEX, YOUTUBE_VIDEO_ID_REGEX
 
 
 class VideoMetadata(serializers.Serializer):
     source = serializers.CharField(allow_blank=True, default="")
-    video_id = serializers.RegexField(rf"^({YOUTUBE_VIDEO_ID_REGEX})$")
+    video_id = serializers.RegexField(
+        rf"^({YOUTUBE_VIDEO_ID_REGEX}|{BILIBILI_VIDEO_ID_REGEX})$"
+    )
     name = serializers.CharField(allow_blank=True, default="")
     description = serializers.CharField(allow_blank=True, default="")
     uploader = serializers.CharField(allow_blank=True, default="")
@@ -20,6 +22,12 @@ class VideoMetadata(serializers.Serializer):
     language = serializers.CharField(allow_null=True, default=None)
     tags = serializers.ListField(child=serializers.CharField(), default=list)
     is_unlisted = serializers.BooleanField(default=False)
+    thumbnail_url = serializers.URLField(
+        allow_null=True,
+        default=None,
+        help_text="Thumbnail URL. Remains null for sources whose thumbnail"
+        " URLs can be derived from the video id (e.g. YouTube).",
+    )
 
 
 class CandidateMetadata(serializers.Serializer):

@@ -7,7 +7,7 @@ from django.db.models.fields.json import KeyTextTransform
 from django.utils import timezone
 
 from tournesol.serializers.metadata import VideoMetadata
-from tournesol.utils.constants import YOUTUBE_VIDEO_ID_REGEX
+from tournesol.utils.constants import BILIBILI_VIDEO_ID_REGEX, YOUTUBE_VIDEO_ID_REGEX
 
 from .base import UID_DELIMITER, EntityType
 
@@ -19,12 +19,19 @@ YOUTUBE_UID_REGEX = (
     rf"({YOUTUBE_UID_NAMESPACE})({UID_DELIMITER})({YOUTUBE_VIDEO_ID_REGEX})"
 )
 
+BILIBILI_UID_NAMESPACE = "bili"
+BILIBILI_UID_REGEX = (
+    rf"({BILIBILI_UID_NAMESPACE})({UID_DELIMITER})({BILIBILI_VIDEO_ID_REGEX})"
+)
+
 
 class VideoEntity(EntityType):
     """
     Video entity type
 
-    Handles the metadata specific to videos, retrieved from the YouTube API.
+    Handles the metadata specific to videos, retrieved from the API of the
+    platform hosting the video (YouTube or Bilibili, depending on the UID
+    namespace).
     """
 
     name = TYPE_VIDEO
@@ -54,14 +61,22 @@ class VideoEntity(EntityType):
     def get_uid_regex(cls, namespace: str) -> str:
         if namespace == YOUTUBE_UID_NAMESPACE:
             return YOUTUBE_UID_REGEX
+        if namespace == BILIBILI_UID_NAMESPACE:
+            return BILIBILI_UID_REGEX
         return ""
 
     def update_metadata_field(self, compute_language=False, **kwargs) -> None:
         # pylint: disable=import-outside-toplevel
+        from tournesol.utils.api_bilibili import get_bilibili_video_metadata
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
 
+        if self.instance.uid.startswith(f"{BILIBILI_UID_NAMESPACE}{UID_DELIMITER}"):
+            get_metadata = get_bilibili_video_metadata
+        else:
+            get_metadata = get_video_metadata
+
         try:
-            metadata = get_video_metadata(
+            metadata = get_metadata(
                 self.instance.metadata["video_id"], compute_language=compute_language
             )
         except VideoNotFound:

@@ -275,10 +275,10 @@ class RelatedEntitySerializer(EntitySerializer):
         except ObjectDoesNotExist as error:
             created = False
             if self.context["poll"].entity_type == VideoEntity.name:
-                # A video entity can be created dynamically from a YouTube video id
-                video_id = uid.split(UID_DELIMITER)[1]
+                # A video entity can be created dynamically from its platform video id
+                namespace, video_id = uid.split(UID_DELIMITER, 1)
                 try:
-                    entity = Entity.create_from_video_id(video_id)
+                    entity = Entity.create_from_video_id(video_id, namespace=namespace)
                     attrs["pk"] = entity.pk
                     created = True
                 except VideoNotFound:

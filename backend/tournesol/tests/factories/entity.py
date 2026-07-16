@@ -88,6 +88,23 @@ class VideoFactory(EntityFactory):
     uid = factory.LazyAttribute(lambda e: f"yt:{e.metadata['video_id']}")
 
 
+BILIBILI_BASE58_SYMBOLS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
+
+def generate_bilibili_id():
+    return "BV" + "".join(random.choices(BILIBILI_BASE58_SYMBOLS, k=10))
+
+
+class BilibiliVideoMetadataFactory(VideoMetadataFactory):
+    source = "bilibili"
+    video_id = factory.LazyFunction(generate_bilibili_id)
+
+
+class BilibiliVideoFactory(VideoFactory):
+    metadata = factory.SubFactory(BilibiliVideoMetadataFactory)
+    uid = factory.LazyAttribute(lambda e: f"bili:{e.metadata['video_id']}")
+
+
 class VideoCriteriaScoreFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EntityCriteriaScore

@@ -1339,6 +1339,35 @@ class ComparisonApiTestCase(TestCase):
         # No additional call to YouTube API should be visible.
         self.assertEqual(len(mock_get_video_metadata.mock_calls), 2)
 
+    @patch("tournesol.utils.api_bilibili.get_bilibili_video_metadata")
+    def test_comparison_creation_with_bilibili_video(self, mock_get_bilibili_video_metadata):
+        """
+        A comparison involving a non-existing Bilibili video should create
+        the entity dynamically, using the Bilibili API to fetch its metadata.
+        """
+        mock_get_bilibili_video_metadata.return_value = {
+            "source": "bilibili",
+            "name": "video title",
+        }
+        self.client.force_authenticate(self.user)
+
+        bilibili_uid = "bili:BV1GJ411x7h7"
+        data = {
+            "entity_a": {"uid": bilibili_uid},
+            "entity_b": {"uid": self._uid_01},
+            "criteria_scores": [
+                {"criteria": "largely_recommended", "score": 10, "score_max": 10, "weight": 10}
+            ],
+        }
+        response = self.client.post(self.comparisons_base_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+
+        mock_get_bilibili_video_metadata.assert_called_once_with("BV1GJ411x7h7")
+        entity = Entity.objects.get(uid=bilibili_uid)
+        self.assertEqual(entity.type, "video")
+        self.assertEqual(entity.metadata["source"], "bilibili")
+        self.assertEqual(entity.metadata["name"], "video title")
+
     def test_invalid_criteria_in_comparison(self):
         self.client.force_authenticate(self.user)
         data = deepcopy(self.non_existing_comparison)

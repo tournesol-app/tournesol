@@ -21,7 +21,7 @@ from django.utils.html import format_html
 
 from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
-from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
+from tournesol.entities.video import BILIBILI_UID_NAMESPACE, TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT, RateLater
 from tournesol.serializers.metadata import VideoMetadata
@@ -321,7 +321,7 @@ class Entity(models.Model):
             return None
 
         video_uri = urljoin(
-            settings.TOURNESOL_MAIN_URL, f"entities/yt:{self.video_id}"
+            settings.TOURNESOL_MAIN_URL, f"entities/{self.uid}"
         )
         return format_html('<a href="{}" target="_blank">Play ▶</a>', video_uri)
 
@@ -359,17 +359,23 @@ class Entity(models.Model):
         return criteria_distributions
 
     @classmethod
-    def create_from_video_id(cls, video_id, fetch_metadata=True):
+    def create_from_video_id(cls, video_id, fetch_metadata=True, namespace=YOUTUBE_UID_NAMESPACE):
         # pylint: disable=import-outside-toplevel
+        from tournesol.utils.api_bilibili import get_bilibili_video_metadata
         from tournesol.utils.api_youtube import VideoNotFound, get_video_metadata
+
+        if namespace == BILIBILI_UID_NAMESPACE:
+            get_metadata = get_bilibili_video_metadata
+        else:
+            get_metadata = get_video_metadata
 
         last_metadata_request_at = None
         if fetch_metadata:
             last_metadata_request_at = timezone.now()
             try:
-                extra_data = get_video_metadata(video_id)
+                extra_data = get_metadata(video_id)
             except VideoNotFound:
-                logging.warning("Failed to fetch YT metadata about %s", video_id)
+                logging.warning("Failed to fetch metadata about %s", video_id)
                 raise
         else:
             extra_data = {}
@@ -391,18 +397,18 @@ class Entity(models.Model):
         try:
             return cls.objects.create(
                 type=TYPE_VIDEO,
-                uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}",
+                uid=f"{namespace}{UID_DELIMITER}{video_id}",
                 metadata=metadata,
                 metadata_timestamp=timezone.now(),
                 last_metadata_request_at=last_metadata_request_at,
             )
         except IntegrityError:
             # A concurrent request may have created the video
-            return cls.get_from_video_id(video_id)
+            return cls.get_from_video_id(video_id, namespace=namespace)
 
     @classmethod
-    def get_from_video_id(cls, video_id):
-        return cls.objects.get(uid=f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{video_id}")
+    def get_from_video_id(cls, video_id, namespace=YOUTUBE_UID_NAMESPACE):
+        return cls.objects.get(uid=f"{namespace}{UID_DELIMITER}{video_id}")
 
     def clean(self):
         # An empty dict is considered as an empty value for JSONField,
