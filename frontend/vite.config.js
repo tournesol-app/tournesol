@@ -10,18 +10,18 @@ export default defineConfig(() => {
       },
     },
     envPrefix: "REACT_APP_",
+    // Vite 8's Rolldown/Oxc pipeline resolves default imports from CommonJS
+    // modules the way Node's ESM does, which differs from the esbuild behavior
+    // our code was written against (e.g. `import storage from
+    // 'redux-persist/lib/storage'` now yields the module namespace instead of
+    // its `.default`). This flag keeps the previous interop until those imports
+    // are migrated to the packages' ESM entry points.
+    legacy: {
+      inconsistentCjsInterop: true,
+    },
     build: {
       outDir: 'build',
       target: "es2015",
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // React hooks are bundled in a separate bundle to solve warnings
-            // about circular dependencies with the default Vite config.
-            "hooks": ["src/hooks"]
-          }
-        }
-      }
     },
     plugins: [react()],
     server: {
@@ -35,7 +35,7 @@ export default defineConfig(() => {
       clearMocks: true,
       deps: {
         optimizer: {
-          web: {
+          client: {
             enabled: true,
             // Include all MUI icons in the test bundle to prevent Vitest from loading
             // them individually, which significantly slows down unit test collection.
