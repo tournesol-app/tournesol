@@ -10,15 +10,6 @@ export default defineConfig(() => {
       },
     },
     envPrefix: "REACT_APP_",
-    // Vite 8's Rolldown/Oxc pipeline resolves default imports from CommonJS
-    // modules the way Node's ESM does, which differs from the esbuild behavior
-    // our code was written against (e.g. `import storage from
-    // 'redux-persist/lib/storage'` now yields the module namespace instead of
-    // its `.default`). This flag keeps the previous interop until those imports
-    // are migrated to the packages' ESM entry points.
-    legacy: {
-      inconsistentCjsInterop: true,
-    },
     build: {
       outDir: 'build',
       target: "es2015",
