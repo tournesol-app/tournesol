@@ -17,13 +17,13 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { combineReducers, createStore } from 'redux';
 
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
-import { combineReducers, createStore } from 'redux';
 import loginReducer, { initialState } from '../login/loginSlice';
-import { Provider } from 'react-redux';
 
 import SearchFilter from './SearchFilter';
 
@@ -172,7 +172,7 @@ describe('Filters feature', () => {
     } else if (action === 'remove') {
       const buttons = within(autocomplete).getAllByRole('button');
       const button = buttons.find((b) => b.textContent === language);
-      expect(button).not.toBeUndefined();
+      expect(button).toBeDefined();
       const removeButton = within(button).getByTestId('CancelIcon');
       fireEvent.click(removeButton);
     }
@@ -226,9 +226,15 @@ describe('Filters feature', () => {
     clickOnShowMore();
 
     // Adding new languages
-    selectLanguage({ language: 'language.en', expectInLocalStorage: 'en' });
+    selectLanguage({
+      language: 'language.en',
+      expectInLocalStorage: 'en',
+    });
     expect(router.state.location.search).toEqual('?language=en');
-    selectLanguage({ language: 'language.fr', expectInLocalStorage: 'en,fr' });
+    selectLanguage({
+      language: 'language.fr',
+      expectInLocalStorage: 'en,fr',
+    });
     expect(router.state.location.search).toEqual(
       `?language=${encodeURIComponent('en,fr')}`
     );
