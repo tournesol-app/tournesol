@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import { SpyInstance } from 'vitest';
+import { MockInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {
@@ -78,7 +78,7 @@ describe('Preferences Page', () => {
     });
   };
 
-  let storeDispatchSpy: SpyInstance;
+  let storeDispatchSpy: MockInstance;
 
   const setup = async () => {
     const state = {
@@ -104,7 +104,7 @@ describe('Preferences Page', () => {
 
   describe("Successfully fetch the user's settings", () => {
     beforeAll(() => {
-      fetchMock.mockReset();
+      fetchMock.resetMocks();
       fetchMock.doMockIf(
         new RegExp('/users/me/settings/'),
         JSON.stringify({
@@ -136,7 +136,7 @@ describe('Preferences Page', () => {
 
   describe("Error while fetching the user's settings", () => {
     beforeAll(() => {
-      fetchMock.mockReset();
+      fetchMock.resetMocks();
       fetchMock.mockIf(new RegExp('/users/me/settings/'), '{}', {
         status: 429,
       });

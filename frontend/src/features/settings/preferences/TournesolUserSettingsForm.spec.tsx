@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import { SpyInstance } from 'vitest';
+import { MockInstance } from 'vitest';
 import { act } from 'react-dom/test-utils';
 import * as reactRedux from 'react-redux';
 import configureStore, {
@@ -123,7 +123,7 @@ describe('GenericPollUserSettingsForm', () => {
     });
   };
 
-  let storeDispatchSpy: SpyInstance;
+  let storeDispatchSpy: MockInstance;
   const useSelectorSpy = vi.spyOn(reactRedux, 'useSelector');
 
   const setup = async () => {

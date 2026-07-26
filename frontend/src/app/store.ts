@@ -1,6 +1,10 @@
 import { combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+// Point at redux-persist's ESM build explicitly: it ships no `exports` map, and
+// its CJS entry (`lib/storage`) exposes the storage object only under `.default`.
+// Since the Vite 8 upgrade, default imports are ES-spec compliant and no longer
+// auto-unwrap a CJS `.default`, so importing the ESM build gives the object directly.
+import storage from 'redux-persist/es/storage';
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 import drawerOpenReducer from '../features/frame/drawerOpenSlice';

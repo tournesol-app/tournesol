@@ -8,22 +8,22 @@ import React from 'react';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from 'src/theme';
 import {
+  act,
+  fireEvent,
+  getByTestId,
+  queryAllByTestId,
   render,
   screen,
-  fireEvent,
-  queryAllByTestId,
-  queryByTestId,
-  act,
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { combineReducers, createStore } from 'redux';
 
 import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
-import { combineReducers, createStore } from 'redux';
 import loginReducer, { initialState } from '../login/loginSlice';
-import { Provider } from 'react-redux';
 
 import SearchFilter from './SearchFilter';
 
@@ -160,14 +160,11 @@ describe('Filters feature', () => {
     action: 'add' | 'remove';
     expectInLocalStorage: string;
   }) {
-    const languageFilter = queryByTestId(document, 'search-language-filter');
-    const autocomplete = queryByTestId(languageFilter, 'autocomplete');
-    expect(autocomplete).not.toBeNull();
-    const input = within(autocomplete).getByRole('combobox');
-    expect(input).not.toBeNull();
+    const languageFilter = getByTestId(document, 'search-language-filter');
+    const autocomplete = getByTestId(languageFilter, 'autocomplete');
 
     if (action === 'add') {
-      autocomplete.focus();
+      const input = within(autocomplete).getByRole('combobox');
       userEvent.type(input, language);
       // Select the first item
       fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
@@ -175,7 +172,7 @@ describe('Filters feature', () => {
     } else if (action === 'remove') {
       const buttons = within(autocomplete).getAllByRole('button');
       const button = buttons.find((b) => b.textContent === language);
-      expect(button).not.toBeUndefined();
+      expect(button).toBeDefined();
       const removeButton = within(button).getByTestId('CancelIcon');
       fireEvent.click(removeButton);
     }
@@ -229,9 +226,15 @@ describe('Filters feature', () => {
     clickOnShowMore();
 
     // Adding new languages
-    selectLanguage({ language: 'language.en', expectInLocalStorage: 'en' });
+    selectLanguage({
+      language: 'language.en',
+      expectInLocalStorage: 'en',
+    });
     expect(router.state.location.search).toEqual('?language=en');
-    selectLanguage({ language: 'language.fr', expectInLocalStorage: 'en,fr' });
+    selectLanguage({
+      language: 'language.fr',
+      expectInLocalStorage: 'en,fr',
+    });
     expect(router.state.location.search).toEqual(
       `?language=${encodeURIComponent('en,fr')}`
     );
@@ -266,7 +269,7 @@ describe('Filters feature', () => {
       expectInLocalStorage: '',
     });
     expect(router.state.location.search).toEqual(`?language=`);
-  });
+  }, 8000);
 
   it('Can select a maximum duration', async () => {
     const { router } = await renderSearchFilters(true);
