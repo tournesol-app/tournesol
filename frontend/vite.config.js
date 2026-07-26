@@ -14,24 +14,6 @@ export default defineConfig(() => {
       outDir: 'build',
       target: "es2015",
     },
-    optimizeDeps: {
-      rolldownOptions: {
-        plugins: [
-          {
-            // This plugin rewrites 'jsx-runtime' imports.
-            // A bug in React <= 17 prevents 'jsx-runtime' from resolving correctly
-            // in bundles built by Vitest. See https://github.com/facebook/react/issues/20235.
-            name: "fix-jsx-runtime",
-            resolveId(source) {
-              if (/jsx-runtime$/.test(source)) {
-                return path.resolve(__dirname, "node_modules", `${source}.js`)
-              }
-              return null
-            },
-          },
-        ],
-      },
-    },
     plugins: [react()],
     server: {
       host: true,
@@ -49,6 +31,22 @@ export default defineConfig(() => {
             // Include all MUI icons in the test bundle to prevent Vitest from loading
             // them individually, which significantly slows down unit test collection.
             include: ["@mui/icons-material"],
+            rolldownOptions: {
+              plugins: [
+                {
+                  // This plugin rewrites 'jsx-runtime' imports.
+                  // A bug in React <= 17 prevents 'jsx-runtime' from resolving correctly
+                  // in bundles built by Vitest. See https://github.com/facebook/react/issues/20235.
+                  name: "fix-jsx-runtime",
+                  resolveId(source) {
+                    if (/jsx-runtime$/.test(source)) {
+                      return path.resolve(__dirname, "node_modules", `${source}.js`)
+                    }
+                    return null
+                  },
+                },
+              ],
+            },
           }
         }
       }
