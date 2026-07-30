@@ -34,11 +34,15 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
     padding: 8,
+    '& > a': {
+      flex: 1,
+    },
   },
   card: {
     border: '1px solid #DCD8CB',
     padding: '24px',
     background: '#FFFFFF',
+    width: '100%',
   },
 }));
 
@@ -55,7 +59,7 @@ const CoreTeamCard = ({
   institution?: string;
   role?: string;
   title?: string;
-  job: string;
+  job: React.ReactNode;
 }) => {
   return (
     <Card sx={{ maxWidth: 320, fontSize: '0.9rem' }}>
@@ -68,6 +72,7 @@ const CoreTeamCard = ({
             objectFit: 'cover',
             borderRadius: '50%',
             marginBottom: '8px',
+            filter: 'drop-shadow(1px 3px 3px #bbb)',
           }}
         />
         <Typography variant="h4">{name}</Typography>
@@ -113,7 +118,7 @@ const ContributorCard = ({
           <Grid2
             container
             sx={{
-              alignItems: 'center',
+              alignItems: 'start',
             }}
             size={4}
           >
@@ -124,6 +129,8 @@ const ContributorCard = ({
                 aspectRatio: '1',
                 objectFit: 'cover',
                 borderRadius: '50%',
+                backgroundColor: '#ddd',
+                filter: 'drop-shadow(1px 3px 3px #bbb)',
               }}
             />
           </Grid2>
@@ -312,6 +319,8 @@ const AboutPage = () => {
                 />
               </Grid2>
 
+              <br />
+
               <Grid2
                 size={{
                   xs: 6,
@@ -324,6 +333,26 @@ const AboutPage = () => {
                   role="Executive Director"
                   title="Dr. in Mathematics"
                   job="AI Researcher and Communicator"
+                />
+              </Grid2>
+
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
+                  name="Anne Alombert"
+                  image="/people/Anne.jpeg"
+                  institution="Université Paris 8"
+                  job={
+                    <>
+                      Philosopher
+                      <br />
+                      Maîtresse de conférences
+                    </>
+                  }
                 />
               </Grid2>
 
@@ -352,6 +381,20 @@ const AboutPage = () => {
                   image="/people/Aidan.jpg"
                   institution="SBB CFF FFS"
                   job="Project Manager"
+                />
+              </Grid2>
+
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
+                  name="Matteo Tacchi-Bénard"
+                  image="/people/Matteo.jpeg"
+                  institution="CNRS"
+                  job="Applied Mathematician"
                 />
               </Grid2>
             </Grid2>
