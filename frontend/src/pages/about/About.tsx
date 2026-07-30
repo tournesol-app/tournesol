@@ -451,7 +451,45 @@ const AboutPage = () => {
           <Grid2 className={classes.container} size={12}>
             <Box width="100%">
               <Typography variant="h3">
-                {t('about.weThankOurPartners')}
+                {t('about.weThankOurSupporters')}
+              </Typography>
+            </Box>
+          </Grid2>
+
+          <Grid2 className={classes.container} size={12}>
+            <Link
+              href="https://www.fondationdefrance.org"
+              rel="noopener"
+              underline="none"
+              color="inherit"
+              variant="inherit"
+              target="_blank"
+              sx={{
+                display: 'flex',
+              }}
+            >
+              <Box className={classes.card}>
+                <img
+                  height="140px"
+                  src="/logos/fondation_de_france_projet_soutenu.jpg"
+                  alt="Projet soutenu par la Fondation de France"
+                />
+                <Typography variant="h4">
+                  {t('about.partnershipWithFDF')}
+                </Typography>
+                <Typography>{t('about.partnershipWithFDFDetail')}</Typography>
+              </Box>
+            </Link>
+          </Grid2>
+        </Grid2>
+
+        <Divider />
+
+        <Grid2 container className={classes.root}>
+          <Grid2 className={classes.container} size={12}>
+            <Box width="100%">
+              <Typography variant="h3">
+                {t('about.weThankOurFormerPartners')}
               </Typography>
             </Box>
           </Grid2>
@@ -467,7 +505,7 @@ const AboutPage = () => {
                 display: 'flex',
               }}
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img height="84px" src="/logos/Calicarpa_Logo.svg" />
                 <Typography variant="h4">
                   {t('about.partnershipWithCalicarpa')}
@@ -480,7 +518,7 @@ const AboutPage = () => {
           </Grid2>
 
           <Grid2 size={12} className={classes.container}>
-            <Box className={classes.card} maxWidth="100%">
+            <Box className={classes.card}>
               <img height="84px" src="/logos/EPFL_Logo.png" />
               <Typography variant="h4">
                 {t('about.partnershipWithEpfl')}
@@ -512,7 +550,7 @@ const AboutPage = () => {
                 display: 'flex',
               }}
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img
                   height="64px"
                   src="/logos/Polyconseil_Logo.png"
@@ -549,7 +587,7 @@ const AboutPage = () => {
                 display: 'flex',
               }}
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img height="64px" src="/logos/Kleis_Logo.svg" />
                 <Typography variant="h4">
                   {t('about.partnershipWithKleis')}
@@ -573,7 +611,7 @@ const AboutPage = () => {
               color="inherit"
               variant="inherit"
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img height="64px" src="/logos/devoxx_france_logo.png" />
                 <Typography
                   sx={{
@@ -586,6 +624,9 @@ const AboutPage = () => {
             </Link>
           </Grid2>
         </Grid2>
+
+        <Divider />
+
         <Grid2 container className={classes.root}>
           <Grid2 className={classes.container}>
             <Box maxWidth="100%" sx={{ p: 2 }} className={classes.card}>
