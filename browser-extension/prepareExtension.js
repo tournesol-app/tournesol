@@ -43,7 +43,7 @@ const hostPermissions = [
     ],
   }),
   'https://www.youtube.com/',
-];
+].map((permission) => (browser === 'safari' ? `${permission}*` : permission));
 
 const permissions = [
   'activeTab',
