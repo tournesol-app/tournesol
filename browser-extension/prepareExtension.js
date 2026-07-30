@@ -49,7 +49,7 @@ const permissions = [
   'activeTab',
   'contextMenus',
   'storage',
-  'webNavigation',
+  ...(browser !== 'safari' ? ['webNavigation'] : []),
   // webRequest and webReauestBlocking were used to overwrite
   // headers in the API response. This is no longer the case
   // with version > 3.5.2.
