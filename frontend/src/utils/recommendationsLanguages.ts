@@ -12,7 +12,7 @@ export const recommendationsLanguages: {
   // It currently contains all the languages detected by langdetect except Chinese because
   // it hasn't been decided how to handle the variants.
   //
-  // Translation keys must be string literals without interpolation so that i18next-parser can extract them.
+  // Translation keys must be string literals without interpolation so that i18next-cli can extract them.
   //
   // The list of these language codes is also present in the browser extension (`availableRecommendationsLanguages`)
   // so it must be updated there too if it changes here.

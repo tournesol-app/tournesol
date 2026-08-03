@@ -45,7 +45,7 @@
     "lint": "eslint src --ext '.js,.jsx,.ts,.tsx'",
     "lint:fix": "eslint --fix src --ext '.js,.jsx,.ts,.tsx'",
     "prepare": "cd .. && husky install frontend/.husky",
-    "i18n:parse": "i18next --config i18next-parser.config.js"
+    "i18n:parse": "i18next-cli extract"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -65,7 +65,7 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.1",
-    "i18next-parser": "^9",
+    "i18next-cli": "^1.66.0",
     "jsdom": "^28",
     "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.3.2",
