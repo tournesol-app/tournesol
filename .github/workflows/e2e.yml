@@ -29,7 +29,7 @@ jobs:
           browser: chromium
           headed: true
           spec: "cypress/e2e/browser-extension/**/*"
-          config: baseUrl=https://www.youtube.com
+          config: baseUrl=https://www.youtube.com,experimentalMemoryManagement=true
 
       - uses: actions/upload-artifact@v4
         if: failure()
