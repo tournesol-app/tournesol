@@ -56,14 +56,16 @@ const useCriteriaChartData = ({
     useContributorRating();
 
   const clipScore = useCallback(
-    (score) =>
-      between(
-        SCORE_MIN,
-        SCORE_MAX,
-        // Below is a bad hack necessary because scores on "presidentielle2022"
-        // are frozen, and the latest Mehestan scaling is not applied on this poll.
-        pollName === PRESIDENTIELLE_2022_POLL_NAME ? 400 * score : score
-      ),
+    (score: number | undefined) =>
+      score === undefined
+        ? undefined
+        : between(
+            SCORE_MIN,
+            SCORE_MAX,
+            // Below is a bad hack necessary because scores on "presidentielle2022"
+            // are frozen, and the latest Mehestan scaling is not applied on this poll.
+            pollName === PRESIDENTIELLE_2022_POLL_NAME ? 400 * score : score
+          ),
     [pollName]
   );
 

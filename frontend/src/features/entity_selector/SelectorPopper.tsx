@@ -10,9 +10,10 @@ import {
 import { ArrowBack } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
-interface Props extends PopperProps {
+interface Props extends Omit<PopperProps, 'children'> {
   onClose: () => void;
   modal?: boolean;
+  children?: React.ReactNode;
 }
 
 const SelectorPopper = ({

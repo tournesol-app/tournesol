@@ -46,7 +46,7 @@ const PersonalScoreCheckbox = () => {
               disabled={!canActivatePersonalScores}
             />
           }
-          label={t<string>('personalCriteriaScores.activatePersonalScores')}
+          label={t('personalCriteriaScores.activatePersonalScores')}
         />
       </FormGroup>
     </Tooltip>
