@@ -23,7 +23,7 @@ jobs:
         run: |
           EXTENSION_BROWSER=chrome MANIFEST_VERSION=3 yarn configure
 
-      - uses: cypress-io/github-action@v6
+      - uses: cypress-io/github-action@v7
         with:
           working-directory: tests
           browser: chromium
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: '22'
 
-      - uses: cypress-io/github-action@v6
+      - uses: cypress-io/github-action@v7
         with:
           working-directory: tests
           browser: chrome
