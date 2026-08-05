@@ -13,6 +13,9 @@ interface ExternalLinkProps {
 interface InternalLinkProps {
   children: React.ReactNode;
   to: string;
+  // Arbitrary value attached to the target history entry (not the URL),
+  // readable at the destination via the router's `useLocation().state`.
+  state?: unknown;
   target?: string;
   id?: string;
   ariaLabel?: string;
@@ -64,6 +67,7 @@ export const InternalLink = React.forwardRef<
   {
     children,
     to,
+    state,
     target,
     id,
     ariaLabel,
@@ -79,6 +83,7 @@ export const InternalLink = React.forwardRef<
       component={RouterLink}
       ref={ref}
       to={to}
+      state={state}
       target={target}
       id={id}
       aria-label={ariaLabel}

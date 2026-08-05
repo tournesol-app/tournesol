@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
@@ -15,7 +15,6 @@ import {
   SearchIconButtonLink,
 } from 'src/components';
 import EntityList from 'src/features/entities/EntityList';
-import { updateBackNagivation } from 'src/features/login/loginSlice';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
 import { useCurrentPoll } from 'src/hooks';
 import { PaginatedRecommendationList } from 'src/services/openapi';
@@ -26,7 +25,6 @@ const ENTITIES_LIMIT = 20;
 
 const FeedForYou = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,15 +55,6 @@ const FeedForYou = () => {
     searchParams.set('offset', newOffset.toString());
     navigate({ search: searchParams.toString() });
   };
-
-  useEffect(() => {
-    dispatch(
-      updateBackNagivation({
-        backPath: location.pathname,
-        backParams: offset > 0 ? `offset=${offset}` : '',
-      })
-    );
-  }, [dispatch, location.pathname, offset]);
 
   useEffect(() => {
     const searchString = new URLSearchParams(userPreferences);
@@ -118,7 +107,13 @@ const FeedForYou = () => {
             gap: 1,
           }}
         >
-          <SearchIconButtonLink params={userPreferences.toString()} />
+          <SearchIconButtonLink
+            params={userPreferences.toString()}
+            backNavigation={{
+              backPath: location.pathname,
+              backParams: offset > 0 ? `offset=${offset}` : '',
+            }}
+          />
           <PreferencesIconButtonLink hash={`#${pollName}-feed-foryou`} />
         </Box>
         {!isLoading && entities.count === 0 && (

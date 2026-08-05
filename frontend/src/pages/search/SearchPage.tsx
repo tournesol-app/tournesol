@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
 
@@ -13,9 +12,9 @@ import {
   Pagination,
   PreferencesIconButtonLink,
 } from 'src/components';
-import { useCurrentPoll } from 'src/hooks';
+import { BackNavigationState } from 'src/components/buttons/SearchIconButtonLink';
+import { useCurrentPoll, useUpdateSearchParams } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
-import { selectLogin } from 'src/features/login/loginSlice';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { PaginatedRecommendationList } from 'src/services/openapi';
@@ -26,13 +25,12 @@ const ENTITIES_LIMIT = 20;
 const SearchPage = () => {
   const { t } = useTranslation();
 
-  const navigate = useNavigate();
+  const updateSearchParams = useUpdateSearchParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const offset = Number(searchParams.get('offset') || 0);
 
   const { name: pollName, criterias, options } = useCurrentPoll();
-  const loginState = useSelector(selectLogin);
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(false);
@@ -43,7 +41,7 @@ const SearchPage = () => {
 
   const onOffsetChange = (newOffset: number) => {
     searchParams.set('offset', newOffset.toString());
-    navigate({ search: searchParams.toString() });
+    updateSearchParams(searchParams.toString());
   };
 
   useEffect(() => {
@@ -55,7 +53,7 @@ const SearchPage = () => {
 
     if (searchString.get('language') === null) {
       searchString.set('language', '');
-      navigate({ search: searchString.toString() }, { replace: true });
+      updateSearchParams(searchString.toString(), { replace: true });
       return;
     }
 
@@ -80,11 +78,20 @@ const SearchPage = () => {
     };
 
     fetchEntities();
-  }, [criterias, location.search, navigate, offset, options, pollName]);
+  }, [
+    criterias,
+    location.search,
+    updateSearchParams,
+    offset,
+    options,
+    pollName,
+  ]);
+
+  const backNavigation = location.state as BackNavigationState | null;
 
   const createBackButtonPath = () => {
-    const backPath = loginState.backPath;
-    const backParams = loginState.backParams;
+    const backPath = backNavigation?.backPath;
+    const backParams = backNavigation?.backParams;
 
     if (!backPath) {
       return '';
