@@ -73,7 +73,7 @@ const HelpResearch = () => {
               Tournesol Talks
             </ExternalLink>
             , or{' '}
-            <ExternalLink href="mailto:talks@tournesol.app">
+            <ExternalLink href="mailto:talks@tournesol.org">
               ask to intervene
             </ExternalLink>
             .

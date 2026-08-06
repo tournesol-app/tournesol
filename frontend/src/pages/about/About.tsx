@@ -34,11 +34,15 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'center',
     padding: 8,
+    '& > a': {
+      flex: 1,
+    },
   },
   card: {
     border: '1px solid #DCD8CB',
     padding: '24px',
     background: '#FFFFFF',
+    width: '100%',
   },
 }));
 
@@ -55,7 +59,7 @@ const CoreTeamCard = ({
   institution?: string;
   role?: string;
   title?: string;
-  job: string;
+  job: React.ReactNode;
 }) => {
   return (
     <Card sx={{ maxWidth: 320, fontSize: '0.9rem' }}>
@@ -68,6 +72,7 @@ const CoreTeamCard = ({
             objectFit: 'cover',
             borderRadius: '50%',
             marginBottom: '8px',
+            filter: 'drop-shadow(1px 3px 3px #bbb)',
           }}
         />
         <Typography variant="h4">{name}</Typography>
@@ -113,7 +118,7 @@ const ContributorCard = ({
           <Grid2
             container
             sx={{
-              alignItems: 'center',
+              alignItems: 'start',
             }}
             size={4}
           >
@@ -124,6 +129,8 @@ const ContributorCard = ({
                 aspectRatio: '1',
                 objectFit: 'cover',
                 borderRadius: '50%',
+                backgroundColor: '#ddd',
+                filter: 'drop-shadow(1px 3px 3px #bbb)',
               }}
             />
           </Grid2>
@@ -312,6 +319,8 @@ const AboutPage = () => {
                 />
               </Grid2>
 
+              <br />
+
               <Grid2
                 size={{
                   xs: 6,
@@ -324,6 +333,26 @@ const AboutPage = () => {
                   role="Executive Director"
                   title="Dr. in Mathematics"
                   job="AI Researcher and Communicator"
+                />
+              </Grid2>
+
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
+                  name="Anne Alombert"
+                  image="/people/Anne.jpeg"
+                  institution="Université Paris 8"
+                  job={
+                    <>
+                      Philosopher
+                      <br />
+                      Maîtresse de conférences
+                    </>
+                  }
                 />
               </Grid2>
 
@@ -352,6 +381,20 @@ const AboutPage = () => {
                   image="/people/Aidan.jpg"
                   institution="SBB CFF FFS"
                   job="Project Manager"
+                />
+              </Grid2>
+
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
+                  name="Matteo Tacchi-Bénard"
+                  image="/people/Matteo.jpeg"
+                  institution="CNRS"
+                  job="Applied Mathematician"
                 />
               </Grid2>
             </Grid2>
@@ -408,7 +451,45 @@ const AboutPage = () => {
           <Grid2 className={classes.container} size={12}>
             <Box width="100%">
               <Typography variant="h3">
-                {t('about.weThankOurPartners')}
+                {t('about.weThankOurSupporters')}
+              </Typography>
+            </Box>
+          </Grid2>
+
+          <Grid2 className={classes.container} size={12}>
+            <Link
+              href="https://www.fondationdefrance.org"
+              rel="noopener"
+              underline="none"
+              color="inherit"
+              variant="inherit"
+              target="_blank"
+              sx={{
+                display: 'flex',
+              }}
+            >
+              <Box className={classes.card}>
+                <img
+                  height="140px"
+                  src="/logos/fondation_de_france_projet_soutenu.jpg"
+                  alt="Projet soutenu par la Fondation de France"
+                />
+                <Typography variant="h4">
+                  {t('about.partnershipWithFDF')}
+                </Typography>
+                <Typography>{t('about.partnershipWithFDFDetail')}</Typography>
+              </Box>
+            </Link>
+          </Grid2>
+        </Grid2>
+
+        <Divider />
+
+        <Grid2 container className={classes.root}>
+          <Grid2 className={classes.container} size={12}>
+            <Box width="100%">
+              <Typography variant="h3">
+                {t('about.weThankOurFormerPartners')}
               </Typography>
             </Box>
           </Grid2>
@@ -424,7 +505,7 @@ const AboutPage = () => {
                 display: 'flex',
               }}
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img height="84px" src="/logos/Calicarpa_Logo.svg" />
                 <Typography variant="h4">
                   {t('about.partnershipWithCalicarpa')}
@@ -437,7 +518,7 @@ const AboutPage = () => {
           </Grid2>
 
           <Grid2 size={12} className={classes.container}>
-            <Box className={classes.card} maxWidth="100%">
+            <Box className={classes.card}>
               <img height="84px" src="/logos/EPFL_Logo.png" />
               <Typography variant="h4">
                 {t('about.partnershipWithEpfl')}
@@ -469,7 +550,7 @@ const AboutPage = () => {
                 display: 'flex',
               }}
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img
                   height="64px"
                   src="/logos/Polyconseil_Logo.png"
@@ -506,7 +587,7 @@ const AboutPage = () => {
                 display: 'flex',
               }}
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img height="64px" src="/logos/Kleis_Logo.svg" />
                 <Typography variant="h4">
                   {t('about.partnershipWithKleis')}
@@ -530,7 +611,7 @@ const AboutPage = () => {
               color="inherit"
               variant="inherit"
             >
-              <Box className={classes.card} maxWidth="100%">
+              <Box className={classes.card}>
                 <img height="64px" src="/logos/devoxx_france_logo.png" />
                 <Typography
                   sx={{
@@ -543,6 +624,9 @@ const AboutPage = () => {
             </Link>
           </Grid2>
         </Grid2>
+
+        <Divider />
+
         <Grid2 container className={classes.root}>
           <Grid2 className={classes.container}>
             <Box maxWidth="100%" sx={{ p: 2 }} className={classes.card}>
