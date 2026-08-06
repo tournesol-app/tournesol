@@ -484,7 +484,7 @@ const ManifestoPage = () => {
                       <p>
                         <Trans i18nKey="manifesto.cta.getInvolved" t={t}>
                           Te présenter{' '}
-                          <a href="mailto:hello+intro@tournesol.app">
+                          <a href="mailto:hello+intro@tournesol.org">
                             par mail
                           </a>{' '}
                           ou sur le{' '}
@@ -506,7 +506,7 @@ const ManifestoPage = () => {
                         <Trans i18nKey="manifesto.cta.attendPresentation" t={t}>
                           Venir à une présentation de Tournesol, organisée une
                           fois tous les deux mois, inscription{' '}
-                          <a href="mailto:hello+intro@tournesol.app">
+                          <a href="mailto:hello+intro@tournesol.org">
                             par mail
                           </a>
                           .
