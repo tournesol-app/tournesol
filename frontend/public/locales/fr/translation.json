@@ -737,7 +737,7 @@
     "howMuchWeCurrentlySpendQuestion": "Combien dépensons-nous actuellement\u00a0?",
     "howMuchWeCurrentlySpendAnswer": "L'association dépense environ 300€ par mois.",
     "haveWeConsideredQuestion": "Avons-nous envisagé d'autres opportunités de financement\u00a0?",
-    "haveWeConsideredAnswer": "Oui, nous avons essayé de postuler à plusieurs sources de financement mais n'avons pas encore été sélectionnés avec succès. Si vous êtes une agence de financement et que vous trouvez notre projet prometteur, veuillez nous contacter à l'adresse hello\u00a0(at)\u00a0tournesol.app."
+    "haveWeConsideredAnswer": "Oui, nous avons essayé de postuler à plusieurs sources de financement mais n'avons pas encore été sélectionnés avec succès. Si vous êtes une agence de financement et que vous trouvez notre projet prometteur, veuillez nous contacter à l'adresse hello\u00a0(at)\u00a0tournesol.org."
   },
   "privacyPolicy": {
     "privacyPolicy": "Politique de confidentialité",
@@ -749,7 +749,7 @@
     "contributorProfile": "Profils des contributeur·rices",
     "whyTournesolCollectsContributorProfile": "Afin de distinguer l'expertise des différents contributeur·rices, Tournesol demande à ce qu'ils et elles certifient leur adresse e-mail, décrivent leurs domaines de compétences et ajoutent des liens vers leurs profils publics. Nous pensons que de telles données peuvent avoir un intérêt scientifique et éthique pour construire des systèmes de recommandations plus robustement bénéfiques pour l'humanité.",
     "contactForm": "Formulaire de contact",
-    "thereIsNoContactForm": "Il n'y a actuellement pas de formulaire de contact. Pour nous contacter, veuillez utiliser l'adresse e-mail suivante: hello(at)tournesol.app",
+    "thereIsNoContactForm": "Il n'y a actuellement pas de formulaire de contact. Pour nous contacter, veuillez utiliser l'adresse e-mail suivante: hello(at)tournesol.org",
     "loginInformation": "Données de connexion",
     "loginInformationDetails": "Si une personne possède un compte et se connecte à Tournesol, Tournesol déposera un jeton unique et temporaire afin d'authentifier la session de l'utilisateur·rice auprès des serveurs de Tournesol. Ce jeton ne contient aucune données personnelle, et est utilisé exclusivement à but d'authentification. De plus, Tournesol peut également persister localement sur le navigateur des données relatives aux fonctionnalités de la plateforme, telles que des préférences d'affichage ou de langues. Lors de la déconnexion, les données de connexion sont supprimées. Tournesol n'utilise aucun cookie (ou autre dispositif) à des fins de pistage.",
     "embeddedContentFromOtherWebsites": "Contenu intégré provenant d'autres sites",
