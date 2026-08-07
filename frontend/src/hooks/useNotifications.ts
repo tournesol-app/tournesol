@@ -92,7 +92,7 @@ export const useNotifications = () => {
   const showTooManyRequests = useCallback(
     (message?: string) => {
       if (!message) {
-        message = t('notifications.youTemporarilyMadeTooManyRequests.');
+        message = t('notifications.youTemporarilyMadeTooManyRequests');
       }
       enqueueSnackbar(message, { variant: 'info' });
     },
