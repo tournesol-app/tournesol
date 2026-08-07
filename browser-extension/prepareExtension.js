@@ -72,6 +72,8 @@ const webAccessibleResourcesFromYouTube = [
 const specificSettings = {
   browser_specific_settings: {
     gecko: {
+      // GUID initially assigned by addons.mozilla.org
+      id: "{e8e831e8-8a2b-4fd8-b9f0-cd11155b476d}",
       data_collection_permissions: {
         required: ['none'],
       },
