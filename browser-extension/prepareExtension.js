@@ -69,12 +69,31 @@ const webAccessibleResourcesFromYouTube = [
   'config.js',
 ];
 
+const specificSettings = {
+  browser_specific_settings: {
+    gecko: {
+      data_collection_permissions: {
+        required: ['none'],
+      },
+    },
+  },
+};
+
+const browserSpecificSettings = {
+  firefox: { ...specificSettings },
+  // The manifest key `browser_specific_settings` is not yet supported by
+  // Chrome.
+  // See: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_specific_settings#browser_compatibility
+  chrome: {},
+};
+
 const manifest = {
   name: 'Tournesol Extension',
   version,
   description: 'Open Tournesol directly from YouTube',
-  ...allPermissions,
   manifest_version: manifestVersion,
+  ...allPermissions,
+  ...selectValue(browser, browserSpecificSettings),
   icons: {
     64: 'Logo64.png',
     128: 'Logo128.png',
