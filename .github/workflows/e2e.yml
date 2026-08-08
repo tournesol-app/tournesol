@@ -21,15 +21,15 @@ jobs:
       - name: Prepare extension
         working-directory: browser-extension
         run: |
-          EXTENSION_BROWSER=chrome MANIFEST_VERSION=3 yarn configure
+          EXTENSION_BROWSER=firefox MANIFEST_VERSION=2 yarn configure
 
       - uses: cypress-io/github-action@v7
         with:
           working-directory: tests
-          browser: chromium
-          headed: true
+          browser: firefox
+          headed: false
           spec: "cypress/e2e/browser-extension/**/*"
-          config: baseUrl=https://www.youtube.com,experimentalMemoryManagement=true,experimentalFastVisibility=true
+          config: baseUrl=https://www.youtube.com
 
       - uses: actions/upload-artifact@v4
         if: failure()
