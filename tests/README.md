@@ -41,9 +41,12 @@ For more options see [Cypress documentation](https://docs.cypress.io/guides/guid
 
 ## Testing the browser extension
 
-Currently, the browser extension tests support only Chromium and Chrome, and need to be run in "headed" (windowed) mode.  
-The tests related to the browser extension will be skipped if these conditions are not met.
-
+Currently, the browser extension tests support only Chromium (not Chrome) and Firefox.
 ```
-yarn run cypress run --browser chrome --headed
+yarn run cypress run --browser firefox --spec 'cypress/e2e/browser-extension/**'
+```
+
+On Chromium they need to be run in "headed" (windowed) mode.
+```
+yarn run cypress run --browser chromium --headed --spec 'cypress/e2e/browser-extension/**'
 ```
