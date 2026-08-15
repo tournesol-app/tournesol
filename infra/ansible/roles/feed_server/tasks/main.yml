@@ -1,0 +1,134 @@
+# This role assumes the host is already provisioned by setup.yml: nginx, certbot
+# with the nginx plugin, the DH parameters, the firewall and the repository
+# checkout (/home/git/tournesol) are expected to be in place. The "repository"
+# role, run first by feed-server.yml, refreshes that checkout at git_reference.
+- name: Create feed server user
+  user:
+    name: feedserver
+    system: yes
+    create_home: yes
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: feedserver
+    group: feedserver
+  loop:
+    - /srv/feed-server  # Application directory (synchronized from the checkout)
+    - /home/feedserver/.ansible/tmp  # remote_tmp directory
+
+- name: Copy feed server application
+  synchronize:
+    src: /home/git/tournesol/feed-server/
+    dest: /srv/feed-server
+    archive: no
+    recursive: yes
+    delete: yes
+    checksum: yes
+    rsync_opts:
+      - "--exclude=.venv/"
+      - "--exclude=venv/"
+      - "--exclude=*.pyc"
+  delegate_to: "{{ inventory_hostname }}"
+  become: yes
+  become_user: feedserver
+  notify: Restart feed server
+
+- name: Install UV
+  pip:
+    name:
+      - "uv==0.9.9"
+  become: yes
+
+- name: Synchronize virtualenv with uv.lock
+  ansible.builtin.shell:
+    chdir: /srv/feed-server
+    cmd: |
+      export UV_PROJECT_ENVIRONMENT=/srv/feed-server/venv
+      export UV_LOCKED=1
+      export UV_NO_DEV=1
+
+      if uv sync --check; then
+        # No change to apply
+        exit 10
+      fi
+      uv sync
+  register: uv_sync_result
+  failed_when: uv_sync_result.rc not in [0, 10] # 10 for ok, 0 for changed
+  changed_when: uv_sync_result.rc == 0
+  become: yes
+  become_user: feedserver
+  notify: Restart feed server
+
+- name: Create configuration directory
+  file:
+    path: /etc/feed-server
+    state: directory
+    mode: 0750
+    owner: root
+    group: feedserver
+
+- name: Copy environment file
+  template:
+    src: feed-server.env.j2
+    dest: /etc/feed-server/feed-server.env
+    mode: 0640
+    owner: root
+    group: feedserver
+  notify: Restart feed server
+
+- name: Copy systemd socket file
+  copy:
+    src: feed-server.socket
+    dest: /etc/systemd/system/feed-server.socket
+  notify: Restart feed server
+
+- name: Copy systemd service file
+  template:
+    src: feed-server.service.j2
+    dest: /etc/systemd/system/feed-server.service
+  notify: Restart feed server
+
+- name: Enable and start feed server socket
+  systemd:
+    name: feed-server.socket
+    enabled: true
+    state: started
+    daemon_reload: true
+
+# The application runs continuously (the jetstream indexer must run even without
+# HTTP traffic), so the service is started directly rather than lazily on the
+# first connection to the socket.
+- name: Enable and start feed server
+  systemd:
+    name: feed-server
+    enabled: true
+    state: started
+    daemon_reload: true
+
+# Obtain the certificate through the nginx plugin (no downtime) before writing
+# the TLS vhost, so the vhost can reference an existing certificate. Skipped when
+# letsencrypt_email is undefined (e.g. the local VM, served over plain HTTP).
+# Renewal is handled by the existing certbot.service timer (certbot renews all
+# certificates), so nothing extra is needed here.
+- name: Obtain certificate for the feed server
+  shell:
+    cmd: "certbot certonly --nginx -d {{ feed_server_domain_name }} -n --agree-tos -m {{ letsencrypt_email }}"
+    creates: "/etc/letsencrypt/live/{{ feed_server_domain_name }}/fullchain.pem"
+  when: letsencrypt_email is defined
+
+- name: Copy Nginx configuration
+  template:
+    src: feed-server.j2
+    dest: /etc/nginx/sites-available/feed-server
+  notify: Reload Nginx
+
+- name: Enable Nginx configuration
+  file:
+    src: /etc/nginx/sites-available/feed-server
+    dest: /etc/nginx/sites-enabled/feed-server
+    state: link
+  notify: Reload Nginx
+
+- meta: flush_handlers
