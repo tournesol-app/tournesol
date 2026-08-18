@@ -1,0 +1,12 @@
+- name: Restart feed server
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop: "{{ ['feed-server'] + (feed_server_workers | map(attribute='name') | map('regex_replace', '^', 'feed-server-') | list) }}"
+
+- name: Reload Nginx
+  systemd:
+    name: nginx
+    state: reloaded
+    daemon_reload: true
