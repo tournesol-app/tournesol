@@ -44,6 +44,11 @@ export const DurationWrapper = React.forwardRef(function DurationWrapper(
         position: 'relative',
         height: '100%',
         width: '100%',
+        overflow: 'hidden',
+        borderRadius: 1,
+        '& .react-player__preview': {
+          transform: 'scale(1.01)',
+        },
       }}
     >
       {isDurationVisible && formattedDuration && (
