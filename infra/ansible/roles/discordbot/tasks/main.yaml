@@ -1,0 +1,31 @@
+- name: Create Virtualenv for Discord Bot 
+  pip:
+    name:
+      - "discord.py==2.3.2"
+      - "pip==23.2.1"
+      - "requests==2.31.0"
+    virtualenv: /srv/tournesol-discordbot/venv
+    virtualenv_python: python3.9
+  become: yes
+
+- name: Copy Discord Bot service file
+  template:
+    src: discordbot.service.j2
+    dest: /etc/systemd/system/discordbot.service
+  notify: Restart Discord Bot
+
+- name: Copy Discord Bot script file
+  copy:
+    src: discord_bot.py
+    dest: /usr/local/bin/discord_bot.py
+    mode: u=rx,o=,g=
+  notify: Restart Discord Bot
+
+- name: Enable and start Discord Bot
+  systemd:
+    name: discordbot.service
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- meta: flush_handlers
