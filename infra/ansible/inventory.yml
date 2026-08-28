@@ -8,6 +8,7 @@ all:
           machine_name: tournesol
           domain_name: tournesol-vm
           api_domain_name: tournesol-api
+          feed_server_domain_name: feed-server-vm
           website_analytics_domain_name: tournesol-webanalytics
           api_scheme: http
 
