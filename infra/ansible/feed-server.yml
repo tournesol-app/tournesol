@@ -1,0 +1,12 @@
+- hosts: feed_server
+  roles:
+    - upgrade
+    - base
+    - nftables
+    - zsh
+    - users
+    - nginx
+    - repository
+    - redis
+    - feed_server
+  become: true

@@ -1,0 +1,18 @@
+[Unit]
+Description=AT Proto feed server
+Requires=feed-server.socket redis-server.service
+After=network.target redis-server.service feed-server.socket
+
+[Service]
+Type=notify
+User=feedserver
+Group=feedserver
+WorkingDirectory=/srv/feed-server
+EnvironmentFile=/etc/feed-server/feed-server.env
+ExecStart=/srv/feed-server/venv/bin/gunicorn feed_server.main:app -k uvicorn.workers.UvicornWorker -w {{ feed_server_web_workers }}
+Restart=always
+RestartSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
