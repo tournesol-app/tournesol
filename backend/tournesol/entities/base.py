@@ -2,14 +2,15 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Iterable, List, Type
 
-from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F
+from django.db.models import F, FloatField, Value
+from django.db.models.expressions import RawSQL
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
 from tournesol import models
+from tournesol.utils.text_search import build_prefix_tsquery
 
 UID_DELIMITER = ":"
 
@@ -36,6 +37,8 @@ class EntityType(ABC):
     # This symbol delimits the field:lookup:func in the metadata filter
     # operation string.
     metadata_filter_operation_delimiter = ":"
+
+    TRIGRAM_FALLBACK_MAX_WORDS = 4
 
     def __init__(self, entity: "models.Entity"):
         self.instance = entity
@@ -266,11 +269,34 @@ class EntityType(ABC):
         If there is someday a need for high performances, we could
         switch to ElasticSearch. But this would require managing a
         specific server (and thus a new container).
+
+        The FTS uses prefix matching, partial words match (e.g. "tour"
+        matches "tournesol"). For short queries (up to TRIGRAM_FALLBACK_MAX_WORDS
+        words), if FTS returns no results, a trigram similarity fallback is used
+        to handle typos and approximate matches.
         """
-        search_query = SearchQuery(text_to_search, config=F("search_config_name"))
-        qs = qs.filter_with_text_query(text_to_search, languages)
-        qs = qs.alias(relevance=SearchRank(F("search_vector"), search_query))
-        return qs
+        prefix_query = build_prefix_tsquery(text_to_search)
+        fts_qs = qs.filter_with_text_query(text_to_search, languages, prefix_query=prefix_query)
+
+        if fts_qs.exists():
+            return fts_qs.alias(
+                relevance=RawSQL(
+                    "ts_rank_cd(tournesol_entity.search_vector,"
+                    " to_tsquery(tournesol_entity.search_config_name::regconfig, %s))",
+                    (prefix_query,),
+                    output_field=FloatField(),
+                )
+            )
+
+        word_count = len(text_to_search.split())
+        if word_count <= cls.TRIGRAM_FALLBACK_MAX_WORDS:
+            trigram_qs = qs.filter_with_trigram_query(text_to_search)
+            if trigram_qs.exists():
+                return trigram_qs.alias(relevance=F("_trigram_similarity"))
+
+        return fts_qs.alias(
+            relevance=Value(0.0, output_field=FloatField())
+        )
 
     @classmethod
     @abstractmethod
