@@ -6,9 +6,9 @@
   "iarc_rating_id": "5510f1c2-d410-4ef1-9033-56b6459d50e1",
   "icons": [
     {
-      "src": "/icons/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
+      "src": "/icons/favicon.png",
+      "type": "image/png",
+      "sizes": "48x48"
     },
     {
       "src": "/icons/favicon-128x128.png",
