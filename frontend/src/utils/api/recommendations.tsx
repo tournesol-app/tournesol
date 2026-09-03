@@ -160,6 +160,8 @@ export const getRecommendations = async (
       dateGte: params.get('date_gte') ?? undefined,
       unsafe: advanced_options.includes('unsafe') || pollOptions?.unsafeDefault,
       excludeComparedEntities: advanced_options.includes('exclude_compared'),
+      ordering:
+        (params.get('ordering') as 'top_rated' | 'most_recent') || undefined,
       metadata: getMetadataFilter(pollName, params),
       scoreMode: (params.get('score_mode') as ScoreModeEnum) ?? undefined,
       weights: criteriaWeights,
