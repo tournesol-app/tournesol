@@ -712,7 +712,11 @@
     "trustedDomainsToProtectTournesol": "In order to protect Tournesol from fake Accounts, by default, Tournesol assigns a limited trust score to newly created accounts.",
     "trustedDomainsGainMoreVotingRights": "You can gain significantly more trust by validating <2>an email address from a domain considered trustworthy</2>, or when other users vouch for you.",
     "trustedDomainsValuable": "In any case, your contributions are valuable to us, as they will motivate further research in safe and ethical algorithms.",
-    "trustedDomainsCurrentList": "Current list of domains considered trustworthy"
+    "trustedDomainsCurrentList": "Current list of domains considered trustworthy",
+    "jobJournalistAndYoutuber": "Journalist & Youtuber",
+    "roleExecutiveDirector": "Executive Director",
+    "jobPhilosopher": "Philosopher",
+    "involvedCitizen": "Involved citizen"
   },
   "donate": {
     "ifPossibleConsiderUsingDirectTransfers": "If possible, consider using direct transfers instead (see below). This allows the association to not pay additional fees and makes the most of your contributions.",

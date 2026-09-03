@@ -59,10 +59,10 @@ const CoreTeamCard = ({
   institution?: string;
   role?: string;
   title?: string;
-  job: React.ReactNode;
+  job?: React.ReactNode;
 }) => {
   return (
-    <Card sx={{ maxWidth: 320, fontSize: '0.9rem' }}>
+    <Card sx={{ maxWidth: 320, fontSize: '0.9rem', flex: 1 }}>
       <CardContent>
         <img
           src={image}
@@ -255,10 +255,22 @@ const AboutPage = () => {
                   image="/people/JeanLou.jpg"
                   institution="AprèsLaBière"
                   role={t('about.rolePresident')}
-                  job="Journalist & YouTuber"
+                  job={t('about.jobJournalistAndYoutuber')}
                 />
               </Grid2>
 
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
+                  name="Etienne Koeppel"
+                  image="/people/Etienne.jpg"
+                  role={t('about.roleExecutiveDirector')}
+                />
+              </Grid2>
               <Grid2
                 size={{
                   xs: 6,
@@ -319,23 +331,6 @@ const AboutPage = () => {
                 />
               </Grid2>
 
-              <br />
-
-              <Grid2
-                size={{
-                  xs: 6,
-                  sm: 4,
-                }}
-              >
-                <CoreTeamCard
-                  name="Lê Nguyên Hoang"
-                  image="/people/Le.jpeg"
-                  role="Executive Director"
-                  title="Dr. in Mathematics"
-                  job="AI Researcher and Communicator"
-                />
-              </Grid2>
-
               <Grid2
                 size={{
                   xs: 6,
@@ -348,7 +343,7 @@ const AboutPage = () => {
                   institution="Université Paris 8"
                   job={
                     <>
-                      Philosopher
+                      {t('about.jobPhilosopher')}
                       <br />
                       Maîtresse de conférences
                     </>
@@ -363,10 +358,37 @@ const AboutPage = () => {
                 }}
               >
                 <CoreTeamCard
+                  name="Romain Curis"
+                  image="/people/RomainC.jpg"
+                  title={t('about.involvedCitizen')}
+                />
+              </Grid2>
+
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
                   name="Victor Fersing"
                   image="/people/Victor.jpg"
                   institution="La Fabrique Sociale"
-                  job="Journalist & YouTuber"
+                  job={t('about.jobJournalistAndYoutuber')}
+                />
+              </Grid2>
+
+              <Grid2
+                size={{
+                  xs: 6,
+                  sm: 4,
+                }}
+              >
+                <CoreTeamCard
+                  name="Lê Nguyên Hoang"
+                  image="/people/Le.jpeg"
+                  title="Dr. in Mathematics"
+                  job="AI Researcher and Communicator"
                 />
               </Grid2>
 
