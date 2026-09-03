@@ -12,7 +12,7 @@ dependencies = [
     "django-prometheus==2.4.*",
     "django-rest-registration==0.8.*",
     "django-sql-utils==0.6.*",
-    "djangorestframework==3.15.*",
+    "djangorestframework==3.17.*",
     "drf-spectacular==0.26.*",
     "google-api-python-client==2.*",
     "google-auth-httplib2==0.1.*",
