@@ -25,10 +25,15 @@ import { PollProvider } from 'src/hooks/useCurrentPoll';
 import { PollsService } from 'src/services/openapi';
 import loginReducer, { initialState } from '../login/loginSlice';
 
+import { BackNavigationState } from 'src/components/buttons/SearchIconButtonLink';
+
 import SearchFilter from './SearchFilter';
 
 describe('Filters feature', () => {
-  async function renderSearchFilters(loggedIn: boolean) {
+  async function renderSearchFilters(
+    loggedIn: boolean,
+    initialLocationState?: BackNavigationState
+  ) {
     const routes = [
       {
         path: '/search',
@@ -43,7 +48,7 @@ describe('Filters feature', () => {
     ];
 
     const router = createMemoryRouter(routes, {
-      initialEntries: ['/search'],
+      initialEntries: [{ pathname: '/search', state: initialLocationState }],
       initialIndex: 0,
     });
 
@@ -307,6 +312,18 @@ describe('Filters feature', () => {
     });
 
     expect(router.state.location.search).toEqual('?duration_gte=20');
+  });
+
+  it('Preserves the back-navigation location state across a filter change', async () => {
+    // The search page keeps its back button target in the location state. A
+    // filter change navigates to a new URL, and must not drop that state.
+    const backNavigation = { backPath: '/feed', backParams: 'date=Month' };
+    const { router } = await renderSearchFilters(true, backNavigation);
+    clickOnShowMore();
+
+    clickOnDateCheckbox({ checkbox: 'Week' });
+    expect(router.state.location.search).toEqual('?date=Week');
+    expect(router.state.location.state).toEqual(backNavigation);
   });
 
   it('Can fold and unfold the multiple criteria', async () => {

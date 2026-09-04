@@ -370,7 +370,7 @@ const SizedBarChart = ({
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleClick = useCallback(
-    (event) => {
+    (event: React.MouseEvent<SVGSVGElement>) => {
       event.preventDefault();
 
       const clickY = event.clientY;

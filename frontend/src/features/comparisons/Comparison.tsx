@@ -127,7 +127,7 @@ const Comparison = ({
   const { name: pollName, options } = useCurrentPoll();
   const mainCriterion = options?.mainCriterionName;
 
-  const initializeWithSuggestions = useRef(true);
+  const autoFillStarted = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const selectorAHistory = useRef(new SuggestionHistory(autoSuggestionPool));
@@ -145,6 +145,9 @@ const Comparison = ({
     uid: uidB,
     rating: null,
   });
+
+  // True while the auto-fill effect is still choosing the starting entities.
+  const [isAutoFilling, setIsAutoFilling] = useState(true);
 
   const [pageTitle, setPageTitle] = useState(
     `${t('comparison.newComparison')}`
@@ -215,9 +218,10 @@ const Comparison = ({
    * are true.
    */
   useEffect(() => {
-    if (initializeWithSuggestions.current === false) {
+    if (autoFillStarted.current) {
       return;
     }
+    autoFillStarted.current = true;
 
     const autoFillComparison = async () => {
       let autoUidA = null;
@@ -247,18 +251,16 @@ const Comparison = ({
       if (autoUidB) {
         onChangeB({ uid: autoUidB, rating: null });
       }
-
-      initializeWithSuggestions.current = false;
     };
 
-    autoFillComparison();
+    autoFillComparison().finally(() => setIsAutoFilling(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     // Wait for the potential initialization of the suggested entities before
     // retrieving the comparison.
-    if (initializeWithSuggestions.current) {
+    if (isAutoFilling) {
       return;
     }
 
@@ -286,7 +288,7 @@ const Comparison = ({
           setInitialComparison(null);
           setIsLoading(false);
         });
-  }, [pollName, uidA, uidB, selectorA.uid, selectorB.uid]);
+  }, [pollName, uidA, uidB, selectorA.uid, selectorB.uid, isAutoFilling]);
 
   /**
    * When the UI language changes, refresh the ratings to retrieve the

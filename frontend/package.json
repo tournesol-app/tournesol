@@ -11,11 +11,11 @@
     "@mui/styles": "^6.4.11",
     "@react-hook/resize-observer": "^1.2.5",
     "@reduxjs/toolkit": "^1.7.1",
-    "@types/react": "^17",
-    "@types/react-dom": "^17.0.11",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@types/react-redux": "^7.1.7",
     "@use-gesture/react": "^10.3.1",
-    "i18next": "^22.4.0",
+    "i18next": "^23",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^3.0.5",
     "linkify-string": "^4.1",
@@ -23,9 +23,9 @@
     "notistack": "^3.0.2",
     "plausible-tracker": "^0.3.8",
     "precompress": "7.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-i18next": "^12",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-i18next": "^14",
     "react-player": "^2.9.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.30.4",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@testing-library/dom": ">=5",
     "@testing-library/jest-dom": "^5.16",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/react": "^16",
     "@testing-library/user-event": "^13.5.0",
     "@types/redux-mock-store": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
@@ -87,6 +87,6 @@
     ]
   },
   "resolutions": {
-    "@types/react": "^17"
+    "@types/react": "^18"
   }
 }

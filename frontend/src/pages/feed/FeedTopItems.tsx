@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, Box } from '@mui/material';
@@ -15,7 +15,6 @@ import {
 } from 'src/components';
 import { useCurrentPoll } from 'src/hooks';
 import EntityList from 'src/features/entities/EntityList';
-import { updateBackNagivation } from 'src/features/login/loginSlice';
 import ShareMenuButton from 'src/features/menus/ShareMenuButton';
 import SearchFilter from 'src/features/recommendation/SearchFilter';
 import { selectSettings } from 'src/features/settings/userSettingsSlice';
@@ -54,7 +53,6 @@ const filterAllowedParams = (
 
 const FeedTopItems = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,20 +77,6 @@ const FeedTopItems = () => {
     searchParams.set('offset', newOffset.toString());
     navigate({ search: searchParams.toString() });
   };
-
-  useEffect(() => {
-    const currentParams = filterAllowedParams(
-      new URLSearchParams(location.search),
-      ALLOWED_SEARCH_PARAMS
-    );
-
-    dispatch(
-      updateBackNagivation({
-        backPath: location.pathname,
-        backParams: currentParams.toString(),
-      })
-    );
-  }, [dispatch, location.pathname, location.search]);
 
   useEffect(() => {
     // `searchParams` is defined as a mutable object outside of this effect.
@@ -185,6 +169,13 @@ const FeedTopItems = () => {
                 <ShareMenuButton isIcon />
                 <SearchIconButtonLink
                   params={makeSearchPageSearchParams().toString()}
+                  backNavigation={{
+                    backPath: location.pathname,
+                    backParams: filterAllowedParams(
+                      new URLSearchParams(location.search),
+                      ALLOWED_SEARCH_PARAMS
+                    ).toString(),
+                  }}
                 />
                 <PreferencesIconButtonLink hash={`#${pollName}-feed-top`} />
               </Box>

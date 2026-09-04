@@ -4,6 +4,4 @@ export interface LoginState {
   refresh_token?: string;
   status: 'idle' | 'loading' | 'failed';
   username?: string;
-  backPath?: string;
-  backParams?: string;
 }
