@@ -63,13 +63,8 @@ def add_expander_statistics():
             df["public_username"]
             .value_counts()
             .pipe(lambda x: x[x>0])
-            .reset_index()
-            .rename(
-                columns={
-                    "index": "public_username",
-                    "public_username": "Nb of public comparison",
-                }
-            )
+            .rename_axis("public_username")
+            .reset_index(name="Nb of public comparison")
         )
 
         df_stats["Nb of video"] = df_stats["public_username"].apply(
@@ -100,10 +95,12 @@ def add_expander_correlation_coefficients():
         fig = plt.figure()
         sns.heatmap(
             df_correl,
-            cmap="Blues",
+            cmap="RdBu",
             linewidths=0.5,
             annot=True,
-            fmt=".2g",
+            fmt=".2f",
+            vmin=-1,
+            vmax=1,
             annot_kws={"size": 7},
         )
         st.pyplot(fig)

@@ -117,7 +117,7 @@ def add_comparisons_evolution_grouped_by_contributors_age():
     seasons = pd.date_range(
         start=f"{overall_first_week[:4]}-01-01",
         end=overall_last_week,
-        freq=f"{SEASON_SIZE}M",
+        freq=f"{SEASON_SIZE}ME",
     ).to_list()
 
     # For each season, create a new dataframe.
@@ -145,10 +145,11 @@ def add_comparisons_evolution_grouped_by_contributors_age():
 
     # If user min week_date is same as user max week_date, change its season by 'single week'
     # to differentiate them as they make a large group.
+    SINGLE_WEEK_DATE = pd.Timestamp("1000-01-01")
     users_seasons.loc[
         users_seasons.loc[users_seasons.first_week.eq(users_seasons.last_week)].index, "season"
-    ] = "single week"
-    seasons_users = users_seasons.groupby("season")["public_username"].aggregate(list).to_dict()
+    ] = SINGLE_WEEK_DATE
+    seasons_users = users_seasons.groupby("season")["public_username"].apply(list).to_dict()
 
     for s in seasons_users:
         # Filter df to keep only users of season s.
@@ -158,7 +159,7 @@ def add_comparisons_evolution_grouped_by_contributors_age():
             .public_username.nunique()
         )
 
-        if s == "single week":
+        if s == SINGLE_WEEK_DATE:
             sub_dfs.append(("= last comparison date", season_df))
         else:
             category = s.strftime("%Y %b") + " to " + (s + relativedelta(months=SEASON_SIZE-1)).strftime("%b")

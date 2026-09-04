@@ -8,7 +8,7 @@ This application allows to explore:
 
 ## Install
 
-Create a new Python virtual environment, and install the requirements. Be sure
+Create a new Python virtual environment (Python version `3.13+`), and install the requirements. Be sure
 to use one virtual environment per Python projects in the Tournesol repository
 to not mix dependencies.
 
@@ -40,7 +40,7 @@ streamlit run Tournesol_Data_Visualization.py
 
 ## Copyright & License
 
-Copyright 2021-2022 Association Tournesol and contributors.
+Copyright 2021-2026 Association Tournesol and contributors.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
