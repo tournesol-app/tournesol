@@ -7,7 +7,9 @@ from .criteria import Criteria, CriteriaLocale, CriteriaRank
 from .entity import Entity
 from .entity_poll_rating import EntityPollRating
 from .entity_score import EntityCriteriaScore
+from .entity_source import EntitySource
 from .poll import Poll
 from .rate_later import RateLater
 from .ratings import ContributorRating, ContributorRatingCriteriaScore
 from .scaling import ContributorScaling
+from .subscription import Subscription
