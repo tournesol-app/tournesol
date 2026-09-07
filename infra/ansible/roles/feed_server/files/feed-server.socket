@@ -1,0 +1,12 @@
+[Unit]
+Description=feed server socket
+
+[Socket]
+ListenStream=/run/feed-server.sock
+# nginx connects to the socket, so it must own it. The feed server process
+# receives the socket as an inherited file descriptor and does not need to own
+# the socket file.
+SocketUser=www-data
+
+[Install]
+WantedBy=sockets.target

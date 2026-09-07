@@ -7,8 +7,8 @@
     path: "{{ item }}"
     create: true
     block: |
-    
-      127.0.1.1    {{machine_name}} {{domain_name}} {{api_domain_name}}
+
+      127.0.1.1    {{machine_name}}
   loop:
     - /etc/hosts
     - /etc/cloud/templates/hosts.debian.tmpl  # Template used by cloud-init on startup
@@ -17,7 +17,6 @@
   apt:
     name:
       - unattended-upgrades
-      - software-properties-common
       - apt-transport-https
       - ca-certificates
       - curl
@@ -26,7 +25,7 @@
       - htop
       - net-tools
       - dnsutils
-      - netcat
+      - netcat-traditional
       - python3
       - git
       - build-essential

@@ -1,0 +1,16 @@
+[Unit]
+Description=AT Proto feed server - {{ item.description }}
+Requires=redis-server.service
+After=network.target redis-server.service
+
+[Service]
+User=feedserver
+Group=feedserver
+WorkingDirectory=/srv/feed-server
+EnvironmentFile=/etc/feed-server/feed-server.env
+ExecStart=/srv/feed-server/venv/bin/python -m feed_server.{{ item.module }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
