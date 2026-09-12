@@ -30,6 +30,9 @@ class SubscriptionQuerysetMixin:
         description="Subscribe the logged user to a new source.",
         responses={
             201: SubscriptionSerializer,
+            400: OpenApiResponse(
+                description="The source does not exist, or the uid is malformed."
+            ),
             409: OpenApiResponse(
                 description="The user is already subscribed to this source."
             ),

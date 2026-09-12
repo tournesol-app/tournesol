@@ -7,7 +7,7 @@ from rest_framework.serializers import ModelSerializer
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.errors import ConflictError
-from tournesol.models.entity_source import UID_REGEX_BY_NAMESPACE, EntitySource
+from tournesol.models.entity_source import UID_REGEX_BY_NAMESPACE, EntitySource, SourceNotFound
 from tournesol.models.subscription import Subscription
 
 
@@ -56,9 +56,14 @@ class SubscriptionSerializer(ModelSerializer):
         validators = []
 
     def create(self, validated_data):
-        source = EntitySource.get_or_create_from_uid(
-            validated_data.pop("entity_source")["uid"]
-        )
+        uid = validated_data.pop("entity_source")["uid"]
+        try:
+            source = EntitySource.get_or_create_from_uid(uid)
+        except SourceNotFound as error:
+            raise serializers.ValidationError(
+                {"entity_source": {"uid": [_("This source does not exist.")]}}
+            ) from error
+
         try:
             return Subscription.objects.create(
                 entity_source=source,

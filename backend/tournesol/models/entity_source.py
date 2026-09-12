@@ -18,6 +18,10 @@ UID_REGEX_BY_NAMESPACE = {
 }
 
 
+class SourceNotFound(Exception):
+    """The source does not exist on its platform."""
+
+
 class EntitySource(models.Model):
     """A source that produces entities, such as a YouTube channel."""
 
@@ -34,5 +38,30 @@ class EntitySource(models.Model):
 
     @classmethod
     def get_or_create_from_uid(cls, uid: str) -> "EntitySource":
-        source, _created = cls.objects.get_or_create(uid=uid)
+        existing_source = cls.objects.filter(uid=uid).first()
+        if existing_source is not None:
+            return existing_source
+
+        metadata = cls.fetch_metadata(uid)
+        source, _created = cls.objects.get_or_create(
+            uid=uid, defaults={"metadata": metadata}
+        )
         return source
+
+    @staticmethod
+    def fetch_metadata(uid: str) -> dict:
+        """
+        Fetch the metadata of a source from its platform.
+
+        Only YouTube channels are supported for now; the namespace is validated
+        upstream, before this is reached. Raise `SourceNotFound` if the source
+        does not exist on its platform.
+        """
+        # pylint: disable=import-outside-toplevel
+        from tournesol.utils.api_youtube import ChannelNotFound, get_channel_metadata
+
+        channel_id = uid.split(UID_DELIMITER, maxsplit=1)[1]
+        try:
+            return get_channel_metadata(channel_id)
+        except ChannelNotFound as error:
+            raise SourceNotFound(uid) from error

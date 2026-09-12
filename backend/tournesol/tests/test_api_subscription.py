@@ -1,4 +1,6 @@
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.test import TestCase, override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -9,6 +11,34 @@ from tournesol.tests.factories.subscription import EntitySourceFactory, Subscrip
 
 CHANNEL_ID = "UCH8TsmKEX_PR4jxsg2W3vOg"
 CHANNEL_UID = f"yt:{CHANNEL_ID}"
+
+# A sample of what the YouTube API returns for `channels().list(part="snippet")`.
+CHANNEL_API_RESPONSE = {
+    "kind": "youtube#channelListResponse",
+    "pageInfo": {"totalResults": 1, "resultsPerPage": 5},
+    "items": [
+        {
+            "kind": "youtube#channel",
+            "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
+            "id": CHANNEL_ID,
+            "snippet": {
+                "title": "Tournesol",
+                "description": "Channel description",
+                "publishedAt": "2021-01-01T00:00:00Z",
+                "thumbnails": {
+                    "default": {"url": "https://yt3.ggpht.com/default"},
+                    "medium": {"url": "https://yt3.ggpht.com/medium"},
+                    "high": {"url": "https://yt3.ggpht.com/high"},
+                },
+            },
+        }
+    ],
+}
+# What `get_channel_metadata` extracts from the response above.
+CHANNEL_METADATA = {
+    "name": "Tournesol",
+    "thumbnail": "https://yt3.ggpht.com/medium",
+}
 
 
 class SubscriptionApiTestCase(TestCase):
@@ -33,7 +63,9 @@ class SubscriptionApiTestCase(TestCase):
             status.HTTP_401_UNAUTHORIZED,
         )
 
-    def test_can_subscribe_to_a_new_source(self):
+    @patch("tournesol.utils.api_youtube.get_youtube_channel_details")
+    def test_can_subscribe_to_a_new_source(self, mock_get_youtube_channel_details):
+        mock_get_youtube_channel_details.return_value = CHANNEL_API_RESPONSE
         self.client.force_authenticate(self.user)
 
         response = self.client.post(
@@ -47,15 +79,93 @@ class SubscriptionApiTestCase(TestCase):
             response.data["entity_source"],
             {
                 "uid": CHANNEL_UID,
-                "metadata": {},
+                "metadata": CHANNEL_METADATA,
             },
         )
         self.assertIn("created_at", response.data)
+        mock_get_youtube_channel_details.assert_called_once_with(CHANNEL_ID)
 
         subscription = Subscription.objects.get(user=self.user)
         self.assertEqual(subscription.entity_source.uid, CHANNEL_UID)
 
-    def test_subscribing_reuses_an_existing_source(self):
+    @patch("tournesol.utils.api_youtube.get_youtube_channel_details")
+    def test_cannot_subscribe_to_a_nonexistent_source(self, mock_get_youtube_channel_details):
+        mock_get_youtube_channel_details.return_value = {"items": []}
+        self.client.force_authenticate(self.user)
+
+        response = self.client.post(
+            self.subscriptions_base_url,
+            {"entity_source": {"uid": CHANNEL_UID}},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(EntitySource.objects.filter(uid=CHANNEL_UID).exists())
+        self.assertFalse(Subscription.objects.filter(user=self.user).exists())
+
+    @patch("tournesol.utils.api_youtube.get_youtube_channel_details")
+    def test_subscribing_stores_the_source_without_a_thumbnail(
+        self, mock_get_youtube_channel_details
+    ):
+        mock_get_youtube_channel_details.return_value = {
+            "items": [{"id": CHANNEL_ID, "snippet": {"title": "Tournesol"}}]
+        }
+        self.client.force_authenticate(self.user)
+
+        response = self.client.post(
+            self.subscriptions_base_url,
+            {"entity_source": {"uid": CHANNEL_UID}},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data["entity_source"]["metadata"],
+            {"name": "Tournesol", "thumbnail": None},
+        )
+
+    @override_settings(YOUTUBE_API_KEY=None)
+    def test_subscribing_without_an_api_key_still_creates_the_source(self):
+        """
+        When the metadata cannot be fetched (no API key configured), the
+        subscription is created anyway with an empty metadata, to be filled in
+        later.
+        """
+        self.client.force_authenticate(self.user)
+
+        response = self.client.post(
+            self.subscriptions_base_url,
+            {"entity_source": {"uid": CHANNEL_UID}},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["entity_source"]["metadata"], {})
+        self.assertTrue(Subscription.objects.filter(user=self.user).exists())
+
+    @patch("tournesol.utils.api_youtube.get_youtube_channel_details")
+    def test_subscribing_when_youtube_fails_still_creates_the_source(
+        self, mock_get_youtube_channel_details
+    ):
+        """
+        When the YouTube API call fails, the subscription is created anyway with
+        an empty metadata, to be filled in later.
+        """
+        mock_get_youtube_channel_details.side_effect = Exception("YouTube is unreachable")
+        self.client.force_authenticate(self.user)
+
+        response = self.client.post(
+            self.subscriptions_base_url,
+            {"entity_source": {"uid": CHANNEL_UID}},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["entity_source"]["metadata"], {})
+        self.assertTrue(Subscription.objects.filter(user=self.user).exists())
+
+    @patch("tournesol.utils.api_youtube.get_youtube_channel_details")
+    def test_subscribing_reuses_an_existing_source(self, mock_get_youtube_channel_details):
         self.client.force_authenticate(self.user)
         source = EntitySourceFactory(uid=CHANNEL_UID)
 
@@ -65,6 +175,7 @@ class SubscriptionApiTestCase(TestCase):
             format="json",
         )
 
+        mock_get_youtube_channel_details.assert_not_called()
         self.assertEqual(EntitySource.objects.filter(uid=CHANNEL_UID).count(), 1)
         self.assertEqual(
             Subscription.objects.get(user=self.user).entity_source, source
