@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-14 15:16+0000\n"
+"POT-Creation-Date: 2026-09-13 17:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,31 +23,31 @@ msgstr ""
 msgid "Successfully refreshed the metadata of %(count)s entities."
 msgstr "Les métadonnées de %(count)s entités ont été mises à jour."
 
-#: tournesol/admin.py:294
+#: tournesol/admin.py:300
 msgid "score max"
 msgstr "score max"
 
-#: tournesol/admin.py:393
+#: tournesol/admin.py:399
 msgid "has text?"
 msgstr "contient du texte?"
 
-#: tournesol/admin.py:398
+#: tournesol/admin.py:404
 msgid "Yes"
 msgstr "Oui"
 
-#: tournesol/admin.py:399
+#: tournesol/admin.py:405
 msgid "No"
 msgstr "Non"
 
-#: tournesol/models/comparisons.py:155
+#: tournesol/models/comparisons.py:164
 msgid "The value of score_max cannot be None."
 msgstr "La valeur de score_max ne peut pas être None."
 
-#: tournesol/models/comparisons.py:158
+#: tournesol/models/comparisons.py:167
 msgid "The value of score_max must be greater than or equal to 1."
 msgstr "La valeur de score_max doit être supérieure ou égale à 1."
 
-#: tournesol/models/comparisons.py:163
+#: tournesol/models/comparisons.py:172
 #, python-format
 msgid ""
 "The absolute value of the score %(score)s given to the criterion "
@@ -56,10 +56,18 @@ msgstr ""
 "La valeur absolue du score %(score)s donnée au critère %(criterion)s ne peut "
 "pas être supérieure à la valeur de score_max %(score_max)s."
 
-#: tournesol/serializers/rate_later.py:60
+#: tournesol/serializers/rate_later.py:75
 msgid "The entity is already in the rate-later list of this poll."
 msgstr "L'entité est déjà dans la liste à comparer plus tard de ce scrutin."
 
-#: tournesol/views/comparison.py:20
+#: tournesol/serializers/subscription.py:64
+msgid "This source does not exist."
+msgstr "Cette source n'existe pas."
+
+#: tournesol/serializers/subscription.py:74
+msgid "You are already subscribed to this source."
+msgstr "Vous êtes déjà abonné·e à cette source."
+
+#: tournesol/views/comparison.py:17
 msgid "This action is not allowed on an inactive poll."
 msgstr "Cette action n'est pas permise dans un scrutin inactif."
