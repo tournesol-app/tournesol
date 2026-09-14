@@ -1,0 +1,11 @@
+- name: Restart feed server
+  systemd:
+    name: feed-server
+    state: restarted
+    daemon_reload: true
+
+- name: Reload Nginx
+  systemd:
+    name: nginx
+    state: reloaded
+    daemon_reload: true

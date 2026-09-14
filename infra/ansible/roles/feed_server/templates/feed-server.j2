@@ -1,0 +1,36 @@
+server {
+    server_name {{ feed_server_domain_name }};
+
+    keepalive_timeout 5;
+
+    location / {
+        proxy_pass http://unix:/run/feed-server.sock;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+{% if letsencrypt_email is defined %}
+    listen 443 ssl http2;
+    ssl_certificate /etc/letsencrypt/live/{{ feed_server_domain_name }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ feed_server_domain_name }}/privkey.pem;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload;" always;
+{% else %}
+    listen 80;
+{% endif %}
+}
+
+{% if letsencrypt_email is defined %}
+server {
+    if ($host = {{ feed_server_domain_name }}) {
+        return 301 https://$host$request_uri;
+    }
+
+    listen 80;
+    server_name {{ feed_server_domain_name }};
+    return 404;
+}
+{% endif %}
