@@ -8,6 +8,7 @@ import packageJson from '../package.json';
 declare module 'i18next' {
   interface CustomTypeOptions {
     returnNull: false;
+    allowObjectInHTMLChildren: true;
   }
 }
 

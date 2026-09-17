@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -83,7 +83,6 @@ const ComparisonSliders = ({
   const userSettings = useSelector(selectSettings)?.settings;
   const critAlwaysDisplayed = userSettings.videos?.comparison__criteria_order;
 
-  const isMounted = useRef(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
   const castToComparison = (
@@ -137,13 +136,6 @@ const ComparisonSliders = ({
     [initialComparison]
   );
 
-  useEffect(() => {
-    // the cleanup function will be called when the component is unmounted
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
   const submitComparison = async () => {
     setDisableSubmit(true);
     resetPendingRatings();
@@ -155,10 +147,7 @@ const ComparisonSliders = ({
       refreshStats(pollName);
     }
 
-    // avoid a "memory leak" warning if the component is unmounted on submit.
-    if (isMounted.current) {
-      setSubmitted(true);
-    }
+    setSubmitted(true);
   };
 
   const handleSliderChange = (

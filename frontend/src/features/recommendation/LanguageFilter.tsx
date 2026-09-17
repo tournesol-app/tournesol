@@ -27,7 +27,7 @@ export const LanguageField = ({
   const { t, i18n } = useTranslation();
 
   const getOptionLabel = useCallback(
-    (option) => getLanguageName(t, option),
+    (option: string) => getLanguageName(t, option),
     [t]
   );
 

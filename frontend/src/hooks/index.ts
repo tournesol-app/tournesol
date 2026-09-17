@@ -5,6 +5,7 @@ export { useIsExtensionInstalled } from './useIsExtensionInstalled';
 export { useSearchParams } from './useSearchParams';
 export { useLoginState } from './useLoginState';
 export { useListFilter } from './useListFilter';
+export { useUpdateSearchParams } from './useUpdateSearchParams';
 export { useNotifications } from './useNotifications';
 export { useRefreshSettings } from './useRefreshSettings';
 export { useScrollToLocation } from './useScrollToLocation';

@@ -52,7 +52,7 @@ const ProfileForm = () => {
     // handle success and malformed success
     if (response) {
       if ('detail' in response) {
-        showSuccessAlert(response['detail']);
+        showSuccessAlert(String(response['detail']));
       } else {
         showSuccessAlert(t('settings.profileChangedSuccessfully'));
       }

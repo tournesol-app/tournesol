@@ -1,4 +1,6 @@
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
+
+import { useUpdateSearchParams } from './useUpdateSearchParams';
 
 export const useListFilter = ({
   defaults = [],
@@ -8,7 +10,7 @@ export const useListFilter = ({
   setEmptyValues?: boolean;
 } = {}): [URLSearchParams, (key: string, value: string | null) => void] => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const updateSearchParams = useUpdateSearchParams();
   const searchParams = new URLSearchParams(location.search);
 
   // Initialize the filters with the default values provided.
@@ -36,7 +38,7 @@ export const useListFilter = ({
         searchParams.delete('offset');
       }
 
-      navigate({ search: searchParams.toString() });
+      updateSearchParams(searchParams.toString());
     }
   };
 

@@ -23,7 +23,13 @@ export interface JSONObject {
 }
 
 export type ActionList = Array<
-  | (({ uid, entity }: { uid: string; entity?: EntityResult }) => JSX.Element)
+  | (({
+      uid,
+      entity,
+    }: {
+      uid: string;
+      entity?: EntityResult;
+    }) => JSX.Element | null)
   | React.ReactNode
 >;
 

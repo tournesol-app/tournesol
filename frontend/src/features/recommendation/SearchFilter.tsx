@@ -69,7 +69,8 @@ function SearchFilter({
   );
 
   const setFilterCallback = useCallback(
-    (filter) => setFilter(filter.param, filter.value),
+    (filter: { param: string; value: string | null }) =>
+      setFilter(filter.param, filter.value),
     [setFilter]
   );
 

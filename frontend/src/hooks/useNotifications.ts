@@ -100,13 +100,13 @@ export const useNotifications = () => {
   );
 
   const displayMessagesFromReasonBody = useCallback(
-    (reasonBody) => {
+    (reasonBody: unknown) => {
       if (typeof reasonBody === 'string') {
         showErrorAlert(reasonBody);
       } else if (
         Object.prototype.toString.call(reasonBody) === '[object Object]'
       ) {
-        Object.values(reasonBody).map((value) =>
+        Object.values(reasonBody as Record<string, unknown>).map((value) =>
           displayMessagesFromReasonBody(value)
         );
       } else if (Array.isArray(reasonBody)) {
