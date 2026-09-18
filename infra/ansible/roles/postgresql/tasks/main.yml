@@ -3,21 +3,19 @@
     name: en_US.UTF-8
     state: present
 
-# PostgreSQL versions:
-#   Debian 11 (bullseye) → PG13 from the Debian repository
-#   Debian 13 (trixie)   → PG17 from the Debian repository
-# The default 'postgresql' meta-package resolves to the distro-provided version.
+# On Debian 13, PG17 is the version provided in default repositories.
 - name: Install PostgreSQL (distro-provided version)
   apt:
     name: postgresql
     install_recommends: no
     update_cache: yes
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version == "13"
 
 # On Debian 11, PG17 is not available in the Debian repository.
 # The PGDG repository is added to install it alongside PG13,
 # in preparation for migration.
-# On Debian 13, PG17 is the distro-provided version (installed above),
-# so neither the PGDG repository nor this extra install task are needed.
 - name: Add PostgreSQL PGDG repository
   deb822_repository:
     name: pgdg
@@ -38,6 +36,15 @@
       - postgresql-client-17
     install_recommends: no
     update_cache: yes
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version == "11"
+
+# With PGDG keeping the metapackage may suggest unwanted upgrades
+- name: Remove PostgreSQL meta-package (Debian 11)
+  apt:
+    name: postgresql
+    state: absent
   when:
     - ansible_distribution == "Debian"
     - ansible_distribution_version == "11"
