@@ -31,6 +31,10 @@ class VideoNotFound(Exception):
     pass
 
 
+class ChannelNotFound(Exception):
+    pass
+
+
 class YoutubeNotConfiguredError(Exception):
     pass
 
@@ -97,4 +101,48 @@ def get_video_metadata(video_id, compute_language=True):
         "tags": tags,
         "duration": int(duration.total_seconds()) if duration else None,
         "is_unlisted": yt_info["status"].get("privacyStatus") == "unlisted",
+    }
+
+
+def get_youtube_channel_details(channel_id):
+    youtube = get_youtube_client()
+    if not youtube:
+        raise YoutubeNotConfiguredError(
+            "YouTube client not initialized, did you provide an API key?"
+        )
+
+    logger.info("Fetching YouTube metadata for channel_id '%s'", channel_id)
+    request = youtube.channels().list(part="snippet", id=channel_id)
+    return request.execute()
+
+
+def get_channel_metadata(channel_id):
+    """
+    Return the metadata of a YouTube channel.
+
+    A channel that does not exist raises `ChannelNotFound`. As with
+    `get_video_metadata`, any other failure (no API key, network error, quota
+    exhausted, ...) is swallowed and an empty dict is returned, so a missing
+    name never blocks the caller; the metadata can be fetched again later.
+    """
+    try:
+        yt_response = get_youtube_channel_details(channel_id)
+    except YoutubeNotConfiguredError:
+        return {}
+    except Exception:  # pylint: disable=broad-except
+        logger.error(
+            "Failed to retrieve channel metadata from Youtube for channel_id '%s'",
+            channel_id,
+            exc_info=True,
+        )
+        return {}
+
+    yt_items = yt_response.get("items", [])
+    if len(yt_items) == 0:
+        raise ChannelNotFound
+
+    snippet = yt_items[0]["snippet"]
+    return {
+        "name": snippet["title"],
+        "thumbnail": snippet.get("thumbnails", {}).get("medium", {}).get("url"),
     }

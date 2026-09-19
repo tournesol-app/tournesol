@@ -315,6 +315,7 @@ REST_FRAMEWORK = {
         "user_sustained": "3600/hour",
         # specific rates for specific parts of the API
         "api_video_post": "50/min",
+        "api_subscription_post": "50/min",
         "api_users_me_export": "10/min",
         "api_export_comparisons": "10/min",
         "api_rate_later_bulk_create": "20/day",
