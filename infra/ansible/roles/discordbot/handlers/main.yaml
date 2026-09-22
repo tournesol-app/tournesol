@@ -1,0 +1,5 @@
+- name: Restart Discord Bot
+  systemd:
+    name: discordbot.service
+    state: restarted
+    daemon_reload: true
