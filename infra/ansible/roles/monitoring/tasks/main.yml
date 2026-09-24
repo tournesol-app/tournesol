@@ -283,66 +283,12 @@
   notify:
     - Reload Nginx
 
-# - name: Create Grafana users for administrators
-#   community.grafana.grafana_user:
-#     url: "http://127.0.0.1:3000"
-#     url_username: admin
-#     url_password: "{{grafana_admin_password}}"
-#     validate_certs: no
-#     login: "{{item.name}}"
-#     name: "{{ item.fullname | default(item.name) }}"
-#     email: "{{ item.email | default(item.name + '@xxx.xxx') }}"
-#     password: yopyop # temporary before switching to SSO (in between Grafana is exposed only through an SSH tunnel)
-#     is_admin: yes
-#     # state: "{{ item.state | default('present') }}"
-#     state: absent
-#   with_items: "{{admin_users}}"
-
-# https://grafana.com/docs/grafana/latest/administration/image_rendering/#grafana-image-renderer-plugin-and-remote-rendering-service
-- name: Install Grafana image renderer plugin dependencies
-  apt:
-    name:
-      - libxdamage1
-      - libxext6
-      - libxi6
-      - libxtst6
-      - libnss3
-      - libcups2
-      - libxss1
-      - libxrandr2
-      - libasound2
-      - libatk1.0-0
-      - libatk-bridge2.0-0
-      - libpangocairo-1.0-0
-      - libpango-1.0-0
-      - libcairo2
-      - libatspi2.0-0
-      - libgtk3.0-cil
-      - libgdk3.0-cil
-      - libx11-xcb-dev
-      - libgbm1
-      - libxcb-dri3-0 # undocumented but needed
-      - libxshmfence1 # will be needed soon
-    install_recommends: no
-    cache_valid_time: 3600
-  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
-
 - name: Set permissions on Grafana plugins directory
   file:
     path: /var/lib/grafana/plugins
     state: directory
     owner: grafana
     group: grafana
-
-- name: Install Grafana plugins
-  community.grafana.grafana_plugin:
-    name: "{{item.name}}"
-    version: "{{item.version}}"
-  with_items:
-    - name: grafana-image-renderer
-      version: "3.6.2"
-  when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
-  notify: Enable and restart Grafana
 
 - meta: flush_handlers
 
