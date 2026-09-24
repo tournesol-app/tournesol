@@ -22,8 +22,10 @@
   when: export_backups_bucket_name is defined and export_backups_bucket_name != ""
 
 - name: Install awscli
-  pip:
+  apt:
     name: awscli
+    install_recommends: no
+    cache_valid_time: 3600
   become: yes
 
 - name: Enable and start backups export timer

@@ -44,7 +44,7 @@
       - gnupg
       - lsb-release
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
 
 - name: Add Docker repository signing key
   apt_key:
@@ -65,5 +65,5 @@
       - docker-buildx-plugin
       - docker-compose-plugin
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
   notify: Restart Docker

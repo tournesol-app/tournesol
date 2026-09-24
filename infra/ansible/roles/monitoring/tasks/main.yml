@@ -22,7 +22,7 @@
       - geoip-database
       # - geoip-database-extra
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
 
 - name: Copy Nginx log format
   copy:
@@ -53,7 +53,7 @@
       - prometheus-nginx-exporter
       - prometheus-postgres-exporter
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
 
 - name: Enable and start Prometheus
   systemd:
@@ -177,7 +177,7 @@
   apt:
     name: "grafana"
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
   notify:
     - Reset Grafana admin password
     # - Set Grafana default organization role
@@ -323,7 +323,7 @@
       - libxcb-dri3-0 # undocumented but needed
       - libxshmfence1 # will be needed soon
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
   when: discord_infra_alert_webhook is defined and discord_infra_alert_webhook != ""
 
 - name: Set permissions on Grafana plugins directory
