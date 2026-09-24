@@ -11,6 +11,9 @@ try:
 except RuntimeError:
     GBTs = [NumbaUniformGBT]
 
+ROOT_LAWS = [("BradleyTerry", ()), ("Uniform", ()), ("Gaussian", 1.), ("Discrete", 5)]
+ROOT_LAW_IDS = [name for name, _ in ROOT_LAWS]
+
 
 @pytest.mark.parametrize("GBT", GBTs)
 def test_gbt_score_zero(GBT):
@@ -40,6 +43,26 @@ def test_gbt_score_monotonicity(GBT):
     assert scores.get(entity_name="entity_3").value < scores.get(entity_name="entity_2").value
     assert scores.get(entity_name="entity_1").left_unc > scores.get(entity_name="entity_1").right_unc
     assert scores.get(entity_name="entity_2").left_unc < scores.get(entity_name="entity_2").right_unc
+
+
+@pytest.mark.parametrize("comparison_root_law", ROOT_LAWS, ids=ROOT_LAW_IDS)
+def test_flexible_gbt_comparison_root_laws(comparison_root_law):
+    comparisons = Comparisons()
+    comparisons.set(username="user_0", criterion="default", left_name="entity_1", right_name="entity_2", value=4, max=4)
+    poll = Poll(users=Users(["user_0"]), entities=Entities(["entity_1", "entity_2"]), comparisons=comparisons)
+    fgbt = FlexibleGeneralizedBradleyTerry(comparison_root_law=comparison_root_law, discard_ratings=True, max_workers=1)
+    user_model = fgbt.poll2objects_function(poll)["user_0"]
+    assert user_model(poll.entities["entity_1"], "default").value < user_model(poll.entities["entity_2"], "default").value
+
+def test_flexible_gbt_higher_rating_gives_higher_score():
+    ratings = Ratings()
+    for entity_name, value in {"good": 2, "neutral": 0, "bad": -2}.items():
+        ratings.set(username="user_0", entity_name=entity_name, criterion="default", value=value, min=-2, max=2)
+    poll = Poll(users=Users(["user_0"]), entities=Entities(["good", "neutral", "bad"]), ratings=ratings)
+    fgbt = FlexibleGeneralizedBradleyTerry(rating_root_law=("Uniform", ()), comparison_root_law=("Uniform", ()), max_workers=1)
+    user_model = fgbt.poll2objects_function(poll)["user_0"]
+    scores = {entity.name: user_model(entity, "default").value for entity in poll.entities}
+    assert scores["good"] > scores["neutral"] > scores["bad"], scores
 
 
 @pytest.mark.parametrize("GBT", GBTs)

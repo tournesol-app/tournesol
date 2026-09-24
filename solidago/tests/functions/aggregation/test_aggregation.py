@@ -43,4 +43,24 @@ def test_sum():
     assert global_model(entities["entity_2"]).get(criterion="default").value == -.3
     assert global_model(entities["entity_3"], "default").to_triplet() == pytest.approx((0.6, .8, .6), abs=1e-2)
 
+def qr_quantile_uncertainty(n_users: int, value: float) -> float:
+    """ n_users all score entity_0 at value, with uncertainty 0.5 """
+    agreeing_entities = Entities(["entity_0"])
+    agreeing_voting_rights = VotingRights()
+    rows = list()
+    for index in range(n_users):
+        agreeing_voting_rights.set(username=f"user_{index}", entity_name="entity_0", criterion="default", voting_right=1)
+        rows.append((f"user_{index}", "entity_0", "default", value, .5, .5))
+    agreeing_user_models = UserModels(user_directs=UserDirectScores(
+        rows, columns=["username", "entity_name", "criterion", "value", "left_unc", "right_unc"]
+    ))
+    aggregator = functions.aggregation.EntitywiseQrQuantile(quantile=0.2, lipschitz=0.1, error=1e-5, max_workers=1)
+    global_model = aggregator.fn(agreeing_entities, agreeing_voting_rights, agreeing_user_models)
+    return global_model(agreeing_entities["entity_0"], "default").left_unc
+
+@pytest.mark.parametrize("value", [1., 7.])
+def test_qr_quantile_uncertainty_decreases_with_agreeing_users(value):
+    uncertainties = [qr_quantile_uncertainty(n_users, value) for n_users in (1, 6, 20)]
+    assert uncertainties[0] > uncertainties[1] > uncertainties[2], uncertainties
+
 
