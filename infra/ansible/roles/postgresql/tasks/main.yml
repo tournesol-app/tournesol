@@ -11,7 +11,7 @@
     cache_valid_time: 3600
   when:
     - ansible_facts.distribution == "Debian"
-    - ansible_facts.distribution_version == "13"
+    - ansible_facts.distribution_major_version == "13"
 
 # On Debian 11, PG17 is not available in the Debian repository.
 # The PGDG repository is added to install it alongside PG13,
@@ -27,7 +27,7 @@
     state: present
   when:
     - ansible_facts.distribution == "Debian"
-    - ansible_facts.distribution_version == "11"
+    - ansible_facts.distribution_major_version == "11"
 
 - name: Install PostgreSQL 17 (PGDG, migration target)
   apt:
@@ -38,7 +38,7 @@
     cache_valid_time: 3600
   when:
     - ansible_facts.distribution == "Debian"
-    - ansible_facts.distribution_version == "11"
+    - ansible_facts.distribution_major_version == "11"
 
 # With PGDG keeping the metapackage may suggest unwanted upgrades
 - name: Remove PostgreSQL meta-package (Debian 11)
@@ -47,7 +47,7 @@
     state: absent
   when:
     - ansible_facts.distribution == "Debian"
-    - ansible_facts.distribution_version == "11"
+    - ansible_facts.distribution_major_version == "11"
 
 - name: Create Postgresql backups directory
   file:

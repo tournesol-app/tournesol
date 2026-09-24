@@ -126,6 +126,7 @@
   pip:
     name:
       - "uv==0.9.9"
+    break_system_packages: true
   become: yes
 
 - name: "Synchronize virtualenv with uv.lock"
