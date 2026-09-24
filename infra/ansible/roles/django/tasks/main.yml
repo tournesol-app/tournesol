@@ -36,6 +36,18 @@
   become: yes
   become_user: postgres
 
+# Since PostgreSQL 15 the public schema is no longer writable by every user,
+# so the Django user needs an explicit grant to create its tables there.
+- name: Grant privileges on the public schema to Django database user
+  postgresql_privs:
+    roles: "{{django_database_user}}"
+    login_db: "{{django_database_name}}"
+    type: schema
+    objs: public
+    privs: "CREATE"
+  become: yes
+  become_user: postgres
+
 - name: Create Django settings directory
   file:
     path: /etc/tournesol
