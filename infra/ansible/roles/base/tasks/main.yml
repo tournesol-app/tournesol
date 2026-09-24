@@ -17,7 +17,6 @@
   apt:
     name:
       - unattended-upgrades
-      - software-properties-common
       - apt-transport-https
       - ca-certificates
       - curl
@@ -26,8 +25,10 @@
       - htop
       - net-tools
       - dnsutils
-      - netcat
       - python3
+      - python3-debian    # required by deb822_repository tasks in Ansible
+      - python3-pip       # required by pip tasks in Ansible
+      - python3-psycopg2  # required by postgresql_* tasks in Ansible
       - git
       - build-essential
       - vim

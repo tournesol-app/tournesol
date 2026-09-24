@@ -163,21 +163,22 @@
 
 - meta: flush_handlers
 
-- name: Add Grafana repository signing key
-  apt_key:
-    url: https://apt.grafana.com/gpg.key
-    state: present
-
 - name: Add Grafana repository
-  apt_repository:
-    repo: deb https://apt.grafana.com stable main
+  deb822_repository:
+    name: grafana
+    types: deb
+    uris: https://apt.grafana.com
+    suites: stable
+    components: main
+    signed_by: https://apt.grafana.com/gpg.key
     state: present
+  register: grafana_repo
 
 - name: Install Grafana
   apt:
     name: "grafana"
     install_recommends: no
-    cache_valid_time: 3600
+    update_cache: "{{ grafana_repo.changed }}"
   notify:
     - Reset Grafana admin password
     # - Set Grafana default organization role

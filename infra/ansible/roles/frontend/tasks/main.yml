@@ -19,13 +19,14 @@
     suites: stable
     components: main
     signed_by: https://dl.yarnpkg.com/debian/pubkey.gpg
+  register: yarn_repo
 
 - name: Install Yarn
   apt:
     name:
       - yarn
     install_recommends: no
-    cache_valid_time: 3600
+    update_cache: "{{ yarn_repo.changed }}"
 
 - name: Install NVM
   shell:
