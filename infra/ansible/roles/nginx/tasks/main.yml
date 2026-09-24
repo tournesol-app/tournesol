@@ -4,7 +4,7 @@
       - certbot
       - python3-certbot-nginx
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
 
 - name: Check if certificates for frontend are already present
   stat:
@@ -52,7 +52,7 @@
   apt:
     name: nginx
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
 
 - name: Set Nginx configuration
   template:

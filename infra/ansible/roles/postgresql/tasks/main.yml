@@ -8,7 +8,7 @@
   apt:
     name: postgresql
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
   when:
     - ansible_distribution == "Debian"
     - ansible_distribution_version == "13"
@@ -35,7 +35,7 @@
       - postgresql-17
       - postgresql-client-17
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
   when:
     - ansible_distribution == "Debian"
     - ansible_distribution_version == "11"

@@ -38,4 +38,4 @@
       - rsync
       - jq  # used at deploy time by get-vm-secrets
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600

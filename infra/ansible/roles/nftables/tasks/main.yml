@@ -13,7 +13,7 @@
   apt:
     name: nftables
     install_recommends: no
-    update_cache: true
+    cache_valid_time: 3600
 
 - name: Copy Nftables configuration file
   template:
