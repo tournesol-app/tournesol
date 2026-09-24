@@ -4,6 +4,14 @@
     system: yes
     create_home: yes
 
+- name: Allow other users to read content of /home/react
+  file:
+    path: /home/react
+    state: directory
+    owner: react
+    group: react
+    mode: '0755'
+
 - name: Create remote_tmp directory for React user
   file:
     path: /home/react/.ansible/tmp
