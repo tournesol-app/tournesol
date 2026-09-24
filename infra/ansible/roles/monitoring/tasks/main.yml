@@ -20,7 +20,7 @@
   apt:
     name:
       - geoip-database
-      # - geoip-database-extra
+      - libnginx-mod-http-geoip  # provides the geoip_country directive used in nginx-log-format.conf
     install_recommends: no
     cache_valid_time: 3600
 
