@@ -44,17 +44,18 @@
       - gnupg
       - lsb-release
     install_recommends: no
-    update_cache: yes
-
-- name: Add Docker repository signing key
-  apt_key:
-    url: https://download.docker.com/linux/debian/gpg
-    state: present
+    cache_valid_time: 3600
 
 - name: Add Docker repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/debian bullseye stable
+  deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/debian
+    suites: "{{ ansible_facts.distribution_release }}"
+    components: stable
+    signed_by: https://download.docker.com/linux/debian/gpg
     state: present
+  register: docker_repo
 
 - name: Install Docker
   apt:
@@ -65,5 +66,5 @@
       - docker-buildx-plugin
       - docker-compose-plugin
     install_recommends: no
-    update_cache: yes
+    update_cache: "{{ docker_repo.changed }}"
   notify: Restart Docker

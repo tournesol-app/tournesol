@@ -2,7 +2,7 @@
 
 set -Eeuxo pipefail
 
-DEBIAN_VERSION="11.7.0"
+DEBIAN_VERSION="13.7.0"
 CURRENT_DIR="$(realpath -e "$(dirname "$0")")"
 
 cd "$CURRENT_DIR"
