@@ -1,0 +1,2 @@
+# Number of gunicorn worker processes serving the HTTP API. Overridable per host.
+feed_server_web_workers: 1
