@@ -15,6 +15,7 @@ from atproto_crypto.consts import SECP256K1_CURVE_ORDER, SECP256K1_JWT_ALG
 from atproto_crypto.did import format_did_key
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
+from atproto_identity.exceptions import DidNotFoundError
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 
 from feed_server import auth
@@ -27,6 +28,10 @@ ISSUER_DID = "did:plc:exampleissuer000000000000"
 
 def _b64url(raw: bytes) -> str:
     return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+
+def _b64url_decode(segment: str) -> bytes:
+    return base64.urlsafe_b64decode(segment + "=" * (-len(segment) % 4))
 
 
 class SigningIdentity:
@@ -53,7 +58,11 @@ class SigningIdentity:
         signature = self._sign(f"{header}.{signed_body}".encode("ascii"))
         # When tampered_payload is set, the visible body no longer matches what was
         # signed, simulating an attacker editing claims after the token was issued.
-        body = signed_body if tampered_payload is None else _b64url(json.dumps(tampered_payload).encode())
+        body = (
+            signed_body
+            if tampered_payload is None
+            else _b64url(json.dumps(tampered_payload).encode())
+        )
         return f"{header}.{body}.{_b64url(signature)}"
 
     def bearer(self, payload: dict, tampered_payload: dict | None = None) -> str:
@@ -70,7 +79,8 @@ def resolve_to_identity(identity, monkeypatch):
     """Resolve the issuer DID to the test identity's key, without any network call."""
 
     async def fake_resolve_atproto_key(did: str, force_refresh: bool = False) -> str:
-        assert did == ISSUER_DID
+        if did != ISSUER_DID:
+            raise DidNotFoundError(f"Unable to resolve DID {did}")
         return identity.did_key
 
     monkeypatch.setattr(auth._did_resolver, "resolve_atproto_key", fake_resolve_atproto_key)
@@ -103,15 +113,15 @@ async def test_non_bearer_authorization_is_anonymous():
 
 
 async def test_malformed_jwt_is_rejected():
-    assert await auth.get_requester_did(
-        "Bearer not.a-jwt", lexicon_method=GET_FEED_SKELETON
-    ) is None
+    assert (
+        await auth.get_requester_did("Bearer not.a-jwt", lexicon_method=GET_FEED_SKELETON) is None
+    )
 
 
 async def test_forged_signature_is_rejected(identity):
     token = identity.make_jwt(valid_payload())
     header, body, signature = token.split(".")
-    forged_signature = _b64url(bytes(b ^ 0xFF for b in auth._b64url_decode(signature)))
+    forged_signature = _b64url(bytes(b ^ 0xFF for b in _b64url_decode(signature)))
     forged = f"Bearer {header}.{body}.{forged_signature}"
     assert await auth.get_requester_did(forged, lexicon_method=GET_FEED_SKELETON) is None
 
@@ -130,7 +140,8 @@ async def test_wrong_audience_is_rejected(identity):
 
 
 async def test_expired_token_is_rejected(identity):
-    bearer = identity.bearer(valid_payload(exp=int(time.time()) - 5))
+    expired = int(time.time()) - auth.CLOCK_LEEWAY_SECONDS - 5
+    bearer = identity.bearer(valid_payload(exp=expired))
     assert await auth.get_requester_did(bearer, lexicon_method=GET_FEED_SKELETON) is None
 
 
@@ -143,9 +154,10 @@ async def test_token_for_another_method_is_rejected(identity):
 async def test_missing_lexicon_method_is_rejected(identity):
     payload = valid_payload()
     del payload["lxm"]
-    assert await auth.get_requester_did(
-        identity.bearer(payload), lexicon_method=GET_FEED_SKELETON
-    ) is None
+    assert (
+        await auth.get_requester_did(identity.bearer(payload), lexicon_method=GET_FEED_SKELETON)
+        is None
+    )
 
 
 async def test_signature_reverified_after_key_rotation(identity, monkeypatch):
@@ -161,3 +173,42 @@ async def test_signature_reverified_after_key_rotation(identity, monkeypatch):
         identity.bearer(valid_payload()), lexicon_method=GET_FEED_SKELETON
     )
     assert requester_did == ISSUER_DID
+
+
+async def test_missing_expiration_is_rejected(identity):
+    payload = valid_payload()
+    del payload["exp"]
+    assert (
+        await auth.get_requester_did(identity.bearer(payload), lexicon_method=GET_FEED_SKELETON)
+        is None
+    )
+
+
+async def test_non_object_payload_is_rejected():
+    header = _b64url(json.dumps({"typ": "JWT", "alg": "ES256K"}).encode())
+    bearer = f"Bearer {header}.{_b64url(b'[]')}.AA"
+    assert await auth.get_requester_did(bearer, lexicon_method=GET_FEED_SKELETON) is None
+
+
+async def test_did_key_issuer_is_rejected(identity, monkeypatch):
+    # A did:key resolves to itself, so anyone could mint a valid token for a fresh identity.
+    async def resolve_did_key(did: str, force_refresh: bool = False) -> str:
+        return did
+
+    monkeypatch.setattr(auth._did_resolver, "resolve_atproto_key", resolve_did_key)
+    bearer = identity.bearer(valid_payload(iss=identity.did_key))
+    assert await auth.get_requester_did(bearer, lexicon_method=GET_FEED_SKELETON) is None
+
+
+async def test_unexpected_resolver_error_is_rejected(identity, monkeypatch):
+    # e.g. a did:web host answering 200 with a body that is not JSON.
+    async def resolve_malformed_document(did: str, force_refresh: bool = False) -> str:
+        raise ValueError("expected value at line 1 column 1")
+
+    monkeypatch.setattr(auth._did_resolver, "resolve_atproto_key", resolve_malformed_document)
+    assert (
+        await auth.get_requester_did(
+            identity.bearer(valid_payload()), lexicon_method=GET_FEED_SKELETON
+        )
+        is None
+    )

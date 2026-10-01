@@ -39,7 +39,9 @@ async def get_feed_skeleton(
     )
     logger.info("Feed %s requested by %s", rkey, requester_did)
     skeleton = await feed.get_feed(
-        limit=params.limit or 50, cursor=params.cursor, requester_did=requester_did
+        limit=params.limit or 50,
+        cursor=params.cursor,
+        requester_did=requester_did,
     )
     skeleton.req_id = str(uuid.uuid4())
     return skeleton
@@ -76,7 +78,7 @@ async def send_interactions(
         logger.info("Received interaction on feed %s: %s", feed_rkey, interaction)
         if (
             requester_did
-            and interaction.event == 'app.bsky.feed.defs#interactionSeen'
+            and interaction.event == "app.bsky.feed.defs#interactionSeen"
             and interaction.item
         ):
             await db.mark_record_as_seen(
