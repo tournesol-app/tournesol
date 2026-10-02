@@ -1,0 +1,7 @@
+# Deploys the AT Proto feed server onto a host already provisioned by setup.yml.
+- hosts: tournesol
+  roles:
+    - repository # uses the same repository as source
+    - redis
+    - feed_server
+  become: true

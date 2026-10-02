@@ -1,0 +1,21 @@
+[Unit]
+Description=AT Proto feed server
+Requires=feed-server.socket redis-server.service
+After=network.target redis-server.service feed-server.socket
+
+[Service]
+User=feedserver
+Group=feedserver
+WorkingDirectory=/srv/feed-server
+EnvironmentFile=/etc/feed-server/feed-server.env
+# A single worker is mandatory: the jetstream listener and the queue consumer
+# run as asyncio tasks inside the application, so running several workers would
+# index every post several times.
+# The listening socket is provided by feed-server.socket (systemd socket
+# activation) and inherited as file descriptor 3.
+ExecStart=/srv/feed-server/venv/bin/uvicorn feed_server.main:app --fd 3 --workers 1
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
