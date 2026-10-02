@@ -145,4 +145,5 @@ def get_channel_metadata(channel_id):
     return {
         "name": snippet["title"],
         "thumbnail": snippet.get("thumbnails", {}).get("medium", {}).get("url"),
+        "customUrl": snippet.get("customUrl"),
     }
