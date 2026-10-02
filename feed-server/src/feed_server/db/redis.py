@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import os
 
@@ -7,6 +6,20 @@ import redis.asyncio as redis
 from feed_server.indexer.record import AtprotoCompactRecord, AtprotoSeenRecord
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+REDIS_MAX_CONNECTIONS = int(os.getenv("REDIS_MAX_CONNECTIONS", "50"))
+PIPELINE_CHUNK_SIZE = 400  # max LRANGE commands sent in one pipeline
+
+
+def _make_client(decode_responses: bool) -> redis.Redis:
+    # Hard cap: when all connections are busy, redis raises
+    # redis.exceptions.MaxConnectionsError (a ConnectionError subclass),
+    # so a too-low limit shows up in the logs.
+    pool = redis.ConnectionPool.from_url(
+        REDIS_URL,
+        max_connections=REDIS_MAX_CONNECTIONS,
+        decode_responses=decode_responses,
+    )
+    return redis.Redis(connection_pool=pool)
 
 
 class RedisDb:
@@ -14,8 +27,8 @@ class RedisDb:
     SEEN_RETENTION_IN_DAYS = 7
 
     def __init__(self) -> None:
-        self.redis_client = redis.from_url(REDIS_URL, decode_responses=True)
-        self.redis_client_bytes = redis.from_url(REDIS_URL, decode_responses=False)
+        self.redis_client = _make_client(decode_responses=True)
+        self.redis_client_bytes = _make_client(decode_responses=False)
 
     @staticmethod
     def cid_processed_key(cid: str):
@@ -45,6 +58,18 @@ class RedisDb:
     def feed_posts_key(feed_key: str):
         return f"feed:posts:{feed_key}"
 
+    @staticmethod
+    async def _lrange_all(client: redis.Redis, keys: list[str]) -> list:
+        """Read whole lists for many keys, using a few pipelined round trips."""
+        items = []
+        for i in range(0, len(keys), PIPELINE_CHUNK_SIZE):
+            async with client.pipeline(transaction=False) as pipe:
+                for key in keys[i : i + PIPELINE_CHUNK_SIZE]:
+                    pipe.lrange(key, 0, -1)
+                results = await pipe.execute()
+            items.extend(it for result in results for it in result)
+        return items
+
     async def is_record_in_feed(self, feed_key: str, cid: str):
         key = self.cid_in_feed_key(feed_key=feed_key, cid=cid)
         return await self.redis_client.get(key) == "1"
@@ -70,19 +95,17 @@ class RedisDb:
         return [AtprotoCompactRecord.deserialize(it) for it in items]
 
     async def get_records_by_poster(self, poster_did: str):
-        items = []
-        today = datetime.datetime.now(datetime.UTC).date()
-        for n in range(self.POSTS_RETENTION_IN_DAYS + 1):
-            day = today - datetime.timedelta(days=n)
-            key = self.account_posts_key(poster_did, day)
-            items.extend(await self.redis_client_bytes.lrange(key, 0, -1))
-        return [AtprotoCompactRecord.deserialize(it) for it in items]
+        return await self.get_records_by_posters([poster_did])
 
     async def get_records_by_posters(self, poster_dids: list[str]) -> list[AtprotoCompactRecord]:
-        records_per_poster = await asyncio.gather(
-            *(self.get_records_by_poster(did) for did in poster_dids)
-        )
-        return [record for records in records_per_poster for record in records]
+        today = datetime.datetime.now(datetime.UTC).date()
+        keys = [
+            self.account_posts_key(did, today - datetime.timedelta(days=n))
+            for did in poster_dids
+            for n in range(self.POSTS_RETENTION_IN_DAYS + 1)
+        ]
+        items = await self._lrange_all(self.redis_client_bytes, keys)
+        return [AtprotoCompactRecord.deserialize(it) for it in items]
 
     async def mark_record_as_seen(
         self, feed_key: str, user_did: str, seen_record: AtprotoSeenRecord
@@ -92,12 +115,12 @@ class RedisDb:
         await self.redis_client.expire(key, self.SEEN_RETENTION_IN_DAYS * 24 * 3600)
 
     async def get_records_seen_by_user(self, feed_key: str, did: str) -> list[AtprotoSeenRecord]:
-        items = []
         today = datetime.datetime.now(datetime.UTC).date()
-        for n in range(self.SEEN_RETENTION_IN_DAYS + 1):
-            day = today - datetime.timedelta(days=n)
-            key = self.feed_posts_seen_key(feed_key, did=did, date=day)
-            items.extend(await self.redis_client.lrange(key, 0, -1))
+        keys = [
+            self.feed_posts_seen_key(feed_key, did=did, date=today - datetime.timedelta(days=n))
+            for n in range(self.SEEN_RETENTION_IN_DAYS + 1)
+        ]
+        items = await self._lrange_all(self.redis_client, keys)
         return [AtprotoSeenRecord.deserialize(it) for it in items]
 
 
