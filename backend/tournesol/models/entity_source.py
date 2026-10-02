@@ -14,6 +14,7 @@ from django.utils import timezone
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
+from tournesol.serializers.metadata import EntitySourceMetadata
 from tournesol.utils.constants import YOUTUBE_CHANNEL_ID_REGEX
 
 # The pattern a whole source uid must match, per uid namespace.
@@ -28,6 +29,8 @@ class SourceNotFound(Exception):
 
 class EntitySource(models.Model):
     """A source that produces entities, such as a YouTube channel."""
+
+    metadata_serializer_class = EntitySourceMetadata
 
     uid = models.CharField(
         unique=True,
@@ -80,6 +83,12 @@ class EntitySource(models.Model):
         except ChannelNotFound as error:
             raise SourceNotFound(uid) from error
 
+    @property
+    def cleaned_metadata(self):
+        serializer = self.metadata_serializer_class(data=self.metadata)
+        serializer.is_valid(raise_exception=True)
+        return serializer.data
+
     def metadata_needs_to_be_refreshed(self) -> bool:
         if self.last_metadata_request_at is None:
             return True
@@ -121,9 +130,8 @@ class EntitySource(models.Model):
             self.save(update_fields=["last_metadata_request_at"])
 
         self.update_metadata_field()
-        # TODO: implement cleaned_metadata
-        # Ensure that the metadata format is valid after refresh
-        # self.instance.metadata = self.cleaned_metadata
+        # ensure that the metadata format is valid after refresh
+        self.metadata = self.cleaned_metadata
         self.metadata_timestamp = timezone.now()
         if save:
             self.save(update_fields=["metadata", "metadata_timestamp"])
