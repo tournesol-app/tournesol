@@ -24,6 +24,7 @@ CHANNEL_API_RESPONSE = {
             "snippet": {
                 "title": "Tournesol",
                 "description": "Channel description",
+                "customUrl": "Channel handle",
                 "publishedAt": "2021-01-01T00:00:00Z",
                 "thumbnails": {
                     "default": {"url": "https://yt3.ggpht.com/default"},
@@ -38,6 +39,7 @@ CHANNEL_API_RESPONSE = {
 CHANNEL_METADATA = {
     "name": "Tournesol",
     "thumbnail": "https://yt3.ggpht.com/medium",
+    "customUrl": "Channel handle",
 }
 
 
@@ -104,7 +106,7 @@ class SubscriptionApiTestCase(TestCase):
         self.assertFalse(Subscription.objects.filter(user=self.user).exists())
 
     @patch("tournesol.utils.api_youtube.get_youtube_channel_details")
-    def test_subscribing_stores_the_source_without_a_thumbnail(
+    def test_subscribing_stores_the_source_without_optional_fields(
         self, mock_get_youtube_channel_details
     ):
         mock_get_youtube_channel_details.return_value = {
@@ -121,7 +123,7 @@ class SubscriptionApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data["entity_source"]["metadata"],
-            {"name": "Tournesol", "thumbnail": None},
+            {"name": "Tournesol", "thumbnail": None, "customUrl": None},
         )
 
     @override_settings(YOUTUBE_API_KEY=None)
