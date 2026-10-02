@@ -20,6 +20,7 @@ import FeedForYou from 'src/pages/feed/FeedForYou';
 import FeedTopItems from 'src/pages/feed/FeedTopItems';
 import RateLaterPage from 'src/pages/rateLater/RateLater';
 import SearchPage from 'src/pages/search/SearchPage';
+import ChannelPage from 'src/pages/source/ChannelPage';
 import { RouteID } from 'src/utils/types';
 
 interface Props {
@@ -88,6 +89,12 @@ const PollRoutes = ({ pollName }: Props) => {
       url: 'feed/foryou',
       page: FeedForYou,
       auth: true,
+    },
+    {
+      id: RouteID.EntitySource,
+      url: 'source',
+      page: ChannelPage,
+      auth: false,
     },
     {
       id: RouteID.Search,

@@ -215,6 +215,7 @@ export const polls: Array<SelectablePoll> = [
             RouteID.FeedTopItems,
             RouteID.FeedForYou,
             RouteID.Search,
+            RouteID.Channel,
             RouteID.MyRateLaterList,
             RouteID.MyComparedItems,
             RouteID.Criteria,
