@@ -46,6 +46,7 @@ from .views.ratings import (
 )
 from .views.stats import StatisticsView
 from .views.subsamples import SubSamplesList
+from .views.subscription import SubscriptionDetail, SubscriptionList
 from .views.suggestions.to_compare import SuggestionsToCompare
 from .views.unconnected_entities import UnconnectedEntitiesView
 from .views.user import CurrentUserView
@@ -122,6 +123,17 @@ urlpatterns = [
         "users/me/rate_later/<str:poll_name>/<str:uid>/",
         RateLaterDetail.as_view(),
         name="usersme_ratelater_detail",
+    ),
+    # Subscription API
+    path(
+        "users/me/subscriptions/",
+        SubscriptionList.as_view(),
+        name="usersme_subscription_list",
+    ),
+    path(
+        "users/me/subscriptions/<str:source_uid>/",
+        SubscriptionDetail.as_view(),
+        name="usersme_subscription_detail",
     ),
     # Ratings API
     path(
