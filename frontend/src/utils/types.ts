@@ -49,6 +49,7 @@ export enum RouteID {
   Home = 'home',
   PwaEntryPoint = 'pwaEntryPoint',
   // new feeds
+  EntitySource = 'entitySource',
   FeedForYou = 'feedForYou',
   FeedTopItems = 'feedTopItems',
   Search = 'search',
