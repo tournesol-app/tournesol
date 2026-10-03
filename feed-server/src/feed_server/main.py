@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from contextlib import asynccontextmanager
 
 from feed_server.indexer.record import AtprotoCompactRecord
@@ -15,16 +16,25 @@ from feed_server.feeds import ALL_FEEDS
 
 
 async def process_posts():
+    last_warn_check = 0.0
     while True:
-        queue_size = await db.redis_client.llen(QUEUE_KEY)
-        if queue_size >= 100:
-            logging.warning("Many posts to process. Queue size: %s", queue_size)
+        try:
+            now = time.monotonic()
+            if now - last_warn_check > 10:
+                last_warn_check = now
+                size = await db.redis_client.llen(QUEUE_KEY)
+                if size >= 100:
+                    logging.warning("Many posts to process. Queue size: %s", size)
 
-        result = await db.redis_client.blpop(QUEUE_KEY, timeout=0)
-        if result is None:
+            result = await db.redis_client.blpop(QUEUE_KEY, timeout=5)
+            if result is None:
+                continue
+            _, message_json = result
+        except Exception:
+            logging.exception("Error while retrieving posts from Redis queue, retrying")
             await asyncio.sleep(1.0)
             continue
-        _, message_json = result
+
         try:
             post = orjson.loads(message_json)
             record = AtprotoCompactRecord.from_raw(post)
