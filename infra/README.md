@@ -47,10 +47,38 @@ If for any reason you're not able to set up a virtual machine on your computer -
 <VM_IP> tournesol-vm tournesol-api tournesol-grafana tournesol-webanalytics
 ```
 in your `/etc/hosts` file
-- Check the administrators list in `ansible/group_vars/tournesol.yml`
-- Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them either in `ansible/group_vars/tournesol.yml` or in `ansible/roles/users/files/admin-users/<username>/.ssh/authorized_keys`
+- Check the administrators list in `ansible/group_vars/all.yml`
+- Add users dot files in `ansible/roles/users/files/admin-users` to match administrators tastes and set the `authorized_keys` for each of them either in `ansible/group_vars/all.yml` or in `ansible/roles/users/files/admin-users/<username>/.ssh/authorized_keys`
 - Run `source ./ansible/scripts/generate-secrets.sh` to generate secrets
 - Run `./ansible/scripts/provisioning-vm.sh apply` (without `apply` it's a dry-run)
+
+## AT Proto Feed Server
+
+The AT Proto feed server (`feed-server/`) runs on its own dedicated host.
+`feed-server.yml` provisions a fresh Debian (trixie).
+
+To provision the local development VM:
+
+- Create a VM as described above, but with hostname `tournesol-feed` and only an SSH server. Add `<VM_IP> tournesol-feed-vm` to your `/etc/hosts`.
+- Push your SSH key and enable passwordless sudo (same steps as Provisioning).
+- Dry-run, then apply:
+
+```bash
+cd infra
+./ansible/scripts/deploy-feed-server.sh tournesol-feed-vm # dry-run (--check), but some steps are expected to fail when the VM has never been set up
+./ansible/scripts/deploy-feed-server.sh tournesol-feed-vm apply
+```
+
+The development VM is served over plain HTTP (because `letsencrypt_email` is left undefined). You can check by accessing http://tournesol-feed-vm/.well-known/did.json.
+
+The deployment defaults to the current git HEAD; override with the `GIT_REFERENCE` environment variable. The commit must be pushed to GitHub, since the `repository` role clones it from there.
+
+To actually register the feeds on Bluesky you need the system to be reachable from a public hostname and use that name in `feed_server_domain_name`. You also need an HTTPS certificate, that will be created if you define  `letsencrypt_email` in the inventory. Then to register the feeds on Bluesky:
+
+- `ssh <feed_server_domain_name>`
+- `sudo -u feedserver -s`
+- `cd /srv/feed-server`
+- `uv run python scripts/feedgen.py publish --handle <email of the bluesky account hosting the feed> --hostname <feed_server_domain_name> --record-name <name of the feed> --display-name <name of the feed that'll be displayed on bluesky>` (see `feed-server/src/feed_server/feeds/__init__.py` for the available feed names)
 
 ## TODO
 

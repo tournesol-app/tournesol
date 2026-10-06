@@ -1,0 +1,11 @@
+feed_server_uv_version: "0.9.9"
+
+# Ingestion worker processes, each deployed as its own systemd unit
+# (feed-server-<name>.service running python -m feed_server.<module>).
+feed_server_workers:
+  - name: jetstream
+    module: worker_jetstream
+    description: jetstream firehose listener
+  - name: process
+    module: worker_process
+    description: post processing worker

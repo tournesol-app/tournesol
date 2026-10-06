@@ -4,6 +4,14 @@
     system: yes
     create_home: yes
 
+# Service users (gunicorn, feedserver) rsync their code from this checkout, so
+# they need to traverse the home. Debian 13 creates homes as 0750 by default.
+- name: Make the git home traversable
+  file:
+    path: /home/git
+    state: directory
+    mode: "0755"
+
 - name: Create remote_tmp directory for git user
   file:
     path: /home/git/.ansible/tmp
@@ -16,13 +24,5 @@
     repo: 'https://github.com/tournesol-app/tournesol.git'
     dest: /home/git/tournesol
     version: "{{git_reference}}"
-  become: yes
-  become_user: git
-
-- name: Checkout Plausible Analytics self-hosting repository
-  git:
-    repo: 'https://github.com/tournesol-app/plausible-self-hosting'
-    dest: /home/git/plausible_hosting
-    version: "{{ plausible_hosting_tag }}"
   become: yes
   become_user: git
