@@ -6,6 +6,7 @@
   "scripts": {
     "configure": "node prepareExtension.js",
     "configure:dev": "TOURNESOL_ENV=dev-env node prepareExtension.js",
+    "configure:safari": "EXTENSION_BROWSER=safari MANIFEST_VERSION=2 node prepareExtension.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
