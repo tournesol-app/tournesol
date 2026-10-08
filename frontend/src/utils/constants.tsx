@@ -30,6 +30,7 @@ const UID_DELIMITER = ':';
 export const UID_YT_NAMESPACE = 'yt' + UID_DELIMITER;
 
 export const pollVideosFilters = {
+  ordering: 'ordering',
   date: 'date',
   language: 'language',
   uploader: 'uploader',
@@ -46,6 +47,7 @@ export const pollVideosFilters = {
 };
 
 export const pollVideosInitialFilters = {
+  ordering: null,
   date: null,
   language: null,
   uploader: null,
