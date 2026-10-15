@@ -67,6 +67,7 @@ export const recommendationsLanguages: {
   th: (t: TFunction) => t('language.th'),
   tl: (t: TFunction) => t('language.tl'),
   tr: (t: TFunction) => t('language.tr'),
+  ug: (t: TFunction) => t('language.ug'),
   uk: (t: TFunction) => t('language.uk'),
   ur: (t: TFunction) => t('language.ur'),
   vi: (t: TFunction) => t('language.vi'),
