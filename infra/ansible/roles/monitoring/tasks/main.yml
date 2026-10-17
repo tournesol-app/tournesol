@@ -1,19 +1,9 @@
-- name: Check if Grafana certificates are already present
-  stat:
-    path: /etc/letsencrypt/live/{{grafana_domain_name}}/fullchain.pem
-  register: grafana_cert_file
-  when: letsencrypt_email is defined
-
-- name: Stop Nginx if Grafana certificates are not present
-  systemd:
+- name: Obtain the TLS certificate for the Grafana domain
+  include_role:
     name: nginx
-    state: stopped
-  when: letsencrypt_email is defined and grafana_cert_file.stat.exists == False
-
-- name: Run Certbot for Grafana domain
-  shell:
-    cmd: "certbot certonly --standalone -d {{grafana_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
-    creates: /etc/letsencrypt/live/{{grafana_domain_name}}/fullchain.pem
+    tasks_from: certificate
+  vars:
+    certbot_domain: "{{ grafana_domain_name }}"
   when: letsencrypt_email is defined
 
 - name: Install GeoIP database
