@@ -1,21 +1,9 @@
-# Temporary:
-# To remove after yarn repo (defined in role "frontend") has been deployed on all environments.
-- name: Remove old entry for Yarn Repository
-  apt_repository:
-    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
-    state: absent
-
-- name: Update all packages to their latest version
-  apt:
-    name: "*"
-    state: latest
-    update_cache: yes
-  when: upgrade_packages == True
-
-- name: Upgrade the OS (apt-get dist-upgrade)
+- name: Upgrade packages
   apt:
     upgrade: dist
     update_cache: yes
+    autoremove: yes
+    autoclean: yes
   when: upgrade_packages == True
 
 - name: Check if a reboot is needed
@@ -26,8 +14,3 @@
 - name: Reboot if needed
   reboot:
   when: reboot_required.stat.exists == True
-
-- name: Autoremove/autoclean unneeded packages
-  apt:
-    autoremove: yes
-    autoclean: yes

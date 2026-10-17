@@ -5,7 +5,7 @@
       - virtualenv
       - gettext  # Required by django to compile messages
     install_recommends: no
-    update_cache: yes
+    cache_valid_time: 3600
 
 - name: Create Gunicorn user
   user:
@@ -33,6 +33,18 @@
     login_db: "{{django_database_name}}"
     type: database
     privs: "CREATE" # Used to create pg extensions in Django migrations
+  become: yes
+  become_user: postgres
+
+# Since PostgreSQL 15 the public schema is no longer writable by every user,
+# so the Django user needs an explicit grant to create its tables there.
+- name: Grant privileges on the public schema to Django database user
+  postgresql_privs:
+    roles: "{{django_database_user}}"
+    login_db: "{{django_database_name}}"
+    type: schema
+    objs: public
+    privs: "CREATE"
   become: yes
   become_user: postgres
 
@@ -126,6 +138,7 @@
   pip:
     name:
       - "uv==0.9.9"
+    break_system_packages: true
   become: yes
 
 - name: "Synchronize virtualenv with uv.lock"

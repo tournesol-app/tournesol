@@ -4,6 +4,14 @@
     system: yes
     create_home: yes
 
+- name: Allow other users to read content of /home/git
+  file:
+    path: /home/git
+    state: directory
+    owner: git
+    group: git
+    mode: '0755'
+
 - name: Create remote_tmp directory for git user
   file:
     path: /home/git/.ansible/tmp
