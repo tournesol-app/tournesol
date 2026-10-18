@@ -3,6 +3,10 @@ Description=Export Backups to S3
 
 [Service]
 Type=oneshot
+# Explicit region needed with AWS CLI v2: it falls back to the
+# VM's metadata service (IMDS) when no region is set, and Infomaniak
+# reports its own region (e.g "dc3-a-0"), which breaks the S3 URL.
+Environment="AWS_REGION=eu-central-1"
 Environment="AWS_ACCESS_KEY_ID={{aws_access_key_id}}"
 Environment="AWS_SECRET_ACCESS_KEY={{aws_secret_access_key}}"
 {% if export_backups_bucket_name is defined %}
