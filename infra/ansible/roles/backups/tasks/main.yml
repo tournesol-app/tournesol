@@ -27,6 +27,9 @@
     install_recommends: no
     cache_valid_time: 3600
   become: yes
+  when:
+    - ansible_facts.distribution == "Debian"
+    - ansible_facts.distribution_major_version == "13"
 
 - name: Enable and start backups export timer
   systemd:
