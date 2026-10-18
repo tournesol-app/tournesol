@@ -259,8 +259,8 @@
 - name: Enable and start ML training timer
   systemd:
     name: ml-train.timer
-    state: started
-    enabled: yes
+    state: "{{ 'stopped' if maintenance | bool else 'started' }}"
+    enabled: "{{ not (maintenance | bool) }}"
     daemon_reload: yes
 
 # scheduled task: create dataset

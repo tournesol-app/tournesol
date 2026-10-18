@@ -79,8 +79,8 @@
 - name: Enable and start tournesol-website-analytics service
   systemd:
     name: tournesol-website-analytics.service
-    state: started
-    enabled: yes
+    state: "{{ 'stopped' if maintenance | bool else 'started' }}"
+    enabled: "{{ not (maintenance | bool) }}"
     daemon_reload: yes
 
 - meta: flush_handlers
