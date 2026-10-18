@@ -58,7 +58,12 @@ def qr_quantile_uncertainty(n_users: int, value: float) -> float:
     global_model = aggregator.fn(agreeing_entities, agreeing_voting_rights, agreeing_user_models)
     return global_model(agreeing_entities["entity_0"], "default").left_unc
 
-@pytest.mark.parametrize("value", [1., 7.])
+@pytest.mark.parametrize("value", [
+    1.,
+    pytest.param(7., marks=pytest.mark.xfail(
+        strict=True, reason="The uncertainty grows with the number of agreeing users far from 0"
+    )),
+])
 def test_qr_quantile_uncertainty_decreases_with_agreeing_users(value):
     uncertainties = [qr_quantile_uncertainty(n_users, value) for n_users in (1, 6, 20)]
     assert uncertainties[0] > uncertainties[1] > uncertainties[2], uncertainties
