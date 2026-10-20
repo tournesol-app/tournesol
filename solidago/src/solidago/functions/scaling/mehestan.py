@@ -1,4 +1,3 @@
-import itertools
 from typing import Callable, Hashable
 from numpy.typing import NDArray
 
@@ -340,7 +339,12 @@ class Mehestan(PollFunction):
         scores = Scores(keynames=["scalee_name", "scaler_name"])
         
         common_kwargs = dict(lipschitz=self.user_comparison_lipschitz, error=self.error)
-        for scalee_name, scaler_name in itertools.product(scores.keys("scaler_name"), scores.keys("scalee_name")):
+        scalee_scaler_pairs = [
+            (scalee_name, scaler_name)
+            for scalee_name in full_scores.keys("scalee_name")
+            for scaler_name in full_scores.filters(scalee_name=scalee_name).keys("scaler_name")
+        ]
+        for scalee_name, scaler_name in scalee_scaler_pairs:
             filtered_weights = full_weights.filters(scalee_name=scalee_name, scaler_name=scaler_name)
             filtered_scores = full_scores.filters(scalee_name=scalee_name, scaler_name=scaler_name)
             kwargs = common_kwargs | dict(

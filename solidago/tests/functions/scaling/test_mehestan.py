@@ -22,3 +22,37 @@ def test_mehestan():
     scaled_users, scaled = mehestan.fn(users, entities, public_settings, user_models)
     assert len(scaled_users) == len(users)
     assert len(user_models) == len(scaled)
+
+
+reference_scores = {"entity_0": -1.5, "entity_1": -0.5, "entity_2": 0.5, "entity_3": 1.5}
+
+
+def scores_of_three_users(transform_last_user_score) -> Scores:
+    rows = [
+        (username, entity_name, "default", score, .1, .1)
+        for username in ("user_0", "user_1")
+        for entity_name, score in reference_scores.items()
+    ] + [
+        ("user_2", entity_name, "default", transform_last_user_score(score), .1, .1)
+        for entity_name, score in reference_scores.items()
+    ]
+    columns = ["username", "entity_name", "criterion", "value", "left_unc", "right_unc"]
+    user_models = UserModels(user_directs=UserDirectScores(rows, columns=columns))
+    return user_models(Entities(list(reference_scores))).filters(criterion="default")
+
+
+def scale_three_users(transform_last_user_score):
+    mehestan = functions.scaling.Mehestan(lipschitz=1., min_scaler_activity=1., max_workers=1)
+    three_users = Users(["user_0", "user_1", "user_2"])
+    scores = scores_of_three_users(transform_last_user_score)
+    multipliers, translations, _, _ = mehestan.scale_criterion(
+        three_users, Entities(list(reference_scores)), PublicSettings(), scores
+    )
+    return multipliers, translations
+
+
+def test_mehestan_computes_a_multiplier_and_a_translation_per_user():
+    multipliers, translations = scale_three_users(lambda score: score)
+    assert len(multipliers) == 3
+    assert len(translations) == 3
+
