@@ -528,7 +528,7 @@ class Mehestan(PollFunction):
             assert isinstance(weights, VotingRights)
             subratios = ratios.filters(scalee_name=scalee_name)
             lipschitz = self.lipschitz / (8 * (1e-9 + model_norms[str(scalee_name)]))
-            multipliers.append(self.aggregate_scalers(weights, subratios, lipschitz, **kwargs)) # type: ignore
+            multipliers.set(self.aggregate_scalers(weights, subratios, lipschitz, **kwargs), username=scalee_name) # type: ignore
         return multipliers
 
     ############################################
@@ -609,6 +609,6 @@ class Mehestan(PollFunction):
         for (scalee_name,), weights in voting_rights.iter("scalee_name"):
             assert isinstance(weights, VotingRights)
             subdiffs = diffs.filters(scalee_name=scalee_name)
-            translations.append(self.aggregate_scalers(weights, subdiffs, **kwargs)) # type: ignore
+            translations.set(self.aggregate_scalers(weights, subdiffs, **kwargs), username=scalee_name) # type: ignore
         return translations
 

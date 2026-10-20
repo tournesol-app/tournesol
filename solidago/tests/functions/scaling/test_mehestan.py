@@ -56,3 +56,9 @@ def test_mehestan_computes_a_multiplier_and_a_translation_per_user():
     assert len(multipliers) == 3
     assert len(translations) == 3
 
+
+def test_mehestan_shrinks_the_scores_of_a_user_with_larger_scores():
+    multipliers, _ = scale_three_users(lambda score: 2 * score)
+    assert multipliers.get(username="user_2").value < 1
+    assert multipliers.get(username="user_0").value >= 1
+
