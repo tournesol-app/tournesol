@@ -62,3 +62,8 @@ def test_mehestan_shrinks_the_scores_of_a_user_with_larger_scores():
     assert multipliers.get(username="user_2").value < 1
     assert multipliers.get(username="user_0").value >= 1
 
+
+def test_mehestan_shifts_the_scores_of_a_user_with_higher_scores_down():
+    _, translations = scale_three_users(lambda score: score + 2)
+    assert translations.get(username="user_2").value < 0
+    assert translations.get(username="user_0").value >= 0

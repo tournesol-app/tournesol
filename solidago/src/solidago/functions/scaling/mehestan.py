@@ -576,7 +576,7 @@ class Mehestan(PollFunction):
         """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
         weight_list, diff_list = VotingRights(keynames=[]), Scores(keynames=[])
         for entity_name in common_entity_names:
-            weight_list.append(value=scaler_public.penalty(self.privacy_penalty, entity_name))
+            weight_list.append(voting_right=scaler_public.penalty(self.privacy_penalty, entity_name))
             diff = scaler_scores.get(entity_name=entity_name) - scalee_scores.get(entity_name=entity_name)
             diff_list.append(diff)
         return weight_list, diff_list
