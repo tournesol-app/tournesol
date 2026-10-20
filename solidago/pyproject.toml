@@ -24,7 +24,7 @@ dependencies = [
     "scikit-learn>=1.7.2",
     "pyyaml>=6.0.3",
     "matplotlib>=3.10.0",
-    "pyarrow>=23.0.1",
+    "pyarrow>=23.0.1,<26",
 ]
 dynamic = ["version"]
 
