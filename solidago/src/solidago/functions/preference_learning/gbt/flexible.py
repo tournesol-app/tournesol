@@ -156,7 +156,9 @@ class FlexibleGeneralizedBradleyTerry(ParallelizedPreferenceLearning):
             (list(), list(), list(), list()), # Gaussian
             (list(), list(), list(), list()), # Discrete
         )
-        comparison_args = a[0] + c[0], a[1] + c[1], a[2] + c[2], a[3] + c[3], a[4] + c[4] # type: ignore
+        # A rating becomes a comparison of the entity (left) against its context (right). A positive
+        # comparison value favors the right side, so a rating's value is negated to favor the entity.
+        comparison_args = a[0] + c[0], a[1] + c[1], [-value for value in a[2]] + c[2], a[3] + c[3], a[4] + c[4] # type: ignore
         for left, right, comparison_value, root_law_index, root_law_arg in zip(*comparison_args):
             comparisons_lists[root_law_index][0].append(left)
             comparisons_lists[root_law_index][1].append(right)
