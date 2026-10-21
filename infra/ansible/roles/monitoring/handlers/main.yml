@@ -17,15 +17,10 @@
     daemon_reload: true
 
 - name: Reset Grafana admin password
-  shell: grafana-cli admin reset-admin-password {{grafana_admin_password}}
+  command: >
+    grafana cli --homepath /usr/share/grafana admin reset-admin-password {{grafana_admin_password}}
   become: yes
   become_user: grafana
-
-# - name: Set Grafana default organization role
-#   lineinfile:
-#     path: /etc/grafana/grafana.ini
-#     regexp: '^;auto_assign_org_role = '
-#     line: auto_assign_org_role = Admin
 
 - name: Create Grafana OIDC application in Django database
   shell:
