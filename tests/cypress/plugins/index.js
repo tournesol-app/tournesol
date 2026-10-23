@@ -12,6 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const fs = require('fs');
 const path = require('path');
 
 /**
@@ -23,7 +24,10 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
 
   on('before:browser:launch', (browser, launchOptions) => {
-    launchOptions.extensions.push(path.join(__dirname, '../../../browser-extension/src'));
+    const browserSrc = path.join(__dirname, '../../../browser-extension/src')
+    if (fs.existsSync(path.join(browserSrc, 'manifest.json'))) {
+      launchOptions.extensions.push(browserSrc);
+    }
     launchOptions.env.LANGUAGE = "en"
     return launchOptions
   })
