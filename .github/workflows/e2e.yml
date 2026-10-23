@@ -54,8 +54,8 @@ jobs:
       - uses: cypress-io/github-action@v7
         with:
           working-directory: tests
-          browser: firefox
-          headed: true
+          browser: chrome
+          headed: true  # necessary to reflect the correct behavior of media queries (e.g. in ComparisonInput)
           spec: "cypress/e2e/frontend/**/*"
 
       - name: Print dev-env logs
