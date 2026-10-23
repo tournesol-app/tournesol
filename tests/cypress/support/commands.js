@@ -24,6 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+Cypress.Commands.overwrite('exec', (_originalFn, cmd) => cy.task('exec', { cmd }))
+
 Cypress.Commands.add('sql', (query) =>
   cy.exec(`docker exec tournesol-dev-db psql -U tournesol -c "${query}"`)
 )

@@ -12,6 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const child_process = require("child_process")
 const fs = require('fs');
 const path = require('path');
 
@@ -30,5 +31,18 @@ module.exports = (on, config) => {
     }
     launchOptions.env.LANGUAGE = "en"
     return launchOptions
+  })
+
+  on('task', {
+    exec({ cmd, cwd = process.cwd(), env = {}, timeout = 60_000 }) {
+      return new Promise((resolve) => {
+        child_process.exec(
+          cmd,
+          { cwd, env: { ...process.env, ...env }, timeout },
+          (err, stdout, stderr) =>
+            resolve({ exitCode: err ? (err.code ?? 1) : 0, stdout, stderr })
+        )
+      })
+    },
   })
 }
