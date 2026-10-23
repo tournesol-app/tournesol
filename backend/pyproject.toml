@@ -20,7 +20,7 @@ dependencies = [
     "matplotlib==3.10.*",
     "numpy==2.3.*",
     "pandas==2.2.*",
-    "pillow==12.*",
+    "pillow==13.*",
     "pilmoji~=2.0.5",
     "psycopg2-binary==2.9.*",
     "python-dotenv==1.*",
