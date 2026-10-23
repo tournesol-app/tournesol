@@ -27,7 +27,7 @@ jobs:
         with:
           working-directory: tests
           browser: firefox
-          headed: true
+          headed: false
           spec: "cypress/e2e/browser-extension/**/*"
           config: baseUrl=https://www.youtube.com
 
@@ -55,7 +55,7 @@ jobs:
         with:
           working-directory: tests
           browser: firefox
-          headed: false
+          headed: true
           spec: "cypress/e2e/frontend/**/*"
 
       - name: Print dev-env logs
