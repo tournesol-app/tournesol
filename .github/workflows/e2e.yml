@@ -27,7 +27,7 @@ jobs:
         with:
           working-directory: tests
           browser: firefox
-          headed: false
+          headed: true
           spec: "cypress/e2e/browser-extension/**/*"
           config: baseUrl=https://www.youtube.com
 
