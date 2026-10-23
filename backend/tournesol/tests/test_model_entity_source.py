@@ -24,8 +24,12 @@ class EntitySourceTestCase(TestCase):
     def setUp(self):
         self.entity_source = EntitySourceFactory(uid=CHANNEL_UID)
 
-        self.metadata_timedelta_refresh_required = OBSOLETE_METADATA_AFTER_DAYS + 1
-        self.metadata_timedelta_refresh_notrequired = OBSOLETE_METADATA_AFTER_DAYS - 1
+        self.metadata_timedelta_refresh_required = (
+            EntitySourceTestCase.OBSOLETE_METADATA_AFTER_DAYS + 1
+        )
+        self.metadata_timedelta_refresh_notrequired = (
+            EntitySourceTestCase.OBSOLETE_METADATA_AFTER_DAYS - 1
+        )
 
     def test_cleaned_metadata_with_valid_medatadata(self):
         """
