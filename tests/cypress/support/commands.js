@@ -24,31 +24,38 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+Cypress.Commands.add('execFile', (file, ...args) => cy.task('execFile', { file, args }))
+
 Cypress.Commands.add('sql', (query) =>
-  cy.exec(`docker exec tournesol-dev-db psql -U tournesol -c "${query}"`)
+  cy.execFile('docker', 'exec', 'tournesol-dev-db', 'psql', '-U', 'tournesol', '-c', query)
 )
 
 Cypress.Commands.add('getEmailLink', () =>
-  cy.exec('docker logs tournesol-dev-api --since=10s 2>&1 | egrep "^http://localhost:3000" | tail -1')
-    .then(result => result.stdout)
+  cy.execFile('docker', 'logs', 'tournesol-dev-api', '--since=10s')
+    .then(({ stdout }) =>
+      stdout.split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith('http://localhost:3000'))
+        .pop() ?? ''
+    )
 )
 
 Cypress.Commands.add('recreateUser', (username, email, password) =>
-  cy.exec(`docker exec tournesol-dev-api uv run python manage.py shell --command="
+  cy.execFile('docker', 'exec', 'tournesol-dev-api', 'uv', 'run', 'python', 'manage.py', 'shell', '--command', `
 from core.models import User
 User.objects.filter(username='${username}').delete()
 User.objects.create_user(username='${username}', email='${email}', password='${password}')
-"`)
+`)
 )
 
 /**
  * Delete a user from the database.
  */
 Cypress.Commands.add('deleteUser', (username) =>
-  cy.exec(`docker exec tournesol-dev-api uv run python manage.py shell --command="
+  cy.execFile('docker', 'exec', 'tournesol-dev-api', 'uv', 'run', 'python', 'manage.py', 'shell', '--command', `
 from core.models import User
 User.objects.filter(username='${username}').delete()
-"`)
+`)
 )
 
 /**
