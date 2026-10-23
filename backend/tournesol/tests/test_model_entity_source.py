@@ -47,7 +47,8 @@ class EntitySourceTestCase(TestCase):
         Calling `cleaned_metadata` with invalid metadata values should
         raise an exception.
         """
-        self.entity_source.metadata = {'name': [1, 2, 3]}
+        invalid_name_value = [1, 2, 3]
+        self.entity_source.metadata = {'name': invalid_name_value}
         with self.assertRaises(ValidationError):
             self.entity_source.cleaned_metadata
 
@@ -98,6 +99,7 @@ class EntitySourceTestCase(TestCase):
         """
         mock_get_channel_metadata.return_value = CHANNEL_METADATA
 
+        # [WHEN] the matadata needs to be refreshed
         self.entity_source.metadata = {}
         self.entity_source.metadata_timestamp = None
         self.entity_source.last_metadata_request_at = None
@@ -107,15 +109,40 @@ class EntitySourceTestCase(TestCase):
             "last_metadata_request_at"
         ])
 
+        # By default, force=False and save=True
         self.entity_source.refresh_metadata()
-        self.entity_source.refresh_from_db()
-
         self.assertDictEqual(self.entity_source.metadata, CHANNEL_METADATA)
         self.assertIsNotNone(self.entity_source.metadata_timestamp)
         self.assertIsNotNone(self.entity_source.last_metadata_request_at)
 
+        self.entity_source.refresh_from_db()
+        self.assertDictEqual(self.entity_source.metadata, CHANNEL_METADATA)
+        self.assertIsNotNone(self.entity_source.metadata_timestamp)
+        self.assertIsNotNone(self.entity_source.last_metadata_request_at)
+
+        # [WHEN] the matadata doesn't need to be refreshed
+        metadata_updated_at = timezone.now() - timedelta(days=1)
+        self.entity_source.metadata = {}
+        self.entity_source.metadata_timestamp = metadata_updated_at
+        self.entity_source.last_metadata_request_at = metadata_updated_at
+        self.entity_source.save(update_fields=[
+            "metadata",
+            "metadata_timestamp",
+            "last_metadata_request_at"
+        ])
+
+        self.entity_source.refresh_metadata()
+        self.assertDictEqual(self.entity_source.metadata, {})
+        self.assertEqual(self.entity_source.metadata_timestamp, metadata_updated_at)
+        self.assertEqual(self.entity_source.last_metadata_request_at, metadata_updated_at)
+
+        self.entity_source.refresh_from_db()
+        self.assertDictEqual(self.entity_source.metadata, {})
+        self.assertEqual(self.entity_source.metadata_timestamp, metadata_updated_at)
+        self.assertEqual(self.entity_source.last_metadata_request_at, metadata_updated_at)
+
     @patch("tournesol.utils.api_youtube.get_channel_metadata")
-    def test_refresh_metadata_with_default_arg_force(self, mock_get_channel_metadata):
+    def test_refresh_metadata_with_arg_force_set_to_true(self, mock_get_channel_metadata):
         """
         Using force=true should update the metadata regardless of the return
         value of `metadata_needs_to_be_refreshed`.
@@ -135,17 +162,20 @@ class EntitySourceTestCase(TestCase):
         self.assertFalse(self.entity_source.metadata_needs_to_be_refreshed())
 
         self.entity_source.refresh_metadata(force=True)
-        self.entity_source.refresh_from_db()
+        self.assertDictEqual(self.entity_source.metadata, CHANNEL_METADATA)
+        self.assertIsNotNone(self.entity_source.metadata_timestamp)
+        self.assertIsNotNone(self.entity_source.last_metadata_request_at)
 
+        self.entity_source.refresh_from_db()
         self.assertDictEqual(self.entity_source.metadata, CHANNEL_METADATA)
         self.assertIsNotNone(self.entity_source.metadata_timestamp)
         self.assertIsNotNone(self.entity_source.last_metadata_request_at)
 
     @patch("tournesol.utils.api_youtube.get_channel_metadata")
-    def test_refresh_metadata_with_default_arg_save(self, mock_get_channel_metadata):
+    def test_refresh_metadata_with_arg_save_set_to_false(self, mock_get_channel_metadata):
         """
-        Using force=true should update the metadata regardless of the return
-        value of `metadata_needs_to_be_refreshed`.
+        Using save=false should update the `EntitySource` instansce's metadata
+        field but not save it to the database.
         """
         mock_get_channel_metadata.return_value = CHANNEL_METADATA
 
@@ -159,8 +189,11 @@ class EntitySourceTestCase(TestCase):
         ])
 
         self.entity_source.refresh_metadata(save=False)
-        self.entity_source.refresh_from_db()
+        self.assertDictEqual(self.entity_source.metadata, CHANNEL_METADATA)
+        self.assertIsNotNone(self.entity_source.metadata_timestamp)
+        self.assertIsNotNone(self.entity_source.last_metadata_request_at)
 
+        self.entity_source.refresh_from_db()
         self.assertDictEqual(self.entity_source.metadata, {})
         self.assertIsNone(self.entity_source.metadata_timestamp)
         self.assertIsNone(self.entity_source.last_metadata_request_at)
