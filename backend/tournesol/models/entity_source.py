@@ -17,6 +17,8 @@ from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.serializers.metadata import EntitySourceMetadata
 from tournesol.utils.constants import YOUTUBE_CHANNEL_ID_REGEX
 
+OBSOLETE_METADATA_AFTER_DAYS = 7
+
 # The pattern a whole source uid must match, per uid namespace.
 UID_REGEX_BY_NAMESPACE = {
     YOUTUBE_UID_NAMESPACE: rf"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{YOUTUBE_CHANNEL_ID_REGEX}",
@@ -95,7 +97,7 @@ class EntitySource(models.Model):
 
         now = timezone.now()
         since_last_request = now - self.last_metadata_request_at
-        if since_last_request > timedelta(days=30):
+        if since_last_request > timedelta(days=OBSOLETE_METADATA_AFTER_DAYS):
             return True
 
         return False
