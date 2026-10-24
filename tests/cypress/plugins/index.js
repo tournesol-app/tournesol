@@ -12,6 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const child_process = require("child_process")
 const path = require('path');
 
 /**
@@ -26,5 +27,19 @@ module.exports = (on, config) => {
     launchOptions.extensions.push(path.join(__dirname, '../../../browser-extension/src'));
     launchOptions.env.LANGUAGE = "en"
     return launchOptions
+  })
+
+  on('task', {
+    execFile({ file, args = [] }) {
+      return new Promise((resolve) => {
+        child_process.execFile(
+          file,
+          args,
+          { timeout: 60_000 },
+          (err, stdout, stderr) => {
+            resolve({ exitCode: err ? (err.code ?? 1) : 0, stdout, stderr })
+          })
+      })
+    },
   })
 }
