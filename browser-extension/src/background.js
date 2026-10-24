@@ -372,12 +372,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Send message to Tournesol tab on URL change, to sync access token
-// during navigation (after login, logout, etc.)
-chrome.webNavigation.onHistoryStateUpdated.addListener(
-  (event) => {
-    chrome.tabs.sendMessage(event.tabId, 'historyStateUpdated');
-  },
-  {
-    url: [{ hostEquals: frontendHost }],
-  }
-);
+// during navigation (after login, logout, etc.). Safari does not expose the
+// webNavigation API, but tabs.onUpdated reports the same SPA URL changes.
+if (chrome.webNavigation?.onHistoryStateUpdated) {
+  chrome.webNavigation.onHistoryStateUpdated.addListener(
+    (event) => {
+      chrome.tabs.sendMessage(event.tabId, 'historyStateUpdated');
+    },
+    {
+      url: [{ hostEquals: frontendHost }],
+    }
+  );
+} else if (chrome.tabs?.onUpdated) {
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.url && new URL(changeInfo.url).host === frontendHost) {
+      chrome.tabs.sendMessage(tabId, 'historyStateUpdated');
+    }
+  });
+}
