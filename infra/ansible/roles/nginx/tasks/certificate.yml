@@ -1,0 +1,47 @@
+# Obtain a TLS certificate for a single domain, using Certbot's Nginx plugin.
+#
+# Expects the following variables:
+#   - certbot_domain: the domain to obtain a certificate for
+#   - letsencrypt_email: the ACME account email
+#
+# The caller is responsible for skipping this file when letsencrypt_email is
+# not defined, and for making sure Nginx is installed and running.
+
+- name: "Check if a certificate already exists for {{ certbot_domain }}"
+  stat:
+    path: "/etc/letsencrypt/live/{{ certbot_domain }}/fullchain.pem"
+  register: certbot_cert
+
+- block:
+    - name: "Install a temporary ACME vhost for {{ certbot_domain }}"
+      template:
+        src: acme-bootstrap.conf.j2
+        dest: /etc/nginx/sites-enabled/00-acme-bootstrap.conf
+
+    - name: Reload Nginx to serve the temporary ACME vhost
+      systemd:
+        name: nginx
+        state: reloaded
+
+    - name: "Obtain a certificate for {{ certbot_domain }} via the Nginx plugin"
+      command:
+        # `certonly` is used instead of `certbot --nginx` so that the Nginx
+        # configuration stays entirely managed by Ansible.
+        cmd: >-
+          certbot certonly --nginx
+          --cert-name {{ certbot_domain }} -d {{ certbot_domain }}
+          -n --agree-tos -m {{ letsencrypt_email }}
+        creates: "/etc/letsencrypt/live/{{ certbot_domain }}/fullchain.pem"
+  always:
+    - name: Remove the temporary ACME vhost
+      file:
+        path: /etc/nginx/sites-enabled/00-acme-bootstrap.conf
+        state: absent
+      register: acme_bootstrap
+
+    - name: Reload Nginx after removing the temporary ACME vhost
+      systemd:
+        name: nginx
+        state: reloaded
+      when: acme_bootstrap.changed
+  when: not certbot_cert.stat.exists

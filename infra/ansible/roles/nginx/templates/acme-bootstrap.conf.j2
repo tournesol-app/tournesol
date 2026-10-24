@@ -1,0 +1,13 @@
+# Temporary vhost installed by Ansible so that `certbot --nginx` has a server
+# block to attach the HTTP-01 challenge to. It is removed right after the
+# certificate has been obtained.
+#
+# This is only needed on a fresh machine: the regular vhosts (tournesol,
+# grafana, website_analytics) cannot be installed before the certificates
+# exist, as they reference /etc/letsencrypt/live paths. Once they are in
+# place, Certbot attaches the challenge to them directly.
+server {
+    listen 80;
+    server_name {{ certbot_domain }};
+    root /var/www/html;
+}

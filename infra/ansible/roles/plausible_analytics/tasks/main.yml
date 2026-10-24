@@ -79,8 +79,8 @@
 - name: Enable and start tournesol-website-analytics service
   systemd:
     name: tournesol-website-analytics.service
-    state: started
-    enabled: yes
+    state: "{{ 'stopped' if maintenance | bool else 'started' }}"
+    enabled: "{{ not (maintenance | bool) }}"
     daemon_reload: yes
 
 - meta: flush_handlers
@@ -89,22 +89,12 @@
 # Install the TLS certificates
 #
 
-- name: Check if website analytics certificates are already present
-  stat:
-    path: /etc/letsencrypt/live/{{website_analytics_domain_name}}/fullchain.pem
-  register: website_analytics_cert_file
-  when: letsencrypt_email is defined
-
-- name: Stop NGINX if website analytics certificates are not present
-  systemd:
+- name: Obtain the TLS certificate for the website analytics domain
+  include_role:
     name: nginx
-    state: stopped
-  when: letsencrypt_email is defined and website_analytics_cert_file.stat.exists == False
-
-- name: Run Certbot for website analytics domain
-  shell:
-    cmd: "certbot certonly --standalone -d {{website_analytics_domain_name}} -n --agree-tos -m {{letsencrypt_email}}"
-    creates: /etc/letsencrypt/live/{{website_analytics_domain_name}}/fullchain.pem
+    tasks_from: certificate
+  vars:
+    certbot_domain: "{{ website_analytics_domain_name }}"
   when: letsencrypt_email is defined
 
 #

@@ -62,6 +62,7 @@ us on [Discord][tournesol-discord-join].
   environment with docker-compose
 - [docs](./docs) contains different kinds of documentations related to the
   project
+- [feed-server](./feed-server) is a FastAPI application to serve ATproto feeds
 - [frontend](./frontend) is a React JS application which is the main website
   and a frontend to Tournesol's API
 - [infra](./infra) contains an ansible recipe used to configure the servers

@@ -101,10 +101,12 @@
   notify: Restart Grafana
 
 - name: Install Grafana worldmap panel plugin
-  community.grafana.grafana_plugin:
-    name: grafana-worldmap-panel
-    version: latest
-    state: present
+  command:
+    cmd: >
+      grafana cli
+      --homepath /usr/share/grafana
+      plugins install grafana-worldmap-panel
+    creates: /var/lib/grafana/plugins/grafana-worldmap-panel
   become: yes
   become_user: grafana
   notify: Restart Grafana
