@@ -1,4 +1,3 @@
-import itertools
 from typing import Callable, Hashable
 from numpy.typing import NDArray
 
@@ -340,7 +339,12 @@ class Mehestan(PollFunction):
         scores = Scores(keynames=["scalee_name", "scaler_name"])
         
         common_kwargs = dict(lipschitz=self.user_comparison_lipschitz, error=self.error)
-        for scalee_name, scaler_name in itertools.product(scores.keys("scaler_name"), scores.keys("scalee_name")):
+        scalee_scaler_pairs = [
+            (scalee_name, scaler_name)
+            for scalee_name in full_scores.keys("scalee_name")
+            for scaler_name in full_scores.filters(scalee_name=scalee_name).keys("scaler_name")
+        ]
+        for scalee_name, scaler_name in scalee_scaler_pairs:
             filtered_weights = full_weights.filters(scalee_name=scalee_name, scaler_name=scaler_name)
             filtered_scores = full_scores.filters(scalee_name=scalee_name, scaler_name=scaler_name)
             kwargs = common_kwargs | dict(
@@ -524,7 +528,7 @@ class Mehestan(PollFunction):
             assert isinstance(weights, VotingRights)
             subratios = ratios.filters(scalee_name=scalee_name)
             lipschitz = self.lipschitz / (8 * (1e-9 + model_norms[str(scalee_name)]))
-            multipliers.append(self.aggregate_scalers(weights, subratios, lipschitz, **kwargs)) # type: ignore
+            multipliers.set(self.aggregate_scalers(weights, subratios, lipschitz, **kwargs), username=scalee_name) # type: ignore
         return multipliers
 
     ############################################
@@ -572,7 +576,7 @@ class Mehestan(PollFunction):
         """ Returns the scaler's voting right and ratios to multiplicatively scale scalee's model """
         weight_list, diff_list = VotingRights(keynames=[]), Scores(keynames=[])
         for entity_name in common_entity_names:
-            weight_list.append(value=scaler_public.penalty(self.privacy_penalty, entity_name))
+            weight_list.append(voting_right=scaler_public.penalty(self.privacy_penalty, entity_name))
             diff = scaler_scores.get(entity_name=entity_name) - scalee_scores.get(entity_name=entity_name)
             diff_list.append(diff)
         return weight_list, diff_list
@@ -605,6 +609,6 @@ class Mehestan(PollFunction):
         for (scalee_name,), weights in voting_rights.iter("scalee_name"):
             assert isinstance(weights, VotingRights)
             subdiffs = diffs.filters(scalee_name=scalee_name)
-            translations.append(self.aggregate_scalers(weights, subdiffs, **kwargs)) # type: ignore
+            translations.set(self.aggregate_scalers(weights, subdiffs, **kwargs), username=scalee_name) # type: ignore
         return translations
 
