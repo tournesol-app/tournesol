@@ -11,6 +11,7 @@ import ComparisonListPage from 'src/pages/comparisons/ComparisonList';
 import CriteriaPage from 'src/pages/criteria/CriteriaPage';
 import FeedbackPage from 'src/pages/personal/feedback/FeedbackPage';
 import EntityAnalysisPage from 'src/pages/entities/EntityAnalysisPage';
+import EntitySourcePage from 'src/pages/entitySources/EntitySourcePage';
 import HomePage from 'src/pages/home/Home';
 import ProofByKeywordPage from 'src/pages/me/proof/ProofByKeywordPage';
 import RecommendationPage from 'src/pages/recommendations/RecommendationPage';
@@ -107,6 +108,13 @@ const PollRoutes = ({ pollName }: Props) => {
       id: RouteID.EntityAnalysis,
       url: 'entities/:uid',
       page: EntityAnalysisPage,
+      auth: false,
+    },
+    {
+      id: RouteID.EntitySource,
+      // TODO: should we use entity-sources/:uid instead?
+      url: 'entity-source',
+      page: EntitySourcePage,
       auth: false,
     },
     {

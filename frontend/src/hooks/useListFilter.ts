@@ -6,7 +6,7 @@ export const useListFilter = ({
   defaults = [],
   setEmptyValues = false,
 }: {
-  defaults?: Array<{ name: string; value: string }>;
+  defaults?: Array<{ name: string; value: string; defaultOnlyNull?: boolean }>;
   setEmptyValues?: boolean;
 } = {}): [URLSearchParams, (key: string, value: string | null) => void] => {
   const location = useLocation();
@@ -15,8 +15,14 @@ export const useListFilter = ({
 
   // Initialize the filters with the default values provided.
   defaults.map((param) => {
-    if (!searchParams.get(param.name)) {
-      searchParams.set(param.name, param.value);
+    if (param.defaultOnlyNull) {
+      if (searchParams.get(param.name) === null) {
+        searchParams.set(param.name, param.value);
+      }
+    } else {
+      if (!searchParams.get(param.name)) {
+        searchParams.set(param.name, param.value);
+      }
     }
   });
 
