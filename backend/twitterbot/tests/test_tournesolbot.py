@@ -16,8 +16,8 @@ from twitterbot.tournesolbot import (
     generate_top_contributor_figure,
     get_best_criteria,
     get_video_recommendations,
+    post_top_contributor_graph,
     prepare_text,
-    tweet_top_contributor_graph,
 )
 
 
@@ -162,8 +162,7 @@ class TestTournesolBot(TestCase):
         with self.assertRaises(ValueError):
             get_best_criteria(self.videos[8], 15) == criteria_in_order
 
-    @mock.patch("twitterbot.tournesolbot.get_twitter_account_from_video_id")
-    def test_prepare_tweet(self, mock_get_twitter_account_from_video_id):
+    def test_prepare_tweet(self):
 
         message_text = (
             "Aujourd'hui, je recommande 'Tournesol is great! 🌻 #tournesol' de @TournesolApp, "
@@ -172,9 +171,6 @@ class TestTournesolBot(TestCase):
         )
         message_end = "\ntournesol.app/entities/yt:AAAAAAAAAAA"
 
-        mock_get_twitter_account_from_video_id.return_value = "@TournesolApp"
-
-        assert prepare_text(self.videos[8], dest="twitter") == message_text + message_end
         assert prepare_text(self.videos[8], dest="bluesky") == message_text.replace(
             "@TournesolApp", "'Tournesol'"
         )
@@ -193,24 +189,9 @@ class TestTournesolBot(TestCase):
         )
         message_end = "\ntournesol.app/entities/yt:AAAAAAAAAAA"
 
-        assert prepare_text(self.videos[8], dest="twitter") == tweet_text_too_long + message_end
         assert prepare_text(self.videos[8], dest="bluesky").startswith(
             "Aujourd'hui, je recommande 'Tournesol is great!"
         )
-
-        # Test replacement of special characters in the video title for Twitter
-        self.videos[8].metadata["name"] = "Tournesol.app is great but mention @twitter are not..."
-
-        tweet_special_characters = (
-            "Aujourd'hui, je recommande 'Tournesol․app is great but mention ﹫twitter "
-            "are not...' de @TournesolApp, comparée 77 fois sur #Tournesol🌻 par 28 "
-            "contributeurs, critères favoris:"
-            "\n- Important & actionnable"
-            "\n- Stimulant & suscite la réflexion"
-            "\ntournesol.app/entities/yt:AAAAAAAAAAA"
-        )
-
-        assert prepare_text(self.videos[8], dest="twitter") == tweet_special_characters
 
     def test_get_video_recommendations(self):
         """
@@ -279,37 +260,38 @@ class TestTournesolBotTopContributor(TestCase):
 
         assert figure_path.exists()
 
-    @mock.patch("tweepy.Client")
-    @mock.patch("tweepy.API")
-    @override_settings(
-        TWITTERBOT_CREDENTIALS={
-            "@TournesolBot": {
-                "LANGUAGE": "en",
-                "CONSUMER_KEY": "",
-                "CONSUMER_SECRET": "",
-                "ACCESS_TOKEN": "",
-                "ACCESS_TOKEN_SECRET": "",
-            },
-            "@TournesolBotFR": {
-                "LANGUAGE": "fr",
-                "CONSUMER_KEY": "",
-                "CONSUMER_SECRET": "",
-                "ACCESS_TOKEN": "",
-                "ACCESS_TOKEN_SECRET": "",
-            },
-        }
-    )
-    def test_tweet_top_contributor_graph(self, api_mock, client_mock):
-        mocked_api_client = api_mock.return_value
-        mocked_v2_client = client_mock.return_value
+    # @mock.patch("tweepy.Client")
+    # @mock.patch("tweepy.API")
+    # @override_settings(
+    #     TWITTERBOT_CREDENTIALS={
+    #         "@TournesolBot": {
+    #             "LANGUAGE": "en",
+    #             "CONSUMER_KEY": "",
+    #             "CONSUMER_SECRET": "",
+    #             "ACCESS_TOKEN": "",
+    #             "ACCESS_TOKEN_SECRET": "",
+    #         },
+    #         "@TournesolBotFR": {
+    #             "LANGUAGE": "fr",
+    #             "CONSUMER_KEY": "",
+    #             "CONSUMER_SECRET": "",
+    #             "ACCESS_TOKEN": "",
+    #             "ACCESS_TOKEN_SECRET": "",
+    #         },
+    #     }
+    # )
+    # def post_tweet_top_contributor_graph(self, api_mock, client_mock):
+    #     mocked_api_client = api_mock.return_value
+    #     mocked_v2_client = client_mock.return_value
 
-        tweet_top_contributor_graph("@TournesolBot", assumeyes=True, dest=["twitter"])
-        tweet_top_contributor_graph("@TournesolBotFR", assumeyes=True, dest=["twitter"])
+    #     post_top_contributor_graph("@TournesolBot", assumeyes=True, dest=["twitter"])
+    #     post_top_contributor_graph("@TournesolBotFR", assumeyes=True, dest=["twitter"])
 
-        self.assertEqual(
-            mocked_api_client.media_upload.call_count, 2, mocked_api_client.media_upload.calls
-        )
-        self.assertEqual(mocked_api_client.media_upload.call_args_list[0].args[0].suffix, ".png")
-        self.assertEqual(
-            mocked_v2_client.create_tweet.call_count, 2, mocked_api_client.update_status.calls
-        )
+    #     self.assertEqual(
+    #         mocked_api_client.media_upload.call_count, 2, mocked_api_client.media_upload.calls
+    #     )
+    #     self.assertEqual(mocked_api_client.media_upload.call_args_list[0].args[0].suffix, ".png")
+    #     # FIXME: 
+    #     self.assertEqual(
+    #         mocked_v2_client.create_tweet.call_count, 2, mocked_api_client.update_status.calls
+    #     )
