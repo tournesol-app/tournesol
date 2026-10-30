@@ -16,8 +16,8 @@ from twitterbot.tournesolbot import (
     generate_top_contributor_figure,
     get_best_criteria,
     get_video_recommendations,
+    post_top_contributor_graph,
     prepare_text,
-    tweet_top_contributor_graph,
 )
 
 
@@ -280,12 +280,12 @@ class TestTournesolBotTopContributor(TestCase):
     #         },
     #     }
     # )
-    # def test_tweet_top_contributor_graph(self, api_mock, client_mock):
+    # def post_tweet_top_contributor_graph(self, api_mock, client_mock):
     #     mocked_api_client = api_mock.return_value
     #     mocked_v2_client = client_mock.return_value
 
-    #     tweet_top_contributor_graph("@TournesolBot", assumeyes=True, dest=["twitter"])
-    #     tweet_top_contributor_graph("@TournesolBotFR", assumeyes=True, dest=["twitter"])
+    #     post_top_contributor_graph("@TournesolBot", assumeyes=True, dest=["twitter"])
+    #     post_top_contributor_graph("@TournesolBotFR", assumeyes=True, dest=["twitter"])
 
     #     self.assertEqual(
     #         mocked_api_client.media_upload.call_count, 2, mocked_api_client.media_upload.calls

@@ -118,7 +118,7 @@ def get_video_recommendations(language):
     )
 
     # Filter videos with some quality criteria
-    tweetable_videos = (
+    recommendations = (
         Entity
         .objects
         .filter_safe_for_poll(Poll.default_poll())
@@ -140,22 +140,22 @@ def get_video_recommendations(language):
         datetime_tweet__gte=time_ago(days=settings.DAYS_ALREADY_TWEETED_UPLOADER)
     ).values("video__metadata__uploader")
 
-    tweetable_videos = tweetable_videos.exclude(metadata__uploader__in=exclude_uploader)
+    recommendations = recommendations.exclude(metadata__uploader__in=exclude_uploader)
 
-    return list(tweetable_videos)
+    return list(recommendations)
 
 
-def select_a_video(tweetable_videos):
-    """Select a video to tweet."""
+def select_a_video(recommendations):
+    """Select a video to post."""
 
     tournesol_score_list = [
         v.single_poll_rating.tournesol_score
-        for v in tweetable_videos
+        for v in recommendations
     ]
 
     # Chose a random video weighted by tournesol score
     selected_video = random.choices(  # not a cryptographic use # nosec B311
-        tweetable_videos, weights=tournesol_score_list
+        recommendations, weights=tournesol_score_list
     )[0]
 
     return selected_video
@@ -261,12 +261,12 @@ def generate_top_contributor_figure(top_contributors_qs, language="en") -> Path:
     return figure_path
 
 
-def tweet_top_contributor_graph(bot_name, dest: Literal["twitter", "bluesky"], assumeyes=False):
-    """Tweet the top contibutor graph of last month.
+def post_top_contributor_graph(bot_name, dest: Literal["bluesky"], assumeyes=False):
+    """Post the top contibutor graph of last month.
 
     Args:
         bot_name (str): The name of the bot.
-        assumeyes (bool): If True, a confirmation will be asked before tweeting it.
+        assumeyes (bool): If True, a confirmation will be asked before posting.
 
     """
 
