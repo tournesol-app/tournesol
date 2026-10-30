@@ -13,7 +13,7 @@ CHANNEL_UID = f"yt:{CHANNEL_ID}"
 CHANNEL_METADATA = {
     "name": "Tournesol",
     "thumbnail": "https://yt3.ggpht.com/medium",
-    "customUrl": "Channel handle",
+    "custom_url": "Channel handle",
 }
 
 
@@ -41,7 +41,7 @@ class EntitySourceTestCase(TestCase):
         # [THEN] `cleaned_metadata` returns valid metadata representation
         self.assertDictEqual(
             self.entity_source.cleaned_metadata,
-            {"name": None, "thumbnail": None, "customUrl": None},
+            {"name": None, "thumbnail": None, "custom_url": None},
         )
 
         # [WHEN] the metadata is a partial dict
@@ -49,7 +49,7 @@ class EntitySourceTestCase(TestCase):
         # [THEN] `cleaned_metadata` returns valid metadata representation
         self.assertDictEqual(
             self.entity_source.cleaned_metadata,
-            {"name": "channel_name", "thumbnail": None, "customUrl": None},
+            {"name": "channel_name", "thumbnail": None, "custom_url": None},
         )
 
     def test_cleaned_metadata_with_invalid_medatadata(self):
