@@ -9,6 +9,7 @@ feed of the entities these sources produce.
 import logging
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
@@ -137,3 +138,14 @@ class EntitySource(models.Model):
         self.metadata_timestamp = timezone.now()
         if save:
             self.save(update_fields=["metadata", "metadata_timestamp"])
+
+    def clean(self):
+        # Allow blank value in forms.
+        if self.metadata is None:
+            self.metadata = {}
+
+        if self.metadata_serializer_class:
+            serializer = self.metadata_serializer_class(data=self.metadata)
+            if not serializer.is_valid():
+                raise ValidationError({"metadata": str(serializer.errors)})
+            self.metadata = serializer.data
