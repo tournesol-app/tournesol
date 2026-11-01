@@ -48,6 +48,36 @@ By default, the script creates an extension that connects to the production Tour
 
 The default is also to build a Manifest V2 extension for Firefox. To build a Manifest V3 extension for Chrome, run `EXTENSION_BROWSER=chrome MANIFEST_VERSION=3 yarn configure`.
 
+To prepare a Manifest V2 extension compatible with Safari, run:
+
+```shell
+yarn configure:safari
+```
+
+Safari uses Manifest V2 because the background script is an ECMAScript module.
+Safari does not currently support the `type: "module"` service worker declaration
+used by the Chrome Manifest V3 build.
+
+### Package for Safari
+
+On macOS with Xcode installed, generate a macOS app and Safari Web Extension
+Xcode project with:
+
+```shell
+./build-safari.sh
+```
+
+The project is generated in `safari/Tournesol/Tournesol.xcodeproj`. To use a
+different output directory or bundle identifier prefix:
+
+```shell
+./build-safari.sh -o /path/to/output -b org.example
+```
+
+Open the generated project in Xcode, select your development team under Signing
+& Capabilities, then build and run the `Tournesol` scheme. Enable the extension
+in Safari under Settings > Extensions.
+
 ### Code Quality
 
 We use `ESLint` to find and fix problems in the JavaScript code.
