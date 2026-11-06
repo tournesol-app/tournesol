@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import numpy as np
 from django.db.models import Avg, F, QuerySet
 from scipy.sparse.csgraph import shortest_path
@@ -71,7 +69,7 @@ class CompleteGraph:
 
     def compute_offline_parameters(
             self,
-            scaling_factor_increasing_videos: Optional[list[SuggestedVideo]] = None
+            scaling_factor_increasing_videos: list[SuggestedVideo] | None = None
     ):
         """
         Function computing the offline parameters, including the adjacency matrix, its
@@ -291,7 +289,6 @@ class Graph(CompleteGraph):
                         # Compute estimated information gain relative to the respective
                         # uncertainties in both scores
                         va.beta[vb] = va.uncertainty_diminution(vb)
-                        if max_beta < va.beta[vb]:
-                            max_beta = va.beta[vb]
+                        max_beta = max(max_beta, va.beta[vb])
                 for vb in sg.nodes:
                     vb.suggestibility_normalization = max(max_beta, 1)

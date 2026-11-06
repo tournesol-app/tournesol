@@ -1,4 +1,3 @@
-from typing import Optional
 
 from django.db.models import F, QuerySet
 
@@ -181,8 +180,7 @@ class SuggestionProvider:
         # Todo : take into account the rate later list / already seen videos ?
         for v in considered_vid_list:
             v.user_pref = max(v.nb_comparison_with.values()) / v.comparison_nb
-            if v.user_pref > max_vid_pref:
-                max_vid_pref = v.user_pref
+            max_vid_pref = max(max_vid_pref, v.user_pref)
 
         # todo explain that
         for i in range(nb_video_required):
@@ -226,8 +224,7 @@ class SuggestionProvider:
         max_vid_pref = 0
         for v in considered_vid_list:
             v.user_pref = v.nb_comparison_with[first_video_id] / v.comparison_nb
-            if v.user_pref > max_vid_pref:
-                max_vid_pref = v.user_pref
+            max_vid_pref = max(max_vid_pref, v.user_pref)
 
         for i in range(nb_video_required):
             for v in considered_vid_list:
@@ -242,7 +239,7 @@ class SuggestionProvider:
                     break
         return result
 
-    def _prepare_video_list(self, user: User, first_video: Optional[SuggestedVideo]):
+    def _prepare_video_list(self, user: User, first_video: SuggestedVideo | None):
         """
         Function used in the video recommendations, to prepare the set of videos to choose the
         recommendation from

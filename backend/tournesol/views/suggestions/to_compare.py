@@ -1,4 +1,3 @@
-from typing import Optional
 
 from django.db import models
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -51,7 +50,7 @@ class SuggestionsToCompare(PollScopedViewMixin, generics.ListAPIView):
     # from this list, use the fallback language.
     min_lang_set = ["en", "fr"]
 
-    def _get_user_preferred_langs(self, fallback: Optional[str] = None) -> list[str]:
+    def _get_user_preferred_langs(self, fallback: str | None = None) -> list[str]:
         preferred_langs = self.request.user.get_recommendations_default_langs(
             self.poll_from_url.name
         )

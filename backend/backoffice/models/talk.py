@@ -1,4 +1,3 @@
-from typing import Optional
 from zoneinfo import ZoneInfo
 
 from django.db import models
@@ -69,7 +68,7 @@ class TalkEntry(models.Model):
 
         super().save(*args, **kwargs)
 
-    def date_as_tz_europe_paris(self) -> Optional[str]:
+    def date_as_tz_europe_paris(self) -> str | None:
         if self.date:
             return self.date.astimezone(ZoneInfo("Europe/Paris")).strftime("%Y-%m-%dT%H:%M:%S%z")
         return None

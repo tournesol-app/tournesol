@@ -67,17 +67,17 @@ def get_preview_recommendations_redirect_params(request):
     for (key, value) in params.items():
         if key == "uploader":
             if value:
-                query["metadata[uploader]"] = params[key]
+                query["metadata[uploader]"] = value
         elif key == "duration_lte":
             if value == "":
                 continue
             # Durations are in seconds in the backend but minutes in the frontend URL
-            query["metadata[duration:lte:int]"] = f"{int(params[key]) * 60}"
+            query["metadata[duration:lte:int]"] = f"{int(value) * 60}"
         elif key == "duration_gte":
             if value == "":
                 continue
             # Durations are in seconds in the backend but minutes in the frontend URL
-            query["metadata[duration:gte:int]"] = f"{int(params[key]) * 60}"
+            query["metadata[duration:gte:int]"] = f"{int(value) * 60}"
         elif key == "language":
             languages = [lang for lang in value.split(",") if lang != ""]
             if languages:
@@ -91,7 +91,7 @@ def get_preview_recommendations_redirect_params(request):
         elif key == "advanced":
             query["unsafe"] = "unsafe" in value.split(",")
         else:
-            query[key] = params[key]
+            query[key] = value
 
     redirect_base_url = reverse("tournesol:website_preview_recommendations_internal")
     return HttpResponseRedirect(f"{redirect_base_url}?{query.urlencode()}")

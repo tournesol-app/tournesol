@@ -6,7 +6,6 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 
 import logging
 from io import BytesIO
-from typing import Optional
 
 import numpy
 import requests
@@ -92,7 +91,7 @@ class BasePreviewAPIView(APIView):
 
     def get_yt_thumbnail(
         self, entity: Entity, quality="mq", return_none_on_404=False
-    ) -> Optional[Image.Image]:
+    ) -> Image.Image | None:
         # Quality can be: hq, mq, sd, or maxres (https://stackoverflow.com/a/34784842/188760)
         url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
@@ -116,7 +115,7 @@ class BasePreviewAPIView(APIView):
 
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
 
-    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Optional[Image.Image]:
+    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Image.Image | None:
         result = self.get_yt_thumbnail(entity, quality="maxres", return_none_on_404=True)
         if result is not None:
             return result
