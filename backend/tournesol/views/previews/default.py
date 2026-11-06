@@ -64,8 +64,7 @@ class BasePreviewAPIView(APIView):
     def default_preview(self):
         # The file needs to remain open to be streamed and will be closed automatically
         # by FileResponse. A context-manager should not be used here.
-        # pylint: disable=consider-using-with
-        default_preview = open(
+        default_preview = open(  # noqa: SIM115
             str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
         )
         return FileResponse(default_preview, content_type="image/png")

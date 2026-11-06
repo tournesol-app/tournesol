@@ -51,10 +51,7 @@ jobs:
         run: uv sync --locked --all-extras
 
       - name: Python Code Quality Checks
-        run: uv run ./scripts/ci/lint.sh
+        run: uv run ruff check --output-format github
 
       - name: Run pytest
         run: uv run pytest
-
-      - name: Run bandit
-        run: uv run bandit -r . -c bandit.yaml

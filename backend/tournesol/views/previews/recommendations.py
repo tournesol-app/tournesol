@@ -53,14 +53,13 @@ DATE_PARAM_TO_SECONDS_MAX_AGE = {
 @api_view()
 @permission_classes([])
 @renderer_classes([ImageRenderer])
-def get_preview_recommendations_redirect_params(request):
+def get_preview_recommendations_redirect_params(request):  # noqa: PLR0912
     """
     Preview of a Recommendations page.
 
     Returns a HTTP redirection to format the query parameters to match those
     used by the polls API.
     """
-    # pylint: disable=too-many-branches
     params = request.GET
     query = QueryDict("", mutable=True)
 

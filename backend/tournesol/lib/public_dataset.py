@@ -287,7 +287,7 @@ def write_comparisons_file(
             "video_a": comparison.uid_a.split(UID_DELIMITER)[1],
             "video_b": comparison.uid_b.split(UID_DELIMITER)[1],
             "criteria": comparison.criteria,
-            "score": int(round(comparison.score)),
+            "score": round(comparison.score),
             "score_max": comparison.score_max,
             "week_date": comparison.week_date,
         }
