@@ -35,14 +35,11 @@ class LocalizedFieldsMixin:
         if lang is None:
             lang = translation.get_language()
 
-        try:
-            locale = [loc for loc in getattr(self, related).all() if loc.language == lang][0]
-
-        except IndexError:
-            try:
-                locale = [loc for loc in getattr(self, related).all() if loc.language == "en"][0]
-
-            except IndexError:
-                return default
-
-        return getattr(locale, field)
+        for code in (lang, "en"):
+            locale = next(
+                (loc for loc in getattr(self, related).all() if loc.language == code),
+                None,
+            )
+            if locale:
+                return getattr(locale, field)
+        return default

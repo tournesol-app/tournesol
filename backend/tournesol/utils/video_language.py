@@ -35,7 +35,7 @@ POSTGRES_LANGUAGES = (
 
 # Personalized configurations, notably used for automatically removing accents
 POSTGRES_SEARCH_CONFIGS = ["customized_" + language for language in POSTGRES_LANGUAGES]
-SEARCH_CONFIG_CHOICES = list(zip(POSTGRES_SEARCH_CONFIGS, POSTGRES_LANGUAGES))
+SEARCH_CONFIG_CHOICES = list(zip(POSTGRES_SEARCH_CONFIGS, POSTGRES_LANGUAGES, strict=True))
 
 # Add the "generic" default configuration for languages not supported by Postgres.
 DEFAULT_SEARCH_CONFIG = "generic"

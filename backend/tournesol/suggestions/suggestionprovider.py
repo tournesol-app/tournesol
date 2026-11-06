@@ -74,11 +74,11 @@ class SuggestionProvider:
             user__in=User.with_trusted_email().filter(is_staff=True),
         ).values_list("entity_1__uid", "entity_2__uid")
 
-        supertursted_compared_entities = set(
+        supertursted_compared_entities = {
             entity_uid
             for comparison in supertrusted_comparisons
             for entity_uid in comparison
-        )
+        }
 
         return [
             self._entity_to_video[uid]

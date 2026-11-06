@@ -104,13 +104,13 @@ class TournesolPollOutput(PipelineOutput):
                 "id", "user_id", "entity_id"
             )
         }
-        ratings_to_create = set(
+        ratings_to_create = {
             (contributor_id, entity_id)
             for contributor_id, entity_id in scores[
                 ["user_id", "entity_id"]
             ].itertuples(index=False)
             if (contributor_id, entity_id) not in rating_ids
-        )
+        }
         ContributorRating.objects.bulk_create(
             (
                 ContributorRating(

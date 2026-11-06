@@ -46,7 +46,7 @@ class SubSamplesQuerysetMixin(ContributorRatingQuerysetMixin):
             return ContributorRating.objects.none()
 
         sub_sample_size = min(sub_sample_size, len(all_ratings))
-        selected = [random.choice(bucket)  # nosec
+        selected = [random.choice(bucket)  # noqa: S311
                     for bucket in np.array_split(all_ratings, sub_sample_size)]
 
         # Only the previously selected ratings are retrieved and annotated.

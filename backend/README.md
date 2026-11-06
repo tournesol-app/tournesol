@@ -193,51 +193,43 @@ document for each test: `pytest --html=report.html --self-contained-html`
 
 ## Code Quality
 
-We use several tools to keep the code quality as good, readable and
-maintainable as possible:
-- `isort` automatically sorts import statements
-- `pylint` performs a static analysis looking for errors
-- `flake8` enforces the code style by using three popular tools
+`ruff` is the linter we use to keep the code quality as good, readable and
+maintainable as possible.
 
-All of them should be automatically triggered by the continuous integration
-system using single script `scripts/ci/lint.sh`.
-
-You are encouraged to run this script locally before creating a new commit.
-Note that the script must be run from the root of the back end folder.
+Linting is enforced by the continuous integration scripts.
+You are encouraged to run the linter locally before creating a new commit.
+Note that the script must be run from the root of the `backend/` folder.
 
 ### Run the checks
 
 ```shell
 # with a manually installed back end
-uv run ./scripts/ci/lint.sh
+uv run ruff check
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api uv run scripts/ci/lint.sh
+docker exec tournesol-dev-api uv run ruff check
 ```
 
 Files and folders can be passed as parameters.
 
 ```shell
 # with a manually installed back end
-uv run ./scripts/ci/lint.sh core/apps.py core/models/
+uv run ruff check core/apps.py core/models/
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api uv run scripts/ci/lint.sh core/apps.py core/models/
+docker exec tournesol-dev-api uv run ruff check core/apps.py core/models/
 ```
-
-An output finishing by `+ exit 0` means all checks have been successful,
-`+ exit 1` means at least one check has failed.
 
 ### Automatically fix some errors
 
-Some tools, like `isort` are able to automatically fixes the target files.
+Some lint rules can be fixed automatically, like order of imports.
 
 ```shell
 # with a manually installed back end
-uv run ./scripts/ci/lint-fix.sh
+uv run ruff check --fix
 
 # with an automatically installed back end with Docker
-docker exec tournesol-dev-api uv run scripts/ci/lint-fix.sh
+docker exec tournesol-dev-api uv run ruff check --fix
 ```
 
 ## F.A.Q.

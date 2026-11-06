@@ -75,7 +75,7 @@ def prepare_text(video: Entity, dest: Literal["twitter", "bluesky"]):
         video_title = video_title.replace("@", "﹫")
 
         # Replace "." in between words to avoid in the tweet false detection of links
-        video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
+        video_title = re.sub(r"\b(?:\.)\b", "․", video_title)  # noqa: RUF001
 
     # Generate the text of the tweet
     poll_rating = video.all_poll_ratings.get(poll__name=DEFAULT_POLL_NAME)
@@ -160,8 +160,9 @@ def select_a_video(tweetable_videos):
     ]
 
     # Chose a random video weighted by tournesol score
-    selected_video = random.choices(  # not a cryptographic use # nosec B311
-        tweetable_videos, weights=tournesol_score_list
+    selected_video = random.choices(  # not a cryptographic use # noqa: S311
+        tweetable_videos,
+        weights=tournesol_score_list,
     )[0]
 
     return selected_video

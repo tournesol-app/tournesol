@@ -170,7 +170,7 @@ class StatisticsView(generics.GenericAPIView):
 
     def _get_comparisons_statistics(self, poll):
         last_monday = datetime.combine(
-            time_ago(days=datetime.now().weekday()),
+            time_ago(days=datetime.now(UTC).weekday()),
             time.min,
             tzinfo=UTC,
         )

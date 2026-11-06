@@ -2,19 +2,11 @@
 Utils methods for Tournesol's core app
 """
 
-import base64
 import logging
-import pickle
 from functools import reduce
 
-import numpy as np
 from computed_property.fields import ComputedField
 from django.db.models import JSONField
-
-
-def enum_list(*lst):
-    """Create choices=... for a list."""
-    return zip(lst, lst)
 
 
 class WithDynamicFields:
@@ -34,43 +26,6 @@ class WithDynamicFields:
             if not scl.fields_created:
                 scl.fields_created = True
                 scl.create_fields()
-
-
-class WithEmbedding:
-    """Define embedding setters and getters."""
-
-    _EMBEDDING_FIELD = "embedding"
-
-    def set_embedding(self, np_array):
-        """Set embedding from an np array."""
-        if np_array.shape != (self.EMBEDDING_LEN,):
-            # TODO : Create a dedicated exception class to have the possibility
-            #        to try/except it with ease.
-            raise AssertionError("Wrong shape")
-        np_bytes = pickle.dumps(np_array)
-        emb_encoded = base64.b64encode(np_bytes)
-        setattr(self, self._EMBEDDING_FIELD, emb_encoded)
-
-    def get_embedding_np_array(self):
-        """Get embedding as an np array."""
-        try:
-            decoded = base64.b64decode(getattr(self, self._EMBEDDING_FIELD))
-            array = pickle.loads(decoded)
-        except Exception:  # pylint: disable=broad-except
-            return None
-        if not isinstance(array, np.ndarray):
-            return None
-        if array.shape != (self.EMBEDDING_LEN,):
-            # TODO : see above for dedicated class
-            raise AssertionError()
-        return array
-
-    @property
-    def embedding_np(self):
-        """Get np array with the video embedding."""
-        return self.get_embedding_np_array()
-
-    EMBEDDING_LEN = 1536
 
 
 class ComputedJsonField(ComputedField, JSONField):

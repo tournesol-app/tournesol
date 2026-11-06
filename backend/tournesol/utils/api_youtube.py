@@ -56,11 +56,10 @@ def get_video_metadata(video_id, compute_language=True):
         yt_response = get_youtube_video_details(video_id)
     except YoutubeNotConfiguredError:
         return {}
-    except Exception:  # pylint: disable=broad-except
-        logger.error(
+    except Exception:
+        logger.exception(
             "Failed to retrieve video metadata from Youtube for video_id '%s'",
             video_id,
-            exc_info=True,
         )
         return {}
 
@@ -129,11 +128,10 @@ def get_channel_metadata(channel_id):
         yt_response = get_youtube_channel_details(channel_id)
     except YoutubeNotConfiguredError:
         return {}
-    except Exception:  # pylint: disable=broad-except
-        logger.error(
+    except Exception:
+        logger.exception(
             "Failed to retrieve channel metadata from Youtube for channel_id '%s'",
             channel_id,
-            exc_info=True,
         )
         return {}
 

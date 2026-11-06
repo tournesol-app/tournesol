@@ -239,7 +239,7 @@ class Graph(CompleteGraph):
 
             self.compute_information_gain(scaling_factor_increasing_videos)
 
-    def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):
+    def compute_information_gain(self, scaling_factor_increasing_videos: list[SuggestedVideo]):  # noqa: PLR0912
         """
         Function used to compute the estimated information gain
         """
