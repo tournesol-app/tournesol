@@ -49,6 +49,7 @@ dev = [
     "pytest==9.*",
     "pytest-django==4.*",
     "pytest-html==3.*",
+    "ruff>=0.17.4",
 ]
 
 [tool.uv]

@@ -2,7 +2,6 @@
 Administration interface of `core` app.
 """
 
-from typing import List, Tuple
 from urllib.parse import urlencode
 
 from django.contrib import admin
@@ -94,7 +93,7 @@ class UserAdmin(DjangoUserAdmin):
         qs = super().get_queryset(request)
         return qs.annotate(n_comparisons=Count("comparisons"))
 
-    def get_fieldsets(self, request, obj=None) -> List[Tuple]:
+    def get_fieldsets(self, request, obj=None) -> list[tuple]:
         fieldsets = super().get_fieldsets(request, obj=obj)
         if not obj:
             return fieldsets

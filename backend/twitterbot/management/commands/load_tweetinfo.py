@@ -39,7 +39,7 @@ class Command(BaseCommand):
         if not video_to_add_file.exists():
             raise FileNotFoundError(f"File {video_to_add_file} not found")
 
-        with open(video_to_add_file, "r") as f:
+        with open(video_to_add_file) as f:
 
             fake_tweet_id = 10001
 

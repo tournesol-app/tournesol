@@ -1,5 +1,4 @@
 import random
-from typing import Optional
 
 from core.utils.time import time_ago
 from tournesol.lib.suggestions.strategies.tocompare.classic import ClassicEntitySuggestionStrategy
@@ -94,7 +93,7 @@ class WatchedEntitySuggestionStrategy(ClassicEntitySuggestionStrategy):
         self,
         exclude_ids: list[int],
         entity_filters: dict[str, str],
-        limit: Optional[int] = None,
+        limit: int | None = None,
     ) -> list[int]:
         """
         Return random entity ids from the recommendations that have been

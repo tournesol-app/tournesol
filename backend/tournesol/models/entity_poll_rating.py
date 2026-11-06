@@ -1,7 +1,6 @@
 """
 Entity score and ratings per poll.
 """
-from typing import Optional
 
 from django.conf import settings
 from django.db import models
@@ -93,7 +92,7 @@ class EntityPollRating(models.Model):
         self.save(update_fields=["n_comparisons", "n_contributors"])
 
     @staticmethod
-    def bulk_update_sum_trust_scores(poll: Poll, batch_size: Optional[int] = 4000):
+    def bulk_update_sum_trust_scores(poll: Poll, batch_size: int | None = 4000):
         if batch_size is None:
             EntityPollRating._bulk_update_sum_trust_score(poll)
         else:

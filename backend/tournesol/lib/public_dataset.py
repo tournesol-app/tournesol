@@ -8,7 +8,6 @@ shortcuts to write these data in file-like objects.
 import csv
 import json
 from datetime import datetime
-from typing import Optional
 
 import solidago
 from django.conf import settings
@@ -260,7 +259,7 @@ def write_metadata_file(write_target, data_until: datetime) -> None:
 
 
 def write_comparisons_file(
-    poll_name: str, write_target, until_: Optional[datetime] = None
+    poll_name: str, write_target, until_: datetime | None = None
 ) -> None:
     """
     Write the output of `get_comparisons_data` as CSV in `write_target`, an
