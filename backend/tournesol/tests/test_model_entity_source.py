@@ -1,6 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
@@ -198,3 +199,23 @@ class EntitySourceTestCase(TestCase):
         self.assertDictEqual(self.entity_source.metadata, {})
         self.assertIsNone(self.entity_source.metadata_timestamp)
         self.assertIsNone(self.entity_source.last_metadata_request_at)
+
+    def test_clean(self):
+        self.entity_source.metadata = None
+        self.entity_source.clean()
+        self.assertDictEqual(
+            self.entity_source.metadata,
+            {"name": None, "thumbnail": None, "custom_url": None},
+        )
+
+        self.entity_source.metadata = {"__invalid_key": 1}
+        self.entity_source.clean()
+        self.assertDictEqual(
+            self.entity_source.metadata,
+            {"name": None, "thumbnail": None, "custom_url": None},
+        )
+
+        invalid_name_value = [1, 2, 3]
+        self.entity_source.metadata = {"name": invalid_name_value}
+        with self.assertRaises(DjangoValidationError):
+            self.entity_source.clean()
