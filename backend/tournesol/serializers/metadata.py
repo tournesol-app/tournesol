@@ -4,9 +4,9 @@ from tournesol.utils.constants import YOUTUBE_VIDEO_ID_REGEX
 
 
 class EntitySourceMetadata(serializers.Serializer):
-    name = serializers.CharField(allow_blank=True, default=None)
-    thumbnail = serializers.CharField(allow_blank=True, default=None)
-    customUrl = serializers.CharField(allow_blank=True, default=None)
+    name = serializers.CharField(allow_blank=True, allow_null=True, default=None)
+    thumbnail = serializers.CharField(allow_blank=True, allow_null=True, default=None)
+    custom_url = serializers.CharField(allow_blank=True, allow_null=True, default=None)
 
 
 class VideoMetadata(serializers.Serializer):

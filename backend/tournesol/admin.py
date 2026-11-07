@@ -27,6 +27,7 @@ from .models import (
     Entity,
     EntityCriteriaScore,
     EntityPollRating,
+    EntitySource,
     Poll,
 )
 from .utils.video_language import LANGUAGE_CODE_TO_NAME_MATCHING
@@ -190,6 +191,29 @@ class EntityCriteriaScoreAdmin(admin.ModelAdmin):
     )
     search_fields = ("entity__uid",)
     raw_id_fields = ("entity",)
+
+
+@admin.register(EntitySource)
+class EntitySourceAdmin(admin.ModelAdmin):
+    list_display = (
+        "uid",
+        "get_name",
+        "get_custom_url",
+        "created_at",
+        "metadata_timestamp",
+        "last_metadata_request_at"
+    )
+    search_fields = ("uid",)
+
+    @staticmethod
+    @admin.display(description="name", ordering="metadata__name")
+    def get_name(obj):
+        return obj.metadata.get("name")
+
+    @staticmethod
+    @admin.display(description="custom url", ordering="metadata__custom_url")
+    def get_custom_url(obj):
+        return obj.metadata.get("custom_url")
 
 
 @admin.register(ContributorRating)

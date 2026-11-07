@@ -1,6 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
@@ -13,7 +14,7 @@ CHANNEL_UID = f"yt:{CHANNEL_ID}"
 CHANNEL_METADATA = {
     "name": "Tournesol",
     "thumbnail": "https://yt3.ggpht.com/medium",
-    "customUrl": "Channel handle",
+    "custom_url": "Channel handle",
 }
 
 
@@ -41,7 +42,7 @@ class EntitySourceTestCase(TestCase):
         # [THEN] `cleaned_metadata` returns valid metadata representation
         self.assertDictEqual(
             self.entity_source.cleaned_metadata,
-            {"name": None, "thumbnail": None, "customUrl": None},
+            {"name": None, "thumbnail": None, "custom_url": None},
         )
 
         # [WHEN] the metadata is a partial dict
@@ -49,7 +50,7 @@ class EntitySourceTestCase(TestCase):
         # [THEN] `cleaned_metadata` returns valid metadata representation
         self.assertDictEqual(
             self.entity_source.cleaned_metadata,
-            {"name": "channel_name", "thumbnail": None, "customUrl": None},
+            {"name": "channel_name", "thumbnail": None, "custom_url": None},
         )
 
     def test_cleaned_metadata_with_invalid_medatadata(self):
@@ -198,3 +199,23 @@ class EntitySourceTestCase(TestCase):
         self.assertDictEqual(self.entity_source.metadata, {})
         self.assertIsNone(self.entity_source.metadata_timestamp)
         self.assertIsNone(self.entity_source.last_metadata_request_at)
+
+    def test_clean(self):
+        self.entity_source.metadata = None
+        self.entity_source.clean()
+        self.assertDictEqual(
+            self.entity_source.metadata,
+            {"name": None, "thumbnail": None, "custom_url": None},
+        )
+
+        self.entity_source.metadata = {"__invalid_key": 1}
+        self.entity_source.clean()
+        self.assertDictEqual(
+            self.entity_source.metadata,
+            {"name": None, "thumbnail": None, "custom_url": None},
+        )
+
+        invalid_name_value = [1, 2, 3]
+        self.entity_source.metadata = {"name": invalid_name_value}
+        with self.assertRaises(DjangoValidationError):
+            self.entity_source.clean()
