@@ -1,5 +1,25 @@
 # feed-server
 
+## Install
+
+Create the `.env` file.
+
+```bash
+cp .env.example .env
+```
+
+And configure the environment variables.
+
+```bash
+# For development
+FEED_SERVER_HOSTNAME=localhost
+FEED_SERVER_RUN_TASKS_IN_LIFESPAN=1
+
+# For production
+FEED_SERVER_HOSTNAME=at.example.com
+FEED_SERVER_RUN_TASKS_IN_LIFESPAN=0
+```
+
 ## Usage
 
 ### Run the server
