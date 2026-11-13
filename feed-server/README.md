@@ -26,8 +26,22 @@ FEED_SERVER_RUN_TASKS_IN_LIFESPAN=0
 
 ### Run the server
 
+To serve all the feeds (hardcoded for now), run:
+
 ```bash
 uv run --env-file .env fastapi dev src/feed_server/main.py
+```
+
+On production you want to run the workers in different processes. Also run:
+
+```bash
+# To listen to the stream of ATproto records, and queue them:
+uv run --env-file .env src/feed_server/worker_jetstream.py
+```
+
+```bash
+# To read the queued records, index and prepare them for the feeds:
+uv run --env-file .env src/feed_server/worker_process.py
 ```
 
 ## Available Feeds
