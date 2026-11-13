@@ -2,6 +2,8 @@
 
 ## Install
 
+Install Redis server.
+
 Create the `.env` file.
 
 ```bash
