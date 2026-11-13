@@ -89,7 +89,7 @@ class Command(BaseCommand):
 
             try:
                 threshold = max(
-                    (thr for thr in THRESHOLDS if n_users_total >= thr > n_users_before)
+                    thr for thr in THRESHOLDS if n_users_total >= thr > n_users_before
                 )
             except ValueError:
                 continue

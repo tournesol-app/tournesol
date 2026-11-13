@@ -2,8 +2,7 @@
 API endpoints to show public statistics
 """
 from dataclasses import dataclass, field
-from datetime import datetime, time, timezone
-from typing import List
+from datetime import UTC, datetime, time
 
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import generics
@@ -69,7 +68,7 @@ class Statistics:
     """
 
     active_users: ActiveUsersStatistics
-    polls: List[PollStatistics]
+    polls: list[PollStatistics]
 
     def __init__(self):
         self.active_users = ActiveUsersStatistics(0, 0)
@@ -171,9 +170,9 @@ class StatisticsView(generics.GenericAPIView):
 
     def _get_comparisons_statistics(self, poll):
         last_monday = datetime.combine(
-            time_ago(days=datetime.now().weekday()),
+            time_ago(days=datetime.now(UTC).weekday()),
             time.min,
-            tzinfo=timezone.utc,
+            tzinfo=UTC,
         )
         comparisons = Comparison.objects.filter(poll=poll, user__is_active=True)
         comparison_count = comparisons.count()

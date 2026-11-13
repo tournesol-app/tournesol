@@ -8,7 +8,7 @@ class IndividualRatingWithScoresSerializer(IndividualRatingSerializer):
 
     class Meta:
         model = ContributorRating
-        fields = IndividualRatingSerializer.Meta.fields + ["criteria_scores"]
+        fields = [*IndividualRatingSerializer.Meta.fields, "criteria_scores"]
         read_only_fields = fields
 
 
@@ -22,4 +22,4 @@ class ContributorRecommendationsSerializer(RecommendationSerializer):
     )
 
     class Meta(RecommendationSerializer.Meta):
-        fields = RecommendationSerializer.Meta.fields + ["individual_rating"]
+        fields = [*RecommendationSerializer.Meta.fields , "individual_rating"]

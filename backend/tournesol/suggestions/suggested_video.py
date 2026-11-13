@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from functools import total_ordering
-from typing import Optional
 
 
 @total_ordering
@@ -21,7 +20,7 @@ class SuggestedVideo:
 
     def __init__(
             self,
-            from_uid: Optional[str] = None
+            from_uid: str | None = None
     ):
         if from_uid is not None:
             self.uid = from_uid

@@ -2,7 +2,6 @@
 Administration interface of `core` app.
 """
 
-from typing import List, Tuple
 from urllib.parse import urlencode
 
 from django.contrib import admin
@@ -56,7 +55,7 @@ class UserAdmin(DjangoUserAdmin):
     """Interface to manage general data about users."""
 
     ordering = ["-date_joined"]
-    list_filter = DjangoUserAdmin.list_filter + (IsTrustedFilter,)
+    list_filter = (*DjangoUserAdmin.list_filter, IsTrustedFilter)
     list_display = (
         "username",
         "email",
@@ -76,7 +75,8 @@ class UserAdmin(DjangoUserAdmin):
         ),
     )
 
-    fieldsets = DjangoUserAdmin.fieldsets + (
+    fieldsets = (
+        *DjangoUserAdmin.fieldsets,
         (_("Tournesol - trust"), {"fields": ("trust_score",)}),
         (_("Tournesol - preferences"), {"fields": ("settings",)}),
     )
@@ -94,7 +94,7 @@ class UserAdmin(DjangoUserAdmin):
         qs = super().get_queryset(request)
         return qs.annotate(n_comparisons=Count("comparisons"))
 
-    def get_fieldsets(self, request, obj=None) -> List[Tuple]:
+    def get_fieldsets(self, request, obj=None) -> list[tuple]:
         fieldsets = super().get_fieldsets(request, obj=obj)
         if not obj:
             return fieldsets
@@ -102,7 +102,8 @@ class UserAdmin(DjangoUserAdmin):
         # For existing user, show all fields from our custom User model that
         # are not already present on the page, in a separate fieldsets.
         existing_fields = set(flatten_fieldsets(fieldsets))
-        return fieldsets + (
+        return [
+            *fieldsets,
             (
                 "Other fields",
                 {
@@ -114,7 +115,7 @@ class UserAdmin(DjangoUserAdmin):
                     ),
                 },
             ),
-        )
+        ]
 
     @admin.display(boolean=True)
     def is_trusted(self, instance):

@@ -1,0 +1,52 @@
+# ruff.toml
+target-version = "py313"
+line-length = 99
+extend-exclude = [
+    "__init__.py",
+    "tests",
+    "test_*.py",
+    "migrations",
+    "settings",
+]
+
+[lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "N",       # pep8-naming
+    "PL",      # pylint rules
+    "DJ",      # flake8-django
+    "I",       # import sorting
+    "B",       # bugbear
+    "UP",      # pyupgrade
+    "C4",      # comprehensions
+    "SIM",     # simplifications
+    "RUF",     # ruff-specific
+    "BLE",     # blind except
+    "G",       # logging format
+    "S",       # bandit security
+    "TID",     # tidy imports (banned APIs, configured below)
+    "DTZ",     # naive datetimes
+    "PERF",    # performance anti-patterns
+    "A",       # shadowed builtins
+]
+ignore = [
+    "BLE001",  # blind-except
+    "DJ001",   # django-nullable-model-string-field
+    "DJ008",   # django-model-without-dunder-str
+    "DJ012",   # django-unordered-body-content-in-model
+    "DTZ007",  # call-datetime-strptime-without-zone
+    "N818",    # error-suffix-on-exception-name
+    "PLC0415", # import outside top level
+    "PLR2004", # magic-value-comparison
+    "RUF012",  # mutable class attributes (noisy on Django Meta/Admin classes)
+    "SIM102",  # collapsible-if
+    "SIM105",  # suppressible-exception
+    "SIM108",  # if-else-block-instead-of-if-exp
+    "SIM117",  # multiple-with-statements
+    "TID252",  # relative-imports
+    "UP031",   # printf-string-formatting
+]
+
+[lint.flake8-tidy-imports.banned-api]
+"optparse".msg = "Use argparse instead."

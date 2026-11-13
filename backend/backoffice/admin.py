@@ -125,9 +125,7 @@ class FAQEntryAdmin(admin.ModelAdmin):
 
     @admin.display(description="has answer?", boolean=True)
     def has_answer(self, obj) -> bool:
-        if obj.answers.exists():
-            return True
-        return False
+        return obj.answers.exists()
 
     @admin.action(description=_("Enable the selected entries."))
     def enable_entries(self, request, queryset):

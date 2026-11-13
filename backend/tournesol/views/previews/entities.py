@@ -47,7 +47,7 @@ class DynamicWebsitePreviewEntity(BasePreviewAPIView):
     permission_classes = []
 
     @staticmethod
-    def draw_score(  # pylint: disable=too-many-arguments
+    def draw_score(  # noqa: PLR0913
         *,
         image: Image.Image,
         score_overlay: Image.Image,

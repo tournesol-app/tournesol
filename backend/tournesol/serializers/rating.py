@@ -18,7 +18,7 @@ class ExtendedInvididualRatingSerializer(IndividualRatingSerializer):
 
     class Meta:
         model = ContributorRating
-        fields = IndividualRatingSerializer.Meta.fields + ["criteria_scores", "last_compared_at"]
+        fields = [*IndividualRatingSerializer.Meta.fields, "criteria_scores", "last_compared_at"]
         read_only_fields = fields
 
 

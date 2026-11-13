@@ -58,7 +58,7 @@ class ExtendedCollectiveRatingSerializer(CollectiveRatingSerializer):
 
     class Meta:
         model = CollectiveRatingSerializer.Meta.model
-        fields = CollectiveRatingSerializer.Meta.fields + ["criteria_scores"]
+        fields = [*CollectiveRatingSerializer.Meta.fields, "criteria_scores"]
         read_only_fields = fields
 
 

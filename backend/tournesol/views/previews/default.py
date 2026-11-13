@@ -6,7 +6,6 @@ Mainly used to provide URLs that can be used by the Open Graph protocol.
 
 import logging
 from io import BytesIO
-from typing import Optional
 
 import numpy
 import requests
@@ -65,8 +64,7 @@ class BasePreviewAPIView(APIView):
     def default_preview(self):
         # The file needs to remain open to be streamed and will be closed automatically
         # by FileResponse. A context-manager should not be used here.
-        # pylint: disable=consider-using-with
-        default_preview = open(
+        default_preview = open(  # noqa: SIM115
             str(BASE_DIR / "tournesol/resources/tournesol_screenshot_og.png"), "rb"
         )
         return FileResponse(default_preview, content_type="image/png")
@@ -92,7 +90,7 @@ class BasePreviewAPIView(APIView):
 
     def get_yt_thumbnail(
         self, entity: Entity, quality="mq", return_none_on_404=False
-    ) -> Optional[Image.Image]:
+    ) -> Image.Image | None:
         # Quality can be: hq, mq, sd, or maxres (https://stackoverflow.com/a/34784842/188760)
         url = f"https://img.youtube.com/vi/{entity.video_id}/{quality}default.jpg"
         try:
@@ -116,7 +114,7 @@ class BasePreviewAPIView(APIView):
 
         return Image.open(BytesIO(thumbnail_response.content)).convert("RGBA")
 
-    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Optional[Image.Image]:
+    def get_best_quality_yt_thumbnail(self, entity: Entity) -> Image.Image | None:
         result = self.get_yt_thumbnail(entity, quality="maxres", return_none_on_404=True)
         if result is not None:
             return result
