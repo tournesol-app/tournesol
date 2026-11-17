@@ -5,7 +5,7 @@ Entity and closely related models.
 import logging
 from collections import defaultdict
 from functools import cached_property
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 from urllib.parse import urljoin
 
 import numpy as np
@@ -420,7 +420,7 @@ class Entity(models.Model):
             self.metadata = serializer.data
 
     @property
-    def criteria_scores(self) -> List["EntityCriteriaScore"]:
+    def criteria_scores(self) -> list["EntityCriteriaScore"]:
         if hasattr(self, "_prefetched_criteria_scores"):
             return list(self._prefetched_criteria_scores)
         return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))

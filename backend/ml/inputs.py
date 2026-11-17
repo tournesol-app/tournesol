@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import Optional
 
 import pandas as pd
 from django.db.models import F, Q
@@ -116,7 +115,7 @@ class MlInputFromDb(PipelineInput):
         return pd.DataFrame(values)
 
     def get_individual_scores(
-        self, user_id: Optional[int] = None, criterion: Optional[str] = None,
+        self, user_id: int | None = None, criterion: str | None = None,
     ) -> pd.DataFrame:
         scores_queryset = ContributorRatingCriteriaScore.objects.filter(
             contributor_rating__poll__name=self.poll_name,

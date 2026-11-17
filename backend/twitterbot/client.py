@@ -1,6 +1,5 @@
 from functools import cached_property
 from pathlib import Path
-from typing import List, Optional
 
 import requests
 from django.conf import settings
@@ -58,7 +57,7 @@ class TournesolBotClient:
         )
         return client
 
-    def create_tweet(self, text: str, media_files: Optional[List[Path]] = None):
+    def create_tweet(self, text: str, media_files: list[Path] | None = None):
         if media_files is None:
             media_ids = []
         else:
@@ -74,9 +73,9 @@ class TournesolBotClient:
     def create_bluesky_post(
         self,
         text,
-        embed_video: Optional[Entity] = None,
-        image_files: Optional[List[Path]] = None,
-        image_alts: Optional[List[str]] = None,
+        embed_video: Entity | None = None,
+        image_files: list[Path] | None = None,
+        image_alts: list[str] | None = None,
     ):
         from atproto import models  # pylint:disable=import-outside-toplevel
         if image_files is None:

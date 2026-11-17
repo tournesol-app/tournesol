@@ -98,10 +98,7 @@ class EntitySource(models.Model):
 
         now = timezone.now()
         since_last_request = now - self.last_metadata_request_at
-        if since_last_request > timedelta(days=OBSOLETE_METADATA_AFTER_DAYS):
-            return True
-
-        return False
+        return since_last_request > timedelta(days=OBSOLETE_METADATA_AFTER_DAYS)
 
     def update_metadata_field(self) -> None:
         try:

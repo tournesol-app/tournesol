@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Iterable, List, Type
+from collections.abc import Iterable
 
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F
@@ -22,7 +22,7 @@ class EntityType(ABC):
     # The name of this entity type corresponds to the `type` field of the
     # `Entity` model, and to the `entity_type` field of a `Poll`.
     name: str
-    metadata_serializer_class: Type[Serializer]
+    metadata_serializer_class: type[Serializer]
 
     # Configuration related to the metadata filter, that can be overridden by
     # child classes.
@@ -61,7 +61,7 @@ class EntityType(ABC):
             # fmt: on
 
     @classmethod
-    def get_allowed_meta_filter_funcs(cls) -> Dict:
+    def get_allowed_meta_filter_funcs(cls) -> dict:
         """
         Return a `dict` representing functions allowed in the metadata filter.
 
@@ -71,7 +71,7 @@ class EntityType(ABC):
         return cls.metadata_allowed_filter_func
 
     @classmethod
-    def get_allowed_meta_filter_lookups(cls) -> List[str]:
+    def get_allowed_meta_filter_lookups(cls) -> list[str]:
         """
         Return a `list` of lookups allowed in the metadata filter.
 
@@ -195,7 +195,7 @@ class EntityType(ABC):
         return qs.filter(add_time__gte=min_date)
 
     @classmethod
-    def get_allowed_meta_order_fields(cls) -> List[str]:
+    def get_allowed_meta_order_fields(cls) -> list[str]:
         """
         Return a list of metadata fields that can be used to order an entity
         list.

@@ -66,15 +66,13 @@ class DynamicWebsitePreviewFAQ(BasePreviewAPIView):
 
         title_lines = textwrap.wrap(title, width=34)
         line_height = 24
-        line_nb = 0
-        for line in title_lines:
+        for line_nb, line in enumerate(title_lines):
             text_box.text(
                 tuple(numpy.multiply((0, line_height * line_nb), upscale_ratio)),
                 line,
                 font=self.fnt_config["faq_question"],
                 fill="#4a473e",
             )
-            line_nb += 1
 
         image.paste(
             text_box_image,

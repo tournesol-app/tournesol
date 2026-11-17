@@ -29,7 +29,7 @@ class GivenVoucherSerializer(ModelSerializer):
 
     class Meta:
         model = Voucher
-        fields = ["_by"] + VOUCHER_FIELDS
+        fields = ["_by", *VOUCHER_FIELDS]
         validators = [
             UniqueTogetherValidator(
                 queryset=model.objects.all(),

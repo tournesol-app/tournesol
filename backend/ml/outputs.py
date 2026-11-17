@@ -1,7 +1,6 @@
 import logging
 from functools import cached_property
 from itertools import islice
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -27,7 +26,7 @@ class TournesolPollOutput(PipelineOutput):
     def __init__(
         self,
         poll_name: str,
-        criterion: Optional[str] = None,
+        criterion: str | None = None,
         save_trust_scores_enabled: bool = True,
     ):
         self.poll_name = poll_name
@@ -86,7 +85,7 @@ class TournesolPollOutput(PipelineOutput):
     def save_individual_scores(
         self,
         scores: pd.DataFrame,
-        single_user_id: Optional[int] = None,
+        single_user_id: int | None = None,
     ):
         if "voting_right" not in scores:
             # Row contains `voting_right` when it comes from a full ML run, but not in the
@@ -105,13 +104,13 @@ class TournesolPollOutput(PipelineOutput):
                 "id", "user_id", "entity_id"
             )
         }
-        ratings_to_create = set(
+        ratings_to_create = {
             (contributor_id, entity_id)
             for contributor_id, entity_id in scores[
                 ["user_id", "entity_id"]
             ].itertuples(index=False)
             if (contributor_id, entity_id) not in rating_ids
-        )
+        }
         ContributorRating.objects.bulk_create(
             (
                 ContributorRating(

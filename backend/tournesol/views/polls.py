@@ -65,7 +65,7 @@ logger = logging.getLogger(__name__)
                     ),
                     OpenApiExample(
                         name="Videos - some examples",
-                        value={"language": ["en", "pt"], "uploader": "Kurzgesagt – In a Nutshell"},
+                        value={"language": ["en", "pt"], "uploader": "Kurzgesagt - In a Nutshell"},
                     ),
                     OpenApiExample(
                         name="Videos - videos of 8 minutes or less (480 sec)",
@@ -103,11 +103,11 @@ class PollRecommendationsBaseAPIView(PollScopedViewMixin, ListAPIView):
     def _exclude_compared_entities(self, queryset, exclude_compared, poll: Poll, user):
         if exclude_compared and user.is_authenticated:
             comparison_qs = Comparison.objects.filter(user=user, poll=poll)
-            compared_entities = set(
+            compared_entities = {
                 entity_id
                 for comparison in comparison_qs
                 for entity_id in [comparison.entity_1_id, comparison.entity_2_id]
-            )
+            }
             return queryset.exclude(id__in=compared_entities)
         return queryset
 

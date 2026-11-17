@@ -63,8 +63,10 @@ class Command(BaseCommand):
         thread_pool.shutdown()
 
     def create_test_user(self):
-        User.objects.create_user(  # hardcoded password is deliberate # nosec B106
-            username="user1", password="tournesol", email="user1@tournesol.app"
+        User.objects.create_user(
+            username="user1",
+            password="tournesol",  # hardcoded password is deliberate # noqa: S106
+            email="user1@tournesol.app",
         )
 
     @staticmethod

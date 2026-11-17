@@ -2,7 +2,7 @@
 Functions overriding the default rest_registration.utils.users module.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from rest_registration.exceptions import UserNotFound
 from rest_registration.utils.users import get_user_by_lookup_dict, get_user_login_field_names
@@ -15,7 +15,7 @@ RESET_PASSWORD_USER_LOOKUPS_OVERRIDE = {"email": "email__iexact"}
 
 
 def find_user_by_send_reset_password_link_data(
-    data: Dict[str, Any], **kwargs: Any
+    data: dict[str, Any], **kwargs: Any
 ) -> User:
     """
     Custom override of the default Django REST Registration function.

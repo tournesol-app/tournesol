@@ -1,9 +1,0 @@
-[flake8]
-extend-exclude=
-    __init__.py
-    tests
-    migrations
-    settings
-    venv
-    .venv
-max-line-length=99

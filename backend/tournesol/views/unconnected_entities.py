@@ -88,9 +88,11 @@ class UnconnectedEntitiesView(PollScopedViewMixin, generics.ListAPIView):
         # True (the default). Otherwise all the entities except the source are
         # selected.
         strict = self.request.query_params.get("strict") != "false"
-        entity_ids = set(e_id for e_id in neighbors if (
-            (e_id not in distances) if strict else (distances.get(e_id, 2) > 1)
-        ))
+        entity_ids = {
+            e_id
+            for e_id in neighbors
+            if ((e_id not in distances) if strict else (distances.get(e_id, 2) > 1))
+        }
         sorted_entity_ids = sorted(
             entity_ids,
             # Sorting first by distance and secondly by number of comparisons

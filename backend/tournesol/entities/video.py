@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import List
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
@@ -31,7 +30,7 @@ class VideoEntity(EntityType):
     metadata_serializer_class = VideoMetadata
 
     @classmethod
-    def get_allowed_meta_order_fields(cls) -> List[str]:
+    def get_allowed_meta_order_fields(cls) -> list[str]:
         """
         Return a list of metadata fields that can be used to order an entity
         list.
