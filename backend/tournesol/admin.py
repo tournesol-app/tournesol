@@ -3,10 +3,11 @@ Administration interface of the `tournesol` app.
 """
 
 from datetime import datetime
+from urllib.parse import urlencode
 
 from django.contrib import admin, messages
 from django.contrib.admin.filters import SimpleListFilter
-from django.db.models import Q, QuerySet
+from django.db.models import Count, Q, QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -28,6 +29,7 @@ from .models import (
     EntityCriteriaScore,
     EntityPollRating,
     EntitySource,
+    EntitySourceLink,
     Poll,
 )
 from .utils.video_language import LANGUAGE_CODE_TO_NAME_MATCHING
@@ -69,6 +71,14 @@ class EntityLanguageFilter(MetadataFieldFilter):
     metadata_key = "language"
 
 
+class EntitySourceLinksInline(admin.TabularInline):
+    """Used to display the sources in the entities' admin interface"""
+
+    model = EntitySourceLink
+    extra = 0
+    raw_id_fields = ("entity_source",)
+
+
 @admin.register(Entity)
 class EntityAdmin(admin.ModelAdmin):
     list_display = (
@@ -76,8 +86,9 @@ class EntityAdmin(admin.ModelAdmin):
         "get_name",
         "link_to_tournesol",
     )
-    search_fields = ("uid", "metadata__name")
+    search_fields = ("uid", "metadata__name", "sources__uid")
     list_filter = ("type",)
+    inlines = (EntitySourceLinksInline,)
     actions = ["update_metadata"]
 
     @admin.action(description="Force metadata refresh of selected entities")
@@ -201,9 +212,22 @@ class EntitySourceAdmin(admin.ModelAdmin):
         "get_custom_url",
         "created_at",
         "metadata_timestamp",
-        "last_metadata_request_at"
+        "last_metadata_request_at",
+        "entity_number",
     )
     search_fields = ("uid",)
+    readonly_fields = ("entity_number",)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(entity_number=Count("entity_links"))
+
+    @admin.display(ordering="-entity_number", description="# entities")
+    def entity_number(self, obj):
+        return format_html(
+            '<a href="{}">{} entities</a>',
+            f'{reverse("admin:tournesol_entity_changelist")}?{urlencode({"q": obj.uid})}',
+            obj.entity_number,
+        )
 
     @staticmethod
     @admin.display(description="name", ordering="metadata__name")

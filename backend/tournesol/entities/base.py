@@ -223,6 +223,10 @@ class EntityType(ABC):
     def metadata_needs_to_be_refreshed(self) -> bool:
         return False
 
+    def get_source_uids(self) -> set[str]:
+        """Return the uids of the sources that produced the entity, read from its metadata."""
+        return set()
+
     def update_metadata_field(self) -> None:
         raise NotImplementedError
 
