@@ -16,6 +16,7 @@ from django.utils import timezone
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
 from tournesol.serializers.metadata import EntitySourceMetadata
+from tournesol.utils.api_youtube import MAX_CHANNELS_PER_REQUEST
 from tournesol.utils.constants import YOUTUBE_CHANNEL_ID_REGEX
 
 OBSOLETE_METADATA_AFTER_DAYS = 7
@@ -34,6 +35,9 @@ class EntitySource(models.Model):
     """A source that produces entities, such as a YouTube channel."""
 
     metadata_serializer_class = EntitySourceMetadata
+
+    # The maximum number of uids `create_from_uids` accepts.
+    MAX_SOURCES_PER_REQUEST = MAX_CHANNELS_PER_REQUEST
 
     uid = models.CharField(
         unique=True,
@@ -85,6 +89,36 @@ class EntitySource(models.Model):
             return get_channel_metadata(channel_id)
         except ChannelNotFound as error:
             raise SourceNotFound(uid) from error
+
+    @classmethod
+    def create_from_uids(cls, uids: list[str]) -> int:
+        """
+        Create the sources of up to `MAX_SOURCES_PER_REQUEST` uids, with their
+        metadata fetched from their platform in a single request, and return
+        the number of sources found on the platform.
+
+        Sources that do not exist on their platform are not created. A failed
+        request raises.
+        """
+        # pylint: disable=import-outside-toplevel
+        from tournesol.utils.api_youtube import get_channels_metadata
+
+        uid_by_channel_id = {uid.split(UID_DELIMITER, maxsplit=1)[1]: uid for uid in uids}
+        metadata_by_channel_id = get_channels_metadata(list(uid_by_channel_id))
+
+        fetched_at = timezone.now()
+        found_sources = [
+            cls(
+                uid=uid_by_channel_id[channel_id],
+                metadata=metadata,
+                metadata_timestamp=fetched_at,
+                last_metadata_request_at=fetched_at,
+            )
+            for channel_id, metadata in metadata_by_channel_id.items()
+            if channel_id in uid_by_channel_id
+        ]
+        cls.objects.bulk_create(found_sources, ignore_conflicts=True)
+        return len(found_sources)
 
     @property
     def cleaned_metadata(self):
