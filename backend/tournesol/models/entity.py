@@ -14,7 +14,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
-from django.db.models import Prefetch, Q
+from django.db.models import FloatField, Prefetch, Q
 from django.db.models.expressions import RawSQL
 from django.utils import timezone
 from django.utils.html import format_html
@@ -26,6 +26,7 @@ from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT, RateLater
 from tournesol.serializers.metadata import VideoMetadata
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
+from tournesol.utils.text_search import build_prefix_tsquery
 from tournesol.utils.video_language import (
     DEFAULT_SEARCH_CONFIG,
     POSTGRES_SEARCH_CONFIGS,
@@ -121,7 +122,7 @@ class EntityQueryset(models.QuerySet):
 
         return qst
 
-    def filter_with_text_query(self, query: str, languages=None):
+    def filter_with_text_query(self, query: str, languages=None, prefix_query=None):
         """
         This custom query enables to use the index on 'search_vector' independently of
         the language of the user query.
@@ -135,6 +136,11 @@ class EntityQueryset(models.QuerySet):
         explicitly join on 'pg_ts_config' which contains the list of available language
         configurations.
         """
+        if prefix_query is None:
+            prefix_query = build_prefix_tsquery(query)
+        if not prefix_query:
+            return self.none()
+
         if languages:
             search_configs = [language_to_postgres_config(lang) for lang in languages]
         else:
@@ -148,15 +154,30 @@ class EntityQueryset(models.QuerySet):
                     FROM tournesol_entity e
                     INNER JOIN pg_ts_config c
                         ON c.oid = e.search_config_name::regconfig AND c.cfgname = ANY(%s)
-                    WHERE e."search_vector" @@ (plainto_tsquery(oid, %s))
+                    WHERE e."search_vector" @@ to_tsquery(oid, %s)
                 )
                 """,
                 # `= ANY(my_list)` is preferred to `IN my_tuple` in this query, as a workaround
                 # for a bug in django-debug-toolbar:
                 # https://github.com/jazzband/django-debug-toolbar/issues/1482
-                (search_configs, query),
+                (search_configs, prefix_query),
             )
         ).filter(_matching_query=True)
+
+    def filter_with_trigram_query(self, query: str, similarity_threshold=0.4):
+        """Trigram fallback on name/uploader for typo-tolerant search."""
+        return self.alias(
+            _trigram_similarity=RawSQL(
+                """
+                GREATEST(
+                    word_similarity(%s, tournesol_entity.metadata->>'name'),
+                    word_similarity(%s, tournesol_entity.metadata->>'uploader')
+                )
+                """,
+                (query, query),
+                output_field=FloatField(),
+            ),
+        ).filter(_trigram_similarity__gte=similarity_threshold)
 
 
 class Entity(models.Model):
