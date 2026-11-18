@@ -124,6 +124,13 @@ class RecommendationSerializer(RecommendationBaseSerializer):
 
 
 class RecommendationsFilterSerializer(serializers.Serializer):
+    ORDERING_TOP_RATED = "top_rated"
+    ORDERING_MOST_RECENT = "most_recent"
+    ORDERING_CHOICES = [
+        (ORDERING_TOP_RATED, "Sort by highest score"),
+        (ORDERING_MOST_RECENT, "Sort by most recent"),
+    ]
+
     date_lte = serializers.DateTimeField(default=None)
     date_gte = serializers.DateTimeField(default=None)
     search = serializers.CharField(default=None, help_text="A search query to filter entities")
@@ -136,6 +143,11 @@ class RecommendationsFilterSerializer(serializers.Serializer):
         default=False,
         help_text="If true and a user is authenticated, then entities compared by the"
         " user will be removed from the response",
+    )
+    ordering = serializers.ChoiceField(
+        choices=ORDERING_CHOICES,
+        default=ORDERING_TOP_RATED,
+        help_text="Sort order for recommendations.",
     )
 
 
