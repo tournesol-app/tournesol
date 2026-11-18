@@ -57,7 +57,7 @@ server {
     }
 
 {% if letsencrypt_email is defined %}
-    listen 443 ssl http2;
+    listen 443 ssl;
     ssl_certificate /etc/letsencrypt/live/{{domain_name}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{domain_name}}/privkey.pem;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
@@ -138,7 +138,7 @@ server {
     }
 
 {% if letsencrypt_email is defined %}
-    listen 443 ssl http2;
+    listen 443 ssl;
     ssl_certificate /etc/letsencrypt/live/{{api_domain_name}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{api_domain_name}}/privkey.pem;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
