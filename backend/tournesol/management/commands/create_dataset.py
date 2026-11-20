@@ -112,10 +112,10 @@ class Command(BaseCommand):
 
         # BUILDING phase
         with zipfile.ZipFile(archive_abs_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-            with open(readme_path, "r", encoding="utf-8") as readme:
+            with open(readme_path, encoding="utf-8") as readme:
                 zip_file.writestr("README.txt", readme.read())
 
-            with open(license_path, "r", encoding="utf-8") as license_file:
+            with open(license_path, encoding="utf-8") as license_file:
                 zip_file.writestr("LICENSE.txt", license_file.read())
 
             with zip_file.open("metadata.json", "w") as output:

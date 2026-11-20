@@ -5,7 +5,7 @@ Entity and closely related models.
 import logging
 from collections import defaultdict
 from functools import cached_property
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 from urllib.parse import urljoin
 
 import numpy as np
@@ -23,6 +23,8 @@ from tournesol.entities import ENTITY_TYPE_CHOICES, ENTITY_TYPE_NAME_TO_CLASS
 from tournesol.entities.base import UID_DELIMITER, EntityType
 from tournesol.entities.video import TYPE_VIDEO, YOUTUBE_UID_NAMESPACE
 from tournesol.models.entity_score import EntityCriteriaScore, ScoreMode
+from tournesol.models.entity_source import EntitySource, SourceNotFound
+from tournesol.models.entity_source_link import EntitySourceLink
 from tournesol.models.rate_later import RATE_LATER_AUTO_REMOVE_DEFAULT, RateLater
 from tournesol.serializers.metadata import VideoMetadata
 from tournesol.utils.constants import MEHESTAN_MAX_SCALED_SCORE
@@ -216,6 +218,14 @@ class Entity(models.Model):
         " stemmed and weighted according to the language's search config.",
     )
 
+    sources = models.ManyToManyField(
+        to="tournesol.EntitySource",
+        through="tournesol.EntitySourceLink",
+        related_name="entities",
+        blank=True,
+        help_text="The sources that produced the entity, derived from its metadata.",
+    )
+
     def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
         """
         Always refresh the metadata text search vector.
@@ -235,11 +245,32 @@ class Entity(models.Model):
             update_fields=update_fields,
         )
 
-        # If "metadata" has changed, the indexed search_vector needs to be updated.
+        # If "metadata" has changed, the indexed search_vector and the sources
+        # need to be updated.
         # This condition also avoids infinite loop when calling .save()
         if (update_fields is None) or ("metadata" in update_fields):
             if self.type in ENTITY_TYPE_NAME_TO_CLASS:
                 self.entity_cls.update_search_vector(self)
+                self.update_sources()
+
+    def update_sources(self) -> None:
+        """
+        Link the entity to the sources named in its metadata, and only to them.
+
+        A source seen for the first time is created with its metadata fetched
+        from its platform, so that it can be used right away.
+        """
+        source_uids = self.inner.get_source_uids()
+        self.source_links.exclude(entity_source__uid__in=source_uids).delete()
+
+        linked_source_uids = set(self.sources.values_list("uid", flat=True))
+        for source_uid in source_uids - linked_source_uids:
+            try:
+                source = EntitySource.get_or_create_from_uid(source_uid)
+            except SourceNotFound:
+                logging.warning("Source %s of entity %s does not exist", source_uid, self.uid)
+                continue
+            EntitySourceLink.objects.get_or_create(entity=self, entity_source=source)
 
     def update_entity_poll_rating(self, poll):
         """
@@ -420,7 +451,7 @@ class Entity(models.Model):
             self.metadata = serializer.data
 
     @property
-    def criteria_scores(self) -> List["EntityCriteriaScore"]:
+    def criteria_scores(self) -> list["EntityCriteriaScore"]:
         if hasattr(self, "_prefetched_criteria_scores"):
             return list(self._prefetched_criteria_scores)
         return list(self.all_criteria_scores.filter(score_mode=ScoreMode.DEFAULT))

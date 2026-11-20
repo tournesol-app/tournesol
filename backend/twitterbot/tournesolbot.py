@@ -154,8 +154,9 @@ def select_a_video(recommendations):
     ]
 
     # Chose a random video weighted by tournesol score
-    selected_video = random.choices(  # not a cryptographic use # nosec B311
-        recommendations, weights=tournesol_score_list
+    selected_video = random.choices(  # not a cryptographic use # noqa: S311
+        recommendations,
+        weights=tournesol_score_list,
     )[0]
 
     return selected_video

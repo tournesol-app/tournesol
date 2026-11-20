@@ -8,6 +8,7 @@ from .entity import Entity
 from .entity_poll_rating import EntityPollRating
 from .entity_score import EntityCriteriaScore
 from .entity_source import EntitySource
+from .entity_source_link import EntitySourceLink
 from .poll import Poll
 from .rate_later import RateLater
 from .ratings import ContributorRating, ContributorRatingCriteriaScore

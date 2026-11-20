@@ -6,11 +6,20 @@ the videos it publishes. Users subscribe to sources to build a personalized
 feed of the entities these sources produce.
 """
 
+import logging
+from datetime import timedelta
+
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from tournesol.entities.base import UID_DELIMITER
 from tournesol.entities.video import YOUTUBE_UID_NAMESPACE
+from tournesol.serializers.metadata import EntitySourceMetadata
+from tournesol.utils.api_youtube import MAX_CHANNELS_PER_REQUEST
 from tournesol.utils.constants import YOUTUBE_CHANNEL_ID_REGEX
+
+OBSOLETE_METADATA_AFTER_DAYS = 7
 
 # The pattern a whole source uid must match, per uid namespace.
 UID_REGEX_BY_NAMESPACE = {
@@ -25,12 +34,27 @@ class SourceNotFound(Exception):
 class EntitySource(models.Model):
     """A source that produces entities, such as a YouTube channel."""
 
+    metadata_serializer_class = EntitySourceMetadata
+
+    # The maximum number of uids `create_from_uids` accepts.
+    MAX_SOURCES_PER_REQUEST = MAX_CHANNELS_PER_REQUEST
+
     uid = models.CharField(
         unique=True,
         max_length=144,
         help_text="A unique identifier, built with a namespace and an external id.",
     )
     metadata = models.JSONField(blank=True, default=dict)
+    metadata_timestamp = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="Timestamp the metadata was updated",
+    )
+    last_metadata_request_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Last time fetch of metadata was attempted",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -65,3 +89,93 @@ class EntitySource(models.Model):
             return get_channel_metadata(channel_id)
         except ChannelNotFound as error:
             raise SourceNotFound(uid) from error
+
+    @classmethod
+    def create_from_uids(cls, uids: list[str]) -> int:
+        """
+        Create the sources of up to `MAX_SOURCES_PER_REQUEST` uids, with their
+        metadata fetched from their platform in a single request, and return
+        the number of sources found on the platform.
+
+        Sources that do not exist on their platform are not created. A failed
+        request raises.
+        """
+        # pylint: disable=import-outside-toplevel
+        from tournesol.utils.api_youtube import get_channels_metadata
+
+        uid_by_channel_id = {uid.split(UID_DELIMITER, maxsplit=1)[1]: uid for uid in uids}
+        metadata_by_channel_id = get_channels_metadata(list(uid_by_channel_id))
+
+        fetched_at = timezone.now()
+        found_sources = [
+            cls(
+                uid=uid_by_channel_id[channel_id],
+                metadata=metadata,
+                metadata_timestamp=fetched_at,
+                last_metadata_request_at=fetched_at,
+            )
+            for channel_id, metadata in metadata_by_channel_id.items()
+            if channel_id in uid_by_channel_id
+        ]
+        cls.objects.bulk_create(found_sources, ignore_conflicts=True)
+        return len(found_sources)
+
+    @property
+    def cleaned_metadata(self):
+        serializer = self.metadata_serializer_class(data=self.metadata)
+        serializer.is_valid(raise_exception=True)
+        return serializer.data
+
+    def metadata_needs_to_be_refreshed(self) -> bool:
+        if self.last_metadata_request_at is None:
+            return True
+
+        now = timezone.now()
+        since_last_request = now - self.last_metadata_request_at
+        return since_last_request > timedelta(days=OBSOLETE_METADATA_AFTER_DAYS)
+
+    def update_metadata_field(self) -> None:
+        try:
+            metadata = EntitySource.fetch_metadata(self.uid)
+        except SourceNotFound:
+            metadata = {}
+
+        if not metadata:
+            return
+
+        for (metadata_key, metadata_value) in metadata.items():
+            if metadata_value is not None:
+                self.metadata[metadata_key] = metadata_value
+
+    def refresh_metadata(self, force=False, save=True) -> None:
+        if not force and not self.metadata_needs_to_be_refreshed():
+            logging.debug(
+                "Not refreshing metadata for entity source %s. Last attempt at %s",
+                self.uid,
+                self.last_metadata_request_at,
+            )
+            return
+
+        self.last_metadata_request_at = timezone.now()
+        if save:
+            # Let's update 'last_metadata_request_at' as soon as possible,
+            # to avoid repeated metadata refreshes, due to concurrent requests
+            # or unexpected errors in the refresh process.
+            self.save(update_fields=["last_metadata_request_at"])
+
+        self.update_metadata_field()
+        # ensure that the metadata format is valid after refresh
+        self.metadata = self.cleaned_metadata
+        self.metadata_timestamp = timezone.now()
+        if save:
+            self.save(update_fields=["metadata", "metadata_timestamp"])
+
+    def clean(self):
+        # Allow blank value in forms.
+        if self.metadata is None:
+            self.metadata = {}
+
+        serializer = self.metadata_serializer_class(data=self.metadata)
+        if not serializer.is_valid():
+            raise ValidationError({"metadata": str(serializer.errors)})
+        self.metadata = serializer.data

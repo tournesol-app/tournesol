@@ -14,7 +14,7 @@ from pydantic import ConfigDict
 
 from ..auth import get_requester_did
 from ..db import db
-from ..feeds import ALL_FEEDS
+from ..feeds import ENABLED_FEEDS
 from ..config import FEED_SERVER_DID
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ async def get_feed_skeleton(
     authorization: Annotated[str | None, Header()] = None,
 ) -> AppBskyFeedGetFeedSkeleton.Response:
     rkey = params.feed.split("/")[-1]
-    feed = ALL_FEEDS.get(rkey)
+    feed = ENABLED_FEEDS.get(rkey)
     if feed is None:
         raise HTTPException(404, "Unknown feed")
     requester_did = await get_requester_did(
@@ -55,7 +55,7 @@ def describe_feed_generator() -> AppBskyFeedDescribeFeedGenerator.Response:
             AppBskyFeedDescribeFeedGenerator.Feed(
                 uri=f"at://{FEED_SERVER_DID}/app.bsky.feed.generator/{rkey}"
             )
-            for rkey in ALL_FEEDS.keys()
+            for rkey in ENABLED_FEEDS.keys()
         ],
     )
 

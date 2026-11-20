@@ -55,7 +55,7 @@ class RandomRecommendationBaseAPIView(PollRecommendationsBaseAPIView):
                     ),
                     OpenApiExample(
                         name="Videos - some examples",
-                        value={"language": ["en", "pt"], "uploader": "Kurzgesagt – In a Nutshell"},
+                        value={"language": ["en", "pt"], "uploader": "Kurzgesagt - In a Nutshell"},
                     ),
                     OpenApiExample(
                         name="Videos - videos of 8 minutes or less (480 sec)",

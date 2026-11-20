@@ -1,4 +1,3 @@
-from typing import List
 
 from django.core.signing import Signer
 from django.db import models
@@ -53,11 +52,11 @@ class Poll(models.Model):
         return cls.objects.only("pk").get(name=DEFAULT_POLL_NAME).pk
 
     @cached_property
-    def criterias_list(self) -> List[str]:
+    def criterias_list(self) -> list[str]:
         return list(self.criterias.values_list("name", flat=True))
 
     @cached_property
-    def required_criterias_list(self) -> List[str]:
+    def required_criterias_list(self) -> list[str]:
         return list(
             self.criterias
             .filter(criteriarank__optional=False)

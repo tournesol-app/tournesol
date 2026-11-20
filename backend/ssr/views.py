@@ -1,8 +1,7 @@
-import typing as tp
 
 import requests
-from django.http import HttpResponse, HttpRequest
 from django.conf import settings
+from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 
 from tournesol.models import Entity
@@ -63,7 +62,7 @@ def get_entity_meta_tags(uid: str) -> dict[str, str]:
     return meta_tags
 
 
-def render_tournesol_html_with_dynamic_tags(request: HttpRequest, uid: tp.Optional[str] = None):
+def render_tournesol_html_with_dynamic_tags(request: HttpRequest, uid: str | None = None):
     index_html = get_static_index_html()
     meta_tags = get_default_meta_tags(request)
     if uid is not None:

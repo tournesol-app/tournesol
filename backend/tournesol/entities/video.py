@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import List
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
@@ -31,7 +30,7 @@ class VideoEntity(EntityType):
     metadata_serializer_class = VideoMetadata
 
     @classmethod
-    def get_allowed_meta_order_fields(cls) -> List[str]:
+    def get_allowed_meta_order_fields(cls) -> list[str]:
         """
         Return a list of metadata fields that can be used to order an entity
         list.
@@ -73,6 +72,12 @@ class VideoEntity(EntityType):
         for (metadata_key, metadata_value) in metadata.items():
             if metadata_value is not None:
                 self.instance.metadata[metadata_key] = metadata_value
+
+    def get_source_uids(self) -> set[str]:
+        channel_id = self.instance.metadata.get("channel_id")
+        if not channel_id:
+            return set()
+        return {f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{channel_id}"}
 
     def metadata_needs_to_be_refreshed(self) -> bool:
         """

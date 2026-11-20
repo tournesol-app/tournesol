@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
                 ('n_private_experts', computed_property.fields.ComputedIntegerField(compute_from='get_n_private_experts', default=0, editable=False, help_text='Number of certified contributors who rated this video privately')),
                 ('public_experts', core.utils.models.ComputedJsonField(compute_from='get_certified_top_raters_list', default='[]', editable=False, help_text='Top 10 certified public contributor usernames')),
             ],
-            bases=(models.Model, core.utils.models.WithEmbedding, core.utils.models.WithDynamicFields),
+            bases=(models.Model, core.utils.models.WithDynamicFields),
         ),
         migrations.CreateModel(
             name='VideoSelectorSkips',

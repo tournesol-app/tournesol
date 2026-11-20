@@ -6,7 +6,7 @@ class _SuggesterStore:
     suggesters: dict[Poll, SuggestionProvider] = {}
 
     def get_suggester(self, poll: Poll) -> SuggestionProvider:
-        if poll not in self.suggesters.keys():
+        if poll not in self.suggesters:
             self.suggesters[poll] = SuggestionProvider(poll)
         return self.suggesters[poll]
 

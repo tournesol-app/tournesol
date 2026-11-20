@@ -39,7 +39,7 @@ CHANNEL_API_RESPONSE = {
 CHANNEL_METADATA = {
     "name": "Tournesol",
     "thumbnail": "https://yt3.ggpht.com/medium",
-    "customUrl": "Channel handle",
+    "custom_url": "Channel handle",
 }
 
 
@@ -123,7 +123,7 @@ class SubscriptionApiTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data["entity_source"]["metadata"],
-            {"name": "Tournesol", "thumbnail": None, "customUrl": None},
+            {"name": "Tournesol", "thumbnail": None, "custom_url": None},
         )
 
     @override_settings(YOUTUBE_API_KEY=None)

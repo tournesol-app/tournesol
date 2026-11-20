@@ -51,9 +51,9 @@ class ComparisonSerializerMixin:
         partial_update = self.context.get("partial_update")
 
         if not partial_update:
-            missing_criterias = set(current_poll.required_criterias_list) - set(
+            missing_criterias = set(current_poll.required_criterias_list) - {
                 score["criteria"] for score in value
-            )
+            }
             if missing_criterias:
                 raise ValidationError(f"Missing required criteria: {','.join(missing_criterias)}")
 
