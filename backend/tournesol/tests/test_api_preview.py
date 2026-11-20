@@ -467,6 +467,32 @@ class DynamicRecommendationsPreviewTestCase(TestCase):
         self.assertEqual(response.headers["Content-Type"], "image/jpeg")
         self.assertNotIn("Content-Disposition", response.headers)
 
+    @patch.object(requests.Session, "get", mock_yt_thumbnail_response)
+    def test_preview_internal_route_with_safe_recommendations(self):
+        """
+        The recommendations are drawn, and the API doesn't fall back to the
+        default preview (a PNG image) when safe recommendations exist.
+        """
+        for video in VideoFactory.create_batch(4, make_safe_for_poll=True):
+            VideoCriteriaScoreFactory(entity=video)
+
+        response = self.client.get(f"{self.preview_internal_url}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+        self.assertNotIn("Content-Disposition", response.headers)
+
+    def test_preview_internal_route_without_matching_recommendations(self):
+        """
+        The API draws a JPEG preview, and doesn't fall back to the default
+        preview, when no recommendation matches the search criteria.
+        """
+        VideoFactory(make_safe_for_poll=True, metadata__language="en")
+
+        response = self.client.get(f"{self.preview_internal_url}/?metadata[language]=fr")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "image/jpeg")
+        self.assertNotIn("Content-Disposition", response.headers)
+
     def test_preview_redirection(self):
         for url in self.preview_urls:
             response = self.client.get(f"{url}/?language=fr&date=Month")
