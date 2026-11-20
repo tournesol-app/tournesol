@@ -64,12 +64,12 @@ def prepare_text(video: Entity, dest: Literal["bluesky"]):
     )
 
     video_title = video.metadata["name"]
-
+ 
     # if dest == "twitter":
     #     # Replace "@" by a smaller "@" to avoid false mentions in the tweet
     #     video_title = video_title.replace("@", "﹫")
     #     # Replace "." in between words to avoid in the tweet false detection of links
-    #     video_title = re.sub(r"\b(?:\.)\b", "․", video_title)
+    #     video_title = re.sub(r"\b(?:\.)\b", "․", video_title)  # noqa: RUF003
 
     # Generate the text of the tweet
     poll_rating = video.all_poll_ratings.get(poll__name=DEFAULT_POLL_NAME)
