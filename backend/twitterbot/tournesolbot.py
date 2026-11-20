@@ -64,7 +64,7 @@ def prepare_text(video: Entity, dest: Literal["bluesky"]):
     )
 
     video_title = video.metadata["name"]
- 
+
     # if dest == "twitter":
     #     # Replace "@" by a smaller "@" to avoid false mentions in the tweet
     #     video_title = video_title.replace("@", "﹫")
