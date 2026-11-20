@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from twitterbot.tournesolbot import tweet_top_contributor_graph
+from twitterbot.tournesolbot import post_top_contributor_graph
 
 
 class Command(BaseCommand):
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        tweet_top_contributor_graph(
+        post_top_contributor_graph(
             options["bot_name"],
             assumeyes=options["assumeyes"],
             dest=["bluesky"],
