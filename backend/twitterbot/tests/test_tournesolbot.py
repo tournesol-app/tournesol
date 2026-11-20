@@ -1,7 +1,6 @@
 from datetime import timedelta
-from unittest import mock
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.utils import timezone
 
 from core.tests.factories.user import UserFactory
@@ -16,7 +15,6 @@ from twitterbot.tournesolbot import (
     generate_top_contributor_figure,
     get_best_criteria,
     get_video_recommendations,
-    post_top_contributor_graph,
     prepare_text,
 )
 
@@ -162,7 +160,7 @@ class TestTournesolBot(TestCase):
         with self.assertRaises(ValueError):
             get_best_criteria(self.videos[8], 15) == criteria_in_order
 
-    def test_prepare_tweet(self):
+    def test_prepare_text(self):
 
         message_text = (
             "Aujourd'hui, je recommande 'Tournesol is great! 🌻 #tournesol' de @TournesolApp, "
@@ -259,39 +257,3 @@ class TestTournesolBotTopContributor(TestCase):
         figure_path = generate_top_contributor_figure(top_contributors_qs, "fr")
 
         assert figure_path.exists()
-
-    # @mock.patch("tweepy.Client")
-    # @mock.patch("tweepy.API")
-    # @override_settings(
-    #     TWITTERBOT_CREDENTIALS={
-    #         "@TournesolBot": {
-    #             "LANGUAGE": "en",
-    #             "CONSUMER_KEY": "",
-    #             "CONSUMER_SECRET": "",
-    #             "ACCESS_TOKEN": "",
-    #             "ACCESS_TOKEN_SECRET": "",
-    #         },
-    #         "@TournesolBotFR": {
-    #             "LANGUAGE": "fr",
-    #             "CONSUMER_KEY": "",
-    #             "CONSUMER_SECRET": "",
-    #             "ACCESS_TOKEN": "",
-    #             "ACCESS_TOKEN_SECRET": "",
-    #         },
-    #     }
-    # )
-    # def post_tweet_top_contributor_graph(self, api_mock, client_mock):
-    #     mocked_api_client = api_mock.return_value
-    #     mocked_v2_client = client_mock.return_value
-
-    #     post_top_contributor_graph("@TournesolBot", assumeyes=True, dest=["twitter"])
-    #     post_top_contributor_graph("@TournesolBotFR", assumeyes=True, dest=["twitter"])
-
-    #     self.assertEqual(
-    #         mocked_api_client.media_upload.call_count, 2, mocked_api_client.media_upload.calls
-    #     )
-    #     self.assertEqual(mocked_api_client.media_upload.call_args_list[0].args[0].suffix, ".png")
-    #     # FIXME: 
-    #     self.assertEqual(
-    #         mocked_v2_client.create_tweet.call_count, 2, mocked_api_client.update_status.calls
-    #     )
