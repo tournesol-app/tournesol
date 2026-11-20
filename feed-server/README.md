@@ -54,17 +54,21 @@ And configure the environment variables.
 # For development, with ATproto records processing in background tasks
 FEED_SERVER_HOSTNAME=localhost
 FEED_SERVER_RUN_TASKS_IN_LIFESPAN=1
+# Start from the live stream, to avoid processing a large amount of past data
+FEED_SERVER_JETSTREAM_USE_STORED_CURSOR=0
 
 # For production, where workers are to be started separately
 FEED_SERVER_HOSTNAME=at.example.com
 FEED_SERVER_RUN_TASKS_IN_LIFESPAN=0
+FEED_SERVER_JETSTREAM_USE_STORED_CURSOR=1
 ```
 
 ## Usage
 
 ### Run the server
 
-To serve all feeds (hardcoded for now), run:
+To serve all feeds with the development server, run the following command.  
+To serve only some of the feeds, set `FEED_SERVER_ENABLED_FEEDS` in .env first.
 
 ```bash
 uv run --env-file .env fastapi dev src/feed_server/main.py

@@ -12,7 +12,7 @@ from feed_server.db import db
 from feed_server.indexer.jetstream import listen_to_posts, QUEUE_KEY
 from feed_server.routes.feed import router as feed_router
 from feed_server.routes.well_known import router as well_known_router
-from feed_server.feeds import ALL_FEEDS
+from feed_server.feeds import ENABLED_FEEDS
 
 
 async def process_posts():
@@ -40,7 +40,7 @@ async def process_posts():
             record = AtprotoCompactRecord.from_raw(post)
             await asyncio.gather(
                 db.save_record(record),
-                *(feed.on_message(post, record) for feed in ALL_FEEDS.values()),
+                *(feed.on_message(post, record) for feed in ENABLED_FEEDS.values()),
             )
         except Exception:
             logging.exception("Failed to process message, skipping: %s", message_json)
