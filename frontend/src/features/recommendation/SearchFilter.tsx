@@ -33,6 +33,7 @@ function SearchFilter({
   disableAdvanced = false,
   disableCriteria = false,
   disableDuration = false,
+  defaultFilters = [],
   onLanguagesChange,
 }: {
   appearExpanded?: boolean;
@@ -40,10 +41,19 @@ function SearchFilter({
   disableAdvanced?: boolean;
   disableCriteria?: boolean;
   disableDuration?: boolean;
+  // TODO: delete this prop if not used
+  defaultFilters?: Array<{
+    name: string;
+    value: string;
+    defaultOnlyNull?: boolean;
+  }>;
   onLanguagesChange?: (value: string) => void;
 }) {
   const [expanded, setExpanded] = useState(appearExpanded);
-  const [filterParams, setFilter] = useListFilter({ setEmptyValues: true });
+  const [filterParams, setFilter] = useListFilter({
+    defaults: defaultFilters,
+    setEmptyValues: true,
+  });
 
   const { name: pollName } = useCurrentPoll();
 
