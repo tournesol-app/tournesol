@@ -10,6 +10,9 @@ from tournesol.utils.video_language import compute_video_language
 logger = logging.getLogger(__name__)
 thread_local = threading.local()
 
+# The maximum number of ids accepted by a single `channels.list` request.
+MAX_CHANNELS_PER_REQUEST = 50
+
 
 def get_youtube_client():
     youtube_api_key = settings.YOUTUBE_API_KEY
@@ -139,7 +142,45 @@ def get_channel_metadata(channel_id):
     if len(yt_items) == 0:
         raise ChannelNotFound
 
-    snippet = yt_items[0]["snippet"]
+    return channel_snippet_to_metadata(yt_items[0]["snippet"])
+
+
+def get_youtube_channels_details(channel_ids):
+    youtube = get_youtube_client()
+    if not youtube:
+        raise YoutubeNotConfiguredError(
+            "YouTube client not initialized, did you provide an API key?"
+        )
+
+    logger.info("Fetching YouTube metadata for %s channels", len(channel_ids))
+    request = youtube.channels().list(
+        part="snippet", id=",".join(channel_ids), maxResults=MAX_CHANNELS_PER_REQUEST
+    )
+    return request.execute()
+
+
+def get_channels_metadata(channel_ids):
+    """
+    Return the metadata of up to `MAX_CHANNELS_PER_REQUEST` YouTube channels,
+    fetched in a single request, by channel id.
+
+    Channels that do not exist are absent from the result. Unlike
+    `get_channel_metadata`, failures are raised, so that a caller fetching many
+    channels can stop instead of carrying on with empty metadata.
+    """
+    if len(channel_ids) > MAX_CHANNELS_PER_REQUEST:
+        raise ValueError(
+            f"Cannot fetch more than {MAX_CHANNELS_PER_REQUEST} channels in one request"
+        )
+
+    yt_response = get_youtube_channels_details(channel_ids)
+    return {
+        yt_item["id"]: channel_snippet_to_metadata(yt_item["snippet"])
+        for yt_item in yt_response.get("items", [])
+    }
+
+
+def channel_snippet_to_metadata(snippet):
     return {
         "name": snippet["title"],
         "thumbnail": snippet.get("thumbnails", {}).get("medium", {}).get("url"),

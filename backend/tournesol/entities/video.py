@@ -73,6 +73,12 @@ class VideoEntity(EntityType):
             if metadata_value is not None:
                 self.instance.metadata[metadata_key] = metadata_value
 
+    def get_source_uids(self) -> set[str]:
+        channel_id = self.instance.metadata.get("channel_id")
+        if not channel_id:
+            return set()
+        return {f"{YOUTUBE_UID_NAMESPACE}{UID_DELIMITER}{channel_id}"}
+
     def metadata_needs_to_be_refreshed(self) -> bool:
         """
         Refresh will be executed only if the current metadata
