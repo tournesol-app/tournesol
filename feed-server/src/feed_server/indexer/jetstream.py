@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 import orjson
 import websockets
 
+from ..config import FEED_SERVER_JETSTREAM_USE_STORED_CURSOR
 from ..db import db
 
 JETSTREAM_BASE_URL = "wss://jetstream1.us-east.bsky.network/subscribe"
@@ -28,9 +29,10 @@ def is_reply(data: dict) -> bool:
 
 async def get_jetstream_url():
     params: dict[str, Any] = {"wantedCollections": WANTED_COLLECTIONS}
-    cursor = await db.redis_client.get(CURSOR_KEY)
-    if cursor is not None:
-        params["cursor"] = int(cursor) - CURSOR_TOLERANCE_MICROSECONDS
+    if FEED_SERVER_JETSTREAM_USE_STORED_CURSOR:
+        cursor = await db.redis_client.get(CURSOR_KEY)
+        if cursor is not None:
+            params["cursor"] = int(cursor) - CURSOR_TOLERANCE_MICROSECONDS
     return f"{JETSTREAM_BASE_URL}?{urlencode(params, doseq=True)}"
 
 
