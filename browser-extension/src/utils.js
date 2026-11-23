@@ -142,6 +142,11 @@ export const addRateLaterBulk = async (videoIds) => {
       data: videoIds.map((videoId) => ({ entity: { uid: 'yt:' + videoId } })),
     }
   );
+
+  if (!rateLaterBulkResponse) {
+    return { success: false };
+  }
+
   const responseJson = await rateLaterBulkResponse.json();
   return {
     success: rateLaterBulkResponse.ok,
@@ -157,6 +162,10 @@ export const getUserProof = async (keyword) => {
   const userProofResponse = await fetchTournesolApi(
     `users/me/proof/videos?keyword=${keyword}`
   );
+
+  if (!userProofResponse) {
+    return { success: false };
+  }
 
   if ([200, 401].includes(userProofResponse.status)) {
     const responseJson = await userProofResponse.json();
@@ -182,6 +191,10 @@ export const updateSingleSetting = async (name, value, scope = 'videos') => {
 
 export const getUserSettings = async () => {
   const userSettingsResponse = await fetchTournesolApi('users/me/settings/');
+
+  if (!userSettingsResponse) {
+    return { success: false };
+  }
 
   if ([200, 401].includes(userSettingsResponse.status)) {
     const responseJson = await userSettingsResponse.json();
@@ -220,7 +233,7 @@ export const getVideoStatistics = async (videoId) => {
   const videoStatistics = await fetchTournesolApi(
     `polls/videos/entities/yt:${videoId}`
   );
-  if (videoStatistics.status === 200) {
+  if (videoStatistics && videoStatistics.status === 200) {
     const responseJson = await videoStatistics.json();
 
     return {

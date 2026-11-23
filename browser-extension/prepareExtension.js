@@ -12,10 +12,16 @@ const browser = process.env.EXTENSION_BROWSER || 'firefox';
 if (process.env.EXTENSION_BROWSER && !process.env.MANIFEST_VERSION) {
   throw new Error(`MANIFEST_VERSION is required with EXTENSION_BROWSER`);
 }
+if (!['chrome', 'firefox', 'safari'].includes(browser)) {
+  throw new Error(`Invalid browser: ${browser}`);
+}
 
 const manifestVersion = parseInt(process.env.MANIFEST_VERSION || 2);
 if (manifestVersion != 2 && manifestVersion != 3)
   throw new Error(`Invalid manifest version: ${manifestVersion}`);
+if (browser === 'safari' && manifestVersion !== 2) {
+  throw new Error('Safari builds require manifest version 2');
+}
 if (manifestVersion === 2) {
   console.info(
     `Extension will be configured with manifest version ${manifestVersion}.`
@@ -37,22 +43,22 @@ const hostPermissions = [
     ],
   }),
   'https://www.youtube.com/',
-];
+].map((permission) => (browser === 'safari' ? `${permission}*` : permission));
 
 const permissions = [
   'activeTab',
   'contextMenus',
   'storage',
-  'webNavigation',
+  ...(browser !== 'safari' ? ['webNavigation'] : []),
   // webRequest and webReauestBlocking were used to overwrite
   // headers in the API response. This is no longer the case
   // with version > 3.5.2.
   // These permissions can be removed as soon as we are confident
   // the next release works as expected.
-  ...selectValue(manifestVersion, {
-    2: ['webRequest', 'webRequestBlocking'],
-    3: ['scripting'],
-  }),
+  ...(manifestVersion === 2 && browser !== 'safari'
+    ? ['webRequest', 'webRequestBlocking']
+    : []),
+  ...(manifestVersion === 3 ? ['scripting'] : []),
 ];
 
 const allPermissions = selectValue(manifestVersion, {
@@ -101,22 +107,25 @@ const manifest = {
     128: 'Logo128.png',
     512: 'Logo512.png',
   },
-  background: selectValue(manifestVersion, {
-    2: { page: 'background.html', persistent: true },
-    3: selectValue(browser, {
-      // It's possible to make a browser-independent background value but
-      // Chrome only supports that since version 121 released in January 2024.
-      // See https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/background
-      firefox: {
-        scripts: ['background.js'],
-        type: 'module',
-      },
-      chrome: {
-        service_worker: 'background.js',
-        type: 'module',
-      },
-    }),
-  }),
+  background:
+    manifestVersion === 2
+      ? {
+          page: 'background.html',
+          persistent: true,
+        }
+      : selectValue(browser, {
+          // It's possible to make a browser-independent background value but
+          // Chrome only supports that since version 121 released in January 2024.
+          // See https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/background
+          firefox: {
+            scripts: ['background.js'],
+            type: 'module',
+          },
+          chrome: {
+            service_worker: 'background.js',
+            type: 'module',
+          },
+        }),
   [selectValue(manifestVersion, { 2: 'browser_action', 3: 'action' })]: {
     default_icon: {
       16: 'Logo16.png',
@@ -177,11 +186,25 @@ const manifest = {
       all_frames: false,
     },
   ],
-  options_ui: {
-    page: 'options/options.html',
-    open_in_tab: true,
-  },
+  options_ui:
+    browser === 'safari'
+      ? {
+          page: 'options/options.html',
+        }
+      : {
+          page: 'options/options.html',
+          open_in_tab: true,
+        },
   default_locale: 'en',
+  ...(browser === 'safari'
+    ? {
+        browser_specific_settings: {
+          safari: {
+            strict_min_version: '14.0',
+          },
+        },
+      }
+    : {}),
   web_accessible_resources: selectValue(manifestVersion, {
     2: webAccessibleResourcesFromYouTube,
     3: [
