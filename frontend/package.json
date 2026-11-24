@@ -15,7 +15,7 @@
     "@types/react-dom": "^18",
     "@types/react-redux": "^7.1.7",
     "@use-gesture/react": "^10.3.1",
-    "i18next": "^23",
+    "i18next": "^26",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^4.0.4",
     "linkify-string": "^4.1",
