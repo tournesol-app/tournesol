@@ -194,14 +194,20 @@ def qr_standard_deviation(
         right_unc = left_unc
 
     if median is None:
-        median = qr_median(lipschitz, values, voting_rights, 
-            left_unc, right_unc, error)
+        median = qr_median(
+            lipschitz,
+            values,
+            voting_rights,
+            left_unc=left_unc,
+            right_unc=right_unc,
+            error=error,
+        )
 
     deltas = values - median
     deviations = np.abs(deltas)
-    left_unc = left_unc * (deltas > 0) + right_unc * (deltas < 0)
-    left_unc = np.minimum(left_unc, deviations)
-    right_unc = left_unc * (deltas < 0) + right_unc * (deltas > 0)
+    dev_left = left_unc * (deltas > 0) + right_unc * (deltas < 0)
+    dev_left = np.minimum(dev_left, deviations)
+    dev_right = left_unc * (deltas < 0) + right_unc * (deltas > 0)
 
     return max(
         qr_quantile(
@@ -209,10 +215,10 @@ def qr_standard_deviation(
             quantile_dev,
             deviations,
             voting_rights,
-            left_unc,
-            right_unc,
-            default_dev,
-            error,
+            left_unc=dev_left,
+            right_unc=dev_right,
+            default_value=default_dev,
+            error=error,
         ),
         0.0,
     )
