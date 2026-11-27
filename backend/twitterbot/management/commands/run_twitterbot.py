@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from twitterbot.tournesolbot import get_video_recommendations, tweet_video_recommendation
+from twitterbot.tournesolbot import get_video_recommendations, post_video_recommendation
 
 
 class Command(BaseCommand):
-    help = "Runs Tournesol Twitter Bot"
+    help = "Run the Tournesol bot"
 
     def add_arguments(self, parser):
 
@@ -52,4 +52,4 @@ class Command(BaseCommand):
 
             return
 
-        tweet_video_recommendation(bot_name, assumeyes=options["assumeyes"], dest=["bluesky"])
+        post_video_recommendation(bot_name, assumeyes=options["assumeyes"], dest=["bluesky"])

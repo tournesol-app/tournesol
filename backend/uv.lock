@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = "==3.13.*"
 
 [[package]]
@@ -1142,19 +1142,6 @@ wheels = [
 ]
 
 [[package]]
-name = "requests-oauthlib"
-version = "2.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "oauthlib" },
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/42/f2/05f29bc3913aea15eb670be136045bf5c5bbf4b99ecb839da9b422bb2c85/requests-oauthlib-2.0.0.tar.gz", hash = "sha256:b3dffaebd884d8cd778494369603a9e7b58d29111bf6b41bdc2dcd87203af4e9", size = 55650, upload-time = "2024-03-22T20:32:29.939Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/5d/63d4ae3b9daea098d5d6f5da83984853c1bbacd5dc826764b249fe119d24/requests_oauthlib-2.0.0-py2.py3-none-any.whl", hash = "sha256:7dd8a5c40426b779b0868c404bdef9768deccf22749cde15852df527e6269b36", size = 24179, upload-time = "2024-03-22T20:32:28.055Z" },
-]
-
-[[package]]
 name = "rpds-py"
 version = "0.30.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1316,7 +1303,6 @@ dependencies = [
     { name = "requests" },
     { name = "scipy" },
     { name = "solidago" },
-    { name = "tweepy" },
 ]
 
 [package.optional-dependencies]
@@ -1361,7 +1347,6 @@ requires-dist = [
     { name = "requests", specifier = "==2.*" },
     { name = "scipy", specifier = "==1.*" },
     { name = "solidago", editable = "../solidago" },
-    { name = "tweepy", specifier = "==4.*" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'deploy'", specifier = "==0.22.0" },
 ]
 provides-extras = ["deploy"]
@@ -1373,20 +1358,6 @@ dev = [
     { name = "pytest-django", specifier = "==4.*" },
     { name = "pytest-html", specifier = "==3.*" },
     { name = "ruff", specifier = ">=0.17.4" },
-]
-
-[[package]]
-name = "tweepy"
-version = "4.16.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "oauthlib" },
-    { name = "requests" },
-    { name = "requests-oauthlib" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6e/45/a73bb812b1817247d3f79b3b9a4784ab93a081853b697e87428caa8c287b/tweepy-4.16.0.tar.gz", hash = "sha256:1d95cbdc50bf6353a387f881f2584eaf60d14e00dbbdd8872a73de79c66878e3", size = 87646, upload-time = "2025-06-22T01:17:51.34Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/7c/3375cd1fbefcb8ead580fe324b1b6dcdc21aabf51562ee6def7266fcf363/tweepy-4.16.0-py3-none-any.whl", hash = "sha256:48d1a1eb311d2c4b8990abcfa6f9fa2b2ad61be05c723b1a9b4f242656badae2", size = 98843, upload-time = "2025-06-22T01:17:49.823Z" },
 ]
 
 [[package]]
