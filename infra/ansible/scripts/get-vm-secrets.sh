@@ -3,11 +3,13 @@
 export VM_ADDR="${1:-"staging.tournesol.app"}"
 export VM_USER="${2:-"$USER"}"
 
-function get_settings_value() {
-    local jq_filter=$1;
+SETTINGS_FILE_JSON="$(\
     ssh "$VM_USER@$VM_ADDR" -- \
-    'sudo python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'' \
-    | jq -r' "'$jq_filter | values'"
+    'sudo python3 -c '\''import yaml,json; print(json.dumps(yaml.safe_load(open("/etc/tournesol/settings.yaml"))))'\'''\
+)"
+
+function get_settings_value() {
+    jq -r $1 <<< "$SETTINGS_FILE_JSON"
 }
 
 DJANGO_SECRET_KEY=$(get_settings_value .SECRET_KEY)
@@ -87,6 +89,9 @@ export TWBOT_ACCESS_TOKEN_EN
 
 TWBOT_ACCESS_TOKEN_SECRET_EN=$(get_settings_value .TWITTERBOT_CREDENTIALS.\"@TournesolBot\".ACCESS_TOKEN_SECRET)
 export TWBOT_ACCESS_TOKEN_SECRET_EN
+
+DISCORD_BOT_TOKEN=$(get_settings_value .DISCORD_BOT_TOKEN)
+export DISCORD_BOT_TOKEN
 
 DISCORD_INFRA_ALERT_WEBHOOK=$(get_settings_value .DISCORD_CHANNEL_WEBHOOKS.infra_alert)
 export DISCORD_INFRA_ALERT_WEBHOOK
